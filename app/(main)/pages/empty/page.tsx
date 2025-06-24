@@ -5,7 +5,7 @@ const EmptyPage = () => {
         <div className="grid">
             <div className="col-12">
                 <div className="card">
-                    <h5>Aqui esta el cambio</h5>
+                    <h5>un cambio distinto</h5>
                     <p>Use this page to start from scratch and place your custom content.</p>
                 </div>
             </div>
