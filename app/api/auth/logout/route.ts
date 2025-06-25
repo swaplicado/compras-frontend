@@ -1,11 +1,50 @@
 import { NextRequest, NextResponse } from 'next/server';
 import cookie from 'cookie';
-import api from '../../axios/axiosConfig'
+import api from '../../axios/axiosConfig';
+
+// Interfaz para estandarizar las respuestas de error
+interface ErrorResponse {
+    error: string;
+    status: number;
+}
+
+// Función auxiliar para mapear errores
+const getErrorMessage = (error: any): ErrorResponse => {
+    // Manejo de errores de Axios
+    if (error.response) {
+        const { status, data } = error.response;
+        switch (status) {
+            case 400:
+                return { error: data?.error || 'Solicitud inválida', status: 400 };
+            case 401:
+                return { error: data?.error || 'Credenciales inválidas', status: 401 };
+            case 403:
+                return { error: data?.error || 'Acceso denegado', status: 403 };
+            case 404:
+                return { error: data?.error || 'Recurso no encontrado', status: 404 };
+            case 500:
+                return { error: data?.error || 'Error en el servidor', status: 500 };
+            default:
+                return { error: data?.error || 'Error inesperado', status };
+        }
+    }
+
+    // Errores de red o conexión
+    if (error.code === 'ECONNREFUSED') {
+        return { error: 'No hay conexión con el servidor', status: 503 };
+    }
+    if (error.code === 'ERR_NETWORK') {
+        return { error: 'Error de red', status: 503 };
+    }
+
+    // Otros errores
+    return { error: 'Ocurrió un error inesperado', status: 500 };
+};
 
 export async function POST(req: NextRequest) {
+    const cookiesToDelete = ['access_token', 'company']; // Agrega aquí los nombres de tus cookies
     try {
         // Lista de nombres de cookies a eliminar
-        const cookiesToDelete = ['access_token', 'company']; // Agrega aquí los nombres de tus cookies
 
         const token = req.cookies.get('access_token');
         let headersLogout = {};
@@ -16,17 +55,19 @@ export async function POST(req: NextRequest) {
             headersLogout = { headers: { 'Content-Type': 'application/json' } };
         }
 
-        const response = await api.post('/logout', {
-            'token': token?.value
-        }, headersLogout);
-
-        const data = response.data;
+        const response = await api.post(
+            '/logout',
+            {
+                token: token?.value
+            },
+            headersLogout
+        );
 
         // Crear un objeto Headers
         const headers = new Headers();
 
         // Generar encabezados para eliminar cada cookie
-        cookiesToDelete.forEach(cookieName => {
+        cookiesToDelete.forEach((cookieName) => {
             headers.append(
                 'Set-Cookie',
                 cookie.serialize(cookieName, '', {
@@ -34,38 +75,47 @@ export async function POST(req: NextRequest) {
                     secure: process.env.NODE_ENV === 'production',
                     maxAge: -1, // Expirar inmediatamente
                     path: '/',
-                    sameSite: 'Strict',
+                    sameSite: 'Strict'
                 })
             );
         });
 
-        return new NextResponse(
-            JSON.stringify({ message: 'Logout exitoso, cookies eliminadas' }),
-            {
-                headers,
-            }
-        );
-    } catch (error) {
-        const oError = error as any;
-        if (oError.cookieHeader) {
-            // Incluye el cookieHeader en la respuesta si existe
-            return NextResponse.json({ error: 'No autorizado' }, {
-                status: 401,
-                headers: {
-                    'Set-Cookie': oError.cookieHeader,
-                },
-            });
+        return new NextResponse(JSON.stringify({ message: 'Logout exitoso, cookies eliminadas' }), {
+            headers
+        });
+    } catch (error: any) {
+        // Si el error incluye cookieHeader (por ejemplo, 401/403 desde el interceptor)
+        if (error.cookieHeader) {
+            const { error: message, status } = getErrorMessage(error.error || error);
+            return NextResponse.json(
+                { error: message },
+                {
+                    status,
+                    headers: { 'Set-Cookie': error.cookieHeader }
+                }
+            );
         }
 
-        const axiosError = oError.error || error;
-        const response = axiosError.response || axiosError.cause || {};
-        const code = response.code || '';
-        const status = response.status || 500;
-        let message = response.data?.error || 'Ocurrió un error inesperado';
-        if (code == 'ECONNREFUSED') {
-            message = 'No hay conexión con el servidor';
-        }
+        // Crear un objeto Headers
+        const headers = new Headers();
 
-        return NextResponse.json({ error: message }, { status });
+        // Generar encabezados para eliminar cada cookie
+        cookiesToDelete.forEach((cookieName) => {
+            headers.append(
+                'Set-Cookie',
+                cookie.serialize(cookieName, '', {
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === 'production',
+                    maxAge: -1, // Expirar inmediatamente
+                    path: '/',
+                    sameSite: 'Strict'
+                })
+            );
+        });
+
+        // Otros errores
+        const { error: message, status } = getErrorMessage(error);
+        // return NextResponse.json({ error: message }, { status });
+        return new NextResponse(JSON.stringify({ error: message }), {status,headers});
     }
 }

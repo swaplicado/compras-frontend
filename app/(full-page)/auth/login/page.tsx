@@ -49,6 +49,9 @@ const LoginPage = () => {
                 //esto es para cuando se implemente la seleccion de la empresa por parte del usuario
                 // Cookies.set('lCompany', JSON.stringify(response.data.userData.work_instances), { expires: 7 });
                 // router.push('/auth/selectCompany');
+                Cookies.set('companyName', response.data.userData.default_work_instance.work_instance_name);
+                Cookies.set('companyId', response.data.userData.default_work_instance.id_work_instance);
+                Cookies.set('companyLogo', response.data.userData.default_work_instance.logo_url);
                 router.push('/');
             } else {
                 throw new Error('Login fallido');
@@ -57,6 +60,7 @@ const LoginPage = () => {
             // El error siempre tendrá la estructura { error: string }
             showToast(error.response?.data?.error || 'Error al iniciar sesión');
         } finally {
+            await new Promise(resolve => setTimeout(resolve, 1000));
             setLoading(false);
         }
     };

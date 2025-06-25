@@ -25,7 +25,7 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
     const [loading, setLoading] = useState(false);
     const [companyName, setCompanyName] = useState<any>(null);
     
-    let itemsCompany: MenuItem[] | { label: any; command: () => void; }[] | undefined = [];
+    // let itemsCompany: MenuItem[] | { label: any; command: () => void; }[] | undefined = [];
     const itemsProfile = [
         {
             label: 'Opciones',
@@ -48,30 +48,30 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
         }
     ];
 
-    const getlCompany = async () => {
-        try {
-            const result = await axios.get('/api/axios/get', {
-                params: {
-                    route: '/get_work_instances'
-                },
-            });
+    // const getlCompany = async () => {
+    //     try {
+    //         const result = await axios.get('/api/axios/get', {
+    //             params: {
+    //                 route: '/get_work_instances'
+    //             },
+    //         });
 
-            if (result.data) {
-                const work_instances = result.data.data.work_instances
-                work_instances.forEach((company: any) => {
-                    itemsCompany.push({
-                        label: company.work_instance_name,
-                        command: () => {
-                            changeCompany(company)
-                        }
-                    });
-                });
-            }
+    //         if (result.data) {
+    //             const work_instances = result.data.data.work_instances
+    //             work_instances.forEach((company: any) => {
+    //                 itemsCompany.push({
+    //                     label: company.work_instance_name,
+    //                     command: () => {
+    //                         changeCompany(company)
+    //                     }
+    //                 });
+    //             });
+    //         }
 
-        } catch (error) {
+    //     } catch (error) {
             
-        }
-    }
+    //     }
+    // }
 
     const changeCompany = (company: any) => {
         setDisplayConfirmationChangeCompany(true);
@@ -122,17 +122,17 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
     };
 
     // getlCompany();
-    // useEffect(() => {
-    //     getCompanyName();
-    // }, []);
+    useEffect(() => {
+        getCompanyName();
+    }, []);
 
     return (
         <div className="layout-topbar">
             { loading ? loaderScreen() : null }
             { displayConfirmationChangeCompany ? confirmChangeCompanyDialog() : null }
             <Link href="/" className="layout-topbar-logo">
-                <img src={`/layout/images/logo-${layoutConfig.colorScheme !== 'light' ? 'white' : 'dark'}.svg`} width="47.22px" height={'35px'} alt="logo" />
-                <span>SAKAI</span>
+                <img src={`/layout/images/aeth_logo.png`} alt="logo" />
+                <span>{companyName}</span>
             </Link>
 
             <button ref={menubuttonRef} type="button" className="p-link layout-menu-button layout-topbar-button" onClick={onMenuToggle}>
@@ -143,11 +143,11 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
                 <i className="pi pi-ellipsis-v" />
             </button>
             
-            <div className="layout-topbar-menu">
+            {/* <div className="layout-topbar-menu">
                 <div className="flex align-items-center justify-content-center text-2xl">
                     <b>{companyName}</b>
                 </div>
-            </div>
+            </div> */}
 
             <div ref={topbarmenuRef} className={classNames('layout-topbar-menu', { 'layout-topbar-menu-mobile-active': layoutState.profileSidebarVisible })}>
                 {/* <Menu model={itemsCompany} popup ref={menuCompany} id="popup_menu_right" popupAlignment="right" />
