@@ -8,7 +8,10 @@ interface SimpleLayoutProps {
 
 export const metadata: Metadata = {
     title: 'compras',
-    description: ''
+    description: '',
+    icons: {
+        icon: '/aeth_logo.png'
+    }
 };
 
 export default function SimpleLayout({ children }: SimpleLayoutProps) {
