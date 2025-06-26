@@ -1,0 +1,11 @@
+# Ignorar todo esto:
+**/.next
+**/node_modules
+**/.git
+**/.env*.local
+**/.DS_Store
+**/npm-debug.log
+**/yarn-error.log
+**/coverage
+**/.idea
+.vscode/
