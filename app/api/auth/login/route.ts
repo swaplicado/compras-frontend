@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 // import axios from 'axios';
 import api from '../../axios/axiosConfig';
 import cookie from 'cookie'; // Importar la librería cookie para manejar las cookies
+import appConfig from '../../../../appConfig.json';
 
 // Interfaz para estandarizar las respuestas de error
 interface ErrorResponse {
@@ -65,7 +66,8 @@ export async function POST(req: NextRequest) {
             },
             {
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'X-API-KEY': appConfig.apiKey
                 }
             }
         );

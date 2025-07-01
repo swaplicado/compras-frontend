@@ -20,9 +20,6 @@ export function middleware(req: NextRequest) {
         req.nextUrl.pathname.endsWith('.svg') ||
         req.nextUrl.pathname.endsWith('.woff2');
 
-    console.log('Token en middleware:', token?.value);
-    console.log('Company en middleware:', company?.value);
-
     // Redirigir si no hay token y no estás en login, recursos estáticos o API
     if (!token?.value && !isLoginPage && !isStaticAsset && !isApiRequest && !isResetPasswordPage && !isConfirmPasswordPage) {
         return NextResponse.redirect(new URL('/auth/login', req.url));

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import api from '@/app/api/axios/axiosConfig';
+import appConfig from '../../../../appConfig.json';
 
 // Interfaz para estandarizar las respuestas de error
 interface ErrorResponse {
@@ -55,9 +56,9 @@ export async function POST(req: NextRequest) {
 
         let headers = {};
         if (token) {
-            headers = { headers: { 'Content-Type': 'application/json', Authorization: `Token ${token?.value}` } };
+            headers = { headers: { 'Content-Type': 'application/json', Authorization: `Token ${token?.value}`, 'X-API-KEY': appConfig.apiKey } };
         } else {
-            headers = { headers: { 'Content-Type': 'application/json' } };
+            headers = { headers: { 'Content-Type': 'application/json', 'X-API-KEY': appConfig.apiKey } };
         }
 
         if (params) {
