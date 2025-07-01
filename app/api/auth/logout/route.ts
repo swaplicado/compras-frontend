@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import cookie from 'cookie';
 import api from '../../axios/axiosConfig';
+import appConfig from '../../../../appConfig.json';
 
 // Interfaz para estandarizar las respuestas de error
 interface ErrorResponse {
@@ -50,9 +51,9 @@ export async function POST(req: NextRequest) {
         let headersLogout = {};
 
         if (token) {
-            headersLogout = { headers: { 'Content-Type': 'application/json', Authorization: `Token ${token?.value}` } };
+            headersLogout = { headers: { 'Content-Type': 'application/json', Authorization: `Token ${token?.value}`, 'X-API-KEY': appConfig.apiKey } };
         } else {
-            headersLogout = { headers: { 'Content-Type': 'application/json' } };
+            headersLogout = { headers: { 'Content-Type': 'application/json', 'X-API-KEY': appConfig.apiKey } };
         }
 
         const response = await api.post(

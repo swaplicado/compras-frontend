@@ -1,8 +1,9 @@
 import axios from 'axios';
 import cookie from 'cookie'; // Importar la librería cookie para manejar las cookies
+import appConfig from '/appConfig.json';
 
 const api = axios.create({
-    baseURL: 'http://127.0.0.1:8000'
+    baseURL: appConfig.mainRoute
 });
 
 // Configura el interceptor de respuesta
