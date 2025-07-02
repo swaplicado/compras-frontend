@@ -8,6 +8,9 @@ import { Toast } from 'primereact/toast';
 import loaderScreen from '@/app/components/loaderScreen';
 import axios from 'axios';
 import { Password } from 'primereact/password';
+import Lottie from 'lottie-react';
+import successAnimation from '@/public/layout/animations/Animation - success.json';
+import errorAnimation from '@/public/layout/animations/Animation - error.json';
 
 const ResetPassword = () => {
     const { layoutConfig } = useContext(LayoutContext);
@@ -18,6 +21,7 @@ const ResetPassword = () => {
     const { uid, token } = useParams();
     const [ enterResetPassword, setEnterResetPassword ] = useState(false);
     const [ sendResultOk, setSendResultOk ] = useState(false);
+    const [resultLottie, setResultLottie] = useState<'wait' | 'success' | 'error'>('wait');
 
     const containerClassName = classNames('surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden, background-image', {
         'p-input-filled': layoutConfig.inputStyle === 'filled'
@@ -50,18 +54,13 @@ const ResetPassword = () => {
 
             if (result.status === 200) {
                 setSendResultOk(true);
+                setResultLottie('success')
             }
 
-        } catch (error) {
-            if (axios.isAxiosError(error)) {
-                if (error.response?.status === 401) {
-                    showToast(error.response?.data.error || error.message);
-                } else {
-                    showToast(error.response?.data.error || error.message);
-                }
-            } else {
-                showToast('Error desconocido:');
-            }
+        } catch (error: any) {
+            showToast(error.response?.data?.error || 'Ocurrió un error al actualizar la contraseña');
+            setSendResultOk(false);
+            setResultLottie('error')
         } finally {
             setLoading(false);
         }
@@ -81,13 +80,20 @@ const ResetPassword = () => {
         });
     };
 
+    const retry = () =>  {
+        setPassword('');
+        setConfirmPassword('');
+        setResultLottie('wait');
+        setSendResultOk(false);
+    }
+
     return (
         <div className={containerClassName}>
             {loading && (
                 loaderScreen()
             )}
             <div className='flex flex-column align-items-center justify-content-center'>
-                <img src={`/layout/images/logo-${layoutConfig.colorScheme === 'light' ? 'dark' : 'white'}.svg`} alt='Sakai logo' className='mb-5 w-6rem flex-shrink-0' />
+                <img src={`/layout/images/aeth_logo.png`} alt='Sakai logo' className='mb-5 w-6rem flex-shrink-0' />
                 <div
                     style={{
                         borderRadius: '56px',
@@ -95,7 +101,7 @@ const ResetPassword = () => {
                         background: 'var(--primary-color)'
                     }}
                 >
-                    { !sendResultOk && (
+                    { !sendResultOk && resultLottie == 'wait' && (
                         <div className='w-full surface-card py-8 px-5 sm:px-8' style={{ borderRadius: '53px' }}>
                             <div className='mb-5'>
                                 <div className='mb-5'>
@@ -150,10 +156,12 @@ const ResetPassword = () => {
                             </div>
                         </div>
                     )}
-
-                    { sendResultOk && (
+                    { sendResultOk && resultLottie == 'success' ? (
                         <div className='w-full surface-card py-8 px-5 sm:px-8' style={{ borderRadius: '53px' }}>
                             <div className='mb-5'>
+                                <div style={{ width: 200, height: 200, margin: '0 auto' }}>
+                                    <Lottie animationData={successAnimation} loop={false} autoplay={true} />
+                                </div>
                                 <label htmlFor='username' className='block text-900 text-xl font-medium mb-2'>
                                     Se ha restablecido tu contraseña correctamente.
                                 </label>
@@ -163,7 +171,22 @@ const ResetPassword = () => {
                                 <Button label='Regresar a login' className="flex align-items-center justify-content-center bg-primary font-bold border-round " onClick={handleExit}></Button>
                             </div>
                         </div>
-                    )}
+                    ) : !sendResultOk && resultLottie == 'error' ? (
+                        <div className='w-full surface-card py-8 px-5 sm:px-8' style={{ borderRadius: '53px' }}>
+                            <div className='mb-5'>
+                                <div style={{ width: 200, height: 200, margin: '0 auto' }}>
+                                    <Lottie animationData={errorAnimation} loop={false} autoplay={true} />
+                                </div>
+                                <h3 className="mt-3">No se pudo actualizar tu contraseña</h3>
+                                <p className="mt-2">Tu contraseña no ha sido cambiada.</p>
+                            </div>
+
+                            <div className='flex align-items-center justify-content-between mb-5 gap-5'>
+                                <Button label='Regresar a login' className="flex align-items-center justify-content-center bg-primary font-bold border-round " onClick={handleExit}></Button>
+                                <Button label='Reintentar' className="flex align-items-center justify-content-center bg-primary font-bold border-round " onClick={retry}></Button>
+                            </div>
+                        </div>
+                    ) : '' }
                 </div>
             </div>
             <Toast ref={toast} />
