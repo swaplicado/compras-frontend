@@ -31,6 +31,13 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
             label: 'Opciones',
             items: [
                 {
+                    label: 'Cambiar contraseña',
+                    icon: 'pi pi-lock',
+                    command: () => {
+                        window.location.href = '/pages/changePassword';
+                    }
+                },
+                {
                     label: 'Recargar',
                     icon: 'pi pi-refresh',
                     command: () => {

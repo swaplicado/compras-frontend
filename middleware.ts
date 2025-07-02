@@ -18,6 +18,7 @@ export function middleware(req: NextRequest) {
         req.nextUrl.pathname.endsWith('.jpg') ||
         req.nextUrl.pathname.endsWith('.png') ||
         req.nextUrl.pathname.endsWith('.svg') ||
+        req.nextUrl.pathname.endsWith('.gif') ||
         req.nextUrl.pathname.endsWith('.woff2');
 
     // Redirigir si no hay token y no estás en login, recursos estáticos o API
