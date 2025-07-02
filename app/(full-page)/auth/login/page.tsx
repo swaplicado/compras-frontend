@@ -52,6 +52,7 @@ const LoginPage = () => {
                 Cookies.set('companyName', response.data.userData.default_work_instance.work_instance_name);
                 Cookies.set('companyId', response.data.userData.default_work_instance.id_work_instance);
                 Cookies.set('companyLogo', response.data.userData.default_work_instance.logo_url);
+                Cookies.set('userId', response.data.userData.user.id);
                 router.push('/');
             } else {
                 throw new Error('Login fallido');
@@ -113,12 +114,12 @@ const LoginPage = () => {
                         <div>
                             <div className='mb-5'>
                                 <label htmlFor='username' className='block text-900 text-xl font-medium mb-2'>
-                                    Nombre de usuario
+                                    Usuario
                                 </label>
                                 <InputText
                                     id='username'
                                     type='text'
-                                    placeholder='Nombre de usuario'
+                                    placeholder='Usuario'
                                     value={username}
                                     onChange={e => setUsername(e.target.value)}
                                     onKeyDown={e => e.key === 'Enter' && handleLogin()}
@@ -127,7 +128,7 @@ const LoginPage = () => {
                                 />
                                 {enterLogin && username === '' && (
                                     <small id="username-help" className="block p-error">
-                                        Por favor ingresa tu nombre de usuario.
+                                        Por favor ingresa tu usuario.
                                     </small>
                                 )}
                             </div>
@@ -154,11 +155,11 @@ const LoginPage = () => {
                                 )}
                             </div>
                                 <br />
-                            {/* <div className='flex align-items-center justify-content-end mb-5 mt-2 gap-5'>
+                            <div className='flex align-items-center justify-content-end mb-5 mt-2 gap-5'>
                                 <a href='/auth/resetPassword' onClick={() => setLoading(true)} className='font-medium no-underline ml-2 text-right cursor-pointer' style={{ color: 'var(--primary-color)' }}>
                                     ¿Olvidaste tu contraseña?
                                 </a>
-                            </div> */}
+                            </div>
                             <Button label='Entrar' className='w-full p-3 text-xl' onClick={handleLogin}></Button>
                         </div>
                         <div className="flex justify-content-center mt-5">

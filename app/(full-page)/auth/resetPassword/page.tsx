@@ -82,7 +82,7 @@ const ResetPassword = () => {
                 loaderScreen()
             )}
             <div className='flex flex-column align-items-center justify-content-center'>
-                <img src={`/layout/images/logo-${layoutConfig.colorScheme === 'light' ? 'dark' : 'white'}.svg`} alt='Sakai logo' className='mb-5 w-6rem flex-shrink-0' />
+                <img src={`/layout/images/aeth_logo.png`} alt='' className='mb-5 w-6rem flex-shrink-0' />
                 <div
                     style={{
                         borderRadius: '56px',
@@ -93,13 +93,13 @@ const ResetPassword = () => {
                     { !sendResultOk && (
                         <div className='w-full surface-card py-8 px-5 sm:px-8' style={{ borderRadius: '53px' }}>
                             <div className='mb-5'>
-                                <label htmlFor='nombre de usuario' className='block text-900 text-xl font-medium mb-2'>
-                                    Nombre de usuario
+                                <label htmlFor='Usuario' className='block text-900 text-xl font-medium mb-2'>
+                                    Usuario
                                 </label>
                                 
                                 <InputText 
                                     type="text"
-                                    placeholder="Nombre de usuario"
+                                    placeholder="Usuario"
                                     value={username}
                                     onChange={e => setUsername(e.target.value)}
                                     className={classNames({ 'p-invalid': enterReset && username == '' }, 'w-full md:w-30rem')}
