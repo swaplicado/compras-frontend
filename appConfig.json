@@ -1,4 +1,10 @@
 {
     "mainRoute": "https://gateway-backend-compras-4p99zqdp.uc.gateway.dev/v1",
-    "apiKey": "AIzaSyDlskxETi2HFbsl2AWwBzktGkoUtUwnktU"
+    "apiKey": "AIzaSyDlskxETi2HFbsl2AWwBzktGkoUtUwnktU",
+    "groups": [
+        { "id": 1, "name": "comprador" },
+        { "id": 2, "name": "contador" },
+        { "id": 3, "name": "pagador" },
+        { "id": 4, "name": "proveedor" }
+    ]
 }

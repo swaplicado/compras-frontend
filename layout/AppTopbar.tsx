@@ -12,6 +12,7 @@ import { MenuItem } from 'primereact/menuitem';
 import { Dialog } from 'primereact/dialog';
 import loaderScreen from '@/app/components/loaderScreen';
 import Cookies from 'js-cookie';
+import appConfig from '../appConfig.json';
 
 const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
     const { layoutConfig, layoutState, onMenuToggle, showProfileSidebar } = useContext(LayoutContext);
@@ -24,6 +25,8 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
     const [company, setCompany] = useState<any>(null);
     const [loading, setLoading] = useState(false);
     const [companyName, setCompanyName] = useState<any>(null);
+    const [ nameUser, setNameUser ] = useState<any>(null);
+    const [ roleUser, setRoleUser ] = useState<any>(null);
     
     // let itemsCompany: MenuItem[] | { label: any; command: () => void; }[] | undefined = [];
     const itemsProfile = [
@@ -108,6 +111,22 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
         }
     }
 
+    const getRole = () => {
+        const lgroups = appConfig.groups;
+
+        if (Cookies.get('groups')) {
+            const groups = JSON.parse(Cookies.get('groups') || '');
+            const role = lgroups.find(item => item.id === groups);
+            if (role) {
+                setRoleUser(role.name);
+            }
+        }
+
+        if (Cookies.get('nameUser')) {
+            setNameUser(Cookies.get('nameUser'));
+        }
+    }
+
     const confirmationDialogFooter = (
         <>
             <Button type="button" label="No" icon="pi pi-times" onClick={() => setDisplayConfirmationChangeCompany(false)} text />
@@ -131,6 +150,7 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
     // getlCompany();
     useEffect(() => {
         getCompanyName();
+        getRole();
     }, []);
 
     return (
@@ -150,11 +170,11 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
                 <i className="pi pi-ellipsis-v" />
             </button>
             
-            {/* <div className="layout-topbar-menu">
+            <div className="layout-topbar-menu">
                 <div className="flex align-items-center justify-content-center text-2xl">
-                    <b>{companyName}</b>
+                    <b>{nameUser} - {roleUser}</b>
                 </div>
-            </div> */}
+            </div>
 
             <div ref={topbarmenuRef} className={classNames('layout-topbar-menu', { 'layout-topbar-menu-mobile-active': layoutState.profileSidebarVisible })}>
                 {/* <Menu model={itemsCompany} popup ref={menuCompany} id="popup_menu_right" popupAlignment="right" />
