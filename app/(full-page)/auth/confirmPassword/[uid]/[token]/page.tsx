@@ -80,6 +80,13 @@ const ResetPassword = () => {
         });
     };
 
+    const retry = () =>  {
+        setPassword('');
+        setConfirmPassword('');
+        setResultLottie('wait');
+        setSendResultOk(false);
+    }
+
     return (
         <div className={containerClassName}>
             {loading && (
@@ -176,6 +183,7 @@ const ResetPassword = () => {
 
                             <div className='flex align-items-center justify-content-between mb-5 gap-5'>
                                 <Button label='Regresar a login' className="flex align-items-center justify-content-center bg-primary font-bold border-round " onClick={handleExit}></Button>
+                                <Button label='Reintentar' className="flex align-items-center justify-content-center bg-primary font-bold border-round " onClick={retry}></Button>
                             </div>
                         </div>
                     ) : '' }
