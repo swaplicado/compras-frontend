@@ -53,6 +53,8 @@ const LoginPage = () => {
                 Cookies.set('companyId', response.data.userData.default_work_instance.id_work_instance);
                 Cookies.set('companyLogo', response.data.userData.default_work_instance.logo_url);
                 Cookies.set('userId', response.data.userData.user.id);
+                Cookies.set('groups', response.data.userData.user.groups);
+                Cookies.set('nameUser', response.data.userData.user.attributes.fullname);
                 router.push('/');
             } else {
                 throw new Error('Login fallido');
