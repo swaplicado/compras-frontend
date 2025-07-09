@@ -93,13 +93,16 @@ const ResetPassword = () => {
                     { !sendResultOk && (
                         <div className='w-full surface-card py-8 px-5 sm:px-8' style={{ borderRadius: '53px' }}>
                             <div className='mb-5'>
+                                <p className='mb-5 w-full md:w-30rem'>
+                                    <span className='text-600 font-medium'>Como proveedor ingresa tu <b>RFC</b>, como usuario interno ingresa tu cuenta de usuario.</span>
+                                </p>
                                 <label htmlFor='Usuario' className='block text-900 text-xl font-medium mb-2'>
                                     Usuario
                                 </label>
                                 
                                 <InputText 
                                     type="text"
-                                    placeholder="Usuario"
+                                    placeholder="Proveedor: Tu RFC, Usuario interno: Tu cuenta de usuario"
                                     value={username}
                                     onChange={e => setUsername(e.target.value)}
                                     className={classNames({ 'p-invalid': enterReset && username == '' }, 'w-full md:w-30rem')}
@@ -125,7 +128,7 @@ const ResetPassword = () => {
                         <div className='w-full surface-card py-8 px-5 sm:px-8' style={{ borderRadius: '53px' }}>
                             <div className='mb-5'>
                                 <label htmlFor='username' className='block text-900 text-xl font-medium mb-2'>
-                                    Se ha enviado un correo electrónico al usuario {username} con instrucciones para restablecer tu contraseña.
+                                    Se ha enviado un correo electrónico al usuario {username} con instrucciones para restablecer su contraseña.
                                 </label>
                             </div>
 

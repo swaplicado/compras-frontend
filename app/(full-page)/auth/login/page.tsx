@@ -53,6 +53,8 @@ const LoginPage = () => {
                 Cookies.set('companyId', response.data.userData.default_work_instance.id_work_instance);
                 Cookies.set('companyLogo', response.data.userData.default_work_instance.logo_url);
                 Cookies.set('userId', response.data.userData.user.id);
+                Cookies.set('groups', response.data.userData.user.groups);
+                Cookies.set('nameUser', response.data.userData.user.attributes.full_name);
                 router.push('/');
             } else {
                 throw new Error('Login fallido');
@@ -154,10 +156,13 @@ const LoginPage = () => {
                                     </small>
                                 )}
                             </div>
-                                <br />
-                            <div className='flex align-items-center justify-content-end mb-5 mt-2 gap-5'>
+                            <br />
+                            <div className='flex align-items-center justify-content-between mb-5 mt-2 gap-5'>
                                 <a href='/auth/resetPassword' onClick={() => setLoading(true)} className='font-medium no-underline ml-2 text-right cursor-pointer' style={{ color: 'var(--primary-color)' }}>
                                     ¿Olvidaste tu contraseña?
+                                </a>
+                                <a href='/auth/resetPassword' onClick={() => setLoading(true)} className='font-medium no-underline ml-2 text-right cursor-pointer' style={{ color: 'var(--primary-color)' }}>
+                                    Alta de proveedores
                                 </a>
                             </div>
                             <Button label='Entrar' className='w-full p-3 text-xl' onClick={handleLogin}></Button>
