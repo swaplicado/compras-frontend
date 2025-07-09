@@ -47,9 +47,10 @@ const ResetPassword = () => {
                 route,
                 jsonData: {
                     new_password: password,
-                    confirm_password: confirmPassword
+                    confirm_password: confirmPassword,
+                    uid: uid,
+                    token: token
                 },
-                params: { 'uid': uid, 'token': token}
             });
 
             if (result.status === 200) {
