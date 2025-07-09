@@ -8,9 +8,10 @@ const AppFooter = () => {
 
     return (
         <div className="layout-footer">
-            <img src={`/layout/images/logo-${layoutConfig.colorScheme === 'light' ? 'dark' : 'white'}.svg`} alt="Logo" height="20" className="mr-2" />
-            by
-            <span className="font-medium ml-2">PrimeReact</span>
+            <span className="font-medium ml-6 "> <strong>© 2025 Software Aplicado SA de CV.</strong> Todos los derechos reservados.</span>
+            <span className="font-medium ml-6">
+                <a href='https://www.swaplicado.com.mx' target='_blank' style={{color: 'black'}}>www.swaplicado.com.mx</a>
+            </span>
         </div>
     );
 };

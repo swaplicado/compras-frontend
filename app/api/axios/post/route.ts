@@ -70,8 +70,11 @@ export async function POST(req: NextRequest) {
 
         return NextResponse.json({ data: response.data, message: 'petición exitosa' }, { status: response.status });
     } catch (error: any) {
+        console.error('Error in POST request:', error);
         // Si el error incluye cookieHeader (por ejemplo, 401/403 desde el interceptor)
         if (error.cookieHeader) {
+            console.log('Error with cookieHeader:', error.cookieHeader);
+            
             const { error: message, status } = getErrorMessage(error.error || error);
             return NextResponse.json(
                 { error: message },
