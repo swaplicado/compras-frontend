@@ -6,5 +6,6 @@
         { "id": 2, "name": "contador" },
         { "id": 3, "name": "pagador" },
         { "id": 4, "name": "proveedor" }
-    ]
+    ],
+    "apiTransactionsUrl" : "https://transaction-backend-368437194061.us-central1.run.app/api"
 }

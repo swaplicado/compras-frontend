@@ -1,0 +1,24 @@
+{
+    "menuProveedor": [
+        {
+            "label": "Inicio",
+            "items": [
+                { 
+                    "label": "Home", 
+                    "icon": "bx bx-home bx-sm", 
+                    "to": "/" 
+                }
+            ]
+        },
+        {
+            "label": "Documentos",
+            "items": [
+                { 
+                    "label": "Facturas", 
+                    "icon": "bx bx-file bx-sm", 
+                    "to": "/pages/documents/invoices"
+                }
+            ]
+        }
+    ]
+}

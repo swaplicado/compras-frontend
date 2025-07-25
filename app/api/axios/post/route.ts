@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import api from '@/app/api/axios/axiosConfig';
-import appConfig from '../../../../appConfig.json';
+// import api from '@/app/api/axios/axiosConfig';
+import createApiInstance from '@/app/api/axios/axiosConfig';
+import appConfig from '@/appConfig.json';
 
 // Interfaz para estandarizar las respuestas de error
 interface ErrorResponse {
@@ -43,38 +44,59 @@ const getErrorMessage = (error: any): ErrorResponse => {
 
 export async function POST(req: NextRequest) {
     try {
-        const data = await req.json();
-        let route = data.route;
-        const jsonData = data.jsonData;
-        const token = req.cookies.get('access_token');
-        const company = req.cookies.get('company');
-        const params = data.params;
+        const contentType = req.headers.get('content-type');
+        const isFormData = contentType?.includes('multipart/form-data');
 
-        if (company) {
-            jsonData.company = company?.value;
+        let route: string;
+        let jsonData: any;
+        let token = req.cookies.get('access_token');
+        let company = req.cookies.get('companyId');
+        let formData: FormData | undefined;
+
+        if (isFormData) {
+            formData = await req.formData();
+            route = formData.get('route') as string;
+            formData.delete('route');
+            formData.append('company', company?.value || '');
+        } else {
+            const data = await req.json();
+            route = data.route;
+            jsonData = data.jsonData;
+            jsonData.company = company?.value || '';
         }
 
         let headers = {};
         if (token) {
-            headers = { headers: { 'Content-Type': 'application/json', Authorization: `Token ${token?.value}`, 'X-API-KEY': appConfig.apiKey } };
+            headers = {
+                headers: {
+                    'Content-Type': isFormData ? 'multipart/form-data' : 'application/json',
+                    Authorization: `Token ${token?.value}`,
+                    'X-API-KEY': appConfig.apiKey,
+                },
+            };
         } else {
-            headers = { headers: { 'Content-Type': 'application/json', 'X-API-KEY': appConfig.apiKey } };
+            headers = {
+                headers: {
+                    'Content-Type': isFormData ? 'multipart/form-data' : 'application/json',
+                    'X-API-KEY': appConfig.apiKey,
+                },
+            };
         }
 
-        if (params) {
-            const paramsArray = Object.entries(params).map(([key, value]) => `${key}=${value}`);
-            route += `?${paramsArray.join('&')}`;
+        let baseUrl = appConfig.mainRoute;
+        if (route.startsWith('/transactions/')) {
+            baseUrl = appConfig.apiTransactionsUrl;
+            route = route.replace('/transactions', '');
         }
-
-        const response = await api.post(route, jsonData, headers);
-
-        return NextResponse.json({ data: response.data, message: 'petición exitosa' }, { status: response.status });
+        const api = createApiInstance(baseUrl);
+        const response = await api.post(route, isFormData ? formData : jsonData, headers);
+        return NextResponse.json({ data: response.data, message: 'Petición exitosa' }, { status: response.status });
     } catch (error: any) {
         console.error('Error in POST request:', error);
         // Si el error incluye cookieHeader (por ejemplo, 401/403 desde el interceptor)
         if (error.cookieHeader) {
-            console.log('Error with cookieHeader:', error.cookieHeader);
-            
+            // console.log('Error with cookieHeader:', error.cookieHeader);
+
             const { error: message, status } = getErrorMessage(error.error || error);
             return NextResponse.json(
                 { error: message },

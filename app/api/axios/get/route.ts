@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import api from '@/app/api/axios/axiosConfig';
-import appConfig from '../../../../appConfig.json';
+import createApiInstance from '@/app/api/axios/axiosConfig';
+import appConfig from '@/appConfig.json';
 
 // Interfaz para estandarizar las respuestas de error
 interface ErrorResponse {
@@ -44,9 +44,9 @@ const getErrorMessage = (error: any): ErrorResponse => {
 export async function GET(req: NextRequest) {
     try {
         const { searchParams } = new URL(req.url);
-        const route = searchParams.get('route');
+        let route = searchParams.get('route');
         const token = req.cookies.get('access_token');
-        const company = req.cookies.get('company');
+        const company = req.cookies.get('companyId');
 
         let headers: Record<string, any> = {};
         if (token) {
@@ -55,15 +55,25 @@ export async function GET(req: NextRequest) {
             headers = { headers: { 'Content-Type': 'application/json', 'X-API-KEY': appConfig.apiKey } };
         }
 
-        // Agregar `company` como query param si existe
-        let params: Record<string, any> = {};
-        if (company) {
-            params.company = company?.value;
-        }
-
         // Realizar la solicitud GET a la API externa
         if (route) {
-            // const response = await api.get(route, { headers: headers.headers, params });
+            let baseUrl = appConfig.mainRoute;
+            if (route.startsWith('/transactions/')) {
+                baseUrl = appConfig.apiTransactionsUrl;
+                route = route.replace('/transactions', '');
+
+                searchParams.forEach((value, key) => {
+                    if (key !== 'route') {
+                        route = route + '/' + value;
+                    }
+                });
+
+                if (company) {
+                    route = route + `/${company.value}`;
+                }
+                
+            }
+            const api = createApiInstance(baseUrl);
             const response = await api.get(route, { headers: headers.headers });
             return NextResponse.json({ data: response.data, message: 'petición exitosa' }, { status: response.status });
         }
