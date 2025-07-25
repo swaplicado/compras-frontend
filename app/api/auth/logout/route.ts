@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import cookie from 'cookie';
-import api from '../../axios/axiosConfig';
+// import api from '../../axios/axiosConfig';
+import createApiInstance from '@/app/api/axios/axiosConfig';
 import appConfig from '../../../../appConfig.json';
 
 // Interfaz para estandarizar las respuestas de error
@@ -56,6 +57,7 @@ export async function POST(req: NextRequest) {
             headersLogout = { headers: { 'Content-Type': 'application/json', 'X-API-KEY': appConfig.apiKey } };
         }
 
+        const api = createApiInstance();
         const response = await api.post(
             '/logout',
             {

@@ -3,7 +3,8 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 // import axios from 'axios';
-import api from '../../axios/axiosConfig';
+// import api from '../../axios/axiosConfig';
+import createApiInstance from '@/app/api/axios/axiosConfig';
 import cookie from 'cookie'; // Importar la librería cookie para manejar las cookies
 import appConfig from '../../../../appConfig.json';
 
@@ -58,6 +59,7 @@ export async function POST(req: NextRequest) {
     try {
         const { username, password } = await req.json(); //Recupera los datos username y password del request
 
+        const api = createApiInstance();
         const response = await api.post(
             '/login',
             {

@@ -6,6 +6,7 @@ import { LayoutContext } from './context/layoutcontext';
 import { MenuProvider } from './context/menucontext';
 import Link from 'next/link';
 import { AppMenuItem } from '@/types';
+import appConfig from '../appMenu.json';
 
 const AppMenu = () => {
     const { layoutConfig } = useContext(LayoutContext);
@@ -171,10 +172,12 @@ const AppMenu = () => {
         }
     ];
 
+    const modelProvider: AppMenuItem[] = appConfig?.menuProveedor || [];
+
     return (
         <MenuProvider>
             <ul className="layout-menu">
-                {model.map((item, i) => {
+                {modelProvider.map((item, i) => {
                     return !item?.seperator ? <AppMenuitem item={item} root={true} index={i} key={item.label} /> : <li className="menu-separator"></li>;
                 })}
             </ul>

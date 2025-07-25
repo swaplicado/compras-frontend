@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import api from '../../axios/axiosConfig'
+// import api from '../../axios/axiosConfig'
+import createApiInstance from '@/app/api/axios/axiosConfig';
 import cookie from 'cookie'; // Importar la librería cookie para manejar las cookies
 
 export async function POST(req: NextRequest) {
@@ -14,6 +15,7 @@ export async function POST(req: NextRequest) {
             headers = { headers: { 'Content-Type': 'application/json' } };
         }
 
+        const api = createApiInstance();
         const response = await api.post('/home/', {
             "id_work_instance": id_work_instance
         }, headers);
