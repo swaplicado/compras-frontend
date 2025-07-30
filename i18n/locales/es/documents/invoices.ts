@@ -14,6 +14,18 @@ export default {
             footer: `Puedes seleccionar varios archivos a la vez, pero asegúrate de que al menos uno sea un PDF y otro un XML.
              Si seleccionas archivos que no cumplen con estos requisitos, se mostrará un mensaje de error.`
         },
+        provider: {
+            label: "* Proveedor:",
+            placeholder: "Selecciona un proveedor",
+            helperText: "Por favor selecciona un proveedor.",
+            tooltip: "Selecciona el proveedor asociado a la factura.",
+        },
+        company:  {
+            label: "* Entidad comercial:",
+            placeholder: "Selecciona una empresa",
+            helperText: "Por favor selecciona una empresa.",
+            tooltip: "Selecciona la empresa a la que pertenece la factura.",
+        },
         reference: {
             label: "* Referencia:",
             placeholder: "Selecciona una referencia",

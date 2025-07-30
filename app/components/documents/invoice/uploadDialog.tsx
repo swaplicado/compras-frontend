@@ -13,19 +13,26 @@ import { animationSuccess, animationError } from '@/app/components/animationResp
 import loaderScreen from '@/app/components/loaderScreen';
 import { Tooltip } from 'primereact/tooltip';
 import { useTranslation } from 'react-i18next';
+import constants from '@/app/constants/constants';
 
 interface UploadDialogProps {
     visible: boolean;
     onHide: () => void;
     lReferences: any[];
+    lProviders?: any[];
+    lCompanies?: any[];
+    isInternalUser?: boolean;
+    partnerId?: string;
 }
 
-export default function UploadDialog({ visible, onHide, lReferences }: UploadDialogProps) {
+export default function UploadDialog({ visible, onHide, lReferences, lProviders, lCompanies, isInternalUser = false, partnerId = '' }: UploadDialogProps) {
     const [selectReference, setSelectReference] = useState<{ id: string; name: string } | null>(null);
+    const [selectProvider, setSelectProvider] = useState<{ id: string; name: string } | null>(null);
+    const [selectCompany, setSelectCompany] = useState<{ id: string; name: string } | null>(null);
     const [totalSize, setTotalSize] = useState(0);
     const [loading, setLoading] = useState(false);
     const [resultUpload, setResultUpload] = useState('waiting');
-    const [errors, setErrors] = useState({ reference: false, folio: false, files: false, includePdf: false, includeXml: false });
+    const [errors, setErrors] = useState({ reference: false, provider: false, company: false, folio: false, files: false, includePdf: false, includeXml: false });
     const [errorMessage, setErrorMessage] = useState('');
     const [serie, setSerie] = useState('');
     const [folio, setFolio] = useState('');
@@ -38,6 +45,8 @@ export default function UploadDialog({ visible, onHide, lReferences }: UploadDia
     const validate = () => {
         const newErrors = {
             reference: !selectReference,
+            provider: isInternalUser && !selectProvider,
+            company: !selectCompany,
             folio: folio.trim() === '',
             files: (fileUploadRef.current?.getFiles().length || 0) === 0,
             includePdf: fileUploadRef.current?.getFiles().length || 0 > 0 ? fileUploadRef.current?.getFiles().some((file) => file.type === 'application/pdf') === false : false,
@@ -59,25 +68,27 @@ export default function UploadDialog({ visible, onHide, lReferences }: UploadDia
                 formData.append('files', file);
             });
 
-            const route = '/transactions/docs/document-transaction/';
+            const route = '/transactions/document-transaction/';
             formData.append('ref_id', selectReference?.id || '');
             formData.append('route', route);
+            formData.append('company_id', selectCompany?.id || '');
+            formData.append('user_id', '1');
 
             const document = {
                 transaction_class: 1,
-                document_type: 1,
-                partner: 3,
+                document_type: 11,
+                partner: selectProvider?.id || '',
                 series: serie,
                 number: folio,
                 date: '2025-07-18',
-                currency: 1,
+                currency: 51,
                 amount: 1500.0,
                 exchange_rate: 17.5
             };
 
             formData.append('document', JSON.stringify(document));
 
-            const response = await axios.post('/api/axios/post', formData, {
+            const response = await axios.post(constants.API_AXIOS_POST, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
 
@@ -207,15 +218,20 @@ export default function UploadDialog({ visible, onHide, lReferences }: UploadDia
 
     useEffect(() => {
         if (visible) {
+            setSelectCompany(null);
+            setSelectProvider(null);
             setSelectReference(null);
             setSerie('');
             setFolio('');
             setResultUpload('waiting');
-            setErrors({ reference: false, folio: false, files: false, includePdf: false, includeXml: false });
+            setErrors({ reference: false, provider: false, company: false, folio: false, files: false, includePdf: false, includeXml: false });
             setTotalSize(0);
             setLoading(false);
             fileUploadRef.current?.clear();
             message.current?.clear();
+            if (!isInternalUser) {
+                setSelectProvider({ id: partnerId, name: '' });
+            }
         }
     }, [visible]);
 
@@ -241,7 +257,13 @@ export default function UploadDialog({ visible, onHide, lReferences }: UploadDia
                 {resultUpload === 'waiting' && (
                     <div className="col-12">
                         <div className="pb-4">
-                            <Button label={!showInfo ? tCommon('btnShowInstructions') : tCommon('btnHideInstructions')} icon="pi pi-info-circle" className="p-button-text p-button-secondary p-0" onClick={() => setShowInfo(!showInfo)} severity="info" />
+                            <Button
+                                label={!showInfo ? tCommon('btnShowInstructions') : tCommon('btnHideInstructions')}
+                                icon="pi pi-info-circle"
+                                className="p-button-text p-button-secondary p-0"
+                                onClick={() => setShowInfo(!showInfo)}
+                                severity="info"
+                            />
                             {showInfo && (
                                 <div className="p-3 border-1 border-round border-gray-200 bg-white mb-3">
                                     {t('uploadDialog.uploadInstructions.header')}
@@ -252,12 +274,68 @@ export default function UploadDialog({ visible, onHide, lReferences }: UploadDia
                                         <li>{t('uploadDialog.uploadInstructions.step4')}</li>
                                         <li>{t('uploadDialog.uploadInstructions.step5')}</li>
                                     </ul>
-                                    <p className="mb-3">
-                                        {t('uploadDialog.uploadInstructions.footer')}
-                                    </p>
+                                    <p className="mb-3">{t('uploadDialog.uploadInstructions.footer')}</p>
                                 </div>
                             )}
                         </div>
+
+                        <div className="p-fluid formgrid grid">
+                            <div className="field col-12 md:col-6">
+                                <label data-pr-tooltip="">{t('uploadDialog.company.label')}</label>
+                                &nbsp;
+                                <Tooltip target=".custom-target-icon" />
+                                <i
+                                    className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
+                                    data-pr-tooltip={t('uploadDialog.company.tooltip')}
+                                    data-pr-position="right"
+                                    data-pr-my="left center-2"
+                                    style={{ fontSize: '1rem', cursor: 'pointer' }}
+                                ></i>
+                                <Dropdown
+                                    value={selectCompany}
+                                    onChange={(e) => {
+                                        setSelectCompany(e.value);
+                                        setErrors((prev) => ({ ...prev, company: false }));
+                                    }}
+                                    options={lCompanies}
+                                    optionLabel="name"
+                                    placeholder={t('uploadDialog.company.placeholder')}
+                                    filter
+                                    className={`w-full ${errors.company ? 'p-invalid' : ''}`}
+                                    showClear
+                                />
+                                {errors.company && <small className="p-error">{t('uploadDialog.company.helperText')}</small>}
+                            </div>
+                            {isInternalUser && (
+                                <div className="field col-12 md:col-6">
+                                    <label data-pr-tooltip="">{t('uploadDialog.provider.label')}</label>
+                                    &nbsp;
+                                    <Tooltip target=".custom-target-icon" />
+                                    <i
+                                        className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
+                                        data-pr-tooltip={t('uploadDialog.provider.tooltip')}
+                                        data-pr-position="right"
+                                        data-pr-my="left center-2"
+                                        style={{ fontSize: '1rem', cursor: 'pointer' }}
+                                    ></i>
+                                    <Dropdown
+                                        value={selectProvider}
+                                        onChange={(e) => {
+                                            setSelectProvider(e.value);
+                                            setErrors((prev) => ({ ...prev, provider: false }));
+                                        }}
+                                        options={lProviders}
+                                        optionLabel="name"
+                                        placeholder={t('uploadDialog.provider.placeholder')}
+                                        filter
+                                        className={`w-full ${errors.provider ? 'p-invalid' : ''}`}
+                                        showClear
+                                    />
+                                    {errors.provider && <small className="p-error">{t('uploadDialog.provider.helperText')}</small>}
+                                </div>
+                            )}
+                        </div>
+
                         <div className="p-fluid formgrid grid">
                             <div className="field col-12 md:col-6">
                                 <label data-pr-tooltip="">{t('uploadDialog.reference.label')}</label>

@@ -23,6 +23,8 @@ import loaderScreen from '@/app/components/loaderScreen';
 import { Toast } from 'primereact/toast';
 import { Tooltip } from 'primereact/tooltip';
 import { useTranslation } from 'react-i18next';
+import Cookies from 'js-cookie';
+import constants from '@/app/constants/constants';
 
 const TableDemo = () => {
     const [customers1, setCustomers1] = useState<Demo.Customer[]>([]);
@@ -35,6 +37,11 @@ const TableDemo = () => {
     const toast = useRef<Toast>(null);
     const { t } = useTranslation('invoices');
     const { t: tCommon } = useTranslation('common');
+    let userGroups = Cookies.get('groups') ? JSON.parse(Cookies.get('groups') || '[]') : [];
+    const partnerId = Cookies.get('partnerId') ? JSON.parse(Cookies.get('partnerId') || '') : null;
+    const [isInternalUser, setIsInternalUser] = useState(false);
+    const [lProviders, setLProviders] = useState<any[]>([]);
+    const [lCompanies, setLCompanies] = useState<any[]>([]);
 
     const representatives = [
         { name: 'Amy Elsner', image: 'amyelsner.png' },
@@ -62,8 +69,8 @@ const TableDemo = () => {
 
     const getlReferences = async () => {
         try {
-            const route = '/transactions/docs/references/by-partner';
-            const response = await axios.get('/api/axios/get', {
+            const route = '/transactions/references/by-partner/';
+            const response = await axios.get(constants.API_AXIOS_GET, {
                 params: {
                     route: route,
                     partner_id: '2'
@@ -81,6 +88,66 @@ const TableDemo = () => {
                 }
 
                 setLReferences(lReferences);
+                return true;
+            } else {
+                throw new Error(`${t('getReferencesError')}: ${response.statusText}`);
+            }
+        } catch (error: any) {
+            showToast('error', error.response?.data?.error || t('getReferencesError'));
+            return false;
+        }
+    };
+
+    const getlProviders = async () => {
+        try {
+            const route = '/transactions/partners/';
+            const response = await axios.get(constants.API_AXIOS_GET, {
+                params: {
+                    route: route,
+                    is_deleted: false
+                }
+            });
+
+            if (response.status === 200) {
+                const data = response.data.data || [];
+                console.log('data', data);
+                let lProviders: any[] = [];
+                for (const item of data) {
+                    lProviders.push({
+                        id: item.id,
+                        name: item.trade_name
+                    });
+                }
+                setLProviders(lProviders);
+                return true;
+            } else {
+                throw new Error(`${t('getReferencesError')}: ${response.statusText}`);
+            }
+        } catch (error: any) {
+            showToast('error', error.response?.data?.error || t('getReferencesError'));
+            return false;
+        }
+    };
+
+    const getlCompanies = async () => {
+        try {
+            const route = '/transactions/partners/list-companies/';
+            const response = await axios.get(constants.API_AXIOS_GET, {
+                params: {
+                    route: route
+                }
+            });
+
+            if (response.status === 200) {
+                const data = response.data.data || [];
+                let lCompanies: any[] = [];
+                for (const item of data) {
+                    lCompanies.push({
+                        id: item.id,
+                        name: item.full_name
+                    });
+                }
+                setLCompanies(lCompanies);
                 return true;
             } else {
                 throw new Error(`${t('getReferencesError')}: ${response.statusText}`);
@@ -114,7 +181,20 @@ const TableDemo = () => {
             });
             initFilters1();
 
-            const success = await getlReferences();
+            let groups = [];
+            if(!Array.isArray(userGroups)){
+                groups = [userGroups];
+            } else {
+                groups = userGroups;
+            }
+
+            if (groups.includes(constants.ROLES.COMPRADOR_ID)) {
+                setIsInternalUser(true);
+                await getlProviders();
+            }
+            
+            await getlReferences();
+            await getlCompanies();
             setLoading(false);
         };
         fetchReferences();
@@ -328,7 +408,15 @@ const TableDemo = () => {
                 {loading && loaderScreen()}
                 <Toast ref={toast} />
                 <Card header={headerCard} pt={{ content: { className: 'p-0' } }}>
-                    <UploadDialog visible={dialogVisible} onHide={() => setDialogVisible(false)} lReferences={lReferences} />
+                    <UploadDialog 
+                        visible={dialogVisible} 
+                        onHide={() => setDialogVisible(false)} 
+                        lReferences={lReferences} 
+                        lProviders={lProviders} 
+                        lCompanies={lCompanies} 
+                        isInternalUser={isInternalUser}
+                        partnerId={partnerId}
+                    />
                     <Toolbar start={startContent} center={centerContent} end={endContent} className="border-bottom-1 surface-border surface-card shadow-1 transition-all transition-duration-300" style={{ borderRadius: '3rem', padding: '0.8rem' }} />
                     <br />
                     <DataTable
