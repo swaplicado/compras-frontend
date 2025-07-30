@@ -4,13 +4,14 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from 'primereact/button';
 import { Password } from 'primereact/password';
-import { LayoutContext } from '../../../../layout/context/layoutcontext';
+import { LayoutContext } from '@/layout/context/layoutcontext';
 import { InputText } from 'primereact/inputtext';
 import { classNames } from 'primereact/utils';
 import { Toast } from 'primereact/toast';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import loaderScreen from '@/app/components/loaderScreen';
+import { useTranslation } from 'react-i18next';
 
 const LoginPage = () => {
     const [username, setUsername] = useState('');
@@ -21,6 +22,7 @@ const LoginPage = () => {
     const toast = useRef<Toast>(null);
     const [loading, setLoading] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false); // Nuevo estado
+    const { t } = useTranslation('login');
 
     const containerClassName = classNames('surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden background-image', {
         'p-input-filled': layoutConfig.inputStyle === 'filled'
@@ -109,19 +111,19 @@ const LoginPage = () => {
                 >
                     <div className='w-full surface-card py-8 px-5 sm:px-8' style={{ borderRadius: '53px' }}>
                         <div className='text-center mb-5'>
-                            <div className='text-900 text-3xl font-medium mb-3'>¡Bienvenido/a!</div>
-                            <span className='text-600 font-medium'>Ingresa tu cuenta para continuar</span>
+                            <div className='text-900 text-3xl font-medium mb-3'>{t('title')}</div>
+                            <span className='text-600 font-medium'>{t('subTitle')}</span>
                         </div>
 
                         <div>
                             <div className='mb-5'>
                                 <label htmlFor='username' className='block text-900 text-xl font-medium mb-2'>
-                                    Usuario
+                                    {t('username')}
                                 </label>
                                 <InputText
                                     id='username'
                                     type='text'
-                                    placeholder='Usuario'
+                                    placeholder={t('usernamePLaceholder')}
                                     value={username}
                                     onChange={e => setUsername(e.target.value)}
                                     onKeyDown={e => e.key === 'Enter' && handleLogin()}
@@ -130,14 +132,14 @@ const LoginPage = () => {
                                 />
                                 {enterLogin && username === '' && (
                                     <small id="username-help" className="block p-error">
-                                        Por favor ingresa tu usuario.
+                                        {t('usernameHelper')}
                                     </small>
                                 )}
                             </div>
 
                             <div>
                                 <label htmlFor='password1' className='block text-900 font-medium text-xl mb-2'>
-                                    Contraseña
+                                    {t('password')}
                                 </label>
                                 <Password
                                     inputId='password1'
@@ -145,30 +147,30 @@ const LoginPage = () => {
                                     onChange={e => setPassword(e.target.value)}
                                     onKeyDown={e => e.key === 'Enter' && handleLogin()}
                                     feedback={false}
-                                    placeholder='Contraseña'
+                                    placeholder={t('passwordPlaceholder')}
                                     toggleMask
                                     className='w-full'
                                     inputClassName={classNames({ 'p-invalid': enterLogin && password == '' }, 'w-full md:w-30rem')}
                                 />
                                 {enterLogin && password === '' && (
                                     <small id="username-help" className="block p-error">
-                                        Por favor ingresa tu contraseña.
+                                        {t('passwordHelper')}
                                     </small>
                                 )}
                             </div>
                             <br />
                             <div className='flex align-items-center justify-content-between mb-5 mt-2 gap-5'>
                                 <a href='/auth/resetPassword' onClick={() => setLoading(true)} className='font-medium no-underline ml-2 text-right cursor-pointer' style={{ color: 'var(--primary-color)' }}>
-                                    ¿Olvidaste tu contraseña?
+                                    {t('forgotPassword')}
                                 </a>
                                 <a href='/auth/resetPassword' onClick={() => setLoading(true)} className='font-medium no-underline ml-2 text-right cursor-pointer' style={{ color: 'var(--primary-color)' }}>
-                                    Alta de proveedores
+                                    {t('registerProvider')}
                                 </a>
                             </div>
-                            <Button label='Entrar' className='w-full p-3 text-xl' onClick={handleLogin}></Button>
+                            <Button label={t('enterButton')} className='w-full p-3 text-xl' onClick={handleLogin}></Button>
                         </div>
                         <div className="flex justify-content-center mt-5">
-                            <span className="font-medium ml-2">Creado por: </span>
+                            <span className="font-medium ml-2">{t('footer')}</span>
                             <img src={`/layout/images/swap_logo_1.png   `} alt="Logo" height="20" className="mr-2" style={{ marginLeft: '10px' }}/>
                         </div>
                     </div>

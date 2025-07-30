@@ -22,6 +22,7 @@ import axios from 'axios';
 import loaderScreen from '@/app/components/loaderScreen';
 import { Toast } from 'primereact/toast';
 import { Tooltip } from 'primereact/tooltip';
+import { useTranslation } from 'react-i18next';
 
 const TableDemo = () => {
     const [customers1, setCustomers1] = useState<Demo.Customer[]>([]);
@@ -32,6 +33,8 @@ const TableDemo = () => {
     const [lReferences, setLReferences] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const toast = useRef<Toast>(null);
+    const { t } = useTranslation('invoices');
+    const { t: tCommon } = useTranslation('common');
 
     const representatives = [
         { name: 'Amy Elsner', image: 'amyelsner.png' },
@@ -80,10 +83,10 @@ const TableDemo = () => {
                 setLReferences(lReferences);
                 return true;
             } else {
-                throw new Error(`Error al cargar las referencias: ${response.statusText}`);
+                throw new Error(`${t('getReferencesError')}: ${response.statusText}`);
             }
         } catch (error: any) {
-            showToast('error', error.response?.data?.error || 'Error al cargar las referencias');
+            showToast('error', error.response?.data?.error || t('getReferencesError'));
             return false;
         }
     };
@@ -112,9 +115,6 @@ const TableDemo = () => {
             initFilters1();
 
             const success = await getlReferences();
-            if (success) {
-                console.log('References fetched successfully');
-            }
             setLoading(false);
         };
         fetchReferences();
@@ -294,18 +294,18 @@ const TableDemo = () => {
 
     const startContent = (
         <React.Fragment>
-            <Button icon="pi pi-plus" label='Cargar factura' className="mr-2" rounded onClick={() => setDialogVisible(true)} tooltip='Cargar factura'/>
+            <Button icon="pi pi-plus" label={t('btnOpenDialogUpload')} className="mr-2" rounded onClick={() => setDialogVisible(true)} tooltip={t('tooltipBtnOpenDialogUpload')}/>
         </React.Fragment>
     );
 
     const centerContent = (
         <span className="p-input-icon-left">
             <i className="pi pi-search" />
-            <InputText value={globalFilterValue1} onChange={onGlobalFilterChange1} placeholder="Buscador" />
+            <InputText value={globalFilterValue1} onChange={onGlobalFilterChange1} placeholder={tCommon('placeholderSearch')} />
         </span>
     );
 
-    const endContent = <Button type="button" icon="pi pi-filter-slash" label="Limpiar" onClick={clearFilter1} style={{ borderRadius: '3rem' }}  tooltip='Limpiar filtros de tabla' tooltipOptions={{ position: 'left' }} />;
+    const endContent = <Button type="button" icon="pi pi-filter-slash" label={tCommon('btnCleanFilter')} onClick={clearFilter1} style={{ borderRadius: '3rem' }}  tooltip={tCommon('tooltipCleanFilter')} tooltipOptions={{ position: 'left' }} />;
 
     const headerCard = (
         <div
@@ -318,7 +318,7 @@ const TableDemo = () => {
                 minHeight: '4rem'
             }}
         >
-            <h3 className="m-0 text-900 font-medium">Facturas</h3>
+            <h3 className="m-0 text-900 font-medium">{t('title')}</h3>
         </div>
     );
 

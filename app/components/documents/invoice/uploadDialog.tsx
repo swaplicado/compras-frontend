@@ -12,6 +12,7 @@ import axios from 'axios';
 import { animationSuccess, animationError } from '@/app/components/animationResponse';
 import loaderScreen from '@/app/components/loaderScreen';
 import { Tooltip } from 'primereact/tooltip';
+import { useTranslation } from 'react-i18next';
 
 interface UploadDialogProps {
     visible: boolean;
@@ -31,6 +32,8 @@ export default function UploadDialog({ visible, onHide, lReferences }: UploadDia
     const [showInfo, setShowInfo] = useState(false);
     const fileUploadRef = useRef<FileUpload>(null);
     const message = useRef<Messages>(null);
+    const { t } = useTranslation('invoices');
+    const { t: tCommon } = useTranslation('common');
 
     const validate = () => {
         const newErrors = {
@@ -81,11 +84,11 @@ export default function UploadDialog({ visible, onHide, lReferences }: UploadDia
             if (response.status == 200 || response.status == 201) {
                 setResultUpload('success');
             } else {
-                throw new Error('Ocurrió un error al actualizar la contraseña');
+                throw new Error(t('uploadDialog.errors.uploadError'));
             }
         } catch (error: any) {
             console.error('Error al subir archivos:', error);
-            setErrorMessage(error.response?.data?.error || 'Ocurrió un error al cargar la factura');
+            setErrorMessage(error.response?.data?.error || t('uploadDialog.errors.uploadError'));
             setResultUpload('error');
         } finally {
             setLoading(false);
@@ -94,8 +97,8 @@ export default function UploadDialog({ visible, onHide, lReferences }: UploadDia
 
     const footerContent = resultUpload === 'waiting' && (
         <div>
-            <Button label="Cerrar" icon="pi pi-times" onClick={onHide} severity="secondary" disabled={loading} />
-            <Button label="Cargar" icon="pi pi-upload" onClick={handleSubmit} autoFocus disabled={loading} />
+            <Button label={tCommon('btnClose')} icon="pi pi-times" onClick={onHide} severity="secondary" disabled={loading} />
+            <Button label={tCommon('btnUpload')} icon="pi pi-upload" onClick={handleSubmit} autoFocus disabled={loading} />
         </div>
     );
 
@@ -118,14 +121,14 @@ export default function UploadDialog({ visible, onHide, lReferences }: UploadDia
 
     const chooseOptions = {
         icon: 'pi pi-folder-open',
-        label: 'Seleccionar',
+        label: tCommon('btnSelectFiles'),
         className: 'custom-choose-btn p-button-rounded p-button-text',
         style: { padding: '0.5rem 1rem' }
     };
 
     const cancelOptions = {
         icon: 'pi pi-times',
-        label: 'Limpiar',
+        label: tCommon('btnClear'),
         className: 'custom-cancel-btn p-button-danger p-button-rounded p-button-text',
         style: { padding: '0.5rem 1rem' }
     };
@@ -158,12 +161,12 @@ export default function UploadDialog({ visible, onHide, lReferences }: UploadDia
 
         if (!validType) {
             fileUploadRef.current?.setFiles(validFiles);
-            addErrorMessage('Solo se permiten archivos PDF y XML');
+            addErrorMessage(t('uploadDialog.files.invalidFileType'));
         }
 
         if (!validSizes) {
             fileUploadRef.current?.setFiles(validFiles);
-            addErrorMessage('El tamaño máximo de los archivos es de 1 MB');
+            addErrorMessage(t('uploadDialog.files.invalidAllFilesSize'));
         }
 
         setErrors((prev) => ({ ...prev, files: (fileUploadRef.current?.getFiles().length || 0) > 1 }));
@@ -177,7 +180,7 @@ export default function UploadDialog({ visible, onHide, lReferences }: UploadDia
 
     const emptyTemplate = () => (
         <div className="flex align-items-center flex-column">
-            <span style={{ fontSize: '1.2em', padding: '1rem' }}>Suelte los archivos aquí para comenzar a cargarlos</span>
+            <span style={{ fontSize: '1.2em', padding: '1rem' }}>{t('uploadDialog.files.placeholder')}</span>
         </div>
     );
 
@@ -219,52 +222,50 @@ export default function UploadDialog({ visible, onHide, lReferences }: UploadDia
     return (
         <div className="flex justify-content-center">
             {loading && loaderScreen()}
-            <Dialog header="Carga de factura" visible={visible} onHide={onHide} footer={footerContent} className="md:w-8 lg:w-6 xl:w-6" pt={{ header: { className: 'pb-2  pt-2 border-bottom-1 surface-border' } }}>
+            <Dialog header={t('uploadDialog.header')} visible={visible} onHide={onHide} footer={footerContent} className="md:w-8 lg:w-6 xl:w-6" pt={{ header: { className: 'pb-2  pt-2 border-bottom-1 surface-border' } }}>
                 {animationSuccess({
                     show: resultUpload === 'success',
-                    title: 'Factura cargada',
-                    text: 'La factura se ha cargado correctamente',
-                    buttonLabel: 'Cerrar',
+                    title: t('uploadDialog.animationSuccess.title'),
+                    text: t('uploadDialog.animationSuccess.text'),
+                    buttonLabel: tCommon('btnClose'),
                     action: onHide
                 }) ||
                     animationError({
                         show: resultUpload === 'error',
-                        title: 'Error al cargar la factura',
-                        text: errorMessage || 'Ocurrió un error al cargar la factura, vuelve a intentarlo mas tarde',
-                        buttonLabel: 'Cerrar',
+                        title: t('uploadDialog.animationError.title'),
+                        text: errorMessage || t('uploadDialog.animationError.text'),
+                        buttonLabel: tCommon('btnClose'),
                         action: onHide
                     })}
 
                 {resultUpload === 'waiting' && (
                     <div className="col-12">
                         <div className="pb-4">
-                            <Button label={!showInfo ? 'ver instrucciones' : 'cerrar instrucciones'} icon="pi pi-info-circle" className="p-button-text p-button-secondary p-0" onClick={() => setShowInfo(!showInfo)} severity="info" />
+                            <Button label={!showInfo ? tCommon('btnShowInstructions') : tCommon('btnHideInstructions')} icon="pi pi-info-circle" className="p-button-text p-button-secondary p-0" onClick={() => setShowInfo(!showInfo)} severity="info" />
                             {showInfo && (
                                 <div className="p-3 border-1 border-round border-gray-200 bg-white mb-3">
-                                    Para cargar una factura, sigue estos pasos:
+                                    {t('uploadDialog.uploadInstructions.header')}
                                     <ul>
-                                        <li>Todos los campos marcados con un * son obligatorios.</li>
-                                        <li>Selecciona una referencia para la factura.</li>
-                                        <li>Ingresa la serie (si aplica) y el folio de la factura.</li>
-                                        <li>Presiona el botón "Seleccionar" y selecciona los archivos PDF y XML correspondientes a la factura.</li>
-                                        <li>Asegúrate de que los archivos no superen los 1 MB y que contengan un PDF y un XML.</li>
+                                        <li>{t('uploadDialog.uploadInstructions.step1')}</li>
+                                        <li>{t('uploadDialog.uploadInstructions.step2')}</li>
+                                        <li>{t('uploadDialog.uploadInstructions.step3')}</li>
+                                        <li>{t('uploadDialog.uploadInstructions.step4')}</li>
+                                        <li>{t('uploadDialog.uploadInstructions.step5')}</li>
                                     </ul>
                                     <p className="mb-3">
-                                        Puedes seleccionar varios archivos a la vez, pero asegúrate de que al menos uno sea un PDF y otro un XML.
-                                        <br />
-                                        Si seleccionas archivos que no cumplen con estos requisitos, se mostrará un mensaje de error.
+                                        {t('uploadDialog.uploadInstructions.footer')}
                                     </p>
                                 </div>
                             )}
                         </div>
                         <div className="p-fluid formgrid grid">
                             <div className="field col-12 md:col-6">
-                                <label data-pr-tooltip="">* Referencia:</label>
+                                <label data-pr-tooltip="">{t('uploadDialog.reference.label')}</label>
                                 &nbsp;
                                 <Tooltip target=".custom-target-icon" />
                                 <i
                                     className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                                    data-pr-tooltip="Selecciona una referencia para la factura"
+                                    data-pr-tooltip={t('uploadDialog.reference.tooltip')}
                                     data-pr-position="right"
                                     data-pr-my="left center-2"
                                     style={{ fontSize: '1rem', cursor: 'pointer' }}
@@ -277,30 +278,30 @@ export default function UploadDialog({ visible, onHide, lReferences }: UploadDia
                                     }}
                                     options={lReferences}
                                     optionLabel="name"
-                                    placeholder="Selecciona una referencia"
+                                    placeholder={t('uploadDialog.reference.placeholder')}
                                     filter
                                     className={`w-full ${errors.reference ? 'p-invalid' : ''}`}
                                     showClear
                                 />
-                                {errors.reference && <small className="p-error">Selecciona una referencia.</small>}
+                                {errors.reference && <small className="p-error">{t('uploadDialog.reference.helperText')}</small>}
                             </div>
 
                             <div className="field col-12 md:col-6">
                                 <div className="formgrid grid">
                                     <div className="field col">
-                                        <label>Serie:</label>
+                                        <label>{t('uploadDialog.serie.label')}</label>
                                         &nbsp;
                                         <Tooltip target=".custom-target-icon" />
                                         <i
                                             className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                                            data-pr-tooltip="Ingresa la serie de la factura si aplica"
+                                            data-pr-tooltip={t('uploadDialog.serie.tooltip')}
                                             data-pr-position="right"
                                             data-pr-my="left center-2"
                                             style={{ fontSize: '1rem', cursor: 'pointer' }}
                                         ></i>
                                         <InputText
                                             type="text"
-                                            placeholder="Serie"
+                                            placeholder={t('uploadDialog.serie.placeholder')}
                                             className={`w-full`}
                                             value={serie}
                                             onChange={(e) => {
@@ -310,19 +311,19 @@ export default function UploadDialog({ visible, onHide, lReferences }: UploadDia
                                         />
                                     </div>
                                     <div className="field col">
-                                        <label>* Folio:</label>
+                                        <label>{t('uploadDialog.folio.label')}</label>
                                         &nbsp;
                                         <Tooltip target=".custom-target-icon" />
                                         <i
                                             className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                                            data-pr-tooltip="Ingresa el folio de la factura"
+                                            data-pr-tooltip={t('uploadDialog.folio.tooltip')}
                                             data-pr-position="right"
                                             data-pr-my="left center-2"
                                             style={{ fontSize: '1rem', cursor: 'pointer' }}
                                         ></i>
                                         <InputText
                                             type="text"
-                                            placeholder="Folio"
+                                            placeholder={t('uploadDialog.folio.placeholder')}
                                             className={`w-full ${errors.folio ? 'p-invalid' : ''}`}
                                             value={folio}
                                             onChange={(e) => {
@@ -330,18 +331,18 @@ export default function UploadDialog({ visible, onHide, lReferences }: UploadDia
                                                 setErrors((prev) => ({ ...prev, folio: false }));
                                             }}
                                         />
-                                        {errors.folio && <small className="p-error">Ingresa el folio.</small>}
+                                        {errors.folio && <small className="p-error">{t('uploadDialog.folio.helperText')}</small>}
                                     </div>
                                 </div>
                             </div>
 
                             <div className="field col-12">
-                                <label>* Archivos de factura:</label>
+                                <label>{t('uploadDialog.files.label')}</label>
                                 &nbsp;
                                 <Tooltip target=".custom-target-icon" />
                                 <i
                                     className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                                    data-pr-tooltip="Selecciona los archivos de la factura (PDF y XML)"
+                                    data-pr-tooltip={t('uploadDialog.files.tooltip')}
                                     data-pr-position="right"
                                     data-pr-my="left center-2"
                                     style={{ fontSize: '1rem', cursor: 'pointer' }}
@@ -361,8 +362,8 @@ export default function UploadDialog({ visible, onHide, lReferences }: UploadDia
                                     onSelect={onTemplateSelect}
                                     onError={onTemplateClear}
                                     onClear={onTemplateClear}
-                                    invalidFileSizeMessageDetail="El tamaño máximo del archivo es de 1 MB."
-                                    invalidFileSizeMessageSummary="Archivo demasiado grande"
+                                    invalidFileSizeMessageDetail={t('uploadDialog.files.invalidFileSize')}
+                                    invalidFileSizeMessageSummary={t('uploadDialog.files.invalidFileSizeMessageSummary')}
                                     pt={{
                                         content: {
                                             className: 'p-0 border-dashed',
@@ -380,9 +381,9 @@ export default function UploadDialog({ visible, onHide, lReferences }: UploadDia
                                             : {}
                                     }
                                 />
-                                {errors.files && <small className="p-error">Selecciona los archivos de la factura.</small>}
-                                {errors.includePdf && <small className="p-error">Debe incluir un archivo PDF.</small>}
-                                {errors.includeXml && <small className="p-error">Debe incluir un archivo XML.</small>}
+                                {errors.files && <small className="p-error">{t('uploadDialog.files.helperTextFiles')}</small>}
+                                {errors.includePdf && <small className="p-error">{t('uploadDialog.files.helperTextPdf')}</small>}
+                                {errors.includeXml && <small className="p-error">{t('uploadDialog.files.helperTextXml')}</small>}
                             </div>
                         </div>
                     </div>

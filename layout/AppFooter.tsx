@@ -2,15 +2,17 @@
 
 import React, { useContext } from 'react';
 import { LayoutContext } from './context/layoutcontext';
+import { useTranslation } from 'react-i18next';
 
 const AppFooter = () => {
     const { layoutConfig } = useContext(LayoutContext);
+    const { t } = useTranslation('footer');
 
     return (
         <div className="layout-footer">
-            <span className="font-medium ml-6 "> <strong>© 2025 Software Aplicado SA de CV.</strong> Todos los derechos reservados.</span>
+            <span className="font-medium ml-6 "> <strong>{t('strongText')}</strong>{t('rightsReserved')}</span>
             <span className="font-medium ml-6">
-                <a href='https://www.swaplicado.com.mx' target='_blank' style={{color: 'black'}}>www.swaplicado.com.mx</a>
+                <a href={t('websiteLink')} target='_blank' style={{color: 'black'}}>{t('website')}</a>
             </span>
         </div>
     );
