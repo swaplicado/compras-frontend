@@ -6,10 +6,12 @@ import { Button } from 'primereact/button';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { Toast } from 'primereact/toast';
+import { useTranslation } from 'react-i18next';
 
 const Logout = () => {
     const router = useRouter();
     const toast = useRef<Toast>(null);
+    const { t } = useTranslation('logout');
 
     const handleLogout = async () => {
         try {
@@ -19,7 +21,7 @@ const Logout = () => {
             });
         } catch (error: any) {
             // El error siempre tendrá la estructura { error: string }
-            showToast(error.response?.data?.error || 'Error al cerrar sesión');
+            showToast(error.response?.data?.error || t('errors.logoutError'));
         } finally {
             const allCookies = Cookies.get();
       
@@ -50,9 +52,9 @@ const Logout = () => {
         <div className="surface-ground flex align-items-center justify-content-center min-h-screen">
             <div className="text-center">
                 <img src="/layout/images/aeth_logo.png" alt="Logo" className="mb-5 w-6rem" />
-                <h1 className="text-900 font-medium text-3xl mb-3">Cerrando sesión...</h1>
-                <p className="text-600 text-lg mb-5">Por favor, espera mientras te redirigimos al login.</p>
-                <Button label="Ir al Login" className="p-button-outlined" onClick={() => router.push('/auth/login')} />
+                <h1 className="text-900 font-medium text-3xl mb-3">{t('title')}</h1>
+                <p className="text-600 text-lg mb-5">{t('texto')}</p>
+                <Button label={t('btnGotoLogin')} className="p-button-outlined" onClick={() => router.push('/auth/login')} />
             </div>
         </div>
     );

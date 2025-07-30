@@ -8,6 +8,7 @@ import { Toast } from 'primereact/toast';
 import loaderScreen from '@/app/components/loaderScreen';
 import axios from 'axios';
 import { InputText } from 'primereact/inputtext';
+import { useTranslation } from 'react-i18next';
 
 const ResetPassword = () => {
     const { layoutConfig } = useContext(LayoutContext);
@@ -15,7 +16,9 @@ const ResetPassword = () => {
     const toast = useRef<Toast>(null);
     const [username, setUsername] = useState('');
     const [ enterReset, setEnterReset ] = useState(false);
-    const [ sendResultOk, setSendResultOk ] = useState(false); 
+    const [ sendResultOk, setSendResultOk ] = useState(false);
+    const { t } = useTranslation('resetPassword');
+    const { t: tCommon } = useTranslation('common');
 
     const containerClassName = classNames('surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden, background-image', {
         'p-input-filled': layoutConfig.inputStyle === 'filled'
@@ -94,15 +97,15 @@ const ResetPassword = () => {
                         <div className='w-full surface-card py-8 px-5 sm:px-8' style={{ borderRadius: '53px' }}>
                             <div className='mb-5'>
                                 <p className='mb-5 w-full md:w-30rem'>
-                                    <span className='text-600 font-medium'>Como proveedor ingresa tu <b>RFC</b>, como usuario interno ingresa tu cuenta de usuario.</span>
+                                    <span className='text-600 font-medium'>{t('description')}</span>
                                 </p>
                                 <label htmlFor='Usuario' className='block text-900 text-xl font-medium mb-2'>
-                                    Usuario
+                                    {t('resetPassword.label')}
                                 </label>
                                 
                                 <InputText 
                                     type="text"
-                                    placeholder="Proveedor: Tu RFC, Usuario interno: Tu cuenta de usuario"
+                                    placeholder={t('resetPassword.placeholder')}
                                     value={username}
                                     onChange={e => setUsername(e.target.value)}
                                     className={classNames({ 'p-invalid': enterReset && username == '' }, 'w-full md:w-30rem')}
@@ -112,14 +115,14 @@ const ResetPassword = () => {
                                 {
                                     enterReset && username == '' && (
                                     <small id="username-help" className="block p-error">
-                                        Por favor ingresa tu nombre de usuario.
+                                        {t('resetPassword.helperText')}
                                     </small>)
                                 }
                             </div>
 
                             <div className='flex align-items-center justify-content-between mb-5 gap-5'>
-                                <Button label='Regresar a login' className="flex align-items-center justify-content-center bg-primary font-bold border-round " onClick={handleExit}></Button>
-                                <Button label='Continuar' className="flex align-items-center justify-content-center bg-primary font-bold border-round " onClick={handleReset}></Button>
+                                <Button label={t('btnBackToLogin')} className="flex align-items-center justify-content-center bg-primary font-bold border-round " onClick={handleExit}></Button>
+                                <Button label={tCommon('btnContinue')} className="flex align-items-center justify-content-center bg-primary font-bold border-round " onClick={handleReset}></Button>
                             </div>
                         </div>
                     ) }
@@ -128,12 +131,12 @@ const ResetPassword = () => {
                         <div className='w-full surface-card py-8 px-5 sm:px-8' style={{ borderRadius: '53px' }}>
                             <div className='mb-5'>
                                 <label htmlFor='username' className='block text-900 text-xl font-medium mb-2'>
-                                    Se ha enviado un correo electrónico al usuario {username} con instrucciones para restablecer su contraseña.
+                                    {t('emailSentMessage', { username })}
                                 </label>
                             </div>
 
                             <div className='flex align-items-center justify-content-between mb-5 gap-5'>
-                                <Button label='Regresar a login' className="flex align-items-center justify-content-center bg-primary font-bold border-round " onClick={handleExit}></Button>
+                                <Button label={t('btnBackToLogin')} className="flex align-items-center justify-content-center bg-primary font-bold border-round " onClick={handleExit}></Button>
                             </div>
                         </div>
                     )}

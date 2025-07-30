@@ -13,6 +13,7 @@ import { Dialog } from 'primereact/dialog';
 import loaderScreen from '@/app/components/loaderScreen';
 import Cookies from 'js-cookie';
 import appConfig from '../appConfig.json';
+import { useTranslation } from 'react-i18next';
 
 const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
     const { layoutConfig, layoutState, onMenuToggle, showProfileSidebar } = useContext(LayoutContext);
@@ -27,28 +28,29 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
     const [companyName, setCompanyName] = useState<any>(null);
     const [ nameUser, setNameUser ] = useState<any>(null);
     const [ roleUser, setRoleUser ] = useState<any>(null);
+    const { t } = useTranslation('topBar');
     
     // let itemsCompany: MenuItem[] | { label: any; command: () => void; }[] | undefined = [];
     const itemsProfile = [
         {
-            label: 'Opciones',
+            label: t('itemsProfile.label'),
             items: [
                 {
-                    label: 'Cambiar contraseña',
+                    label: t('itemsProfile.changePassword'),
                     icon: 'pi pi-lock',
                     command: () => {
                         window.location.href = '/pages/changePassword';
                     }
                 },
                 {
-                    label: 'Recargar',
+                    label: t('itemsProfile.refresh'),
                     icon: 'pi pi-refresh',
                     command: () => {
                         window.location.reload();
                     }
                 },
                 {
-                    label: 'Salir',
+                    label: t('itemsProfile.logout'),
                     icon: 'pi pi-sign-out',
                     command: () => {
                         window.location.href = '/auth/logout';
