@@ -67,6 +67,14 @@ export default {
         errors: {
             uploadError: "Error al cargar la factura. Por favor, verifica los archivos y referencia y vuelve a intentarlo.",
             getReferencesError: "Error al obtener las referencias. Por favor, intenta nuevamente más tarde.",
+            updateStatusError: "Error al actualizar el estado de la factura. Por favor, intenta nuevamente más tarde.",
+        },
+        rejectComments: {
+            label: "Comentarios de rechazo:",
+            placeholder: "Ingresa los comentarios de rechazo.",
+            helperText: "Por favor ingresa los comentarios de rechazo. Luego vuelve a presionar el botón de rechazar.",
+            tooltip: "Ingresa los comentarios de rechazo si la factura es rechazada. Luego vuelve a presionar el botón de rechazar.",
         }
-    }
+    },
+    btnDownloadFiles: "Descargar archivos",
 }
