@@ -29,7 +29,7 @@ interface UploadDialogProps {
     lReferences: any[];
     lProviders: any[];
     lCompanies: any[];
-    isInternalUser?: boolean;
+    oValidUser?: { isInternalUser: boolean, isProvider: boolean, isProviderMexico: boolean };
     partnerId?: string;
     setLReferences: React.Dispatch<React.SetStateAction<any[]>>;
     getlReferences: (partner_id?: string) => Promise<boolean>;
@@ -38,9 +38,9 @@ interface UploadDialogProps {
     getDps?: (isInternalUser: boolean) => Promise<any>;
 }
 
-export default function UploadDialog({ visible, onHide, lReferences, lProviders, lCompanies, isInternalUser = false, partnerId = '', getlReferences, setLReferences, dialogMode = 'create', reviewFormData, getDps }: UploadDialogProps) {
+export default function UploadDialog({ visible, onHide, lReferences, lProviders, lCompanies, oValidUser = { isInternalUser: false, isProvider: false, isProviderMexico: true }, partnerId = '', getlReferences, setLReferences, dialogMode = 'create', reviewFormData, getDps }: UploadDialogProps) {
     const [selectReference, setSelectReference] = useState<{ id: string; name: string } | null>(null);
-    const [selectProvider, setSelectProvider] = useState<{ id: string; name: string } | null>(null);
+    const [selectProvider, setSelectProvider] = useState<{ id: string; name: string; country: number } | null>(null);
     const [selectCompany, setSelectCompany] = useState<{ id: string; name: string } | null>(null);
     const [totalSize, setTotalSize] = useState(0);
     const [loading, setLoading] = useState(false);
@@ -71,12 +71,14 @@ export default function UploadDialog({ visible, onHide, lReferences, lProviders,
     const validate = () => {
         const newErrors = {
             reference: !selectReference,
-            provider: isInternalUser && !selectProvider,
+            provider: oValidUser.isInternalUser && !selectProvider,
             company: !selectCompany,
             folio: folio.trim() === '',
             files: (fileUploadRef.current?.getFiles().length || 0) === 0,
             includePdf: fileUploadRef.current?.getFiles().length || 0 > 0 ? !fileUploadRef.current?.getFiles().some((file: { type: string }) => file.type === 'application/pdf') : false,
-            includeXml: fileUploadRef.current?.getFiles().length || 0 > 0 ? !fileUploadRef.current?.getFiles().some((file: { type: string }) => file.type === 'text/xml') : false,
+            includeXml: fileUploadRef.current?.getFiles().length || 0 > 0 ? 
+                !fileUploadRef.current?.getFiles().some((file: { type: string }) => file.type === 'text/xml') && 
+                    (oValidUser.isProvider ? oValidUser.isProviderMexico : (selectProvider ? selectProvider.country == constants.COUNTRIES.MEXICO_ID : false) ) : false,
             rejectComments: dialogMode === 'review' && isRejected && rejectComments.trim() === ''
         };
         setErrors(newErrors);
@@ -168,7 +170,7 @@ export default function UploadDialog({ visible, onHide, lReferences, lProviders,
             if (response.status === 200 || response.status === 201) {
                 setSuccessMessage(response.data.data.success || t('uploadDialog.animationSuccess.text'));
                 setResultUpload('success');
-                getDps?.(isInternalUser);
+                getDps?.(oValidUser.isInternalUser);
             } else {
                 throw new Error(t('uploadDialog.errors.updateStatusError'));
             }
@@ -259,14 +261,14 @@ export default function UploadDialog({ visible, onHide, lReferences, lProviders,
             setTotalSize(0);
             fileUploadRef.current?.clear();
             message.current?.clear();
-            if (!isInternalUser) {
-                setSelectProvider({ id: partnerId, name: '' });
+            if (!oValidUser.isInternalUser) {
+                setSelectProvider({ id: partnerId, name: '', country: 151 }); // Assuming 151 is the country ID for Mexico
             }
         }
 
         if (visible && (dialogMode === 'view' || dialogMode === 'review') && reviewFormData) {
             setSelectCompany(reviewFormData.company);
-            setSelectProvider(reviewFormData.partner);
+            setSelectProvider({...reviewFormData.partner, country: constants.COUNTRIES.MEXICO_ID}); // Default to Mexico if country is not provided
             setSelectReference(reviewFormData.reference);
             setSerie(reviewFormData.series);
             setFolio(reviewFormData.number);
@@ -274,7 +276,7 @@ export default function UploadDialog({ visible, onHide, lReferences, lProviders,
             setRejectComments('');
             setTotalSize(0);
         }
-    }, [visible, isInternalUser, partnerId]);
+    }, [visible, oValidUser.isInternalUser, partnerId]);
 
     const renderInfoButton = () => {
         const instructionKey = dialogMode === 'create' ? 'uploadInstructions' : 'reviewInstructions';
@@ -396,7 +398,7 @@ export default function UploadDialog({ visible, onHide, lReferences, lProviders,
                                 dialogMode === 'view' || dialogMode === 'review'
                             )}
 
-                            {isInternalUser &&
+                            {oValidUser.isInternalUser &&
                                 renderDropdownField(
                                     t('uploadDialog.provider.label'),
                                     dialogMode === 'review' ? t('uploadDialog.provider.tooltipReview') : t('uploadDialog.provider.tooltip'),

@@ -38,8 +38,9 @@ const TableDemo = () => {
     const { t: tCommon } = useTranslation('common');
     let userGroups = Cookies.get('groups') ? JSON.parse(Cookies.get('groups') || '[]') : [];
     const partnerId = Cookies.get('partnerId') ? JSON.parse(Cookies.get('partnerId') || '') : null;
+    const partnerCountry = Cookies.get('partnerCountry') ? JSON.parse(Cookies.get('partnerCountry') || '') : null;
     const functionalAreas = Cookies.get('functional_areas') ? JSON.parse(Cookies.get('functional_areas') || '[]') : [];
-    const [isInternalUser, setIsInternalUser] = useState(false);
+    const [oValidUser, setOValidUser] = useState({ isInternalUser: false, isProvider: false, isProviderMexico: true });
     const [lProviders, setLProviders] = useState<any[]>([]);
     const [lCompanies, setLCompanies] = useState<any[]>([]);
     const [lDps, setLDps] = useState<any[]>([]);
@@ -66,8 +67,6 @@ const TableDemo = () => {
 
             if (response.status === 200) {
                 const data = response.data.data || [];
-                console.log('Datos obtenidos:', data);
-
                 let dps: any[] = [];
                 for (let i = 0; i < data.length; i++) {
                     let reference = '';
@@ -97,10 +96,10 @@ const TableDemo = () => {
                 setLDps(dps);
                 return true;
             } else {
-                // throw new Error(`${t('getReferencesError')}: ${response.statusText}`);
+                throw new Error(`${t('errors.getReferencesError')}: ${response.statusText}`);
             }
         } catch (error: any) {
-            // showToast('error', error.response?.data?.error || t('getReferencesError'));
+            showToast('error', error.response?.data?.error || t('errors.getReferencesError'));
             return false;
         }
     };
@@ -152,7 +151,8 @@ const TableDemo = () => {
                 for (const item of data) {
                     lProviders.push({
                         id: item.id,
-                        name: item.trade_name
+                        name: item.trade_name,
+                        country: item.country,
                     });
                 }
 
@@ -222,13 +222,16 @@ const TableDemo = () => {
             }
 
             if (groups.includes(constants.ROLES.COMPRADOR_ID)) {
-                setIsInternalUser(true);
+                // setIsInternalUser(true);
+                setOValidUser({ isInternalUser: true, isProvider: false, isProviderMexico: false });
                 await getlProviders();
                 await getDps(true);
             }
 
             if (groups.includes(constants.ROLES.PROVEEDOR_ID)) {
-                setIsInternalUser(false);
+                // setIsInternalUser(false);
+                const isProviderMexico = partnerCountry == constants.COUNTRIES.MEXICO_ID;
+                setOValidUser({ isInternalUser: false, isProvider: true, isProviderMexico: isProviderMexico });
                 await getlReferences(partnerId);
                 await getDps(false);
             }
@@ -381,9 +384,7 @@ const TableDemo = () => {
     );
 
     const handleRowClick = (e: DataTableRowClickEvent) => {
-        console.log('isInternalUser:', isInternalUser);
-        
-        if (!isInternalUser){
+        if (!oValidUser.isInternalUser){
             e.originalEvent.preventDefault();
             return;
         }
@@ -403,7 +404,7 @@ const TableDemo = () => {
     };
 
     const handleDoubleClick = (e: DataTableRowClickEvent) => {
-        if (!isInternalUser) {
+        if (!oValidUser.isInternalUser) {
             e.originalEvent.preventDefault();
             return;
         }
@@ -433,7 +434,7 @@ const TableDemo = () => {
                         lReferences={lReferences}
                         lProviders={lProviders}
                         lCompanies={lCompanies}
-                        isInternalUser={isInternalUser}
+                        oValidUser={oValidUser}
                         partnerId={partnerId}
                         getlReferences={getlReferences}
                         setLReferences={setLReferences}
@@ -464,8 +465,8 @@ const TableDemo = () => {
                         // onRowUnselect={onRowUnselect}
                         selection={selectedRow}
                         onSelectionChange={(e) => setSelectedRow(e.value)}
-                        onRowClick={ (e) => isInternalUser ? handleRowClick(e) : '' }
-                        onRowDoubleClick={ (e) => isInternalUser ? handleDoubleClick(e) : '' }
+                        onRowClick={ (e) => oValidUser.isInternalUser ? handleRowClick(e) : '' }
+                        onRowDoubleClick={ (e) => oValidUser.isInternalUser ? handleDoubleClick(e) : '' }
                         metaKeySelection={false}
                     >
                         <Column field="id_dps" header="id" hidden />
@@ -483,7 +484,7 @@ const TableDemo = () => {
                             // filterApply={<></>}
                             // filterClear={<></>}
                         />
-                        <Column field="provider_name" header="Proveedor" footer="Proveedor" filterField="provider_name" showFilterMatchModes={false} filterMenuStyle={{ width: '14rem' }} style={{ minWidth: '14rem' }} hidden={!isInternalUser} />
+                        <Column field="provider_name" header="Proveedor" footer="Proveedor" filterField="provider_name" showFilterMatchModes={false} filterMenuStyle={{ width: '14rem' }} style={{ minWidth: '14rem' }} hidden={!oValidUser.isInternalUser} />
                         <Column field="serie" header="Serie" footer="Serie" />
                         <Column field="folio" header="Folio" footer="Folio" />
                         <Column field="reference" header="Referencia" footer="Referencia" />
