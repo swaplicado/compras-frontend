@@ -30,5 +30,7 @@ export default {
     TABLE_DEFAULT_ROWS: 10,
 
     //pais id
-    COUNTRY_MXN: 151
+    COUNTRIES: {
+        MEXICO_ID: 151
+    }
 }

@@ -59,6 +59,7 @@ const LoginPage = () => {
                 Cookies.set('nameUser', response.data.userData.user.attributes.full_name);
                 Cookies.set('partnerId', response.data.userData.partner? response.data.userData.partner.id : null);
                 Cookies.set('partnerName', response.data.userData.partner? response.data.userData.partner.trade_name : null);
+                Cookies.set('partnerCountry', response.data.userData.partner? response.data.userData.partner.country : null);
                 Cookies.set('functional_areas', response.data.userData.user.functional_areas);
                 router.push('/');
             } else {
