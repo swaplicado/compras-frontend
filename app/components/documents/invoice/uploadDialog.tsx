@@ -15,9 +15,9 @@ import { FileUpload } from 'primereact/fileupload';
 import { InputTextarea } from 'primereact/inputtextarea';
 
 interface reviewFormData {
-    company: { id: string; name: string; };
-    partner: { id: string; name: string; };
-    reference: { id: string; name: string; };
+    company: { id: string; name: string };
+    partner: { id: string; name: string };
+    reference: { id: string; name: string };
     series: string;
     number: string;
     dpsId: string;
@@ -38,8 +38,7 @@ interface UploadDialogProps {
     getDps?: (isInternalUser: boolean) => Promise<any>;
 }
 
-export default function UploadDialog({ visible, onHide, lReferences, lProviders, lCompanies, isInternalUser = false, partnerId = '', getlReferences, 
-        setLReferences, dialogMode = 'create', reviewFormData, getDps }: UploadDialogProps) {
+export default function UploadDialog({ visible, onHide, lReferences, lProviders, lCompanies, isInternalUser = false, partnerId = '', getlReferences, setLReferences, dialogMode = 'create', reviewFormData, getDps }: UploadDialogProps) {
     const [selectReference, setSelectReference] = useState<{ id: string; name: string } | null>(null);
     const [selectProvider, setSelectProvider] = useState<{ id: string; name: string } | null>(null);
     const [selectCompany, setSelectCompany] = useState<{ id: string; name: string } | null>(null);
@@ -64,9 +63,10 @@ export default function UploadDialog({ visible, onHide, lReferences, lProviders,
     const message = useRef<Messages>(null);
     const { t } = useTranslation('invoices');
     const { t: tCommon } = useTranslation('common');
-    const [ rejectComments, setRejectComments ] = useState('');
-    const [ isRejected, setIsRejected ] = useState(false);
+    const [rejectComments, setRejectComments] = useState('');
+    const [isRejected, setIsRejected] = useState(false);
     const [successMessage, setSuccessMessage] = useState('');
+    const [textHeaderer, setTextHeader] = useState(dialogMode === 'create' ? t('uploadDialog.header') : t('uploadDialog.headerReview'));
 
     const validate = () => {
         const newErrors = {
@@ -148,59 +148,107 @@ export default function UploadDialog({ visible, onHide, lReferences, lProviders,
         try {
             setLoading(true);
 
-            if(reviewOption == constants.REVIEW_REJECT) {
+            if (reviewOption == constants.REVIEW_REJECT) {
                 setIsRejected(true);
                 if (!rejectComments.trim()) {
                     setErrors((prev) => ({ ...prev, rejectComments: true }));
                     return;
                 }
             }
-            
+
             const route = '/transactions/documents/' + reviewFormData?.dpsId + '/set-authz/';
-            const response = await axios.post(constants.API_AXIOS_PATCH, { 
+            const response = await axios.post(constants.API_AXIOS_PATCH, {
                 route,
                 jsonData: {
                     authz_code: reviewOption,
-                    authz_acceptance_notes: rejectComments,
-                },
+                    authz_acceptance_notes: rejectComments
+                }
             });
 
             if (response.status === 200 || response.status === 201) {
                 setSuccessMessage(response.data.data.success || t('uploadDialog.animationSuccess.text'));
                 setResultUpload('success');
                 getDps?.(isInternalUser);
-            }
-            else {
+            } else {
                 throw new Error(t('uploadDialog.errors.updateStatusError'));
             }
         } catch (error: any) {
             console.error('Error al actualizar estado:', error);
-            setErrorMessage(error.response?.data?.error || t('uploadDialog.errors.updateStatusError'));   
+            setErrorMessage(error.response?.data?.error || t('uploadDialog.errors.updateStatusError'));
             setResultUpload('error');
         } finally {
             setLoading(false);
         }
-    }
+    };
 
-    const footerContent = resultUpload === 'waiting' && (
-        dialogMode === 'create' && (
-            <div>
-                <Button label={tCommon('btnClose')} icon="pi pi-times" onClick={onHide} severity="secondary" disabled={loading} />
-                <Button label={tCommon('btnUpload')} icon="pi pi-upload" onClick={handleSubmit} autoFocus disabled={loading} />
-            </div>
-        )
-        || dialogMode === 'review' && (
-            <div className='flex justify-content-between align-items-center w-full'>
-                <Button label={tCommon('btnClose')} icon="pi pi-times" onClick={onHide} severity="secondary" disabled={loading} />
-                <div className='flex gap-4'>
-                    <Button label={tCommon('btnReject')} icon="bx bx-dislike" onClick={() => handleReview(constants.REVIEW_REJECT)} autoFocus disabled={loading} severity='danger' />
-                    <Button label={tCommon('btnAccept')} icon="bx bx-dislike" onClick={() => handleReview(constants.REVIEW_ACCEPT)} autoFocus disabled={loading} severity='success'/>
+    const footerContent =
+    resultUpload === 'waiting' &&
+    ((dialogMode === 'create' && (
+        <div className="flex flex-column md:flex-row justify-content-between gap-2">
+            <Button 
+                label={tCommon('btnClose')} 
+                icon="pi pi-times" 
+                onClick={onHide} 
+                severity="secondary" 
+                disabled={loading} 
+                className="order-1 md:order-0" 
+            />
+            <Button 
+                label={tCommon('btnUpload')} 
+                icon="pi pi-upload" 
+                onClick={handleSubmit} 
+                autoFocus 
+                disabled={loading} 
+                className="order-0 md:order-1" 
+            />
+        </div>
+    )) ||
+        (dialogMode === 'review' && (
+            <div className='grid'>
+                <div className='col-12 md:col-6 lg:col-6 xl:col-6 flex justify-content-end md:justify-content-start'>
+                    <Button 
+                        label={tCommon('btnClose')} 
+                        icon="pi pi-times" 
+                        onClick={onHide} 
+                        severity="secondary" 
+                        disabled={loading} 
+                    />
+                </div>
+                <div className='col-12 md:col-6 lg:col-6 xl:col-6 gap-4 flex justify-content-end'>
+                    <Button 
+                        label={tCommon('btnReject')} 
+                        icon="bx bx-dislike" 
+                        onClick={() => handleReview(constants.REVIEW_REJECT)} 
+                        autoFocus 
+                        disabled={loading} 
+                        severity="danger" 
+                    />
+                    <Button 
+                        label={tCommon('btnAccept')} 
+                        icon="bx bx-like" 
+                        onClick={() => handleReview(constants.REVIEW_ACCEPT)} 
+                        autoFocus 
+                        disabled={loading} 
+                        severity="success" 
+                    />
                 </div>
             </div>
-        )
-    );
+        )));
 
     useEffect(() => {
+        setResultUpload('waiting');
+        setErrors({
+            reference: false,
+            provider: false,
+            company: false,
+            folio: false,
+            files: false,
+            includePdf: false,
+            includeXml: false,
+            rejectComments: false
+        });
+        setLoading(false);
+        setShowInfo(false);
         if (visible && dialogMode === 'create') {
             setSelectCompany(null);
             setSelectProvider(null);
@@ -208,19 +256,7 @@ export default function UploadDialog({ visible, onHide, lReferences, lProviders,
             setLReferences([]);
             setSerie('');
             setFolio('');
-            setResultUpload('waiting');
-            setErrors({
-                reference: false,
-                provider: false,
-                company: false,
-                folio: false,
-                files: false,
-                includePdf: false,
-                includeXml: false,
-                rejectComments: false
-            });
             setTotalSize(0);
-            setLoading(false);
             fileUploadRef.current?.clear();
             message.current?.clear();
             if (!isInternalUser) {
@@ -228,7 +264,7 @@ export default function UploadDialog({ visible, onHide, lReferences, lProviders,
             }
         }
 
-        if (visible && (dialogMode === 'view' || dialogMode === 'review' ) && reviewFormData) {
+        if (visible && (dialogMode === 'view' || dialogMode === 'review') && reviewFormData) {
             setSelectCompany(reviewFormData.company);
             setSelectProvider(reviewFormData.partner);
             setSelectReference(reviewFormData.reference);
@@ -236,40 +272,34 @@ export default function UploadDialog({ visible, onHide, lReferences, lProviders,
             setFolio(reviewFormData.number);
             setIsRejected(false);
             setRejectComments('');
-            setResultUpload('waiting');
-            setErrors({
-                reference: false,
-                provider: false,
-                company: false,
-                folio: false,
-                files: false,
-                includePdf: false,
-                includeXml: false,
-                rejectComments: false
-            });
             setTotalSize(0);
-            setLoading(false);
         }
     }, [visible, isInternalUser, partnerId]);
 
-    const renderInfoButton = () => (
-        <div className="pb-4">
-            <Button label={!showInfo ? tCommon('btnShowInstructions') : tCommon('btnHideInstructions')} icon="pi pi-info-circle" className="p-button-text p-button-secondary p-0" onClick={() => setShowInfo(!showInfo)} severity="info" />
-            {showInfo && (
-                <div className="p-3 border-1 border-round border-gray-200 bg-white mb-3 surface-border surface-card">
-                    {t('uploadDialog.uploadInstructions.header')}
-                    <ul>
-                        <li>{t('uploadDialog.uploadInstructions.step1')}</li>
-                        <li>{t('uploadDialog.uploadInstructions.step2')}</li>
-                        <li>{t('uploadDialog.uploadInstructions.step3')}</li>
-                        <li>{t('uploadDialog.uploadInstructions.step4')}</li>
-                        <li>{t('uploadDialog.uploadInstructions.step5')}</li>
-                    </ul>
-                    <p className="mb-3">{t('uploadDialog.uploadInstructions.footer')}</p>
-                </div>
-            )}
-        </div>
-    );
+    const renderInfoButton = () => {
+        const instructionKey = dialogMode === 'create' ? 'uploadInstructions' : 'reviewInstructions';
+
+        const instructions = JSON.parse(JSON.stringify(t(`uploadDialog.${instructionKey}`, { returnObjects: true })));
+
+        return (
+            <div className="pb-4">
+                <Button label={!showInfo ? tCommon('btnShowInstructions') : tCommon('btnHideInstructions')} icon="pi pi-info-circle" className="p-button-text p-button-secondary p-0" onClick={() => setShowInfo(!showInfo)} severity="info" />
+                {showInfo && (
+                    <div className="p-3 border-1 border-round border-gray-200 bg-white mb-3 surface-border surface-card">
+                        {instructions.header}
+                        <ul>
+                            {Object.keys(instructions)
+                                .filter((key) => key.startsWith('step'))
+                                .map((key, index) => (
+                                    <li key={index}>{instructions[key]}</li>
+                                ))}
+                        </ul>
+                        <p className="mb-3">{instructions.footer}</p>
+                    </div>
+                )}
+            </div>
+        );
+    };
 
     const renderDropdownField = (label: string, tooltip: string, value: any, options: any[], placeholder: string, errorKey: keyof typeof errors, errorMessage: string, onChange: (value: any) => void, disabled?: boolean) => (
         <div className="field col-12 md:col-6">
@@ -277,11 +307,9 @@ export default function UploadDialog({ visible, onHide, lReferences, lProviders,
             &nbsp;
             <Tooltip target=".custom-target-icon" />
             <i className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge" data-pr-tooltip={tooltip} data-pr-position="right" data-pr-my="left center-2" style={{ fontSize: '1rem', cursor: 'pointer' }}></i>
-            
-            { dialogMode == 'create' ? (
+            {dialogMode == 'create' ? (
                 <div>
-                    <Dropdown value={value} onChange={(e) => onChange(e.value)} options={options} optionLabel="name" placeholder={placeholder} 
-                        filter className={`w-full ${errors[errorKey] ? 'p-invalid' : ''}`} showClear disabled={disabled} />
+                    <Dropdown value={value} onChange={(e) => onChange(e.value)} options={options} optionLabel="name" placeholder={placeholder} filter className={`w-full ${errors[errorKey] ? 'p-invalid' : ''}`} showClear disabled={disabled} />
                     {errors[errorKey] && <small className="p-error">{errorMessage}</small>}
                 </div>
             ) : (
@@ -297,17 +325,42 @@ export default function UploadDialog({ visible, onHide, lReferences, lProviders,
             <label htmlFor="comments">{t('uploadDialog.rejectComments.label')}</label>
             &nbsp;
             <Tooltip target=".custom-target-icon" />
-            <i className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge" data-pr-tooltip={t('uploadDialog.rejectComments.tooltip')} data-pr-position="right" data-pr-my="left center-2" style={{ fontSize: '1rem', cursor: 'pointer' }}></i>
+            <i
+                className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
+                data-pr-tooltip={t('uploadDialog.rejectComments.tooltip')}
+                data-pr-position="right"
+                data-pr-my="left center-2"
+                style={{ fontSize: '1rem', cursor: 'pointer' }}
+            ></i>
             <br />
-            <InputTextarea id="comments" rows={3} cols={30} autoResize className={`w-full ${errors.rejectComments ? 'p-invalid' : ''}`} value={rejectComments} onChange={(e) => {setRejectComments(e.target.value); setErrors((prev) => ({ ...prev, rejectComments: false }));}} disabled={dialogMode === 'view'} />
-            { errors.rejectComments &&  <small className="p-error">{t('uploadDialog.rejectComments.helperText')}</small>}
+            <InputTextarea
+                id="comments"
+                rows={3}
+                cols={30}
+                autoResize
+                className={`w-full ${errors.rejectComments ? 'p-invalid' : ''}`}
+                value={rejectComments}
+                onChange={(e) => {
+                    setRejectComments(e.target.value);
+                    setErrors((prev) => ({ ...prev, rejectComments: false }));
+                }}
+                disabled={dialogMode === 'view'}
+            />
+            {errors.rejectComments && <small className="p-error">{t('uploadDialog.rejectComments.helperText')}</small>}
         </div>
     );
 
     return (
         <div className="flex justify-content-center">
             {loading && loaderScreen()}
-            <Dialog header={t('uploadDialog.header')} visible={visible} onHide={onHide} footer={footerContent} className="md:w-8 lg:w-6 xl:w-6" pt={{ header: { className: 'pb-2 pt-2 border-bottom-1 surface-border' } }}>
+            <Dialog
+                header={dialogMode == 'create' ? t('uploadDialog.headerCreate') : t('uploadDialog.headerReview')}
+                visible={visible}
+                onHide={onHide}
+                footer={footerContent}
+                className="md:w-8 lg:w-6 xl:w-6"
+                pt={{ header: { className: 'pb-2 pt-2 border-bottom-1 surface-border' } }}
+            >
                 {animationSuccess({
                     show: resultUpload === 'success',
                     title: t('uploadDialog.animationSuccess.title'),
@@ -329,13 +382,13 @@ export default function UploadDialog({ visible, onHide, lReferences, lProviders,
 
                         <div className="p-fluid formgrid grid">
                             {renderDropdownField(
-                                t('uploadDialog.company.label'), 
-                                t('uploadDialog.company.tooltip'), 
-                                selectCompany, 
-                                lCompanies, 
-                                t('uploadDialog.company.placeholder'), 
-                                'company', 
-                                t('uploadDialog.company.helperText'), 
+                                t('uploadDialog.company.label'),
+                                dialogMode === 'review' ? t('uploadDialog.company.tooltipReview') : t('uploadDialog.company.tooltip'),
+                                selectCompany,
+                                lCompanies,
+                                t('uploadDialog.company.placeholder'),
+                                'company',
+                                t('uploadDialog.company.helperText'),
                                 (value) => {
                                     setSelectCompany(value);
                                     setErrors((prev) => ({ ...prev, company: false }));
@@ -346,7 +399,7 @@ export default function UploadDialog({ visible, onHide, lReferences, lProviders,
                             {isInternalUser &&
                                 renderDropdownField(
                                     t('uploadDialog.provider.label'),
-                                    t('uploadDialog.provider.tooltip'),
+                                    dialogMode === 'review' ? t('uploadDialog.provider.tooltipReview') : t('uploadDialog.provider.tooltip'),
                                     selectProvider,
                                     lProviders,
                                     t('uploadDialog.provider.placeholder'),
@@ -358,10 +411,9 @@ export default function UploadDialog({ visible, onHide, lReferences, lProviders,
                         </div>
 
                         <div className="p-fluid formgrid grid">
-
                             {renderDropdownField(
                                 t('uploadDialog.reference.label'),
-                                t('uploadDialog.reference.tooltip'),
+                                dialogMode === 'review' ? t('uploadDialog.reference.tooltipReview') : t('uploadDialog.reference.tooltip'),
                                 selectReference,
                                 lReferences,
                                 t('uploadDialog.reference.placeholder'),
@@ -371,7 +423,7 @@ export default function UploadDialog({ visible, onHide, lReferences, lProviders,
                                     setSelectReference(value);
                                     setErrors((prev) => ({ ...prev, reference: false }));
                                 },
-                                (!lReferences || lReferences.length === 0) || (dialogMode === 'view' || dialogMode === 'review')
+                                !lReferences || lReferences.length === 0 || dialogMode === 'view' || dialogMode === 'review'
                             )}
 
                             <div className="field col-12 md:col-6">
@@ -382,13 +434,19 @@ export default function UploadDialog({ visible, onHide, lReferences, lProviders,
                                         <Tooltip target=".custom-target-icon" />
                                         <i
                                             className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                                            data-pr-tooltip={t('uploadDialog.serie.tooltip')}
+                                            data-pr-tooltip={dialogMode === 'review' ? t('uploadDialog.serie.tooltipReview') : t('uploadDialog.serie.tooltip')}
                                             data-pr-position="right"
                                             data-pr-my="left center-2"
                                             style={{ fontSize: '1rem', cursor: 'pointer' }}
                                         ></i>
-                                        <InputText type="text" placeholder={t('uploadDialog.serie.placeholder')} className="w-full" value={serie} 
-                                            onChange={(e) => setSerie(e.target.value)} disabled={dialogMode === 'view' || dialogMode === 'review'}/>
+                                        <InputText
+                                            type="text"
+                                            placeholder={t('uploadDialog.serie.placeholder')}
+                                            className="w-full"
+                                            value={serie}
+                                            onChange={(e) => setSerie(e.target.value)}
+                                            disabled={dialogMode === 'view' || dialogMode === 'review'}
+                                        />
                                     </div>
                                     <div className="field col">
                                         <label>{t('uploadDialog.folio.label')}</label>
@@ -396,7 +454,7 @@ export default function UploadDialog({ visible, onHide, lReferences, lProviders,
                                         <Tooltip target=".custom-target-icon" />
                                         <i
                                             className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                                            data-pr-tooltip={t('uploadDialog.folio.tooltip')}
+                                            data-pr-tooltip={dialogMode === 'review' ? t('uploadDialog.folio.tooltipReview') : t('uploadDialog.folio.tooltip')}
                                             data-pr-position="right"
                                             data-pr-my="left center-2"
                                             style={{ fontSize: '1rem', cursor: 'pointer' }}
@@ -417,7 +475,7 @@ export default function UploadDialog({ visible, onHide, lReferences, lProviders,
                                 </div>
                             </div>
 
-                            { dialogMode !== 'view' && dialogMode !== 'review' && (
+                            {dialogMode !== 'view' && dialogMode !== 'review' && (
                                 <div className="field col-12">
                                     <label>{t('uploadDialog.files.label')}</label>
                                     &nbsp;
@@ -432,7 +490,7 @@ export default function UploadDialog({ visible, onHide, lReferences, lProviders,
                                     <CustomFileUpload fileUploadRef={fileUploadRef} totalSize={totalSize} setTotalSize={setTotalSize} errors={errors} setErrors={setErrors} message={message} />
                                 </div>
                             )}
-                        { (dialogMode == 'view' || dialogMode == 'review') && isRejected && renderCommentsField() }
+                            {(dialogMode == 'view' || dialogMode == 'review') && isRejected && renderCommentsField()}
                         </div>
                     </div>
                 )}

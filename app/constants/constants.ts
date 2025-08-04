@@ -16,4 +16,7 @@ export default {
     REVIEW_ACCEPT: 'A',
     REVIEW_REJECT: 'R',
     REVIEW_PENDING: 'P',
+
+    TABLE_ROWS: [10, 25, 50],
+    TABLE_DEFAULT_ROWS: 10,
 }

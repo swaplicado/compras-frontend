@@ -228,6 +228,7 @@ const TableDemo = () => {
             }
 
             if (groups.includes(constants.ROLES.PROVEEDOR_ID)) {
+                setIsInternalUser(false);
                 await getlReferences(partnerId);
                 await getDps(false);
             }
@@ -347,7 +348,7 @@ const TableDemo = () => {
 
     const startContent = (
         <React.Fragment>
-            <Button icon="pi pi-plus" label={t('btnOpenDialogUpload')} className="mr-2" rounded onClick={() => {setDialogMode('create'); setDialogVisible(true);}} tooltip={t('tooltipBtnOpenDialogUpload')} />
+            <Button icon="pi pi-plus" label={t('btnOpenDialogUpload')} className="mr-2" rounded onClick={() => {setDialogMode('create'); setDialogVisible(true);}} />
         </React.Fragment>
     );
 
@@ -376,7 +377,12 @@ const TableDemo = () => {
     );
 
     const handleRowClick = (e: DataTableRowClickEvent) => {
-        if (!isInternalUser) return;
+        console.log('isInternalUser:', isInternalUser);
+        
+        if (!isInternalUser){
+            e.originalEvent.preventDefault();
+            return;
+        }
         const currentTime = new Date().getTime();
         const timeDiff = currentTime - lastClickTime.current;
         const DOUBLE_CLICK_THRESHOLD = 300;
@@ -393,6 +399,10 @@ const TableDemo = () => {
     };
 
     const handleDoubleClick = (e: DataTableRowClickEvent) => {
+        if (!isInternalUser) {
+            e.originalEvent.preventDefault();
+            return;
+        }
         setSelectedRow(e.data);
         let data = {
             company: { id: e.data.company_id, name: e.data.company },
@@ -432,9 +442,9 @@ const TableDemo = () => {
                     <DataTable
                         value={lDps}
                         paginator
-                        rowsPerPageOptions={[5, 10, 25, 50]}
+                        rowsPerPageOptions={constants.TABLE_ROWS}
                         className="p-datatable-gridlines"
-                        rows={5}
+                        rows={constants.TABLE_DEFAULT_ROWS}
                         showGridlines
                         filters={filters1}
                         filterDisplay="menu"
@@ -442,7 +452,7 @@ const TableDemo = () => {
                         responsiveLayout="scroll"
                         emptyMessage="Sin datos para mostrar."
                         scrollable
-                        scrollHeight="flex"
+                        scrollHeight="40rem"
                         selectionMode="single"
                         // selection={selectedDps!}
                         // onSelectionChange={(e) => setSelectedDps(e.value)}
@@ -450,8 +460,8 @@ const TableDemo = () => {
                         // onRowUnselect={onRowUnselect}
                         selection={selectedRow}
                         onSelectionChange={(e) => setSelectedRow(e.value)}
-                        onRowClick={handleRowClick}
-                        onRowDoubleClick={handleDoubleClick}
+                        onRowClick={ (e) => isInternalUser ? handleRowClick(e) : '' }
+                        onRowDoubleClick={ (e) => isInternalUser ? handleDoubleClick(e) : '' }
                         metaKeySelection={false}
                     >
                         <Column field="id_dps" header="id" hidden />
