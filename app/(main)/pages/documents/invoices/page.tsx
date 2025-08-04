@@ -239,32 +239,36 @@ const TableDemo = () => {
         fetchReferences();
     }, []);
 
-    const downloadFilesDps = async (id_dps: number) => {
+    const downloadFilesDps = async (rowData: any) => {
         try {
-            console.log(`Descargando archivos del DPS con ID: ${id_dps}`);
+            const id_dps = rowData.id_dps;
+            const provider = rowData.provider_name;
+            const serie = rowData.serie;
+            const folio = rowData.folio;
+            const file_name = `${provider}_${serie}_${folio}`;
 
-            // const response = await axios.get(constants.API_AXIOS_GET, {
-            //     params: {
-            //         route: '/transactions/documents/download-dps-files/',
-            //         id_dps: id_dps
-            //     },
-            //     responseType: 'blob'
-            // });
+            const response = await axios.get(constants.API_AXIOS_GET, {
+                params: {
+                    route: constants.ROUTE_DOWNLOAD_FILES_DPS,
+                    id: id_dps
+                },
+                responseType: 'blob'
+            });
 
-            // if (response.status === 200) {
-            //     const blob = new Blob([response.data], { type: 'application/zip' });
-            //     const url = window.URL.createObjectURL(blob);
-            //     const link = document.createElement('a');
-            //     link.href = url;
-            //     link.setAttribute('download', `dps_files_${id_dps}.zip`);
-            //     document.body.appendChild(link);
-            //     link.click();
-            //     document.body.removeChild(link);
-            // } else {
-            //     showToast('error', tCommon('errorDownloadFiles'));
-            // }
+            if (response.status === 200) {
+                const blob = new Blob([response.data], { type: 'application/zip' });
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', `${file_name}.zip`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else {
+                showToast('error', tCommon('erros.downloadFiles'));
+            }
         } catch (error: any) {
-            showToast('error', error.response?.data?.error || tCommon('errorDownloadFiles'));
+            showToast('error', error.response?.data?.error || tCommon('erros.downloadFiles'));
         }
     };
 
@@ -341,7 +345,7 @@ const TableDemo = () => {
     const fileBodyTemplate = (rowData: any) => {
         return (
             <div className="flex align-items-center justify-content-center">
-                <Button icon="pi pi-file" className={`p-button-rounded p-button-text text-blue-500`} onClick={() => downloadFilesDps(rowData.id_dps)} tooltip={t('btnDownloadFiles')} tooltipOptions={{ position: 'top' }} size="large" />
+                <Button icon="pi pi-file" className={`p-button-rounded p-button-text text-blue-500`} onClick={() => downloadFilesDps(rowData)} tooltip={t('btnDownloadFiles')} tooltipOptions={{ position: 'top' }} size="large" />
             </div>
         );
     };

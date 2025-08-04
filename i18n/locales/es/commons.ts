@@ -18,4 +18,13 @@ export default {
     btnAccept: "Aceptar",
     btnReject: "Rechazar",
     btnDownload: "Descargar",
+    erros: {
+        requiredField: "Este campo es obligatorio.",
+        invalidEmail: "Por favor ingresa un correo electrónico válido.",
+        invalidNumber: "Por favor ingresa un número válido.",
+        invalidDate: "Por favor ingresa una fecha válida.",
+        fileTooLarge: "El archivo es demasiado grande, debe ser menor a 1 MB.",
+        fileTypeNotSupported: "Tipo de archivo no soportado. Solo se permiten archivos PDF y XML.",
+        downloadFiles: "Error al descargar los archivos, por favor intenta nuevamente.",
+    }
 }

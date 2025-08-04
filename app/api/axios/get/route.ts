@@ -48,40 +48,85 @@ export async function GET(req: NextRequest) {
         const token = req.cookies.get('access_token');
         const company = req.cookies.get('companyId');
 
-        let headers: Record<string, any> = {};
+        // Configurar headers comunes
+        const headers: Record<string, string> = {
+            'X-API-KEY': appConfig.apiKey
+        };
+
+        // Agregar token de autorización si existe
         if (token) {
-            headers = { headers: { 'Content-Type': 'application/json', Authorization: `Token ${token?.value}`, 'X-API-KEY': appConfig.apiKey } };
-        } else {
-            headers = { headers: { 'Content-Type': 'application/json', 'X-API-KEY': appConfig.apiKey } };
+            headers['Authorization'] = `Token ${token.value}`;
         }
 
         let params: Record<string, any> = {};
-        // Realizar la solicitud GET a la API externa
         if (route) {
             let baseUrl = appConfig.mainRoute;
+            
+            // Manejo especial para rutas de transacciones
             if (route.startsWith('/transactions/')) {
                 baseUrl = appConfig.apiTransactionsUrl;
                 route = route.replace('/transactions', '');
 
+                // Procesar parámetros de búsqueda
                 searchParams.forEach((value, key) => {
                     if (key !== 'route') {
-                        // route = route + '/' + value;
                         params[key] = value;
                     }
                 });
 
                 if (company) {
-                    // route = route + `/${company.value}`;
                     params.company_id = company?.value;
                 }
-                
             }
+            
             const api = createApiInstance(baseUrl);
-            const response = await api.get(route, { headers: headers.headers, params });
-            return NextResponse.json({ data: response.data, message: 'petición exitosa' }, { status: response.status });
+            
+            // Realizar la petición con responseType 'arraybuffer' para manejar binarios
+            const response = await api.get(route, { 
+                headers,
+                params,
+                responseType: 'arraybuffer' // Importante para manejar ZIP y JSON
+            });
+
+            // Determinar el content type de la respuesta
+            const contentType = response.headers['content-type'] || 'application/json';
+            
+            // Crear los headers de respuesta base
+            const responseHeaders = new Headers();
+            responseHeaders.set('Content-Type', contentType);
+
+            // Manejar ZIP
+            if (contentType.includes('application/zip')) {
+                responseHeaders.set('Content-Disposition', 'attachment; filename="download.zip"');
+                return new NextResponse(response.data, {
+                    status: response.status,
+                    headers: responseHeaders
+                });
+            }
+            
+            // Manejar JSON (necesitamos convertir el buffer a JSON)
+            if (contentType.includes('application/json')) {
+                const jsonData = JSON.parse(Buffer.from(response.data).toString('utf-8'));
+                return NextResponse.json(
+                    { data: jsonData, message: 'petición exitosa' }, 
+                    { status: response.status }
+                );
+            }
+
+            // Para otros tipos de contenido (imágenes, PDF, etc.)
+            return new NextResponse(response.data, {
+                status: response.status,
+                headers: responseHeaders
+            });
         }
+
+        // Si no se proporcionó ruta
+        return NextResponse.json(
+            { error: 'Parámetro "route" es requerido' },
+            { status: 400 }
+        );
     } catch (error: any) {
-        // Si el error incluye cookieHeader (por ejemplo, 401/403 desde el interceptor)
+        // Manejo de errores de autorización (interceptor)
         if (error.cookieHeader) {
             const { error: message, status } = getErrorMessage(error.error || error);
             return NextResponse.json(
