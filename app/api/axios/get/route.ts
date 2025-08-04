@@ -55,6 +55,7 @@ export async function GET(req: NextRequest) {
             headers = { headers: { 'Content-Type': 'application/json', 'X-API-KEY': appConfig.apiKey } };
         }
 
+        let params: Record<string, any> = {};
         // Realizar la solicitud GET a la API externa
         if (route) {
             let baseUrl = appConfig.mainRoute;
@@ -64,17 +65,19 @@ export async function GET(req: NextRequest) {
 
                 searchParams.forEach((value, key) => {
                     if (key !== 'route') {
-                        route = route + '/' + value;
+                        // route = route + '/' + value;
+                        params[key] = value;
                     }
                 });
 
                 if (company) {
-                    route = route + `/${company.value}`;
+                    // route = route + `/${company.value}`;
+                    params.company_id = company?.value;
                 }
                 
             }
             const api = createApiInstance(baseUrl);
-            const response = await api.get(route, { headers: headers.headers });
+            const response = await api.get(route, { headers: headers.headers, params });
             return NextResponse.json({ data: response.data, message: 'petición exitosa' }, { status: response.status });
         }
     } catch (error: any) {
