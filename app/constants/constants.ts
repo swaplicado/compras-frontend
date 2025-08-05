@@ -19,6 +19,7 @@ export default {
     ROUTE_GET_DPS_BY_PARTNER_ID : '/transactions/documents/list-doc-by-partner/',
     ROUTE_GET_DPS_BY_AREA_ID: '/transactions/documents/list-doc-by-functional-area/',
     ROUTE_DOWNLOAD_FILES_DPS: '/transactions/documents/download-zip/',
+    ROUTE_GET_DPS_LIMIT_DATES: '/transactions/upload-deadline/check-deadline/',
 
     //Constantes de estados de las facturas
     REVIEW_ACCEPT: 'A',

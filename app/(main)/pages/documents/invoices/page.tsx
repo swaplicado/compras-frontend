@@ -15,11 +15,13 @@ import { Toast } from 'primereact/toast';
 import { useTranslation } from 'react-i18next';
 import Cookies from 'js-cookie';
 import constants from '@/app/constants/constants';
+import DateFormatter from '@/app/components/formatDate';
+import moment from 'moment';
 
 interface reviewFormData {
-    company: { id: string; name: string; };
-    partner: { id: string; name: string; };
-    reference: { id: string; name: string; };
+    company: { id: string; name: string };
+    partner: { id: string; name: string };
+    reference: { id: string; name: string };
     series: string;
     number: string;
     dpsId: string;
@@ -37,6 +39,7 @@ const TableDemo = () => {
     const { t } = useTranslation('invoices');
     const { t: tCommon } = useTranslation('common');
     let userGroups = Cookies.get('groups') ? JSON.parse(Cookies.get('groups') || '[]') : [];
+    const userId = Cookies.get('userId') ? JSON.parse(Cookies.get('userId') || '') : null;
     const partnerId = Cookies.get('partnerId') ? JSON.parse(Cookies.get('partnerId') || '') : null;
     const partnerCountry = Cookies.get('partnerCountry') ? JSON.parse(Cookies.get('partnerCountry') || '') : null;
     const functionalAreas = Cookies.get('functional_areas') ? JSON.parse(Cookies.get('functional_areas') || '[]') : [];
@@ -47,15 +50,40 @@ const TableDemo = () => {
     const [selectedRow, setSelectedRow] = useState<any>(null);
     const lastClickTime = useRef<number>(0);
     const [reviewFormData, setFormData] = useState<reviewFormData>();
+    const [limitDate, setLimitDate] = useState<string | null>(null);
+    const [actualDate, setActualDate] = useState<string>('');
 
-   const showToast = (type: 'success' | 'info' | 'warn' | 'error' = 'error', message: string) => {
+    const showToast = (type: 'success' | 'info' | 'warn' | 'error' = 'error', message: string, summaryText = 'Error:') => {
         toast.current?.show({
             severity: type,
-            summary: 'Error:',
+            summary: summaryText,
             detail: message,
             life: 300000
         });
     };
+
+    const getDpsDates = async () => {
+        try {
+            const route = constants.ROUTE_GET_DPS_LIMIT_DATES;
+            const response = await axios.get(constants.API_AXIOS_GET, {
+                params: {
+                    route: route,
+                    partner_id: partnerId
+                }
+            });
+
+            if (response.status === 200) {
+                const data = response.data.data || [];
+                setLimitDate(data.date_end);
+                setActualDate(data.current_date);
+            } else {
+                throw new Error(`${t('errors.getInvoicesError')}: ${response.statusText}`);
+            }
+        } catch (error: any) {
+            showToast('error', error.response?.data?.error || t('errors.getInvoicesError'), t('errors.getInvoicesError'));
+            return false;
+        }
+    }
 
     const getDps = async (isInternalUser: boolean) => {
         try {
@@ -96,10 +124,10 @@ const TableDemo = () => {
                 setLDps(dps);
                 return true;
             } else {
-                throw new Error(`${t('errors.getReferencesError')}: ${response.statusText}`);
+                throw new Error(`${t('errors.getInvoicesError')}: ${response.statusText}`);
             }
         } catch (error: any) {
-            showToast('error', error.response?.data?.error || t('errors.getReferencesError'));
+            showToast('error', error.response?.data?.error || t('errors.getInvoicesError'), t('errors.getInvoicesError'));
             return false;
         }
     };
@@ -127,10 +155,10 @@ const TableDemo = () => {
                 setLReferences(lReferences);
                 return true;
             } else {
-                throw new Error(`${t('getReferencesError')}: ${response.statusText}`);
+                throw new Error(`${t('errors.getReferencesError')}: ${response.statusText}`);
             }
         } catch (error: any) {
-            showToast('error', error.response?.data?.error || t('getReferencesError'));
+            showToast('error', error.response?.data?.error || t('erros.getReferencesError'), t('errors.getReferencesError'));
             return false;
         }
     };
@@ -152,17 +180,17 @@ const TableDemo = () => {
                     lProviders.push({
                         id: item.id,
                         name: item.trade_name,
-                        country: item.country,
+                        country: item.country
                     });
                 }
 
                 setLProviders(lProviders);
                 return true;
             } else {
-                throw new Error(`${t('getReferencesError')}: ${response.statusText}`);
+                throw new Error(`${t('errors.getPartnersError')}: ${response.statusText}`);
             }
         } catch (error: any) {
-            showToast('error', error.response?.data?.error || t('getReferencesError'));
+            showToast('error', error.response?.data?.error || t('errors.getPartnersError'), t('errors.getPartnersError'));
             return false;
         }
     };
@@ -188,10 +216,10 @@ const TableDemo = () => {
                 setLCompanies(lCompanies);
                 return true;
             } else {
-                throw new Error(`${t('getReferencesError')}: ${response.statusText}`);
+                throw new Error(`${t('errors.getCompaniesError')}: ${response.statusText}`);
             }
         } catch (error: any) {
-            showToast('error', error.response?.data?.error || t('getReferencesError'));
+            showToast('error', error.response?.data?.error || t('errors.getCompaniesError'), t('errors.getCompaniesError'));
             return false;
         }
     };
@@ -222,14 +250,13 @@ const TableDemo = () => {
             }
 
             if (groups.includes(constants.ROLES.COMPRADOR_ID)) {
-                // setIsInternalUser(true);
                 setOValidUser({ isInternalUser: true, isProvider: false, isProviderMexico: false });
                 await getlProviders();
                 await getDps(true);
             }
 
             if (groups.includes(constants.ROLES.PROVEEDOR_ID)) {
-                // setIsInternalUser(false);
+                await getDpsDates();
                 const isProviderMexico = partnerCountry == constants.COUNTRIES.MEXICO_ID;
                 setOValidUser({ isInternalUser: false, isProvider: true, isProviderMexico: isProviderMexico });
                 await getlReferences(partnerId);
@@ -244,6 +271,7 @@ const TableDemo = () => {
 
     const downloadFilesDps = async (rowData: any) => {
         try {
+            setLoading(true);
             const id_dps = rowData.id_dps;
             const provider = rowData.provider_name;
             const serie = rowData.serie;
@@ -268,10 +296,12 @@ const TableDemo = () => {
                 link.click();
                 document.body.removeChild(link);
             } else {
-                showToast('error', tCommon('erros.downloadFiles'));
+                throw new Error(`${tCommon('erros.downloadFiles')}: ${response.statusText}`);
             }
         } catch (error: any) {
-            showToast('error', error.response?.data?.error || tCommon('erros.downloadFiles'));
+            showToast('error', error.response?.data?.error || tCommon('erros.downloadFiles'), tCommon('erros.downloadFiles'));
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -290,7 +320,7 @@ const TableDemo = () => {
     const formatCurrency = (value: number) => {
         return value.toLocaleString('es-MX', {
             style: 'currency',
-            currency: 'MXN',
+            currency: 'MXN'
         });
     };
 
@@ -331,7 +361,8 @@ const TableDemo = () => {
     // };
 
     const dateBodyTemplate = (rowData: Demo.Customer) => {
-        return formatDate(rowData.date);
+        // return formatDate(rowData.date);
+        return DateFormatter(rowData.date);
     };
 
     const amountBodyTemplate = (rowData: any) => {
@@ -348,14 +379,40 @@ const TableDemo = () => {
     const fileBodyTemplate = (rowData: any) => {
         return (
             <div className="flex align-items-center justify-content-center">
-                <Button icon="pi pi-file" className={`p-button-rounded p-button-text text-blue-500`} onClick={() => downloadFilesDps(rowData)} tooltip={t('btnDownloadFiles')} tooltipOptions={{ position: 'top' }} size="large" />
+                <Button icon="pi pi-file" className={`p-button-rounded p-button-text text-blue-500`} onClick={() => downloadFilesDps(rowData)} tooltip={t('btnDownloadFiles')} tooltipOptions={{ position: 'top' }} size="large" disabled={loading}/>
             </div>
         );
     };
 
     const startContent = (
         <React.Fragment>
-            <Button icon="pi pi-plus" label={t('btnOpenDialogUpload')} className="mr-2" rounded onClick={() => {setDialogMode('create'); setDialogVisible(true);}} />
+            {limitDate ? (
+                moment(actualDate).isBefore(limitDate) || oValidUser.isInternalUser ? (
+                    <Button
+                        icon="pi pi-plus"
+                        label={t('btnOpenDialogUpload')}
+                        className="mr-2"
+                        rounded
+                        onClick={() => {
+                            setDialogMode('create');
+                            setDialogVisible(true);
+                        }}
+                    />
+                ) : (
+                    ''
+                )
+            ) : (
+                <Button
+                    icon="pi pi-plus"
+                    label={t('btnOpenDialogUpload')}
+                    className="mr-2"
+                    rounded
+                    onClick={() => {
+                        setDialogMode('create');
+                        setDialogVisible(true);
+                    }}
+                />
+            )}
         </React.Fragment>
     );
 
@@ -373,6 +430,7 @@ const TableDemo = () => {
             className="
                 flex align-items-center justify-content-center border-bottom-1
                 surface-border surface-card sticky top-0 z-1 shadow-2 transition-all transition-duration-300
+                justify-content-between
                 "
             style={{
                 padding: '1rem',
@@ -380,11 +438,12 @@ const TableDemo = () => {
             }}
         >
             <h3 className="m-0 text-900 font-medium">{t('title')}</h3>
+            {limitDate && !oValidUser.isInternalUser && <h6 style={{ color: moment(actualDate).isAfter(limitDate) ? 'red' : 'black' }} > { moment(actualDate).isBefore(limitDate) ? t('dpsDateLimitText') : t('dpsDateAfterLimitText') } {DateFormatter(limitDate)}</h6>}
         </div>
     );
 
     const handleRowClick = (e: DataTableRowClickEvent) => {
-        if (!oValidUser.isInternalUser){
+        if (!oValidUser.isInternalUser) {
             e.originalEvent.preventDefault();
             return;
         }
@@ -416,7 +475,7 @@ const TableDemo = () => {
             series: e.data.serie,
             number: e.data.folio,
             dpsId: e.data.id_dps
-        }
+        };
         setFormData(data);
         setDialogMode('review');
         setDialogVisible(true);
@@ -428,20 +487,43 @@ const TableDemo = () => {
                 {loading && loaderScreen()}
                 <Toast ref={toast} />
                 <Card header={headerCard} pt={{ content: { className: 'p-0' } }}>
-                    <UploadDialog
-                        visible={dialogVisible}
-                        onHide={() => setDialogVisible(false)}
-                        lReferences={lReferences}
-                        lProviders={lProviders}
-                        lCompanies={lCompanies}
-                        oValidUser={oValidUser}
-                        partnerId={partnerId}
-                        getlReferences={getlReferences}
-                        setLReferences={setLReferences}
-                        dialogMode={dialogMode}
-                        reviewFormData={reviewFormData}
-                        getDps={getDps}
-                    />
+                    {limitDate ? (
+                        moment(actualDate).isBefore(limitDate) || oValidUser.isInternalUser ? (
+                            <UploadDialog
+                                visible={dialogVisible}
+                                onHide={() => setDialogVisible(false)}
+                                lReferences={lReferences}
+                                lProviders={lProviders}
+                                lCompanies={lCompanies}
+                                oValidUser={oValidUser}
+                                partnerId={partnerId}
+                                getlReferences={getlReferences}
+                                setLReferences={setLReferences}
+                                dialogMode={dialogMode}
+                                reviewFormData={reviewFormData}
+                                getDps={getDps}
+                                userId={userId}
+                            />
+                        ) : (
+                            ''
+                        )
+                    ) : (
+                        <UploadDialog
+                            visible={dialogVisible}
+                            onHide={() => setDialogVisible(false)}
+                            lReferences={lReferences}
+                            lProviders={lProviders}
+                            lCompanies={lCompanies}
+                            oValidUser={oValidUser}
+                            partnerId={partnerId}
+                            getlReferences={getlReferences}
+                            setLReferences={setLReferences}
+                            dialogMode={dialogMode}
+                            reviewFormData={reviewFormData}
+                            getDps={getDps}
+                            userId={userId}
+                        />
+                    )}
                     <Toolbar start={startContent} center={centerContent} end={endContent} className="border-bottom-1 surface-border surface-card shadow-1 transition-all transition-duration-300" style={{ borderRadius: '3rem', padding: '0.8rem' }} />
                     <br />
                     <DataTable
@@ -459,14 +541,10 @@ const TableDemo = () => {
                         scrollable
                         scrollHeight="40rem"
                         selectionMode="single"
-                        // selection={selectedDps!}
-                        // onSelectionChange={(e) => setSelectedDps(e.value)}
-                        // onRowSelect={onRowSelect}
-                        // onRowUnselect={onRowUnselect}
                         selection={selectedRow}
                         onSelectionChange={(e) => setSelectedRow(e.value)}
-                        onRowClick={ (e) => oValidUser.isInternalUser ? handleRowClick(e) : '' }
-                        onRowDoubleClick={ (e) => oValidUser.isInternalUser ? handleDoubleClick(e) : '' }
+                        onRowClick={(e) => (oValidUser.isInternalUser ? handleRowClick(e) : '')}
+                        onRowDoubleClick={(e) => (oValidUser.isInternalUser ? handleDoubleClick(e) : '')}
                         metaKeySelection={false}
                     >
                         <Column field="id_dps" header="id" hidden />
@@ -476,6 +554,7 @@ const TableDemo = () => {
                             field="company"
                             header="Empresa"
                             footer="Empresa"
+                            //comentado para usarse mas adelante
                             // filter
                             // filterPlaceholder="Buscar por nombre"
                             // style={{ minWidth: '12rem' }}
@@ -484,11 +563,20 @@ const TableDemo = () => {
                             // filterApply={<></>}
                             // filterClear={<></>}
                         />
-                        <Column field="provider_name" header="Proveedor" footer="Proveedor" filterField="provider_name" showFilterMatchModes={false} filterMenuStyle={{ width: '14rem' }} style={{ minWidth: '14rem' }} hidden={!oValidUser.isInternalUser} />
+                        <Column
+                            field="provider_name"
+                            header="Proveedor"
+                            footer="Proveedor"
+                            filterField="provider_name"
+                            showFilterMatchModes={false}
+                            filterMenuStyle={{ width: '14rem' }}
+                            style={{ minWidth: '14rem' }}
+                            hidden={!oValidUser.isInternalUser}
+                        />
                         <Column field="serie" header="Serie" footer="Serie" />
                         <Column field="folio" header="Folio" footer="Folio" />
                         <Column field="reference" header="Referencia" footer="Referencia" />
-                        <Column field="amount" header="Cantidad" footer="Cantidad" dataType="numeric" body={amountBodyTemplate} />
+                        <Column field="amount" header="Cantidad" footer="Cantidad" dataType="numeric" body={amountBodyTemplate} hidden/>
                         <Column field="status" header="Estatus" footer="Estatus" body={statusDpsBodyTemplate} />
                         <Column field="date" header="Fecha" footer="Fecha" body={dateBodyTemplate} />
                         <Column field="files" header="Archivos" footer="Archivos" body={fileBodyTemplate} />

@@ -1,3 +1,5 @@
+import { title } from "process";
+
 export default {
     title: "Facturas",
     btnOpenDialogUpload: "Cargar factura",
@@ -73,10 +75,12 @@ export default {
         animationSuccess: {
             title: "Factura cargada.",
             text: "La factura se ha cargado correctamente.",
+            titleReview: "Factura revisada.",
         },
         animationError: {
             title: "Error al cargar la factura.",
             text: "Ocurrió un error al cargar la factura, vuelve a intentarlo mas tarde.",
+            titleReview: "Error al revisar la factura.",
         },
         errors: {
             uploadError: "Error al cargar la factura. Por favor, verifica los archivos y referencia y vuelve a intentarlo.",
@@ -84,11 +88,21 @@ export default {
             updateStatusError: "Error al actualizar el estado de la factura. Por favor, intenta nuevamente más tarde.",
         },
         rejectComments: {
-            label: "Comentarios de rechazo:",
-            placeholder: "Ingresa los comentarios de rechazo.",
+            label: "Comentarios:",
+            placeholder: "Ingresa los comentarios.",
             helperText: "Por favor ingresa los comentarios de rechazo. Luego vuelve a presionar el botón de rechazar.",
             tooltip: "Ingresa los comentarios de rechazo si la factura es rechazada. Luego vuelve a presionar el botón de rechazar.",
         }
     },
+    errors: {
+        getInvoicesError: "Error al obtener las facturas. Por favor, intenta nuevamente más tarde.",
+        getReferencesError: "Error al obtener las referencias. Por favor, intenta nuevamente más tarde.",
+        downloadFilesError: "Error al descargar los archivos. Por favor, intenta nuevamente más tarde.",
+        getFunctionalAreasError: "Error al obtener las áreas funcionales. Por favor, intenta nuevamente más tarde.",
+        getPartnersError: "Error al obtener los proveedores. Por favor, intenta nuevamente más tarde.", 
+        getCompaniesError: "Error al obtener las empresas. Por favor, intenta nuevamente más tarde.",
+    },
     btnDownloadFiles: "Descargar archivos",
+    dpsDateLimitText: "Fecha limite de carga de facturas:",
+    dpsDateAfterLimitText: "La fecha límite para cargar facturas fue.",
 }

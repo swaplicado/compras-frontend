@@ -13,6 +13,7 @@ import loaderScreen from '@/app/components/loaderScreen';
 import constants from '@/app/constants/constants';
 import { FileUpload } from 'primereact/fileupload';
 import { InputTextarea } from 'primereact/inputtextarea';
+import moment from 'moment';
 
 interface reviewFormData {
     company: { id: string; name: string };
@@ -29,16 +30,31 @@ interface UploadDialogProps {
     lReferences: any[];
     lProviders: any[];
     lCompanies: any[];
-    oValidUser?: { isInternalUser: boolean, isProvider: boolean, isProviderMexico: boolean };
+    oValidUser?: { isInternalUser: boolean; isProvider: boolean; isProviderMexico: boolean };
     partnerId?: string;
     setLReferences: React.Dispatch<React.SetStateAction<any[]>>;
     getlReferences: (partner_id?: string) => Promise<boolean>;
     dialogMode?: 'create' | 'edit' | 'view' | 'review';
     reviewFormData?: reviewFormData;
     getDps?: (isInternalUser: boolean) => Promise<any>;
+    userId: number;
 }
 
-export default function UploadDialog({ visible, onHide, lReferences, lProviders, lCompanies, oValidUser = { isInternalUser: false, isProvider: false, isProviderMexico: true }, partnerId = '', getlReferences, setLReferences, dialogMode = 'create', reviewFormData, getDps }: UploadDialogProps) {
+export default function UploadDialog({
+    visible,
+    onHide,
+    lReferences,
+    lProviders,
+    lCompanies,
+    oValidUser = { isInternalUser: false, isProvider: false, isProviderMexico: true },
+    partnerId = '',
+    getlReferences,
+    setLReferences,
+    dialogMode = 'create',
+    reviewFormData,
+    getDps,
+    userId
+}: UploadDialogProps) {
     const [selectReference, setSelectReference] = useState<{ id: string; name: string } | null>(null);
     const [selectProvider, setSelectProvider] = useState<{ id: string; name: string; country: number } | null>(null);
     const [selectCompany, setSelectCompany] = useState<{ id: string; name: string } | null>(null);
@@ -67,6 +83,8 @@ export default function UploadDialog({ visible, onHide, lReferences, lProviders,
     const [isRejected, setIsRejected] = useState(false);
     const [successMessage, setSuccessMessage] = useState('');
     const [textHeaderer, setTextHeader] = useState(dialogMode === 'create' ? t('uploadDialog.header') : t('uploadDialog.headerReview'));
+    const successTitle = dialogMode == 'create' ? t('uploadDialog.animationSuccess.title') : t('uploadDialog.animationSuccess.titleReview');
+    const errorTitle = dialogMode == 'create' ? t('uploadDialog.animationError.title') : t('uploadDialog.animationError.titleReview');
 
     const validate = () => {
         const newErrors = {
@@ -76,9 +94,11 @@ export default function UploadDialog({ visible, onHide, lReferences, lProviders,
             folio: folio.trim() === '',
             files: (fileUploadRef.current?.getFiles().length || 0) === 0,
             includePdf: fileUploadRef.current?.getFiles().length || 0 > 0 ? !fileUploadRef.current?.getFiles().some((file: { type: string }) => file.type === 'application/pdf') : false,
-            includeXml: fileUploadRef.current?.getFiles().length || 0 > 0 ? 
-                !fileUploadRef.current?.getFiles().some((file: { type: string }) => file.type === 'text/xml') && 
-                    (oValidUser.isProvider ? oValidUser.isProviderMexico : (selectProvider ? selectProvider.country == constants.COUNTRIES.MEXICO_ID : false) ) : false,
+            includeXml:
+                fileUploadRef.current?.getFiles().length || 0 > 0
+                    ? !fileUploadRef.current?.getFiles().some((file: { type: string }) => file.type === 'text/xml') &&
+                      (oValidUser.isProvider ? oValidUser.isProviderMexico : selectProvider ? selectProvider.country == constants.COUNTRIES.MEXICO_ID : false)
+                    : false,
             rejectComments: dialogMode === 'review' && isRejected && rejectComments.trim() === ''
         };
         setErrors(newErrors);
@@ -102,7 +122,8 @@ export default function UploadDialog({ visible, onHide, lReferences, lProviders,
             formData.append('ref_id', selectReference?.id || '');
             formData.append('route', route);
             formData.append('company_id', selectCompany?.id || '');
-            formData.append('user_id', '1');
+            formData.append('user_id', userId.toString());
+            formData.append('is_internal_user', oValidUser.isInternalUser ? 'True' : 'False');
 
             const document = {
                 transaction_class: 1,
@@ -110,10 +131,10 @@ export default function UploadDialog({ visible, onHide, lReferences, lProviders,
                 partner: selectProvider?.id || '',
                 series: serie,
                 number: folio,
-                date: '2025-07-18',
+                date: moment().format('YYYY-MM-DD'),
                 currency: 51,
-                amount: 1500.0,
-                exchange_rate: 17.5
+                amount: 1,
+                exchange_rate: 1
             };
 
             formData.append('document', JSON.stringify(document));
@@ -123,6 +144,7 @@ export default function UploadDialog({ visible, onHide, lReferences, lProviders,
             });
 
             if (response.status === 200 || response.status === 201) {
+                setSuccessMessage(response.data.data.success || t('uploadDialog.animationSuccess.text'));
                 setResultUpload('success');
             } else {
                 throw new Error(t('uploadDialog.errors.uploadError'));
@@ -184,58 +206,24 @@ export default function UploadDialog({ visible, onHide, lReferences, lProviders,
     };
 
     const footerContent =
-    resultUpload === 'waiting' &&
-    ((dialogMode === 'create' && (
-        <div className="flex flex-column md:flex-row justify-content-between gap-2">
-            <Button 
-                label={tCommon('btnClose')} 
-                icon="pi pi-times" 
-                onClick={onHide} 
-                severity="secondary" 
-                disabled={loading} 
-                className="order-1 md:order-0" 
-            />
-            <Button 
-                label={tCommon('btnUpload')} 
-                icon="pi pi-upload" 
-                onClick={handleSubmit} 
-                autoFocus 
-                disabled={loading} 
-                className="order-0 md:order-1" 
-            />
-        </div>
-    )) ||
-        (dialogMode === 'review' && (
-            <div className='grid'>
-                <div className='col-12 md:col-6 lg:col-6 xl:col-6 flex justify-content-end md:justify-content-start'>
-                    <Button 
-                        label={tCommon('btnClose')} 
-                        icon="pi pi-times" 
-                        onClick={onHide} 
-                        severity="secondary" 
-                        disabled={loading} 
-                    />
-                </div>
-                <div className='col-12 md:col-6 lg:col-6 xl:col-6 gap-4 flex justify-content-end'>
-                    <Button 
-                        label={tCommon('btnReject')} 
-                        icon="bx bx-dislike" 
-                        onClick={() => handleReview(constants.REVIEW_REJECT)} 
-                        autoFocus 
-                        disabled={loading} 
-                        severity="danger" 
-                    />
-                    <Button 
-                        label={tCommon('btnAccept')} 
-                        icon="bx bx-like" 
-                        onClick={() => handleReview(constants.REVIEW_ACCEPT)} 
-                        autoFocus 
-                        disabled={loading} 
-                        severity="success" 
-                    />
-                </div>
+        resultUpload === 'waiting' &&
+        ((dialogMode === 'create' && (
+            <div className="flex flex-column md:flex-row justify-content-between gap-2">
+                <Button label={tCommon('btnClose')} icon="pi pi-times" onClick={onHide} severity="secondary" disabled={loading} className="order-1 md:order-0" />
+                <Button label={tCommon('btnUpload')} icon="pi pi-upload" onClick={handleSubmit} autoFocus disabled={loading} className="order-0 md:order-1" />
             </div>
-        )));
+        )) ||
+            (dialogMode === 'review' && (
+                <div className="grid">
+                    <div className="col-12 md:col-6 lg:col-6 xl:col-6 flex justify-content-end md:justify-content-start">
+                        <Button label={tCommon('btnClose')} icon="pi pi-times" onClick={onHide} severity="secondary" disabled={loading} />
+                    </div>
+                    <div className="col-12 md:col-6 lg:col-6 xl:col-6 gap-4 flex justify-content-end">
+                        <Button label={tCommon('btnReject')} icon="bx bx-dislike" onClick={() => handleReview(constants.REVIEW_REJECT)} autoFocus disabled={loading} severity="danger" />
+                        <Button label={tCommon('btnAccept')} icon="bx bx-like" onClick={() => handleReview(constants.REVIEW_ACCEPT)} autoFocus disabled={loading} severity="success" />
+                    </div>
+                </div>
+            )));
 
     useEffect(() => {
         setResultUpload('waiting');
@@ -255,20 +243,24 @@ export default function UploadDialog({ visible, onHide, lReferences, lProviders,
             setSelectCompany(null);
             setSelectProvider(null);
             setSelectReference(null);
-            setLReferences([]);
+
+            if (oValidUser.isInternalUser) {
+                setLReferences([]);
+            }
+
             setSerie('');
             setFolio('');
             setTotalSize(0);
             fileUploadRef.current?.clear();
             message.current?.clear();
             if (!oValidUser.isInternalUser) {
-                setSelectProvider({ id: partnerId, name: '', country: 151 }); // Assuming 151 is the country ID for Mexico
+                setSelectProvider({ id: partnerId, name: '', country: constants.COUNTRIES.MEXICO_ID });
             }
         }
 
         if (visible && (dialogMode === 'view' || dialogMode === 'review') && reviewFormData) {
             setSelectCompany(reviewFormData.company);
-            setSelectProvider({...reviewFormData.partner, country: constants.COUNTRIES.MEXICO_ID}); // Default to Mexico if country is not provided
+            setSelectProvider({ ...reviewFormData.partner, country: constants.COUNTRIES.MEXICO_ID });
             setSelectReference(reviewFormData.reference);
             setSerie(reviewFormData.series);
             setFolio(reviewFormData.number);
@@ -365,14 +357,14 @@ export default function UploadDialog({ visible, onHide, lReferences, lProviders,
             >
                 {animationSuccess({
                     show: resultUpload === 'success',
-                    title: t('uploadDialog.animationSuccess.title'),
+                    title: successTitle,
                     text: successMessage || t('uploadDialog.animationSuccess.text'),
                     buttonLabel: tCommon('btnClose'),
                     action: onHide
                 }) ||
                     animationError({
                         show: resultUpload === 'error',
-                        title: t('uploadDialog.animationError.title'),
+                        title: errorTitle,
                         text: errorMessage || t('uploadDialog.animationError.text'),
                         buttonLabel: tCommon('btnClose'),
                         action: onHide
@@ -425,7 +417,7 @@ export default function UploadDialog({ visible, onHide, lReferences, lProviders,
                                     setSelectReference(value);
                                     setErrors((prev) => ({ ...prev, reference: false }));
                                 },
-                                !lReferences || lReferences.length === 0 || dialogMode === 'view' || dialogMode === 'review'
+                                !lReferences || lReferences.length == 0 || dialogMode === 'view' || dialogMode === 'review'
                             )}
 
                             <div className="field col-12 md:col-6">
@@ -492,7 +484,7 @@ export default function UploadDialog({ visible, onHide, lReferences, lProviders,
                                     <CustomFileUpload fileUploadRef={fileUploadRef} totalSize={totalSize} setTotalSize={setTotalSize} errors={errors} setErrors={setErrors} message={message} />
                                 </div>
                             )}
-                            {(dialogMode == 'view' || dialogMode == 'review') && isRejected && renderCommentsField()}
+                            {(dialogMode == 'view' || dialogMode == 'review') && renderCommentsField()}
                         </div>
                     </div>
                 )}
