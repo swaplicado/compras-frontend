@@ -134,5 +134,20 @@ export default {
             header: "Recargar vista:",
             step1: "Presiona el botón de 'Recargar' para actualizar la vista y cargar los datos más recientes.",
         }
+    },
+    invoicesTable: {
+        columns: {
+            company: "Entidad comercial",
+            provider_name: "Proveedor",
+            serie: "Serie",
+            folio: "Folio",
+            reference: "Referencia",
+            amount: "Cantidad",
+            status: "Estatus",
+            files: "Archivos",
+            date: "Fecha de carga",
+        },
+        currentPageReportTemplate: "Mostrando {first} a {last} de {totalRecords} registros",
+        emptyMessage: "Sin datos para mostrar.",   
     }
 }

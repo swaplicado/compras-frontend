@@ -373,7 +373,7 @@ const TableDemo = () => {
         return (
             <div className="flex align-items-center justify-content-center">
                 <Button
-                    label="Descargar"
+                    label={tCommon('btnDownload')}
                     icon="bx bx-cloud-download bx-sm"
                     className="p-button-rounded p-button-text text-blue-500"
                     onClick={() => downloadFilesDps(rowData)}
@@ -422,7 +422,7 @@ const TableDemo = () => {
         <div>
             <span className="p-input-icon-left mr-2">
                 <i className="pi pi-search" />
-                <InputText value={globalFilterValue1} onChange={onGlobalFilterChange1} placeholder={tCommon('placeholderSearch')} />
+                <InputText className='w-full' value={globalFilterValue1} onChange={onGlobalFilterChange1} placeholder={tCommon('placeholderSearch')} />
             </span>
             <Button type="button" icon="pi pi-filter-slash" label={tCommon('btnCleanFilter')} onClick={clearFilter1} tooltip={tCommon('tooltipCleanFilter')} tooltipOptions={{ position: 'left' }} />
         </div>
@@ -580,7 +580,7 @@ const TableDemo = () => {
                         filterDisplay="menu"
                         loading={tableLoading}
                         responsiveLayout="scroll"
-                        emptyMessage="Sin datos para mostrar."
+                        emptyMessage={t('invoicesTable.emptyMessage')}
                         scrollable
                         scrollHeight="40rem"
                         selectionMode="single"
@@ -591,16 +591,19 @@ const TableDemo = () => {
                         metaKeySelection={false}
                         sortField="date"
                         sortOrder={-1}
+                        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+                        currentPageReportTemplate={t('invoicesTable.currentPageReportTemplate')}
+                        resizableColumns
                     >
                         <Column field="id_dps" header="id" hidden />
                         <Column field="provider_id" header="id" hidden />
                         <Column field="company_id" header="id" hidden />
                         <Column
                             field="company"
-                            header="Empresa"
-                            footer="Empresa"
+                            header={t('invoicesTable.columns.company')}
+                            footer={t('invoicesTable.columns.company')}
                             sortable
-                            //comentado para usarse mas adelante
+                            //comentado para usarse mas adelante    
                             // filter
                             // filterPlaceholder="Buscar por nombre"
                             // style={{ minWidth: '12rem' }}
@@ -611,8 +614,8 @@ const TableDemo = () => {
                         />
                         <Column
                             field="provider_name"
-                            header="Proveedor"
-                            footer="Proveedor"
+                            header={t('invoicesTable.columns.provider_name')}
+                            footer={t('invoicesTable.columns.provider_name')}
                             filterField="provider_name"
                             showFilterMatchModes={false}
                             filterMenuStyle={{ width: '14rem' }}
@@ -620,13 +623,13 @@ const TableDemo = () => {
                             hidden={!oValidUser.isInternalUser}
                             sortable
                         />
-                        <Column field="serie" header="Serie" footer="Serie" sortable />
-                        <Column field="folio" header="Folio" footer="Folio" sortable />
-                        <Column field="reference" header="Referencia" footer="Referencia" sortable />
-                        <Column field="amount" header="Cantidad" footer="Cantidad" dataType="numeric" body={amountBodyTemplate} hidden sortable />
-                        <Column field="status" header="Estatus" footer="Estatus" body={statusDpsBodyTemplate} sortable />
-                        <Column field="date" header="Fecha" footer="Fecha" body={dateBodyTemplate} sortable />
-                        <Column field="files" header="Archivos" footer="Archivos" body={fileBodyTemplate} />
+                        <Column field="serie" header={t('invoicesTable.columns.serie')} footer={t('invoicesTable.columns.serie')} sortable />
+                        <Column field="folio" header={t('invoicesTable.columns.folio')} footer={t('invoicesTable.columns.folio')} sortable />
+                        <Column field="reference" header={t('invoicesTable.columns.reference')} footer={t('invoicesTable.columns.reference')} sortable />
+                        <Column field="amount" header={t('invoicesTable.columns.amount')} footer={t('invoicesTable.columns.amount')} dataType="numeric" body={amountBodyTemplate} hidden sortable />
+                        <Column field="status" header={t('invoicesTable.columns.status')} footer={t('invoicesTable.columns.status')} body={statusDpsBodyTemplate} sortable />
+                        <Column field="date" header={t('invoicesTable.columns.date')} footer={t('invoicesTable.columns.date')} body={dateBodyTemplate} sortable />
+                        <Column field="files" header={t('invoicesTable.columns.files')} footer={t('invoicesTable.columns.files')} body={fileBodyTemplate} />
                     </DataTable>
                 </Card>
             </div>
