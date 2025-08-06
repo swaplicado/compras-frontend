@@ -10,14 +10,15 @@ import { Toolbar } from 'primereact/toolbar';
 import { Card } from 'primereact/card';
 import UploadDialog from '@/app/components/documents/invoice/uploadDialog';
 import axios from 'axios';
-import loaderScreen from '@/app/components/loaderScreen';
+import loaderScreen from '@/app/components/commons/loaderScreen';
 import { Toast } from 'primereact/toast';
 import { useTranslation } from 'react-i18next';
 import Cookies from 'js-cookie';
 import constants from '@/app/constants/constants';
-import DateFormatter from '@/app/components/formatDate';
+import DateFormatter from '@/app/components/commons/formatDate';
 import moment from 'moment';
-
+import { ReloadButton } from '@/app/components/commons/reloadButton';
+import { Divider } from 'primereact/divider';
 interface reviewFormData {
     company: { id: string; name: string };
     partner: { id: string; name: string };
@@ -52,6 +53,7 @@ const TableDemo = () => {
     const [reviewFormData, setFormData] = useState<reviewFormData>();
     const [limitDate, setLimitDate] = useState<string | null>(null);
     const [actualDate, setActualDate] = useState<string>('');
+    const [showInfo, setShowInfo] = useState(false);
 
     const showToast = (type: 'success' | 'info' | 'warn' | 'error' = 'error', message: string, summaryText = 'Error:') => {
         toast.current?.show({
@@ -83,7 +85,7 @@ const TableDemo = () => {
             showToast('error', error.response?.data?.error || t('errors.getInvoicesError'), t('errors.getInvoicesError'));
             return false;
         }
-    }
+    };
 
     const getDps = async (isInternalUser: boolean) => {
         try {
@@ -309,14 +311,6 @@ const TableDemo = () => {
         setTableLoading(false);
     }, [lDps]);
 
-    const formatDate = (value: Date) => {
-        return value.toLocaleDateString('es-MX', {
-            day: '2-digit',
-            month: 'short',
-            year: 'numeric'
-        });
-    };
-
     const formatCurrency = (value: number) => {
         return value.toLocaleString('es-MX', {
             style: 'currency',
@@ -361,7 +355,6 @@ const TableDemo = () => {
     // };
 
     const dateBodyTemplate = (rowData: Demo.Customer) => {
-        // return formatDate(rowData.date);
         return DateFormatter(rowData.date);
     };
 
@@ -379,7 +372,16 @@ const TableDemo = () => {
     const fileBodyTemplate = (rowData: any) => {
         return (
             <div className="flex align-items-center justify-content-center">
-                <Button icon="pi pi-file" className={`p-button-rounded p-button-text text-blue-500`} onClick={() => downloadFilesDps(rowData)} tooltip={t('btnDownloadFiles')} tooltipOptions={{ position: 'top' }} size="large" disabled={loading}/>
+                <Button
+                    label="Descargar"
+                    icon="bx bx-cloud-download bx-sm"
+                    className="p-button-rounded p-button-text text-blue-500"
+                    onClick={() => downloadFilesDps(rowData)}
+                    tooltip={t('btnDownloadFiles')}
+                    tooltipOptions={{ position: 'top' }}
+                    size="small"
+                    disabled={loading}
+                />
             </div>
         );
     };
@@ -417,13 +419,16 @@ const TableDemo = () => {
     );
 
     const centerContent = (
-        <span className="p-input-icon-left">
-            <i className="pi pi-search" />
-            <InputText value={globalFilterValue1} onChange={onGlobalFilterChange1} placeholder={tCommon('placeholderSearch')} />
-        </span>
+        <div>
+            <span className="p-input-icon-left mr-2">
+                <i className="pi pi-search" />
+                <InputText value={globalFilterValue1} onChange={onGlobalFilterChange1} placeholder={tCommon('placeholderSearch')} />
+            </span>
+            <Button type="button" icon="pi pi-filter-slash" label={tCommon('btnCleanFilter')} onClick={clearFilter1} tooltip={tCommon('tooltipCleanFilter')} tooltipOptions={{ position: 'left' }} />
+        </div>
     );
 
-    const endContent = <Button type="button" icon="pi pi-filter-slash" label={tCommon('btnCleanFilter')} onClick={clearFilter1} style={{ borderRadius: '3rem' }} tooltip={tCommon('tooltipCleanFilter')} tooltipOptions={{ position: 'left' }} />;
+    const endContent = <ReloadButton />;
 
     const headerCard = (
         <div
@@ -434,11 +439,15 @@ const TableDemo = () => {
                 "
             style={{
                 padding: '1rem',
-                minHeight: '4rem'
+                height: '4rem'
             }}
         >
             <h3 className="m-0 text-900 font-medium">{t('title')}</h3>
-            {limitDate && !oValidUser.isInternalUser && <h6 style={{ color: moment(actualDate).isAfter(limitDate) ? 'red' : 'black' }} > { moment(actualDate).isBefore(limitDate) ? t('dpsDateLimitText') : t('dpsDateAfterLimitText') } {DateFormatter(limitDate)}</h6>}
+            {limitDate && !oValidUser.isInternalUser && (
+                <h6 className="ml-3 text-700 font-medium" style={{ color: moment(actualDate).isAfter(limitDate) ? 'red' : 'black' }}>
+                    {moment(actualDate).isBefore(limitDate) ? t('dpsDateLimitText') : t('dpsDateAfterLimitText')} {DateFormatter(limitDate)}
+                </h6>
+            )}
         </div>
     );
 
@@ -479,6 +488,39 @@ const TableDemo = () => {
         setFormData(data);
         setDialogMode('review');
         setDialogVisible(true);
+    };
+
+    const renderInfoButton = () => {
+        const instructions = JSON.parse(JSON.stringify(t(`viewInstructions`, { returnObjects: true })));
+        if (!instructions || Object.keys(instructions).length === 0) {
+            return null;
+        }
+
+        if (!oValidUser.isInternalUser) {
+            delete instructions['reviewInvoice'];
+        }
+
+        return (
+            <div className="pb-4">
+                <Button label={!showInfo ? tCommon('btnShowInstructions') : tCommon('btnHideInstructions')} icon="pi pi-info-circle" className="p-button-text p-button-secondary p-0" onClick={() => setShowInfo(!showInfo)} severity="info" />
+                {showInfo && (
+                    <div className="p-3 border-1 border-round border-gray-200 bg-white mb-3 surface-border surface-card">
+                        {Object.keys(instructions).map((key, index) => (
+                            <div key={index}>
+                                <h6>{instructions[key].header}</h6>
+                                <ul>
+                                    {Object.keys(instructions[key])
+                                        .filter((subKey) => subKey.startsWith('step'))
+                                        .map((subKey, subIndex) => (
+                                            <li key={subIndex}>{instructions[key][subKey]}</li>
+                                        ))}
+                                </ul>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+        );
     };
 
     return (
@@ -526,6 +568,7 @@ const TableDemo = () => {
                     )}
                     <Toolbar start={startContent} center={centerContent} end={endContent} className="border-bottom-1 surface-border surface-card shadow-1 transition-all transition-duration-300" style={{ borderRadius: '3rem', padding: '0.8rem' }} />
                     <br />
+                    {renderInfoButton()}
                     <DataTable
                         value={lDps}
                         paginator
@@ -546,6 +589,8 @@ const TableDemo = () => {
                         onRowClick={(e) => (oValidUser.isInternalUser ? handleRowClick(e) : '')}
                         onRowDoubleClick={(e) => (oValidUser.isInternalUser ? handleDoubleClick(e) : '')}
                         metaKeySelection={false}
+                        sortField="date"
+                        sortOrder={-1}
                     >
                         <Column field="id_dps" header="id" hidden />
                         <Column field="provider_id" header="id" hidden />
@@ -554,6 +599,7 @@ const TableDemo = () => {
                             field="company"
                             header="Empresa"
                             footer="Empresa"
+                            sortable
                             //comentado para usarse mas adelante
                             // filter
                             // filterPlaceholder="Buscar por nombre"
@@ -572,13 +618,14 @@ const TableDemo = () => {
                             filterMenuStyle={{ width: '14rem' }}
                             style={{ minWidth: '14rem' }}
                             hidden={!oValidUser.isInternalUser}
+                            sortable
                         />
-                        <Column field="serie" header="Serie" footer="Serie" />
-                        <Column field="folio" header="Folio" footer="Folio" />
-                        <Column field="reference" header="Referencia" footer="Referencia" />
-                        <Column field="amount" header="Cantidad" footer="Cantidad" dataType="numeric" body={amountBodyTemplate} hidden/>
-                        <Column field="status" header="Estatus" footer="Estatus" body={statusDpsBodyTemplate} />
-                        <Column field="date" header="Fecha" footer="Fecha" body={dateBodyTemplate} />
+                        <Column field="serie" header="Serie" footer="Serie" sortable />
+                        <Column field="folio" header="Folio" footer="Folio" sortable />
+                        <Column field="reference" header="Referencia" footer="Referencia" sortable />
+                        <Column field="amount" header="Cantidad" footer="Cantidad" dataType="numeric" body={amountBodyTemplate} hidden sortable />
+                        <Column field="status" header="Estatus" footer="Estatus" body={statusDpsBodyTemplate} sortable />
+                        <Column field="date" header="Fecha" footer="Fecha" body={dateBodyTemplate} sortable />
                         <Column field="files" header="Archivos" footer="Archivos" body={fileBodyTemplate} />
                     </DataTable>
                 </Card>

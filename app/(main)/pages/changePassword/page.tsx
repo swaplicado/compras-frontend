@@ -7,7 +7,7 @@ import { Button } from 'primereact/button';
 import Lottie from 'lottie-react';
 import successAnimation from '@/public/layout/animations/Animation - success.json';
 import errorAnimation from '@/public/layout/animations/Animation - error.json';
-import loaderScreen from '@/app/components/loaderScreen';
+import loaderScreen from '@/app/components/commons/loaderScreen';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { Tooltip } from 'primereact/tooltip';
