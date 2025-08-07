@@ -14,9 +14,9 @@ const DateFormatter = ( date: string | Date, format = 'DD-MMM-YYYY', locale = 'e
   moment.locale(locale);
   
   // Formatea la fecha
-  const formattedDate = moment(date).format(format);
+  const formattedDate = moment(date).format(format).toString();
   
-  return <span>{formattedDate}</span>;
+  return formattedDate;
 };
 
 export default DateFormatter;

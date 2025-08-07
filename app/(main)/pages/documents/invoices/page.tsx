@@ -110,13 +110,14 @@ const TableDemo = () => {
                         id_dps: data[i].id,
                         provider_id: data[i].partner.id,
                         company_id: data[i].company.id,
+                        dateFormated: DateFormatter(data[i].date),
                         company: data[i].company.full_name,
                         provider_name: data[i].partner.trade_name,
                         serie: data[i].series,
                         folio: data[i].number,
                         reference: reference,
                         files: data[i].id,
-                        date: new Date(data[i].date),
+                        date: data[i].date,
                         status: data[i].authz_acceptance_name.toLowerCase(),
                         amount: data[i].amount,
                         currency: data[i].currency,
@@ -321,6 +322,7 @@ const TableDemo = () => {
     const initFilters = () => {
         setFilters1({
             global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+            dateFormated: { value: null, matchMode: FilterMatchMode.CONTAINS },
             company: { value: null, matchMode: FilterMatchMode.CONTAINS },
             provider_name: { value: null, matchMode: FilterMatchMode.IN },
             serie: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -598,6 +600,7 @@ const TableDemo = () => {
                         <Column field="id_dps" header="id" hidden />
                         <Column field="provider_id" header="id" hidden />
                         <Column field="company_id" header="id" hidden />
+                        <Column field="dateFormated" header="dateFormated" hidden/>
                         <Column
                             field="company"
                             header={t('invoicesTable.columns.company')}
