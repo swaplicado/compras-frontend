@@ -32,6 +32,6 @@ export default {
 
     //pais id
     COUNTRIES: {
-        MEXICO_ID: 151
+        MEXICO_ID: 150
     }
 }
