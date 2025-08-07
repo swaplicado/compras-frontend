@@ -18,7 +18,7 @@ import constants from '@/app/constants/constants';
 import DateFormatter from '@/app/components/commons/formatDate';
 import moment from 'moment';
 import { ReloadButton } from '@/app/components/commons/reloadButton';
-import { Divider } from 'primereact/divider';
+import { useIsMobile } from '@/app/components/commons/screenMobile';
 interface reviewFormData {
     company: { id: string; name: string };
     partner: { id: string; name: string };
@@ -54,6 +54,8 @@ const TableDemo = () => {
     const [limitDate, setLimitDate] = useState<string | null>(null);
     const [actualDate, setActualDate] = useState<string>('');
     const [showInfo, setShowInfo] = useState(false);
+
+    const isMobile = useIsMobile();
 
     const showToast = (type: 'success' | 'info' | 'warn' | 'error' = 'error', message: string, summaryText = 'Error:') => {
         toast.current?.show({
@@ -394,7 +396,7 @@ const TableDemo = () => {
                 moment(actualDate).isBefore(limitDate) || oValidUser.isInternalUser ? (
                     <Button
                         icon="pi pi-plus"
-                        label={t('btnOpenDialogUpload')}
+                        label={ !isMobile ? t('btnOpenDialogUpload') : ''}
                         className="mr-2"
                         rounded
                         onClick={() => {
@@ -408,7 +410,7 @@ const TableDemo = () => {
             ) : (
                 <Button
                     icon="pi pi-plus"
-                    label={t('btnOpenDialogUpload')}
+                    label={ !isMobile ? t('btnOpenDialogUpload') : ''}
                     className="mr-2"
                     rounded
                     onClick={() => {
@@ -422,11 +424,29 @@ const TableDemo = () => {
 
     const centerContent = (
         <div>
+            { !isMobile &&
+                <span className="p-input-icon-left mr-2">
+                    <i className="pi pi-search" />
+                    <InputText className='w-full' value={globalFilterValue1} onChange={onGlobalFilterChange1} placeholder={tCommon('placeholderSearch')} />
+                </span>
+            }
+            <Button 
+                type="button" 
+                icon="pi pi-filter-slash" 
+                label={ !isMobile ? tCommon('btnCleanFilter') : ''} 
+                onClick={clearFilter1} 
+                tooltip={tCommon('tooltipCleanFilter')} 
+                tooltipOptions={{ position: 'left' }} 
+            />
+        </div>
+    );
+
+    const centerContentMobile = (
+        <div>
             <span className="p-input-icon-left mr-2">
                 <i className="pi pi-search" />
                 <InputText className='w-full' value={globalFilterValue1} onChange={onGlobalFilterChange1} placeholder={tCommon('placeholderSearch')} />
             </span>
-            <Button type="button" icon="pi pi-filter-slash" label={tCommon('btnCleanFilter')} onClick={clearFilter1} tooltip={tCommon('tooltipCleanFilter')} tooltipOptions={{ position: 'left' }} />
         </div>
     );
 
@@ -569,6 +589,7 @@ const TableDemo = () => {
                         />
                     )}
                     <Toolbar start={startContent} center={centerContent} end={endContent} className="border-bottom-1 surface-border surface-card shadow-1 transition-all transition-duration-300" style={{ borderRadius: '3rem', padding: '0.8rem' }} />
+                    { isMobile && <div><br /> {centerContentMobile}</div>}
                     <br />
                     {renderInfoButton()}
                     <DataTable

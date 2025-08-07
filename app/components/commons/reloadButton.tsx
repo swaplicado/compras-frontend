@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button } from 'primereact/button';
 import { useTranslation } from 'react-i18next';
+import { useIsMobile } from '@/app/components/commons/screenMobile';
 
 const handleHardReload = () => {
     const randomParam = `_=${Date.now()}`;
@@ -12,10 +13,11 @@ const handleHardReload = () => {
 
 export const ReloadButton = () => {
     const { t } = useTranslation('common');
+    const isMobile = useIsMobile;
 
   return (
     <Button 
-      label={t('btnReload')}
+      label={ !isMobile() ? t('btnReload') : ''}
       icon="pi pi-refresh"
       className="p-button-primary"
       onClick={handleHardReload}
