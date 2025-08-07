@@ -1,5 +1,3 @@
-import { title } from "process";
-
 export default {
     title: "Facturas",
     btnOpenDialogUpload: "Cargar factura",
@@ -105,4 +103,51 @@ export default {
     btnDownloadFiles: "Descargar archivos",
     dpsDateLimitText: "Fecha limite de carga de facturas:",
     dpsDateAfterLimitText: "La fecha límite para cargar facturas fue.",
+    viewInstructions: {
+        downloadFiles: {
+            header: "Descargar archivos de una factura:",
+            step1: "Presiona el botón de descarga en la columna 'Archivos' de la factura que deseas descargar.",
+            step2: "Se descargará un archivo ZIP que contiene los archivos PDF y XML de la factura.",
+        },
+        reviewInvoice: {
+            header: "Revisar una factura:",
+            step1: "Presiona dos veces sobre la fila de la factura que deseas revisar.",
+            step2: "Al presionar dos veces, se abrirá un cuadro de diálogo el cual contiene más instrucciones para revisar la factura.",
+        },
+        uploadInvoice: {
+            header: "Cargar una nueva factura:",
+            step1: "Presiona el botón 'Cargar factura'",
+            step2: "Al presionar el botón, se abrirá un cuadro de diálogo el cual contiene más instrucciones para cargar una nueva factura.",
+        },
+        searchInvoices: {
+            header: "Buscar facturas:",
+            step1: "Utiliza el campo 'Buscar' para filtrar las facturas por cualquier campo visible en la tabla.",
+            step2: "Escribe el texto que deseas buscar y la tabla se actualizará automáticamente para mostrar solo las facturas que coincidan con el texto ingresado.",
+            step3: "Presiona el botón 'Limpiar filtros' para limpiar todos los filtros aplicados y mostrar todas las facturas nuevamente."
+        },
+        shortColumn: {
+            header: "Ordenar por columna:",
+            step1: "Presiona el encabezado de cualquier columna para ordenar las facturas por esa columna en orden ascendente o descendente.",
+            step2: "Un ícono de flecha junto al encabezado de la columna indica el orden actual (ascendente o descendente).",
+        },
+        reloadView: {
+            header: "Recargar vista:",
+            step1: "Presiona el botón de 'Recargar' para actualizar la vista y cargar los datos más recientes.",
+        }
+    },
+    invoicesTable: {
+        columns: {
+            company: "Entidad comercial",
+            provider_name: "Proveedor",
+            serie: "Serie",
+            folio: "Folio",
+            reference: "Referencia",
+            amount: "Cantidad",
+            status: "Estatus",
+            files: "Archivos",
+            date: "Fecha de carga",
+        },
+        currentPageReportTemplate: "Mostrando {first} a {last} de {totalRecords} registros",
+        emptyMessage: "Sin datos para mostrar.",   
+    }
 }

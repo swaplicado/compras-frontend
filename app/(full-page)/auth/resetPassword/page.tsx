@@ -5,7 +5,7 @@ import { classNames } from 'primereact/utils';
 import { LayoutContext } from '../../../../layout/context/layoutcontext';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
-import loaderScreen from '@/app/components/loaderScreen';
+import loaderScreen from '@/app/components/commons/loaderScreen';
 import axios from 'axios';
 import { InputText } from 'primereact/inputtext';
 import { useTranslation } from 'react-i18next';

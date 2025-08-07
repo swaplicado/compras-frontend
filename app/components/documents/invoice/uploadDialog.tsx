@@ -8,8 +8,8 @@ import { Tooltip } from 'primereact/tooltip';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import { CustomFileUpload } from '@/app/components/documents/invoice/customFileUpload';
-import { animationSuccess, animationError } from '@/app/components/animationResponse';
-import loaderScreen from '@/app/components/loaderScreen';
+import { animationSuccess, animationError } from '@/app/components/commons/animationResponse';
+import loaderScreen from '@/app/components/commons/loaderScreen';
 import constants from '@/app/constants/constants';
 import { FileUpload } from 'primereact/fileupload';
 import { InputTextarea } from 'primereact/inputtextarea';
@@ -106,9 +106,8 @@ export default function UploadDialog({
     };
 
     const handleSubmit = async () => {
-        await getlReferences('1');
         if (!validate()) return;
-
+        
         try {
             setLoading(true);
             const formData = new FormData();
@@ -154,6 +153,7 @@ export default function UploadDialog({
             setErrorMessage(error.response?.data?.error || t('uploadDialog.errors.uploadError'));
             setResultUpload('error');
         } finally {
+            getDps?.(oValidUser.isInternalUser);
             setLoading(false);
         }
     };
@@ -255,6 +255,7 @@ export default function UploadDialog({
             message.current?.clear();
             if (!oValidUser.isInternalUser) {
                 setSelectProvider({ id: partnerId, name: '', country: constants.COUNTRIES.MEXICO_ID });
+                getlReferences(partnerId);
             }
         }
 

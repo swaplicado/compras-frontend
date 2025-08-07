@@ -10,7 +10,7 @@ import { classNames } from 'primereact/utils';
 import { Toast } from 'primereact/toast';
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import loaderScreen from '@/app/components/loaderScreen';
+import loaderScreen from '@/app/components/commons/loaderScreen';
 import { useTranslation } from 'react-i18next';
 
 const LoginPage = () => {

@@ -5,7 +5,7 @@ import { classNames } from 'primereact/utils';
 import { LayoutContext } from '@/layout/context/layoutcontext';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
-import loaderScreen from '@/app/components/loaderScreen';
+import loaderScreen from '@/app/components/commons/loaderScreen';
 import axios from 'axios';
 import { Password } from 'primereact/password';
 import Lottie from 'lottie-react';

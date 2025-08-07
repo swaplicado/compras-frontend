@@ -1,4 +1,4 @@
-import { animationSuccess } from "@/app/components/animationResponse";
+import { animationSuccess } from "@/app/components/commons/animationResponse";
 
 export default {
     title: "Cambio de contraseña",

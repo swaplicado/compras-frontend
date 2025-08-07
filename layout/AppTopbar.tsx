@@ -10,7 +10,7 @@ import { Button } from 'primereact/button';
 import axios from 'axios';
 import { MenuItem } from 'primereact/menuitem';
 import { Dialog } from 'primereact/dialog';
-import loaderScreen from '@/app/components/loaderScreen';
+import loaderScreen from '@/app/components/commons/loaderScreen';
 import Cookies from 'js-cookie';
 import appConfig from '../appConfig.json';
 import { useTranslation } from 'react-i18next';

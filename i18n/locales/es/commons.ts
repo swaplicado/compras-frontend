@@ -18,6 +18,10 @@ export default {
     btnAccept: "Aceptar",
     btnReject: "Rechazar",
     btnDownload: "Descargar",
+
+    btnReload: "Recargar",
+    tooltipBtnReload: "Recargar la página",
+
     erros: {
         requiredField: "Este campo es obligatorio.",
         invalidEmail: "Por favor ingresa un correo electrónico válido.",
