@@ -137,13 +137,19 @@ const TableDemo = () => {
         }
     };
 
-    const getlReferences = async (partner_id = '') => {
+    const getlReferences = async (company_id = '', partner_id = '') => {
         try {
-            const route = '/transactions/references/by-partner/';
+            if (!company_id || !partner_id) {
+                setLReferences([]);
+                return false;
+            }
+
+            const route = constants.ROUTE_GET_REFERENCES;
             const response = await axios.get(constants.API_AXIOS_GET, {
                 params: {
                     route: route,
-                    partner_id: partner_id
+                    partner_id: partner_id,
+                    company_id: company_id,
                 }
             });
 
@@ -264,7 +270,7 @@ const TableDemo = () => {
                 await getDpsDates();
                 const isProviderMexico = partnerCountry == constants.COUNTRIES.MEXICO_ID;
                 setOValidUser({ isInternalUser: false, isProvider: true, isProviderMexico: isProviderMexico });
-                await getlReferences(partnerId);
+                // await getlReferences(partnerId);
                 await getDps(false);
             }
 

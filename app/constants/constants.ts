@@ -21,6 +21,7 @@ export default {
     ROUTE_DOWNLOAD_FILES_DPS: '/transactions/documents/download-zip/',
     ROUTE_GET_DPS_LIMIT_DATES: '/transactions/upload-deadline/check-deadline/',
     ROUTE_GET_COMPANIES: '/transactions/partners/list-companies/',
+    ROUTE_GET_REFERENCES: '/transactions/references/by-partner/',
 
     //Constantes de estados de las facturas
     REVIEW_ACCEPT: 'A',
