@@ -43,16 +43,19 @@ const LoginPage = () => {
                 return;
             }
             setLoading(true);
-            // const response = await axios.post('http://127.0.0.1:8000/login', { username, password });
-
             const response = await axios.post('/api/auth/login', { username, password });
 
             if (response.status === 200) {
                 //esto es para cuando se implemente la seleccion de la empresa por parte del usuario
                 // Cookies.set('lCompany', JSON.stringify(response.data.userData.work_instances), { expires: 7 });
                 // router.push('/auth/selectCompany');
-                Cookies.set('companyName', response.data.userData.default_work_instance.work_instance_name);
-                Cookies.set('companyId', response.data.userData.default_work_instance.id_work_instance);
+                let lCompanies = [];
+                for (let i = 0; i < response.data.userData.partner_companies.length; i++) {
+                    lCompanies.push(response.data.userData.partner_companies[i].id);
+                }
+
+                Cookies.set('companyName', response.data.userData.partner_companies[0]?.trade_name);
+                Cookies.set('companyId', JSON.stringify(lCompanies));
                 Cookies.set('companyLogo', response.data.userData.default_work_instance.logo_url);
                 Cookies.set('userId', response.data.userData.user.id);
                 Cookies.set('groups', response.data.userData.user.groups);
@@ -66,7 +69,6 @@ const LoginPage = () => {
                 throw new Error('Login fallido');
             }
         } catch (error: any) {
-            // El error siempre tendrá la estructura { error: string }
             showToast(error.response?.data?.error || 'Error al iniciar sesión');
         } finally {
             await new Promise(resolve => setTimeout(resolve, 1000));

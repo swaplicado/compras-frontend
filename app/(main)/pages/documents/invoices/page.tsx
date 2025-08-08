@@ -202,7 +202,7 @@ const TableDemo = () => {
 
     const getlCompanies = async () => {
         try {
-            const route = '/transactions/partners/list-companies/';
+            const route = constants.ROUTE_GET_COMPANIES;
             const response = await axios.get(constants.API_AXIOS_GET, {
                 params: {
                     route: route

@@ -120,7 +120,7 @@ export default function UploadDialog({
             const route = '/transactions/document-transaction/';
             formData.append('ref_id', selectReference?.id || '');
             formData.append('route', route);
-            formData.append('company_id', selectCompany?.id || '');
+            formData.append('company', selectCompany?.id || '');
             formData.append('user_id', userId.toString());
             formData.append('is_internal_user', oValidUser.isInternalUser ? 'True' : 'False');
 
