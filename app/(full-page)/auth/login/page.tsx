@@ -55,7 +55,7 @@ const LoginPage = () => {
                 }
 
                 Cookies.set('companyName', response.data.userData.partner_companies[0]?.trade_name);
-                Cookies.set('companyId', response.data.userData.user.lCompanies);
+                Cookies.set('companyId', JSON.stringify(lCompanies));
                 Cookies.set('companyLogo', response.data.userData.default_work_instance.logo_url);
                 Cookies.set('userId', response.data.userData.user.id);
                 Cookies.set('groups', response.data.userData.user.groups);
