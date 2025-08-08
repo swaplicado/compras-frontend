@@ -74,7 +74,7 @@ export async function GET(req: NextRequest) {
                     }
                 });
 
-                if (company) {
+                if (!params.company_id && !params.company && company) {
                     params.company_id = company?.value;
                 }
             }

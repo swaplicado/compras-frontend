@@ -57,12 +57,17 @@ export async function POST(req: NextRequest) {
             formData = await req.formData();
             route = formData.get('route') as string;
             formData.delete('route');
-            formData.append('company', company?.value || '');
+
+            if (!formData.get('company_id') && !formData.get('company') && company) {
+                formData.append('company', company?.value || '');
+            }
         } else {
             const data = await req.json();
             route = data.route;
             jsonData = data.jsonData;
-            jsonData.company = company?.value || '';
+            if (!jsonData.company_id && !jsonData.company && company) {
+                jsonData.company = company?.value || '';
+            }
         }
 
         let headers = {};

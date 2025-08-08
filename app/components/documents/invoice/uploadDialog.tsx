@@ -33,7 +33,7 @@ interface UploadDialogProps {
     oValidUser?: { isInternalUser: boolean; isProvider: boolean; isProviderMexico: boolean };
     partnerId?: string;
     setLReferences: React.Dispatch<React.SetStateAction<any[]>>;
-    getlReferences: (partner_id?: string) => Promise<boolean>;
+    getlReferences: (company_id?: string, partner_id?: string) => Promise<boolean>;
     dialogMode?: 'create' | 'edit' | 'view' | 'review';
     reviewFormData?: reviewFormData;
     getDps?: (isInternalUser: boolean) => Promise<any>;
@@ -159,14 +159,25 @@ export default function UploadDialog({
     };
 
     const handleSelectedProvider = async (oProvider: any) => {
+        setSelectReference(null);
         setSelectProvider(oProvider);
         setErrors((prev) => ({ ...prev, provider: false }));
         if (!oProvider || !oProvider.id) {
             setLReferences([]);
             return;
         }
-        await getlReferences(oProvider.id);
+        const result = await getlReferences(selectCompany?.id, oProvider.id);
     };
+
+    const handleSelectCompany = async ( oCompany: any ) => {
+        setSelectReference(null);
+        setSelectCompany(oCompany);
+        setErrors((prev) => ({ ...prev, company: false }));
+        const result = await getlReferences(oCompany?.id, selectProvider?.id)
+        if (!result) {
+            setSelectReference(null);   
+        }
+    }
 
     const handleReview = async (reviewOption: string) => {
         try {
@@ -244,9 +255,7 @@ export default function UploadDialog({
             setSelectProvider(null);
             setSelectReference(null);
 
-            if (oValidUser.isInternalUser) {
-                setLReferences([]);
-            }
+            setLReferences([]);
 
             setSerie('');
             setFolio('');
@@ -255,7 +264,7 @@ export default function UploadDialog({
             message.current?.clear();
             if (!oValidUser.isInternalUser) {
                 setSelectProvider({ id: partnerId, name: '', country: constants.COUNTRIES.MEXICO_ID });
-                getlReferences(partnerId);
+                // getlReferences(partnerId);
             }
         }
 
@@ -385,8 +394,7 @@ export default function UploadDialog({
                                 'company',
                                 t('uploadDialog.company.helperText'),
                                 (value) => {
-                                    setSelectCompany(value);
-                                    setErrors((prev) => ({ ...prev, company: false }));
+                                    handleSelectCompany(value);
                                 },
                                 dialogMode === 'view' || dialogMode === 'review'
                             )}
