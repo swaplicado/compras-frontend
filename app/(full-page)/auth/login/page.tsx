@@ -63,7 +63,7 @@ const LoginPage = () => {
                 Cookies.set('partnerId', response.data.userData.partner? response.data.userData.partner.id : null);
                 Cookies.set('partnerName', response.data.userData.partner? response.data.userData.partner.trade_name : null);
                 Cookies.set('partnerCountry', response.data.userData.partner? response.data.userData.partner.country : null);
-                Cookies.set('functional_areas', response.data.userData.user.functional_areas);
+                Cookies.set('functional_areas', JSON.stringify(response.data.userData.user.functional_areas));
                 router.push('/');
             } else {
                 throw new Error('Login fallido');
