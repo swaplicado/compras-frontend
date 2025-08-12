@@ -8,7 +8,7 @@ export default {
     passwordPlaceholder: "Contraseña",
     passwordHelper: "Por favor ingresa tu contraseña.",
     forgotPassword: "¿Olvidaste tu contraseña?",
-    registerProvider: "Alta de proveedores",
+    registerProvider: "Activar cuenta de proveedor",
     enterButton: "Entrar",
     footer: "Creado por: ",
 }
