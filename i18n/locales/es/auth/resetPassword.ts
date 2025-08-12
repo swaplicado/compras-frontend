@@ -6,5 +6,6 @@ export default {
         helperText: "Por favor ingresa tu nombre de usuario.",
     },
     btnBackToLogin: "Regresar a login",
-    emailSentMessage: "Se ha enviado un correo electrónico al usuario {{username}} con instrucciones para restablecer su contraseña."
+    emailSentMessage: "Se ha enviado un correo electrónico a {{secretEmail}} con instrucciones para restablecer su contraseña. " + 
+    "Tenga en cuenta que el enlace que viene adjunto en el correo de restablecimiento de contraseña expira en {{expiredTime}}."
 }

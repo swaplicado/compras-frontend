@@ -19,6 +19,8 @@ const ResetPassword = () => {
     const [ sendResultOk, setSendResultOk ] = useState(false);
     const { t } = useTranslation('resetPassword');
     const { t: tCommon } = useTranslation('common');
+    const [ expiredTime, setExpiredTime ] = useState('');
+    const [ secretEmail, setSecretEmail ] = useState('');
 
     const containerClassName = classNames('surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden, background-image', {
         'p-input-filled': layoutConfig.inputStyle === 'filled'
@@ -48,6 +50,8 @@ const ResetPassword = () => {
             });
 
             if (result.status === 200) {
+                setExpiredTime(result.data.data.expired_time);
+                setSecretEmail(result.data.data.secret_email);
                 setSendResultOk(true);
             }
         } catch (error) {
@@ -84,7 +88,7 @@ const ResetPassword = () => {
             {loading && (
                 loaderScreen()
             )}
-            <div className='flex flex-column align-items-center justify-content-center'>
+            <div className='flex flex-column align-items-center justify-content-center md:w-8 lg:w-6 xl:w-6'>
                 <img src={`/layout/images/aeth_logo.png`} alt='' className='mb-5 w-6rem flex-shrink-0' />
                 <div
                     style={{
@@ -128,13 +132,13 @@ const ResetPassword = () => {
                     ) }
 
                     {sendResultOk && (
-                        <div className='w-full surface-card py-8 px-5 sm:px-8' style={{ borderRadius: '53px' }}>
+                        <div className='w-full max-w-screen-md mx-auto surface-card py-8 px-5 sm:px-8' style={{ borderRadius: '53px' }}>
                             <div className='mb-5'>
                                 <label htmlFor='username' className='block text-900 text-xl font-medium mb-2'>
-                                    {t('emailSentMessage', { username })}
+                                    {t('emailSentMessage', { secretEmail, expiredTime })}
                                 </label>
                             </div>
-
+                        
                             <div className='flex align-items-center justify-content-between mb-5 gap-5'>
                                 <Button label={t('btnBackToLogin')} className="flex align-items-center justify-content-center bg-primary font-bold border-round " onClick={handleExit}></Button>
                             </div>
