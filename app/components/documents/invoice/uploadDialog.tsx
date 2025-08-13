@@ -14,6 +14,10 @@ import constants from '@/app/constants/constants';
 import { FileUpload } from 'primereact/fileupload';
 import { InputTextarea } from 'primereact/inputtextarea';
 import moment from 'moment';
+import { Calendar } from 'primereact/calendar';
+import { Nullable } from 'primereact/ts-helpers';
+import { addLocale } from 'primereact/api';
+import DateFormatter from '@/app/components/commons/formatDate';
 
 interface reviewFormData {
     company: { id: string; name: string };
@@ -22,6 +26,7 @@ interface reviewFormData {
     series: string;
     number: string;
     dpsId: string;
+    payday: string;
 }
 
 interface UploadDialogProps {
@@ -82,9 +87,13 @@ export default function UploadDialog({
     const [rejectComments, setRejectComments] = useState('');
     const [isRejected, setIsRejected] = useState(false);
     const [successMessage, setSuccessMessage] = useState('');
-    const [textHeaderer, setTextHeader] = useState(dialogMode === 'create' ? t('uploadDialog.header') : t('uploadDialog.headerReview'));
     const successTitle = dialogMode == 'create' ? t('uploadDialog.animationSuccess.title') : t('uploadDialog.animationSuccess.titleReview');
     const errorTitle = dialogMode == 'create' ? t('uploadDialog.animationError.title') : t('uploadDialog.animationError.titleReview');
+    const [payDate, setPayDate] = useState<Nullable<Date>>(null);
+
+    useEffect(() => {
+        addLocale('es', tCommon('calendar', { returnObjects: true }) as any);
+    }, [tCommon]);
 
     const validate = () => {
         const newErrors = {
@@ -107,7 +116,7 @@ export default function UploadDialog({
 
     const handleSubmit = async () => {
         if (!validate()) return;
-        
+
         try {
             setLoading(true);
             const formData = new FormData();
@@ -137,6 +146,9 @@ export default function UploadDialog({
             };
 
             formData.append('document', JSON.stringify(document));
+
+            console.log(formData);
+            
 
             const response = await axios.post(constants.API_AXIOS_POST, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
@@ -169,15 +181,15 @@ export default function UploadDialog({
         const result = await getlReferences(selectCompany?.id, oProvider.id);
     };
 
-    const handleSelectCompany = async ( oCompany: any ) => {
+    const handleSelectCompany = async (oCompany: any) => {
         setSelectReference(null);
         setSelectCompany(oCompany);
         setErrors((prev) => ({ ...prev, company: false }));
-        const result = await getlReferences(oCompany?.id, selectProvider?.id)
+        const result = await getlReferences(oCompany?.id, selectProvider?.id);
         if (!result) {
-            setSelectReference(null);   
+            setSelectReference(null);
         }
-    }
+    };
 
     const handleReview = async (reviewOption: string) => {
         try {
@@ -191,12 +203,14 @@ export default function UploadDialog({
                 }
             }
 
+            const date = payDate ? DateFormatter( payDate, 'YYYY-MM-DD' ) : '';
             const route = '/transactions/documents/' + reviewFormData?.dpsId + '/set-authz/';
             const response = await axios.post(constants.API_AXIOS_PATCH, {
                 route,
                 jsonData: {
                     authz_code: reviewOption,
-                    authz_acceptance_notes: rejectComments
+                    authz_acceptance_notes: rejectComments,
+                    payday: date
                 }
             });
 
@@ -264,7 +278,6 @@ export default function UploadDialog({
             message.current?.clear();
             if (!oValidUser.isInternalUser) {
                 setSelectProvider({ id: partnerId, name: '', country: constants.COUNTRIES.MEXICO_ID });
-                // getlReferences(partnerId);
             }
         }
 
@@ -277,6 +290,7 @@ export default function UploadDialog({
             setIsRejected(false);
             setRejectComments('');
             setTotalSize(0);
+            setPayDate(reviewFormData.payday ? new Date(reviewFormData.payday + 'T00:00:00') : null);
         }
     }, [visible, oValidUser.isInternalUser, partnerId]);
 
@@ -307,20 +321,24 @@ export default function UploadDialog({
 
     const renderDropdownField = (label: string, tooltip: string, value: any, options: any[], placeholder: string, errorKey: keyof typeof errors, errorMessage: string, onChange: (value: any) => void, disabled?: boolean) => (
         <div className="field col-12 md:col-6">
-            <label data-pr-tooltip="">{label}</label>
-            &nbsp;
-            <Tooltip target=".custom-target-icon" />
-            <i className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge" data-pr-tooltip={tooltip} data-pr-position="right" data-pr-my="left center-2" style={{ fontSize: '1rem', cursor: 'pointer' }}></i>
-            {dialogMode == 'create' ? (
-                <div>
-                    <Dropdown value={value} onChange={(e) => onChange(e.value)} options={options} optionLabel="name" placeholder={placeholder} filter className={`w-full ${errors[errorKey] ? 'p-invalid' : ''}`} showClear disabled={disabled} />
-                    {errors[errorKey] && <small className="p-error">{errorMessage}</small>}
+            <div className="formgrid grid">
+                <div className="col">
+                    <label data-pr-tooltip="">{label}</label>
+                    &nbsp;
+                    <Tooltip target=".custom-target-icon" />
+                    <i className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge" data-pr-tooltip={tooltip} data-pr-position="right" data-pr-my="left center-2" style={{ fontSize: '1rem', cursor: 'pointer' }}></i>
+                    {dialogMode == 'create' ? (
+                        <div>
+                            <Dropdown value={value} onChange={(e) => onChange(e.value)} options={options} optionLabel="name" placeholder={placeholder} filter className={`w-full ${errors[errorKey] ? 'p-invalid' : ''}`} showClear disabled={disabled} />
+                            {errors[errorKey] && <small className="p-error">{errorMessage}</small>}
+                        </div>
+                    ) : (
+                        <div>
+                            <InputText value={value?.name || ''} readOnly className={`w-full ${errors[errorKey] ? 'p-invalid' : ''}`} disabled={disabled} />
+                        </div>
+                    )}
                 </div>
-            ) : (
-                <div>
-                    <InputText value={value?.name || ''} readOnly className={`w-full ${errors[errorKey] ? 'p-invalid' : ''}`} disabled={disabled} />
-                </div>
-            )}
+            </div>
         </div>
     );
 
@@ -353,6 +371,16 @@ export default function UploadDialog({
             {errors.rejectComments && <small className="p-error">{t('uploadDialog.rejectComments.helperText')}</small>}
         </div>
     );
+
+    //Para formatear el input del componente Calendar
+    const inputRef = useRef<HTMLInputElement>(null);
+    useEffect(() => {
+        setTimeout(() => {
+            if (inputRef.current && payDate) {
+                inputRef.current.value = DateFormatter(payDate);
+            }
+        }, 100)
+    }, [payDate]);
 
     return (
         <div className="flex justify-content-center">
@@ -431,7 +459,7 @@ export default function UploadDialog({
 
                             <div className="field col-12 md:col-6">
                                 <div className="formgrid grid">
-                                    <div className="field col">
+                                    <div className="col">
                                         <label>{t('uploadDialog.serie.label')}</label>
                                         &nbsp;
                                         <Tooltip target=".custom-target-icon" />
@@ -449,9 +477,10 @@ export default function UploadDialog({
                                             value={serie}
                                             onChange={(e) => setSerie(e.target.value)}
                                             disabled={dialogMode === 'view' || dialogMode === 'review'}
+                                            maxLength={25}
                                         />
                                     </div>
-                                    <div className="field col">
+                                    <div className="col">
                                         <label>{t('uploadDialog.folio.label')}</label>
                                         &nbsp;
                                         <Tooltip target=".custom-target-icon" />
@@ -472,11 +501,49 @@ export default function UploadDialog({
                                                 setErrors((prev) => ({ ...prev, folio: false }));
                                             }}
                                             disabled={dialogMode === 'view' || dialogMode === 'review'}
+                                            maxLength={50}
                                         />
                                         {errors.folio && <small className="p-error">{t('uploadDialog.folio.helperText')}</small>}
                                     </div>
                                 </div>
                             </div>
+
+                            {dialogMode == 'view' ||
+                                (dialogMode == 'review' && (
+                                    <div className="field col-12 md:col-6">
+                                        <div className="formgrid grid">
+                                            <div className="col">
+                                                <label>{t('uploadDialog.payDay.label')}</label>
+                                                &nbsp;
+                                                <Tooltip target=".custom-target-icon" />
+                                                <i
+                                                    className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
+                                                    data-pr-tooltip={dialogMode === 'review' ? t('uploadDialog.payDay.tooltipReview') : t('uploadDialog.payDay.tooltip')}
+                                                    data-pr-position="right"
+                                                    data-pr-my="left center-2"
+                                                    style={{ fontSize: '1rem', cursor: 'pointer' }}
+                                                ></i>
+                                                <Calendar 
+                                                    value={payDate}
+                                                    onChange={(e) => setPayDate(e.value)}
+                                                    showIcon 
+                                                    locale="es" 
+                                                    inputRef={inputRef} 
+                                                    onSelect={() => {
+                                                        if (inputRef.current && payDate) {
+                                                            inputRef.current.value = DateFormatter(payDate);
+                                                        }
+                                                    }}
+                                                    onBlur={() => {
+                                                        if (inputRef.current && payDate) {
+                                                            inputRef.current.value = DateFormatter(payDate);
+                                                        }
+                                                    }}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
 
                             {dialogMode !== 'view' && dialogMode !== 'review' && (
                                 <div className="field col-12">

@@ -26,6 +26,26 @@ interface reviewFormData {
     series: string;
     number: string;
     dpsId: string;
+    payday: string;
+}
+
+interface dataDps {
+    id_dps: number,
+    provider_id: number,
+    company_id: number,
+    dateFormated: string,
+    company: string,
+    provider_name: string,
+    serie: string,
+    folio: string,
+    reference: string,
+    files: number,
+    date: string,
+    status: string,
+    amount: number,
+    currency: string,
+    exchange_rate: number,
+    payday: string
 }
 
 const TableDemo = () => {
@@ -92,8 +112,8 @@ const TableDemo = () => {
     const getDps = async (isInternalUser: boolean) => {
         try {
             const route = !isInternalUser ? constants.ROUTE_GET_DPS_BY_PARTNER_ID : constants.ROUTE_GET_DPS_BY_AREA_ID;
-            const params = !isInternalUser ? { route: route, partner_id: partnerId } : 
-                { route: route, functional_area_ids: Array.isArray(functionalAreas) ?  JSON.stringify(functionalAreas) : '[' + functionalAreas + ']' };
+            const params = !isInternalUser ? { route: route, partner_id: partnerId, transaction_class: 1, document_type: [11,2] } : 
+                { route: route, functional_area: Array.isArray(functionalAreas) ?  functionalAreas : [functionalAreas] };
             const response = await axios.get(constants.API_AXIOS_GET, {
                 params: params
             });
@@ -124,7 +144,8 @@ const TableDemo = () => {
                         status: data[i].authz_acceptance_name.toLowerCase(),
                         amount: data[i].amount,
                         currency: data[i].currency,
-                        exchange_rate: data[i].exchange_rate
+                        exchange_rate: data[i].exchange_rate,
+                        payday: data[i].payday
                     });
                 }
                 setLDps(dps);
@@ -365,8 +386,12 @@ const TableDemo = () => {
     //     return <InputText value={options.value? options.value : ''} onChange={(e) => applyCompanyFilter(e)} placeholder="Buscar por nombre" />;
     // };
 
-    const dateBodyTemplate = (rowData: Demo.Customer) => {
+    const dateBodyTemplate = (rowData: dataDps) => {
         return DateFormatter(rowData.date);
+    };
+
+    const payDayBodyTemplate = (rowData: dataDps) => {
+        return rowData.payday ? DateFormatter(rowData.payday) : 'N/D';
     };
 
     const amountBodyTemplate = (rowData: any) => {
@@ -376,7 +401,7 @@ const TableDemo = () => {
         return formatCurrency(rowData.amount);
     };
 
-    const statusDpsBodyTemplate = (rowData: Demo.Customer) => {
+    const statusDpsBodyTemplate = (rowData: dataDps) => {
         return <span className={`status-dps-badge status-${rowData.status}`}>{rowData.status}</span>;
     };
 
@@ -512,7 +537,8 @@ const TableDemo = () => {
             reference: { id: e.data.id_dps, name: e.data.reference },
             series: e.data.serie,
             number: e.data.folio,
-            dpsId: e.data.id_dps
+            dpsId: e.data.id_dps,
+            payday: e.data.payday
         };
         setFormData(data);
         setDialogMode('review');
@@ -657,6 +683,7 @@ const TableDemo = () => {
                         <Column field="serie" header={t('invoicesTable.columns.serie')} footer={t('invoicesTable.columns.serie')} sortable />
                         <Column field="folio" header={t('invoicesTable.columns.folio')} footer={t('invoicesTable.columns.folio')} sortable />
                         <Column field="reference" header={t('invoicesTable.columns.reference')} footer={t('invoicesTable.columns.reference')} sortable />
+                        <Column field="payday" header={t('invoicesTable.columns.payday')} footer={t('invoicesTable.columns.payday')} body={payDayBodyTemplate} sortable />
                         <Column field="amount" header={t('invoicesTable.columns.amount')} footer={t('invoicesTable.columns.amount')} dataType="numeric" body={amountBodyTemplate} hidden sortable />
                         <Column field="status" header={t('invoicesTable.columns.status')} footer={t('invoicesTable.columns.status')} body={statusDpsBodyTemplate} sortable />
                         <Column field="date" header={t('invoicesTable.columns.date')} footer={t('invoicesTable.columns.date')} body={dateBodyTemplate} sortable />

@@ -1,4 +1,4 @@
-export default {
+const commons = {
     btnShowInstructions: "Ver instrucciones",
     btnHideInstructions: "Cerrar instrucciones",
     btnSelectFiles: "Seleccionar",
@@ -30,5 +30,19 @@ export default {
         fileTooLarge: "El archivo es demasiado grande, debe ser menor a 1 MB.",
         fileTypeNotSupported: "Tipo de archivo no soportado. Solo se permiten archivos PDF y XML.",
         downloadFiles: "Error al descargar los archivos, por favor intenta nuevamente.",
+    },
+    
+    calendar: {
+      firstDayOfWeek: 1,
+      showMonthAfterYear: false,
+      dayNames: ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'],
+      dayNamesShort: ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'],
+      dayNamesMin: ['D', 'L', 'M', 'M', 'J', 'V', 'S'],
+      monthNames: ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'],
+      monthNamesShort: ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'],
+      today: 'Hoy',
+      clear: 'Limpiar'
     }
-}
+};
+
+export default commons;

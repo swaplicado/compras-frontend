@@ -1,4 +1,4 @@
-export default {
+const invoices = {
     title: "Facturas",
     btnOpenDialogUpload: "Cargar factura",
     tooltipBtnOpenDialogUpload: "Cargar una nueva factura",
@@ -57,6 +57,13 @@ export default {
             helperText: "Por favor ingresa el folio.",
             tooltip: "Ingresa el folio de la factura.",
             tooltipReview: "Este es el folio asociado a la factura.",
+        },
+        payDay: {
+            label: "Fecha tentativa de pago:",
+            placeholder: "Selecciona una fecha",
+            helperText: "Por favor selecciona una fecha.",
+            tooltip: "Selecciona la fecha de pago de la factura.",
+            tooltipReview: "Esta es la fecha de pago asociada a la factura.",
         },
         files: {
             label: "* Archivos de factura:",
@@ -146,8 +153,11 @@ export default {
             status: "Estatus",
             files: "Archivos",
             date: "Fecha de carga",
+            payday: "Fecha de pago",
         },
         currentPageReportTemplate: "Mostrando {first} a {last} de {totalRecords} registros",
         emptyMessage: "Sin datos para mostrar.",   
     }
 }
+
+export default invoices;
