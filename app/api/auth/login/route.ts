@@ -57,6 +57,10 @@ const getErrorMessage = (error: any): ErrorResponse => {
  */
 export async function POST(req: NextRequest) {
     try {
+        const ENVIRONMENT = process.env.REACT_APP_ENVIRONMENT || "local"; // Default: local
+        console.info('process.env: ', process.env.REACT_APP_ENVIRONMENT);
+        console.info('ENVIRONMENT: ', ENVIRONMENT);
+        
         const { username, password } = await req.json(); //Recupera los datos username y password del request
 
         const api = createApiInstance();
