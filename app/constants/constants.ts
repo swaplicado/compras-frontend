@@ -1,4 +1,4 @@
-export default {
+const constants = {
     // Rutas para la api de axios
     API_AXIOS_POST: '/api/axios/post',
     API_AXIOS_GET: '/api/axios/get',
@@ -15,6 +15,7 @@ export default {
         PAGADOR_ID: 4,
         PROVEEDOR_ID: 5,
     },
+    
 
     //Rutas de peticiones backend (transactions-backend, users-backend, compras-backend, etc.)
     ROUTE_GET_DPS_BY_PARTNER_ID : '/transactions/documents/list-doc-by-partner/',
@@ -38,3 +39,5 @@ export default {
         MEXICO_ID: 150
     }
 }
+
+export default constants;

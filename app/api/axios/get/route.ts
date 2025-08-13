@@ -70,12 +70,17 @@ export async function GET(req: NextRequest) {
                 // Procesar parámetros de búsqueda
                 searchParams.forEach((value, key) => {
                     if (key !== 'route') {
-                        params[key] = value;
+                        if (searchParams.getAll(key).length > 1) {
+                            params[ key.split('[')[0] ] = searchParams.getAll(key);
+                        } else {
+                            params[key] = value;
+                        }
                     }
                 });
 
                 if (!params.company_id && !params.company && company) {
-                    params.company_id = company?.value;
+                    const parsed = JSON.parse(company?.value);
+                    params.company_id = Array.isArray(parsed) ? parsed : [parsed];
                 }
             }
             
@@ -85,6 +90,18 @@ export async function GET(req: NextRequest) {
             const response = await api.get(route, { 
                 headers,
                 params,
+                paramsSerializer: (params) => {
+                    // Serializar los parámetros para que las listas se envíen como parámetros repetidos
+                    const searchParams = new URLSearchParams();
+                    Object.entries(params).forEach(([key, value]) => {
+                        if (Array.isArray(value)) {
+                            value.forEach((item) => searchParams.append(key, item));
+                        } else {
+                            searchParams.append(key, value);
+                        }
+                    });
+                    return searchParams.toString();
+                },
                 responseType: 'arraybuffer' // Importante para manejar ZIP y JSON
             });
 
