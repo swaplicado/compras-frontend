@@ -6,6 +6,7 @@ import { Messages } from 'primereact/messages';
 import { Button } from 'primereact/button';
 import { useTranslation } from 'react-i18next';
 import { validateFileType } from '@/app/(main)/utilities/files/fileValidator';
+import constants from '@/app/constants/constants';
 
 interface CustomFileUploadProps {
     fileUploadRef: React.RefObject<FileUpload>;
@@ -40,7 +41,7 @@ export const CustomFileUpload = ({ fileUploadRef, totalSize, setTotalSize, error
 
     const headerTemplate = (options: FileUploadHeaderTemplateOptions) => {
         const { className, chooseButton, cancelButton } = options;
-        const value = totalSize / 10000;
+        const value = totalSize / constants.maxFilesSize;
         const formatedValue = fileUploadRef.current?.formatSize(totalSize) || '0 B';
 
         return (
@@ -48,7 +49,7 @@ export const CustomFileUpload = ({ fileUploadRef, totalSize, setTotalSize, error
                 {chooseButton}
                 {cancelButton}
                 <div className="flex align-items-center gap-3 ml-auto">
-                    <span>{formatedValue} / 1 MB</span>
+                    <span>{formatedValue} / {constants.maxFileSizeForHuman}</span>
                     <ProgressBar value={value} showValue={false} style={{ width: '10rem', height: '12px' }} />
                 </div>
             </div>
@@ -94,12 +95,12 @@ export const CustomFileUpload = ({ fileUploadRef, totalSize, setTotalSize, error
         let validType = true;
 
         for (const file of e.files) {
-            if (!validateFileType(file, ['application/pdf', 'text/xml'])) {
+            if (!validateFileType(file, constants.allowedExtensions)) {
                 validType = false;
                 continue;
             }
 
-            if (_totalSize > 1000000) {
+            if (_totalSize > constants.maxFilesSize) {
                 validSizes = false;
                 continue;
             }
@@ -137,8 +138,8 @@ export const CustomFileUpload = ({ fileUploadRef, totalSize, setTotalSize, error
                 ref={fileUploadRef}
                 name="files[]"
                 multiple
-                accept="application/pdf, text/xml"
-                maxFileSize={1000000}
+                accept={constants.allowedExtensionsNames}
+                maxFileSize={constants.maxFilesSize}
                 headerTemplate={headerTemplate}
                 chooseOptions={chooseOptions}
                 cancelOptions={cancelOptions}

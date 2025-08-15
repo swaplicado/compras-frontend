@@ -62,3 +62,9 @@
         color: #23547B;
     }
 }
+
+// Clase importante para que el visualizador de xml pueda hacer saltos de linea al llegar al limite de la pantalla
+.syntax-highlighter-code .language-xml  {
+    white-space: pre-wrap !important;
+    overflow-wrap: anywhere;
+}

@@ -74,8 +74,8 @@ const invoices = {
             tooltip: "Selecciona los archivos de la factura (PDF y XML).",
             invalidFileSize: "El tamaño máximo del archivo es de 1 MB.",
             invalidFileSizeMessageSummary: "Archivo demasiado grande",
-            invalidFileType: "Solo se permiten archivos PDF y XML.",
-            invalidAllFilesSize: "El tamaño máximo de los archivos es de 1 MB.",
+            invalidFileType: "Solo se permiten archivos PDF, XML, PNG Y JPEG.",
+            invalidAllFilesSize: "El tamaño máximo de los archivos es de 20 MB.",
         },
         animationSuccess: {
             title: "Factura cargada.",
@@ -157,6 +157,11 @@ const invoices = {
         },
         currentPageReportTemplate: "Mostrando {first} a {last} de {totalRecords} registros",
         emptyMessage: "Sin datos para mostrar.",   
+    },
+    fileViewer: {
+        btnShowFiles: "Mostrar archivos",
+        btnHideFiles: "Ocultar archivos",
+        noFile: "Archivo no disponible"
     }
 }
 

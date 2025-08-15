@@ -10,13 +10,12 @@ const constants = {
     //Array de ids de roles
     ROLES: {
         ADMINISTRADOR_ID: 1,
-        COMPRADOR_ID: 2,
-        CONTADOR_ID: 3,
-        PAGADOR_ID: 4,
-        PROVEEDOR_ID: 5,
+        COMPRADOR_ID: 1,
+        CONTADOR_ID: 2,
+        PAGADOR_ID: 3,
+        PROVEEDOR_ID: 4,
     },
     
-
     //Rutas de peticiones backend (transactions-backend, users-backend, compras-backend, etc.)
     ROUTE_GET_DPS_BY_PARTNER_ID : '/transactions/documents/list-doc-by-partner/',
     ROUTE_GET_DPS_BY_AREA_ID: '/transactions/documents/list-doc-by-functional-area/',
@@ -37,7 +36,13 @@ const constants = {
     //pais id
     COUNTRIES: {
         MEXICO_ID: 150
-    }
+    },
+
+    //Constantes para los archivos
+    maxFilesSize: 20 * 1024 * 1024, // 20 MB
+    maxFileSizeForHuman: '20 MB',
+    allowedExtensions: ['application/pdf', 'text/xml', 'image/png', 'image/jpeg'],
+    allowedExtensionsNames: 'application/pdf, text/xml, image/png, image/jpeg',
 }
 
 export default constants;

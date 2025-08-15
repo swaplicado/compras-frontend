@@ -18,6 +18,7 @@ import { Calendar } from 'primereact/calendar';
 import { Nullable } from 'primereact/ts-helpers';
 import { addLocale } from 'primereact/api';
 import DateFormatter from '@/app/components/commons/formatDate';
+import {CustomFileViewer} from './fileViewer';
 
 interface reviewFormData {
     company: { id: string; name: string };
@@ -146,10 +147,6 @@ export default function UploadDialog({
             };
 
             formData.append('document', JSON.stringify(document));
-
-            console.log(formData);
-            
-
             const response = await axios.post(constants.API_AXIOS_POST, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
@@ -203,7 +200,7 @@ export default function UploadDialog({
                 }
             }
 
-            const date = payDate ? DateFormatter( payDate, 'YYYY-MM-DD' ) : '';
+            const date = payDate ? DateFormatter(payDate, 'YYYY-MM-DD') : '';
             const route = '/transactions/documents/' + reviewFormData?.dpsId + '/set-authz/';
             const response = await axios.post(constants.API_AXIOS_PATCH, {
                 route,
@@ -239,13 +236,15 @@ export default function UploadDialog({
             </div>
         )) ||
             (dialogMode === 'review' && (
-                <div className="grid">
-                    <div className="col-12 md:col-6 lg:col-6 xl:col-6 flex justify-content-end md:justify-content-start">
-                        <Button label={tCommon('btnClose')} icon="pi pi-times" onClick={onHide} severity="secondary" disabled={loading} />
-                    </div>
-                    <div className="col-12 md:col-6 lg:col-6 xl:col-6 gap-4 flex justify-content-end">
-                        <Button label={tCommon('btnReject')} icon="bx bx-dislike" onClick={() => handleReview(constants.REVIEW_REJECT)} autoFocus disabled={loading} severity="danger" />
-                        <Button label={tCommon('btnAccept')} icon="bx bx-like" onClick={() => handleReview(constants.REVIEW_ACCEPT)} autoFocus disabled={loading} severity="success" />
+                <div className="p-2">
+                    <div className="grid">
+                        <div className="col-12 md:col-6 lg:col-6 xl:col-6 flex justify-content-end md:justify-content-start">
+                            <Button label={tCommon('btnClose')} icon="pi pi-times" onClick={onHide} severity="secondary" disabled={loading} />
+                        </div>
+                        <div className="col-12 md:col-6 lg:col-6 xl:col-6 gap-4 flex justify-content-end">
+                            <Button label={tCommon('btnReject')} icon="bx bx-dislike" onClick={() => handleReview(constants.REVIEW_REJECT)} autoFocus disabled={loading} severity="danger" />
+                            <Button label={tCommon('btnAccept')} icon="bx bx-like" onClick={() => handleReview(constants.REVIEW_ACCEPT)} autoFocus disabled={loading} severity="success" />
+                        </div>
                     </div>
                 </div>
             )));
@@ -390,8 +389,9 @@ export default function UploadDialog({
                 visible={visible}
                 onHide={onHide}
                 footer={footerContent}
-                className="md:w-8 lg:w-6 xl:w-6"
+                // className="md:w-8 lg:w-6 xl:w-6"
                 pt={{ header: { className: 'pb-2 pt-2 border-bottom-1 surface-border' } }}
+                style={{ width: '70rem' }}
             >
                 {animationSuccess({
                     show: resultUpload === 'success',
@@ -523,12 +523,12 @@ export default function UploadDialog({
                                                     data-pr-my="left center-2"
                                                     style={{ fontSize: '1rem', cursor: 'pointer' }}
                                                 ></i>
-                                                <Calendar 
+                                                <Calendar
                                                     value={payDate}
                                                     onChange={(e) => setPayDate(e.value)}
-                                                    showIcon 
-                                                    locale="es" 
-                                                    inputRef={inputRef} 
+                                                    showIcon
+                                                    locale="es"
+                                                    inputRef={inputRef}
                                                     onSelect={() => {
                                                         if (inputRef.current && payDate) {
                                                             inputRef.current.value = DateFormatter(payDate);
@@ -562,6 +562,15 @@ export default function UploadDialog({
                             )}
                             {(dialogMode == 'view' || dialogMode == 'review') && renderCommentsField()}
                         </div>
+                        {dialogMode == 'view' ||
+                            (dialogMode == 'review' && (
+                                // Estos son datos de prueba, falta funcion para cargar datos reales (en proceso)
+                                <CustomFileViewer lFiles={[ 
+                                    // { url: "https://www.rd.usda.gov/sites/default/files/pdf-sample_0.pdf", extension: 'pdf' }, 
+                                    // { url: "http://127.0.0.1:3000/AGROCISA_1304.xml", extension: 'xml' },
+                                    // { url: "https://picsum.photos/id/237/200/300", extension: 'png' } 
+                                ]} />
+                            ))}
                     </div>
                 )}
             </Dialog>
