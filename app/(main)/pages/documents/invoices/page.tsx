@@ -67,6 +67,8 @@ const TableDemo = () => {
     const [oValidUser, setOValidUser] = useState({ isInternalUser: false, isProvider: false, isProviderMexico: true });
     const [lProviders, setLProviders] = useState<any[]>([]);
     const [lCompanies, setLCompanies] = useState<any[]>([]);
+    const [lCurrencies, setLCurrencies] = useState<any[]>([]);
+    const [lFiscalRegimes, setLFiscalRegimes] = useState<any[]>([]);
     const [lDps, setLDps] = useState<any[]>([]);
     const [selectedRow, setSelectedRow] = useState<any>(null);
     const lastClickTime = useRef<number>(0);
@@ -74,6 +76,7 @@ const TableDemo = () => {
     const [limitDate, setLimitDate] = useState<string | null>(null);
     const [actualDate, setActualDate] = useState<string>('');
     const [showInfo, setShowInfo] = useState(false);
+    const [loadingReferences, setLoadingReferences] = useState(false);
 
     const isMobile = useIsMobile();
 
@@ -112,7 +115,7 @@ const TableDemo = () => {
     const getDps = async (isInternalUser: boolean) => {
         try {
             const route = !isInternalUser ? constants.ROUTE_GET_DPS_BY_PARTNER_ID : constants.ROUTE_GET_DPS_BY_AREA_ID;
-            const params = !isInternalUser ? { route: route, partner_id: partnerId, transaction_class: 1, document_type: [11,2] } : 
+            const params = !isInternalUser ? { route: route, partner_id: partnerId, transaction_class: constants.TRANSACTION_CLASS_COMPRAS, document_type: constants.DOC_TYPE_INVOICE } : 
                 { route: route, functional_area: Array.isArray(functionalAreas) ?  functionalAreas : [functionalAreas] };
             const response = await axios.get(constants.API_AXIOS_GET, {
                 params: params
@@ -165,7 +168,7 @@ const TableDemo = () => {
                 setLReferences([]);
                 return false;
             }
-
+            setLoadingReferences(true);
             const route = constants.ROUTE_GET_REFERENCES;
             const response = await axios.get(constants.API_AXIOS_GET, {
                 params: {
@@ -193,6 +196,8 @@ const TableDemo = () => {
         } catch (error: any) {
             showToast('error', error.response?.data?.error || t('erros.getReferencesError'), t('errors.getReferencesError'));
             return false;
+        } finally {
+            setLoadingReferences(false);
         }
     };
 
@@ -257,6 +262,69 @@ const TableDemo = () => {
         }
     };
 
+    const getlCurrencies = async () => {
+        try {
+            const route = constants.ROUTE_GET_CURRENCIES;
+            const response = await axios.get(constants.API_AXIOS_GET, {
+                params: {
+                    route: route
+                }
+            });
+
+            if (response.status === 200) {
+                const data = response.data.data || [];
+                let lCurrencies: any[] = [];
+                for (const item of data) {
+                    lCurrencies.push({
+                        id: item.id,
+                        name: item.code
+                    });
+                }
+                
+                setLCurrencies(lCurrencies);
+            } else {
+                throw new Error(`${t('errors.getCurrenciesError')}: ${response.statusText}`);
+            }
+        } catch (error: any) {
+            showToast('error', error.response?.data?.error || t('errors.getCurrenciesError'), t('errors.getCurrenciesError'));
+            return [];
+        }
+    };
+
+    const stringToInteger = (str: string): number => {
+        const numero = parseInt(str, 10); // El segundo parámetro es la base (10 para decimal)
+        return isNaN(numero) ? 0 : numero; // Manejo de valores no numéricos
+    };
+    
+    const getlFiscalRegime = async () => {
+        try {
+            const route = constants.ROUTE_GET_FISCAL_REGIMES;
+            const response = await axios.get(constants.API_AXIOS_GET, {
+                params: {
+                    route: route
+                }
+            });
+
+            if (response.status === 200) {
+                const data = response.data.data || [];
+                let lFiscalRegime: any[] = [];
+                for (const item of data) {
+                    lFiscalRegime.push({
+                        id: stringToInteger(item.code),
+                        name: item.name
+                    });
+                }
+
+                setLFiscalRegimes(lFiscalRegime);
+            } else {
+                throw new Error(`${t('errors.getFiscalRegimesError')}: ${response.statusText}`);
+            }
+        } catch (error: any) {
+            showToast('error', error.response?.data?.error || t('errors.getFiscalRegimesError'), t('errors.getFiscalRegimesError'));
+            return [];
+        }
+    }
+
     const clearFilter1 = () => {
         initFilters();
     };
@@ -297,6 +365,8 @@ const TableDemo = () => {
             }
 
             await getlCompanies();
+            await getlCurrencies();
+            await getlFiscalRegime();
             setLoading(false);
         };
         fetchReferences();
@@ -594,12 +664,17 @@ const TableDemo = () => {
                                 lCompanies={lCompanies}
                                 oValidUser={oValidUser}
                                 partnerId={partnerId}
+                                partnerCountry={partnerCountry}
                                 getlReferences={getlReferences}
                                 setLReferences={setLReferences}
                                 dialogMode={dialogMode}
                                 reviewFormData={reviewFormData}
                                 getDps={getDps}
                                 userId={userId}
+                                lCurrencies={lCurrencies}
+                                lFiscalRegimes={lFiscalRegimes}
+                                loadingReferences={loadingReferences}
+                                showToast={showToast}
                             />
                         ) : (
                             ''
@@ -619,6 +694,10 @@ const TableDemo = () => {
                             reviewFormData={reviewFormData}
                             getDps={getDps}
                             userId={userId}
+                            lCurrencies={lCurrencies}
+                            lFiscalRegimes={lFiscalRegimes}
+                            loadingReferences={loadingReferences}
+                            showToast={showToast}
                         />
                     )}
                     <Toolbar start={startContent} center={centerContent} end={endContent} className="border-bottom-1 surface-border surface-card shadow-1 transition-all transition-duration-300" style={{ borderRadius: '3rem', padding: '0.8rem' }} />
