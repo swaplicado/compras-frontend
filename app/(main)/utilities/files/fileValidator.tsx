@@ -43,3 +43,8 @@ export const validateFileSize = (file: File, maxSizeBytes: number): boolean => {
 export const validateFile = (file: File, allowedTypes: string[], maxSizeBytes: number): boolean => {
     return validateFileType(file, allowedTypes) && validateFileSize(file, maxSizeBytes);
 }
+
+export const getExtensionFileByName = (fileName: string) => {
+    const parts = fileName.split('.');
+    return parts[parts.length - 1].toLowerCase();
+}

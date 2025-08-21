@@ -191,6 +191,7 @@ const invoices = {
         getFunctionalAreasError: "Error al obtener las áreas funcionales. Por favor, intenta nuevamente más tarde.",
         getPartnersError: "Error al obtener los proveedores. Por favor, intenta nuevamente más tarde.", 
         getCompaniesError: "Error al obtener las empresas. Por favor, intenta nuevamente más tarde.",
+        getUrlsFilesError: "Error al obtener los archivos de la factura"
     },
     btnDownloadFiles: "Descargar archivos",
     dpsDateLimitText: "Fecha limite de carga de facturas:",

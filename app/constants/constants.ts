@@ -25,6 +25,7 @@ const constants = {
     ROUTE_GET_REFERENCES: '/transactions/references/by-partner/',
     ROUTE_GET_CURRENCIES: '/transactions/currencies/',
     ROUTE_GET_FISCAL_REGIMES: '/transactions/fiscal-regimes/',
+    ROUTE_GET_URL_FILES_DPS: '/transactions/documents/signed-urls/',
 
     ROUTE_POST_VALIDATE_XML: '/transactions/documents/validate-xml/',
     ROUTE_POST_DOCUMENT_TRANSACTION: '/transactions/document-transaction/',

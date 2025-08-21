@@ -27,6 +27,16 @@ interface reviewFormData {
     number: string;
     dpsId: string;
     payday: string;
+    paymentMethod: string;
+    rfcIssuer: string;
+    rfcReceiver: string;
+    taxRegimeIssuer: string;
+    taxRegimeReceiver: string;
+    useCfdi: string;
+    currency: string;
+    amount: string;
+    exchangeRate: string;
+    xml_date: string;
 }
 
 interface dataDps {
@@ -132,10 +142,15 @@ const TableDemo = () => {
                             reference += ', ';
                         }
                     }
+                    
                     dps.push({
                         id_dps: data[i].id,
                         provider_id: data[i].partner.id,
                         company_id: data[i].company.id,
+                        provider_rfc: data[i].partner.fiscal_id,
+                        provider_tax_regime: data[i].partner.fiscal_regime,
+                        company_rfc: data[i].company.fiscal_id,
+                        company_tax_regime: data[i].company.fiscal_regime,
                         dateFormated: DateFormatter(data[i].date),
                         company: data[i].company.full_name,
                         provider_name: data[i].partner.trade_name,
@@ -608,7 +623,17 @@ const TableDemo = () => {
             series: e.data.serie,
             number: e.data.folio,
             dpsId: e.data.id_dps,
-            payday: e.data.payday
+            payday: e.data.payday,
+            paymentMethod: e.data.payment_method,
+            rfcIssuer: e.data.provider_rfc,
+            rfcReceiver: e.data.company_rfc,
+            taxRegimeIssuer: e.data.provider_tax_regime,
+            taxRegimeReceiver: e.data.company_tax_regime,
+            useCfdi: e.data.use_cfdi,
+            currency: e.data.currency,
+            amount: e.data.amount,
+            exchangeRate: e.data.exchange_rate,
+            xml_date: e.data.date
         };
         setFormData(data);
         setDialogMode('review');
@@ -733,6 +758,10 @@ const TableDemo = () => {
                         <Column field="id_dps" header="id" hidden />
                         <Column field="provider_id" header="id" hidden />
                         <Column field="company_id" header="id" hidden />
+                        <Column field="provider_rfc" header="id" hidden />
+                        <Column field="provider_tax_regime" header="id" hidden />
+                        <Column field="company_rfc" header="id" hidden />
+                        <Column field="company_tax_regime" header="id" hidden />
                         <Column field="dateFormated" header="dateFormated" hidden/>
                         <Column
                             field="company"
