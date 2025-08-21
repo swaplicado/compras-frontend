@@ -8,8 +8,8 @@ interface Props {
     show: boolean;
     title: string;
     text: string;
-    buttonLabel: string;
-    action: () => void;
+    buttonLabel?: string;
+    action?: () => void;
     classCard?: boolean | true;
 }
 export const animationLoading = ({ show, title, text, buttonLabel, action, classCard }: Props) => {
@@ -65,7 +65,7 @@ export const animationError = ( { show, title, text, buttonLabel, action, classC
                 <>
                     <h3 className="mt-3">{title}</h3>
                     <p className="mt-2">{text}</p>
-                    <Button label={buttonLabel} className="mt-4" onClick={action} />
+                    { buttonLabel && <Button label={buttonLabel} className="mt-4" onClick={action} /> }
                 </>
             </div>
         </div>

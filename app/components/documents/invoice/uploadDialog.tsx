@@ -18,7 +18,13 @@ import { Calendar } from 'primereact/calendar';
 import { Nullable } from 'primereact/ts-helpers';
 import { addLocale } from 'primereact/api';
 import DateFormatter from '@/app/components/commons/formatDate';
-
+import { CustomFileViewer } from './fileViewer';
+import { ValidateXml } from './validateXml';
+import { InvoiceFields } from './fieldsDps';
+import { ProgressSpinner } from 'primereact/progressspinner';
+import { findFiscalRegime } from '@/app/(main)/utilities/files/catFinder';
+import { findCurrency } from '@/app/(main)/utilities/files/catFinder';
+import { getExtensionFileByName } from '@/app/(main)/utilities/files/fileValidator';
 interface reviewFormData {
     company: { id: string; name: string };
     partner: { id: string; name: string };
@@ -27,6 +33,16 @@ interface reviewFormData {
     number: string;
     dpsId: string;
     payday: string;
+    paymentMethod: string;
+    rfcIssuer: string;
+    rfcReceiver: string;
+    taxRegimeIssuer: string;
+    taxRegimeReceiver: string;
+    useCfdi: string;
+    currency: string;
+    amount: string;
+    exchangeRate: string;
+    xml_date: string;
 }
 
 interface UploadDialogProps {
@@ -37,12 +53,17 @@ interface UploadDialogProps {
     lCompanies: any[];
     oValidUser?: { isInternalUser: boolean; isProvider: boolean; isProviderMexico: boolean };
     partnerId?: string;
+    partnerCountry?: number;
     setLReferences: React.Dispatch<React.SetStateAction<any[]>>;
+    loadingReferences?: boolean;
     getlReferences: (company_id?: string, partner_id?: string) => Promise<boolean>;
     dialogMode?: 'create' | 'edit' | 'view' | 'review';
     reviewFormData?: reviewFormData;
     getDps?: (isInternalUser: boolean) => Promise<any>;
     userId: number;
+    lCurrencies: any[];
+    lFiscalRegimes: any[];
+    showToast?: (type: 'success' | 'info' | 'warn' | 'error', message: string, summaryText?: string) => void;
 }
 
 export default function UploadDialog({
@@ -53,12 +74,17 @@ export default function UploadDialog({
     lCompanies,
     oValidUser = { isInternalUser: false, isProvider: false, isProviderMexico: true },
     partnerId = '',
+    partnerCountry = 0,
     getlReferences,
+    loadingReferences,
     setLReferences,
     dialogMode = 'create',
     reviewFormData,
     getDps,
-    userId
+    userId,
+    lCurrencies,
+    lFiscalRegimes,
+    showToast
 }: UploadDialogProps) {
     const [selectReference, setSelectReference] = useState<{ id: string; name: string } | null>(null);
     const [selectProvider, setSelectProvider] = useState<{ id: string; name: string; country: number } | null>(null);
@@ -74,13 +100,20 @@ export default function UploadDialog({
         files: false,
         includePdf: false,
         includeXml: false,
-        rejectComments: false
+        rejectComments: false,
+        xmlValidateFile: false
+    });
+    const [xmlValidateErrors, setXmlValidateErrors] = useState({
+        includeXml: false,
+        addedXml: false,
+        isValid: false,
+        errors: [],
+        warnings: []
     });
     const [errorMessage, setErrorMessage] = useState('');
-    const [serie, setSerie] = useState('');
-    const [folio, setFolio] = useState('');
     const [showInfo, setShowInfo] = useState(false);
     const fileUploadRef = useRef<FileUpload>(null);
+    const xmlUploadRef = useRef<FileUpload>(null);
     const message = useRef<Messages>(null);
     const { t } = useTranslation('invoices');
     const { t: tCommon } = useTranslation('common');
@@ -90,6 +123,96 @@ export default function UploadDialog({
     const successTitle = dialogMode == 'create' ? t('uploadDialog.animationSuccess.title') : t('uploadDialog.animationSuccess.titleReview');
     const errorTitle = dialogMode == 'create' ? t('uploadDialog.animationError.title') : t('uploadDialog.animationError.titleReview');
     const [payDate, setPayDate] = useState<Nullable<Date>>(null);
+    const [oDps, setODps] = useState<any>({
+        serie: '',
+        folio: '',
+        xml_date: '',
+        payment_method: '',
+        rfc_issuer: '',
+        tax_regime_issuer: '',
+        rfc_receiver: '',
+        tax_regime_receiver: '',
+        use_cfdi: '',
+        amount: '',
+        currency: '',
+        exchange_rate: ''
+    });
+    const [oDpsErros, setODpsErrors] = useState({
+        folio: false,
+        xml_date: false,
+        payment_method: false,
+        rfc_issuer: false,
+        tax_regime_issuer: false,
+        rfc_receiver: false,
+        tax_regime_receiver: false,
+        use_cfdi: false,
+        amount: false,
+        currency: false,
+        exchange_rate: false
+    });
+    const [isXmlValid, setIsXmlValid] = useState(false);
+    const [isLocalProvider, setIsLocalProvider] = useState(false);
+    const [loadingValidateXml, setLoadingValidateXml] = useState(false);
+    const [lUrlFiles, setLUrlFiles] = useState<any[]>([]);
+    const [loadingUrlsFiles, setLoadingUrlsFiles] = useState(false);
+
+    useEffect(() => {
+        if (xmlValidateErrors.addedXml && xmlValidateErrors.isValid && xmlValidateErrors.errors.length == 0) {
+            setIsXmlValid(true);
+        } else {
+            setIsXmlValid(false);
+        }
+    }, [xmlValidateErrors]);
+
+    useEffect(() => {
+        if (selectProvider ? selectProvider.country == constants.COUNTRIES.MEXICO_ID : false) {
+            setIsLocalProvider(true);
+        } else {
+            setIsLocalProvider(false);
+        }
+
+        setODpsErrors({
+            folio: false,
+            xml_date: false,
+            payment_method: false,
+            rfc_issuer: false,
+            tax_regime_issuer: false,
+            rfc_receiver: false,
+            tax_regime_receiver: false,
+            use_cfdi: false,
+            amount: false,
+            currency: false,
+            exchange_rate: false
+        });
+        setErrors({
+            reference: false,
+            provider: false,
+            company: false,
+            folio: false,
+            files: false,
+            includePdf: false,
+            includeXml: false,
+            rejectComments: false,
+            xmlValidateFile: false
+        });
+
+        if (dialogMode == 'create') {
+            setODps({
+                serie: '',
+                folio: '',
+                xml_date: '',
+                payment_method: '',
+                rfc_issuer: '',
+                tax_regime_issuer: '',
+                rfc_receiver: '',
+                tax_regime_receiver: '',
+                use_cfdi: '',
+                amount: '',
+                currency: '',
+                exchange_rate: ''
+            });
+        }
+    }, [selectProvider]);
 
     useEffect(() => {
         addLocale('es', tCommon('calendar', { returnObjects: true }) as any);
@@ -100,18 +223,36 @@ export default function UploadDialog({
             reference: !selectReference,
             provider: oValidUser.isInternalUser && !selectProvider,
             company: !selectCompany,
-            folio: folio.trim() === '',
+            folio: oDps.folio.trim() === '',
             files: (fileUploadRef.current?.getFiles().length || 0) === 0,
             includePdf: fileUploadRef.current?.getFiles().length || 0 > 0 ? !fileUploadRef.current?.getFiles().some((file: { type: string }) => file.type === 'application/pdf') : false,
-            includeXml:
-                fileUploadRef.current?.getFiles().length || 0 > 0
-                    ? !fileUploadRef.current?.getFiles().some((file: { type: string }) => file.type === 'text/xml') &&
-                      (oValidUser.isProvider ? oValidUser.isProviderMexico : selectProvider ? selectProvider.country == constants.COUNTRIES.MEXICO_ID : false)
-                    : false,
-            rejectComments: dialogMode === 'review' && isRejected && rejectComments.trim() === ''
+            // includeXml:
+            //     fileUploadRef.current?.getFiles().length || 0 > 0
+            //         ? !fileUploadRef.current?.getFiles().some((file: { type: string }) => file.type === 'text/xml') &&
+            //           (oValidUser.isProvider ? oValidUser.isProviderMexico : isLocalProvider)
+            //         : false,
+            includeXml: false,
+            rejectComments: dialogMode === 'review' && isRejected && rejectComments.trim() === '',
+            xmlValidateFile: xmlUploadRef.current?.getFiles().length === 0
         };
         setErrors(newErrors);
-        return !Object.values(newErrors).some(Boolean);
+
+        const newODpsErrors = {
+            folio: oDps.folio.trim() === '',
+            xml_date: oDps.xml_date == '',
+            payment_method: oDps.payment_method.trim() === '',
+            rfc_issuer: oDps.rfc_issuer.trim() === '',
+            tax_regime_issuer: oDps.tax_regime_issuer ? false : true,
+            rfc_receiver: oDps.rfc_receiver.trim() === '',
+            tax_regime_receiver: oDps.tax_regime_receiver ? false : true,
+            use_cfdi: oDps.use_cfdi.trim() === '',
+            amount: oDps.amount.trim() === '',
+            currency: oDps.currency == '',
+            exchange_rate: oDps.exchange_rate.trim() === ''
+        };
+        setODpsErrors(newODpsErrors);
+
+        return !Object.values(newErrors).some(Boolean) && !Object.values(newODpsErrors).some(Boolean);
     };
 
     const handleSubmit = async () => {
@@ -121,12 +262,17 @@ export default function UploadDialog({
             setLoading(true);
             const formData = new FormData();
             const files = fileUploadRef.current?.getFiles() || [];
+            const xmlFiles = xmlUploadRef.current?.getFiles() || [];
 
             files.forEach((file: string | Blob) => {
                 formData.append('files', file);
             });
 
-            const route = '/transactions/document-transaction/';
+            xmlFiles.forEach((file: string | Blob) => {
+                formData.append('files', file);
+            });
+
+            const route = constants.ROUTE_POST_DOCUMENT_TRANSACTION;
             formData.append('ref_id', selectReference?.id || '');
             formData.append('route', route);
             formData.append('company', selectCompany?.id || '');
@@ -134,22 +280,18 @@ export default function UploadDialog({
             formData.append('is_internal_user', oValidUser.isInternalUser ? 'True' : 'False');
 
             const document = {
-                transaction_class: 1,
-                document_type: 11,
+                transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
+                document_type: constants.DOC_TYPE_INVOICE,
                 partner: selectProvider?.id || '',
-                series: serie,
-                number: folio,
-                date: moment().format('YYYY-MM-DD'),
-                currency: 51,
-                amount: 1,
-                exchange_rate: 1
+                series: oDps.serie,
+                number: oDps.folio,
+                date: moment(oDps.xml_date).format('YYYY-MM-DD'),
+                currency: oDps.currency?.id || '',
+                amount: oDps.amount,
+                exchange_rate: oDps.exchange_rate
             };
 
             formData.append('document', JSON.stringify(document));
-
-            console.log(formData);
-            
-
             const response = await axios.post(constants.API_AXIOS_POST, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
@@ -203,7 +345,7 @@ export default function UploadDialog({
                 }
             }
 
-            const date = payDate ? DateFormatter( payDate, 'YYYY-MM-DD' ) : '';
+            const date = payDate ? DateFormatter(payDate, 'YYYY-MM-DD') : '';
             const route = '/transactions/documents/' + reviewFormData?.dpsId + '/set-authz/';
             const response = await axios.post(constants.API_AXIOS_PATCH, {
                 route,
@@ -235,20 +377,55 @@ export default function UploadDialog({
         ((dialogMode === 'create' && (
             <div className="flex flex-column md:flex-row justify-content-between gap-2">
                 <Button label={tCommon('btnClose')} icon="pi pi-times" onClick={onHide} severity="secondary" disabled={loading} className="order-1 md:order-0" />
-                <Button label={tCommon('btnUpload')} icon="pi pi-upload" onClick={handleSubmit} autoFocus disabled={loading} className="order-0 md:order-1" />
+                <Button label={tCommon('btnUpload')} icon="pi pi-upload" onClick={handleSubmit} autoFocus disabled={loading || (selectProvider ? (isLocalProvider ? !isXmlValid : false) : true)} className="order-0 md:order-1" />
             </div>
         )) ||
             (dialogMode === 'review' && (
-                <div className="grid">
-                    <div className="col-12 md:col-6 lg:col-6 xl:col-6 flex justify-content-end md:justify-content-start">
-                        <Button label={tCommon('btnClose')} icon="pi pi-times" onClick={onHide} severity="secondary" disabled={loading} />
-                    </div>
-                    <div className="col-12 md:col-6 lg:col-6 xl:col-6 gap-4 flex justify-content-end">
-                        <Button label={tCommon('btnReject')} icon="bx bx-dislike" onClick={() => handleReview(constants.REVIEW_REJECT)} autoFocus disabled={loading} severity="danger" />
-                        <Button label={tCommon('btnAccept')} icon="bx bx-like" onClick={() => handleReview(constants.REVIEW_ACCEPT)} autoFocus disabled={loading} severity="success" />
+                <div className="p-2">
+                    <div className="grid">
+                        <div className="col-12 md:col-6 lg:col-6 xl:col-6 flex justify-content-end md:justify-content-start">
+                            <Button label={tCommon('btnClose')} icon="pi pi-times" onClick={onHide} severity="secondary" disabled={loading} />
+                        </div>
+                        <div className="col-12 md:col-6 lg:col-6 xl:col-6 gap-4 flex justify-content-end">
+                            <Button label={tCommon('btnReject')} icon="bx bx-dislike" onClick={() => handleReview(constants.REVIEW_REJECT)} autoFocus disabled={loading} severity="danger" />
+                            <Button label={tCommon('btnAccept')} icon="bx bx-like" onClick={() => handleReview(constants.REVIEW_ACCEPT)} autoFocus disabled={loading} severity="success" />
+                        </div>
                     </div>
                 </div>
             )));
+
+    const getlUrlFilesDps = async () => {
+        try {
+            setLoadingUrlsFiles(true);
+            const route = constants.ROUTE_GET_URL_FILES_DPS;
+            const response = await axios.get(constants.API_AXIOS_GET, {
+                params: {
+                    route: route,
+                    document_id: reviewFormData?.dpsId
+                }
+            });
+
+            if (response.status === 200) {
+                const data = response.data.data || [];
+                let lUrls: any[] = [];
+                Object.keys(data.files).forEach((key) => {
+                    lUrls.push({
+                        url: data.files[key],
+                        extension: getExtensionFileByName(key)
+                    });
+                });
+                setLUrlFiles(lUrls);
+                return true;
+            } else {
+                throw new Error(`${t('errors.getUrlsFilesError')}: ${response.statusText}`);
+            }
+        } catch (error: any) {
+            showToast?.('error', error.response?.data?.error || t('erros.getUrlsFilesError'), t('errors.getUrlsFilesError'));
+            return false;
+        } finally {
+            setLoadingUrlsFiles(false);
+        }
+    };
 
     useEffect(() => {
         setResultUpload('waiting');
@@ -260,7 +437,28 @@ export default function UploadDialog({
             files: false,
             includePdf: false,
             includeXml: false,
-            rejectComments: false
+            rejectComments: false,
+            xmlValidateFile: false
+        });
+        setXmlValidateErrors({
+            includeXml: false,
+            addedXml: false,
+            isValid: false,
+            errors: [],
+            warnings: []
+        });
+        setODpsErrors({
+            folio: false,
+            xml_date: false,
+            payment_method: false,
+            rfc_issuer: false,
+            tax_regime_issuer: false,
+            rfc_receiver: false,
+            tax_regime_receiver: false,
+            use_cfdi: false,
+            amount: false,
+            currency: false,
+            exchange_rate: false
         });
         setLoading(false);
         setShowInfo(false);
@@ -270,14 +468,11 @@ export default function UploadDialog({
             setSelectReference(null);
 
             setLReferences([]);
-
-            setSerie('');
-            setFolio('');
             setTotalSize(0);
             fileUploadRef.current?.clear();
             message.current?.clear();
             if (!oValidUser.isInternalUser) {
-                setSelectProvider({ id: partnerId, name: '', country: constants.COUNTRIES.MEXICO_ID });
+                setSelectProvider({ id: partnerId, name: '', country: partnerCountry });
             }
         }
 
@@ -285,12 +480,27 @@ export default function UploadDialog({
             setSelectCompany(reviewFormData.company);
             setSelectProvider({ ...reviewFormData.partner, country: constants.COUNTRIES.MEXICO_ID });
             setSelectReference(reviewFormData.reference);
-            setSerie(reviewFormData.series);
-            setFolio(reviewFormData.number);
             setIsRejected(false);
             setRejectComments('');
             setTotalSize(0);
             setPayDate(reviewFormData.payday ? new Date(reviewFormData.payday + 'T00:00:00') : null);
+
+            setODps({
+                serie: reviewFormData.series,
+                folio: reviewFormData.number,
+                xml_date: reviewFormData.xml_date,
+                payment_method: reviewFormData.paymentMethod,
+                rfc_issuer: reviewFormData.rfcIssuer,
+                tax_regime_issuer: findFiscalRegime(lFiscalRegimes, reviewFormData.taxRegimeIssuer),
+                rfc_receiver: reviewFormData.rfcReceiver,
+                tax_regime_receiver: findFiscalRegime(lFiscalRegimes, reviewFormData.taxRegimeReceiver),
+                use_cfdi: reviewFormData.useCfdi,
+                amount: reviewFormData.amount,
+                currency: findCurrency(lCurrencies, reviewFormData.currency),
+                exchange_rate: reviewFormData.exchangeRate,
+            });
+
+            getlUrlFilesDps();
         }
     }, [visible, oValidUser.isInternalUser, partnerId]);
 
@@ -379,7 +589,7 @@ export default function UploadDialog({
             if (inputRef.current && payDate) {
                 inputRef.current.value = DateFormatter(payDate);
             }
-        }, 100)
+        }, 100);
     }, [payDate]);
 
     return (
@@ -390,8 +600,9 @@ export default function UploadDialog({
                 visible={visible}
                 onHide={onHide}
                 footer={footerContent}
-                className="md:w-8 lg:w-6 xl:w-6"
+                // className="md:w-8 lg:w-6 xl:w-6"
                 pt={{ header: { className: 'pb-2 pt-2 border-bottom-1 surface-border' } }}
+                style={{ width: '70rem' }}
             >
                 {animationSuccess({
                     show: resultUpload === 'success',
@@ -442,71 +653,106 @@ export default function UploadDialog({
                         </div>
 
                         <div className="p-fluid formgrid grid">
-                            {renderDropdownField(
-                                t('uploadDialog.reference.label'),
-                                dialogMode === 'review' ? t('uploadDialog.reference.tooltipReview') : t('uploadDialog.reference.tooltip'),
-                                selectReference,
-                                lReferences,
-                                t('uploadDialog.reference.placeholder'),
-                                'reference',
-                                t('uploadDialog.reference.helperText'),
-                                (value) => {
-                                    setSelectReference(value);
-                                    setErrors((prev) => ({ ...prev, reference: false }));
-                                },
-                                !lReferences || lReferences.length == 0 || dialogMode === 'view' || dialogMode === 'review'
+                            {loadingReferences == true ? (
+                                <ProgressSpinner style={{ width: '50px', height: '50px' }} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />
+                            ) : (
+                                renderDropdownField(
+                                    t('uploadDialog.reference.label'),
+                                    dialogMode === 'review' ? t('uploadDialog.reference.tooltipReview') : t('uploadDialog.reference.tooltip'),
+                                    selectReference,
+                                    lReferences,
+                                    lReferences.length > 0 ? t('uploadDialog.reference.placeholder') : t('uploadDialog.reference.placeholderEmpty'),
+                                    'reference',
+                                    t('uploadDialog.reference.helperText'),
+                                    (value) => {
+                                        setSelectReference(value);
+                                        setErrors((prev) => ({ ...prev, reference: false }));
+                                    },
+                                    !lReferences || lReferences.length == 0 || dialogMode === 'view' || dialogMode === 'review'
+                                )
                             )}
 
-                            <div className="field col-12 md:col-6">
-                                <div className="formgrid grid">
-                                    <div className="col">
-                                        <label>{t('uploadDialog.serie.label')}</label>
-                                        &nbsp;
-                                        <Tooltip target=".custom-target-icon" />
-                                        <i
-                                            className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                                            data-pr-tooltip={dialogMode === 'review' ? t('uploadDialog.serie.tooltipReview') : t('uploadDialog.serie.tooltip')}
-                                            data-pr-position="right"
-                                            data-pr-my="left center-2"
-                                            style={{ fontSize: '1rem', cursor: 'pointer' }}
-                                        ></i>
-                                        <InputText
-                                            type="text"
-                                            placeholder={t('uploadDialog.serie.placeholder')}
-                                            className="w-full"
-                                            value={serie}
-                                            onChange={(e) => setSerie(e.target.value)}
-                                            disabled={dialogMode === 'view' || dialogMode === 'review'}
-                                            maxLength={25}
-                                        />
-                                    </div>
-                                    <div className="col">
-                                        <label>{t('uploadDialog.folio.label')}</label>
-                                        &nbsp;
-                                        <Tooltip target=".custom-target-icon" />
-                                        <i
-                                            className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                                            data-pr-tooltip={dialogMode === 'review' ? t('uploadDialog.folio.tooltipReview') : t('uploadDialog.folio.tooltip')}
-                                            data-pr-position="right"
-                                            data-pr-my="left center-2"
-                                            style={{ fontSize: '1rem', cursor: 'pointer' }}
-                                        ></i>
-                                        <InputText
-                                            type="text"
-                                            placeholder={t('uploadDialog.folio.placeholder')}
-                                            className={`w-full ${errors.folio ? 'p-invalid' : ''}`}
-                                            value={folio}
-                                            onChange={(e) => {
-                                                setFolio(e.target.value);
-                                                setErrors((prev) => ({ ...prev, folio: false }));
-                                            }}
-                                            disabled={dialogMode === 'view' || dialogMode === 'review'}
-                                            maxLength={50}
-                                        />
-                                        {errors.folio && <small className="p-error">{t('uploadDialog.folio.helperText')}</small>}
+                            {dialogMode == 'create' && isLocalProvider && (
+                                <div className="field col-12 md:col-12">
+                                    <div className="formgrid grid">
+                                        <div className="col">
+                                            <label>{t('uploadDialog.xml_file.label')}</label>
+                                            &nbsp;
+                                            <Tooltip target=".custom-target-icon" />
+                                            <i
+                                                className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
+                                                data-pr-tooltip={t('uploadDialog.xml_file.tooltip')}
+                                                data-pr-position="right"
+                                                data-pr-my="left center-2"
+                                                style={{ fontSize: '1rem', cursor: 'pointer' }}
+                                            ></i>
+                                            <ValidateXml
+                                                xmlUploadRef={xmlUploadRef}
+                                                oCompany={selectCompany}
+                                                oPartner={selectProvider}
+                                                user_id={userId}
+                                                oRef={selectReference}
+                                                errors={xmlValidateErrors}
+                                                setErrors={setXmlValidateErrors}
+                                                setODps={setODps}
+                                                lCurrencies={lCurrencies}
+                                                lFiscalRegimes={lFiscalRegimes}
+                                                setLoadingValidateXml={setLoadingValidateXml}
+                                                showToast={showToast}
+                                            />
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            )}
+                            {loadingValidateXml && <ProgressSpinner style={{ width: '50px', height: '50px' }} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />}
+                            {(isXmlValid || (selectProvider ? selectProvider.country != constants.COUNTRIES.MEXICO_ID : false) || dialogMode == 'review') && (
+                                <>
+                                    {xmlValidateErrors.warnings.length > 0 && (
+                                        <div className="field col-12 md:col-12">
+                                            <div className="formgrid grid">
+                                                <div className="col">
+                                                    <label>{t('uploadDialog.xml_warnings.tooltip')}</label>
+                                                    &nbsp;
+                                                    <Tooltip target=".custom-target-icon" />
+                                                    <i
+                                                        className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
+                                                        data-pr-tooltip={t('uploadDialog.xml_warnings.label')}
+                                                        data-pr-position="right"
+                                                        data-pr-my="left center-2"
+                                                        style={{ fontSize: '1rem', cursor: 'pointer' }}
+                                                    ></i>
+                                                    <ul>
+                                                        {xmlValidateErrors.warnings.map((warnings: any, index: number) => (
+                                                            <li key={index} className="col-12 md:col-12 text-orange-500">
+                                                                {warnings}
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                    <InvoiceFields dialogMode={dialogMode} oProvider={selectProvider} oDps={oDps} setODps={setODps} errors={oDpsErros} setErrors={setODpsErrors} lCurrencies={lCurrencies} lFiscalRegimes={lFiscalRegimes} />
+                                </>
+                            )}
+
+                            {!xmlValidateErrors.isValid && xmlValidateErrors.errors.length > 0 && (
+                                <div className="field col-12 md:col-12">
+                                    <div className="formgrid grid">
+                                        <div className="col">
+                                            <label>{t('uploadDialog.xml_errors.label')}</label>
+                                            &nbsp;
+                                            <ul>
+                                                {xmlValidateErrors.errors.map((errors: any, index: number) => (
+                                                    <li key={index} className="col-12 md:col-12 text-red-500">
+                                                        {errors}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
 
                             {dialogMode == 'view' ||
                                 (dialogMode == 'review' && (
@@ -523,12 +769,13 @@ export default function UploadDialog({
                                                     data-pr-my="left center-2"
                                                     style={{ fontSize: '1rem', cursor: 'pointer' }}
                                                 ></i>
-                                                <Calendar 
+                                                <Calendar
                                                     value={payDate}
+                                                    placeholder={t('uploadDialog.payDay.placeholder')}
                                                     onChange={(e) => setPayDate(e.value)}
-                                                    showIcon 
-                                                    locale="es" 
-                                                    inputRef={inputRef} 
+                                                    showIcon
+                                                    locale="es"
+                                                    inputRef={inputRef}
                                                     onSelect={() => {
                                                         if (inputRef.current && payDate) {
                                                             inputRef.current.value = DateFormatter(payDate);
@@ -545,7 +792,7 @@ export default function UploadDialog({
                                     </div>
                                 ))}
 
-                            {dialogMode !== 'view' && dialogMode !== 'review' && (
+                            {dialogMode !== 'view' && dialogMode !== 'review' && (isXmlValid || (selectProvider ? selectProvider.country != constants.COUNTRIES.MEXICO_ID : false)) && (
                                 <div className="field col-12">
                                     <label>{t('uploadDialog.files.label')}</label>
                                     &nbsp;
@@ -557,11 +804,42 @@ export default function UploadDialog({
                                         data-pr-my="left center-2"
                                         style={{ fontSize: '1rem', cursor: 'pointer' }}
                                     ></i>
-                                    <CustomFileUpload fileUploadRef={fileUploadRef} totalSize={totalSize} setTotalSize={setTotalSize} errors={errors} setErrors={setErrors} message={message} />
+                                    <CustomFileUpload
+                                        fileUploadRef={fileUploadRef}
+                                        totalSize={totalSize}
+                                        setTotalSize={setTotalSize}
+                                        errors={errors}
+                                        setErrors={setErrors}
+                                        message={message}
+                                        multiple={true}
+                                        allowedExtensions={constants.allowedExtensions}
+                                        allowedExtensionsNames={constants.allowedExtensionsNames}
+                                        maxFilesSize={constants.maxFilesSize}
+                                        maxFileSizeForHuman={constants.maxFileSizeForHuman}
+                                        errorMessages={{
+                                            invalidFileType: t('uploadDialog.files.invalidFileType'),
+                                            invalidAllFilesSize: t('uploadDialog.files.invalidAllFilesSize'),
+                                            invalidFileSize: t('uploadDialog.files.invalidFileSize'),
+                                            invalidFileSizeMessageSummary: t('uploadDialog.files.invalidFileSizeMessageSummary'),
+                                            helperTextFiles: t('uploadDialog.files.helperTextFiles'),
+                                            helperTextPdf: t('uploadDialog.files.helperTextPdf'),
+                                            helperTextXml: t('uploadDialog.files.helperTextXml')
+                                        }}
+                                    />
                                 </div>
                             )}
                             {(dialogMode == 'view' || dialogMode == 'review') && renderCommentsField()}
                         </div>
+                        {dialogMode == 'view' ||
+                            (dialogMode == 'review' &&
+                                (!loadingUrlsFiles ? (
+                                    // Estos son datos de prueba, falta funcion para cargar datos reales (en proceso)
+                                    <CustomFileViewer
+                                        lFiles={ lUrlFiles }
+                                    />
+                                ) : (
+                                    <ProgressSpinner style={{ width: '50px', height: '50px' }} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />
+                                )))}
                     </div>
                 )}
             </Dialog>

@@ -40,9 +40,22 @@ const invoices = {
         reference: {
             label: "* Referencia:",
             placeholder: "Selecciona una referencia",
+            placeholderEmpty: "No hay referencias disponibles",
             helperText: "Por favor selecciona una referencia.",
             tooltip: "Selecciona una referencia para la factura.",
             tooltipReview: "Esta es la referencia asociada a la factura.",
+        },
+        xml_file: {
+            label: "* XML",
+            tooltip: "Archivo XML de la factura"
+        },
+        xml_errors: {
+            label: "Errores del XML:",
+            tooltip: "Errores del archivo XML de la factura"
+        },
+        xml_warnings: {
+            label: "Observaciones del XML:",
+            tooltip: "Observaciones del archivo XML de la factura"
         },
         serie: {
             label: "Serie:",
@@ -58,6 +71,76 @@ const invoices = {
             tooltip: "Ingresa el folio de la factura.",
             tooltipReview: "Este es el folio asociado a la factura.",
         },
+        xml_date: {
+            label: "* Fecha de emisión:",
+            placeholder: "Selecciona una fecha",
+            helperText: "Por favor selecciona una fecha.",
+            tooltip: "Selecciona la fecha de emisión de la factura.",
+            tooltipReview: "Esta es la fecha de emisión asociada a la factura.",
+        },
+        payment_method: {
+            label: "* Método de pago:",
+            placeholder: "ingresa método de pago",
+            helperText: "Por favor selecciona un método de pago.",
+            tooltip: "Selecciona el método de pago de la factura.",
+            tooltipReview: "Este es el método de pago asociado a la factura.",
+        },
+        rfc_issuer: {
+            label: "* RFC emisor",
+            placeholder: "ingresa RFC emisor",
+            helperText: "Por favor ingresa el RFC del emisor.",
+            tooltip: "Ingresa el RFC del emisor de la factura.",
+            tooltipReview: "Este es el RFC del emisor de la factura.",
+        },
+        tax_regime_issuer: {
+            label: "* Regimen fiscal emisor",
+            placeholder: "ingresa regimen fiscal emisor",
+            helperText: "Por favor ingresa el regimen fiscal del emisor.",
+            tooltip: "Ingresa el regimen fiscal del emisor de la factura.",
+            tooltipReview: "Este es el regimen fiscal del emisor de la factura."
+        },
+        rfc_receiver: {
+            label: "* RFC receptor",
+            placeholder: "ingresa RFC receptor",
+            helperText: "Por favor ingresa el RFC del receptor.",
+            tooltip: "Ingresa el RFC del receptor de la factura.",
+            tooltipReview: "Este es el RFC del receptor de la factura.",
+        },
+        tax_regime_receiver: {
+            label: "* Regimen fiscal receptor",
+            placeholder: "ingresa regimen fiscal receptor",
+            helperText: "Por favor ingresa el regimen fiscal del receptor.",
+            tooltip: "Ingresa el regimen fiscal del receptor de la factura.",
+            tooltipReview: "Este es el regimen fiscal del receptor de la factura.",
+        },
+        use_cfdi: {
+            label: "* Uso CFDI",
+            placeholder: "ingresa uso CFDI",
+            helperText: "Por favor ingresa el uso CFDI.",
+            tooltip: "Ingresa el uso CFDI de la factura.",
+            tooltipReview: "Este es el uso CFDI de la factura.",
+        },
+        currency: {
+            label: "* Moneda",
+            placeholder: "ingresa moneda",
+            helperText: "Por favor ingresa la moneda.",
+            tooltip: "Ingresa la moneda de la factura.",
+            tooltipReview: "Esta es la moneda de la factura.",
+        },
+        exchange_rate: {
+            label: "* Tipo de cambio",
+            placeholder: "ingresa tipo de cambio",
+            helperText: "Por favor ingresa el tipo de cambio.",
+            tooltip: "Ingresa el tipo de cambio de la factura.",
+            tooltipReview: "Este es el tipo de cambio de la factura.",
+        },
+        amount: {
+            label: "* Monto:",
+            placeholder: "ingresa monto",
+            helperText: "Por favor ingresa el monto.",
+            tooltip: "Ingresa el monto de la factura.",
+            tooltipReview: "Este es el monto de la factura.",
+        },
         payDay: {
             label: "Fecha tentativa de pago:",
             placeholder: "Selecciona una fecha",
@@ -67,15 +150,16 @@ const invoices = {
         },
         files: {
             label: "* Archivos de factura:",
-            placeholder: "Suelte los archivos aquí para comenzar a cargarlos",
+            placeholderMultiple: "Suelte los archivos aquí para comenzar a cargarlos",
+            placeholderSingle: "Suelte el archivo aquí para comenzar a cargarlo",
             helperTextFiles: "Selecciona los archivos de la factura.",
             helperTextPdf: "Debe incluir un archivo PDF.",
             helperTextXml: "Debe incluir un archivo XML.",
             tooltip: "Selecciona los archivos de la factura (PDF y XML).",
             invalidFileSize: "El tamaño máximo del archivo es de 1 MB.",
             invalidFileSizeMessageSummary: "Archivo demasiado grande",
-            invalidFileType: "Solo se permiten archivos PDF y XML.",
-            invalidAllFilesSize: "El tamaño máximo de los archivos es de 1 MB.",
+            invalidFileType: "Solo se permiten archivos PDF, XML, PNG Y JPEG.",
+            invalidAllFilesSize: "El tamaño máximo de los archivos es de 20 MB.",
         },
         animationSuccess: {
             title: "Factura cargada.",
@@ -91,6 +175,7 @@ const invoices = {
             uploadError: "Error al cargar la factura. Por favor, verifica los archivos y referencia y vuelve a intentarlo.",
             getReferencesError: "Error al obtener las referencias. Por favor, intenta nuevamente más tarde.",
             updateStatusError: "Error al actualizar el estado de la factura. Por favor, intenta nuevamente más tarde.",
+            uploadValidXmlError: "Error al enviar el xml para su validación"
         },
         rejectComments: {
             label: "Comentarios:",
@@ -106,6 +191,7 @@ const invoices = {
         getFunctionalAreasError: "Error al obtener las áreas funcionales. Por favor, intenta nuevamente más tarde.",
         getPartnersError: "Error al obtener los proveedores. Por favor, intenta nuevamente más tarde.", 
         getCompaniesError: "Error al obtener las empresas. Por favor, intenta nuevamente más tarde.",
+        getUrlsFilesError: "Error al obtener los archivos de la factura"
     },
     btnDownloadFiles: "Descargar archivos",
     dpsDateLimitText: "Fecha limite de carga de facturas:",
@@ -152,11 +238,16 @@ const invoices = {
             amount: "Cantidad",
             status: "Estatus",
             files: "Archivos",
-            date: "Fecha de carga",
+            date: "Fecha de emisión",
             payday: "Fecha de pago",
         },
         currentPageReportTemplate: "Mostrando {first} a {last} de {totalRecords} registros",
         emptyMessage: "Sin datos para mostrar.",   
+    },
+    fileViewer: {
+        btnShowFiles: "Mostrar archivos",
+        btnHideFiles: "Ocultar archivos",
+        noFile: "Archivo no disponible"
     }
 }
 

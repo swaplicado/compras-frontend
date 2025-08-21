@@ -12,15 +12,42 @@ interface CustomFileUploadProps {
     totalSize: number;
     setTotalSize: React.Dispatch<React.SetStateAction<number>>;
     errors: {
-        files: boolean;
-        includePdf: boolean;
-        includeXml: boolean;
+        files?: boolean;
+        includePdf?: boolean;
+        includeXml?: boolean;
     };
     setErrors: React.Dispatch<React.SetStateAction<any>>;
     message: React.RefObject<Messages>;
+    multiple: boolean;
+    onFileSelect?: (validFiles: File[]) => void;
+    onFileRemove?: () => void;
+    disabled?: boolean;
+    allowedExtensions: Array<string>
+    allowedExtensionsNames: string;
+    maxFilesSize: number;
+    maxFileSizeForHuman: string;
+    errorMessages: Record<string, any>;
+    onClearCallback?: () => void;
 }
 
-export const CustomFileUpload = ({ fileUploadRef, totalSize, setTotalSize, errors, setErrors, message }: CustomFileUploadProps) => {
+export const CustomFileUpload = ({ 
+        fileUploadRef, 
+        totalSize, 
+        setTotalSize, 
+        errors, 
+        setErrors, 
+        message, 
+        multiple, 
+        onFileSelect,
+        onFileRemove,
+        disabled = false,
+        allowedExtensions, 
+        allowedExtensionsNames,
+        maxFilesSize,
+        maxFileSizeForHuman,
+        errorMessages,
+        onClearCallback
+    }: CustomFileUploadProps) => {
     const { t } = useTranslation('invoices');
     const { t: tCommon } = useTranslation('common');
 
@@ -40,7 +67,7 @@ export const CustomFileUpload = ({ fileUploadRef, totalSize, setTotalSize, error
 
     const headerTemplate = (options: FileUploadHeaderTemplateOptions) => {
         const { className, chooseButton, cancelButton } = options;
-        const value = totalSize / 10000;
+        const value = totalSize / maxFilesSize;
         const formatedValue = fileUploadRef.current?.formatSize(totalSize) || '0 B';
 
         return (
@@ -48,7 +75,7 @@ export const CustomFileUpload = ({ fileUploadRef, totalSize, setTotalSize, error
                 {chooseButton}
                 {cancelButton}
                 <div className="flex align-items-center gap-3 ml-auto">
-                    <span>{formatedValue} / 1 MB</span>
+                    <span>{formatedValue} / {maxFileSizeForHuman}</span>
                     <ProgressBar value={value} showValue={false} style={{ width: '10rem', height: '12px' }} />
                 </div>
             </div>
@@ -57,13 +84,18 @@ export const CustomFileUpload = ({ fileUploadRef, totalSize, setTotalSize, error
 
     const emptyTemplate = () => (
         <div className="flex align-items-center flex-column">
-            <span style={{ fontSize: '1.2em', padding: '1rem' }}>{t('uploadDialog.files.placeholder')}</span>
+            <span style={{ fontSize: '1.2em', padding: '1rem' }}>{ multiple ? t('uploadDialog.files.placeholderMultiple') : t('uploadDialog.files.placeholderSingle') }</span>
         </div>
     );
 
     const onTemplateRemove = (file: File, callback: Function) => {
         setTotalSize((prev) => prev - file.size);
         callback();
+        
+        if (onFileRemove) {
+            onFileRemove();
+        }
+
     };
 
     const itemTemplate = (inFile: object, props: ItemTemplateOptions) => {
@@ -94,12 +126,12 @@ export const CustomFileUpload = ({ fileUploadRef, totalSize, setTotalSize, error
         let validType = true;
 
         for (const file of e.files) {
-            if (!validateFileType(file, ['application/pdf', 'text/xml'])) {
+            if (!validateFileType(file, allowedExtensions)) {
                 validType = false;
                 continue;
             }
 
-            if (_totalSize > 1000000) {
+            if (_totalSize > maxFilesSize) {
                 validSizes = false;
                 continue;
             }
@@ -110,12 +142,16 @@ export const CustomFileUpload = ({ fileUploadRef, totalSize, setTotalSize, error
 
         if (!validType) {
             fileUploadRef.current?.setFiles(validFiles);
-            addErrorMessage(t('uploadDialog.files.invalidFileType'));
+            addErrorMessage(errorMessages.invalidFileType);
         }
 
         if (!validSizes) {
             fileUploadRef.current?.setFiles(validFiles);
-            addErrorMessage(t('uploadDialog.files.invalidAllFilesSize'));
+            addErrorMessage(errorMessages.invalidAllFilesSize);
+        }
+
+        if (onFileSelect && validFiles.length > 0) {
+            onFileSelect(validFiles);
         }
 
         setErrors((prev: any) => ({
@@ -128,17 +164,28 @@ export const CustomFileUpload = ({ fileUploadRef, totalSize, setTotalSize, error
         setTotalSize(_totalSize);
     };
 
-    const onTemplateClear = () => setTotalSize(0);
+    const onTemplateClear = () => {
+        setTotalSize(0);
+        const currentFiles = fileUploadRef.current?.getFiles() || [];
+        if (onFileRemove) {
+            onFileRemove();
+        }
+
+        if (onClearCallback) {
+            onClearCallback();
+        }
+    } 
 
     return (
         <>
             <Messages ref={message} />
             <FileUpload
+                disabled={disabled}
                 ref={fileUploadRef}
                 name="files[]"
-                multiple
-                accept="application/pdf, text/xml"
-                maxFileSize={1000000}
+                multiple={multiple}
+                accept={allowedExtensionsNames}
+                maxFileSize={maxFilesSize}
                 headerTemplate={headerTemplate}
                 chooseOptions={chooseOptions}
                 cancelOptions={cancelOptions}
@@ -147,8 +194,8 @@ export const CustomFileUpload = ({ fileUploadRef, totalSize, setTotalSize, error
                 onSelect={onTemplateSelect}
                 onError={onTemplateClear}
                 onClear={onTemplateClear}
-                invalidFileSizeMessageDetail={t('uploadDialog.files.invalidFileSize')}
-                invalidFileSizeMessageSummary={t('uploadDialog.files.invalidFileSizeMessageSummary')}
+                invalidFileSizeMessageDetail={errorMessages.invalidFileSize}
+                invalidFileSizeMessageSummary={errorMessages.invalidFileSizeMessageSummary}
                 pt={{
                     content: {
                         className: 'p-0 border-dashed',
@@ -166,9 +213,9 @@ export const CustomFileUpload = ({ fileUploadRef, totalSize, setTotalSize, error
                         : {}
                 }
             />
-            {errors.files && <small className="p-error">{t('uploadDialog.files.helperTextFiles')}</small>}
-            {errors.includePdf && <small className="p-error">{t('uploadDialog.files.helperTextPdf')}</small>}
-            {errors.includeXml && <small className="p-error">{t('uploadDialog.files.helperTextXml')}</small>}
+            {errors.files && <small className="p-error">{errorMessages?.helperTextFiles}</small>}
+            {errors.includePdf && <small className="p-error">{errorMessages?.helperTextPdf}</small>}
+            {errors.includeXml && <small className="p-error">{errorMessages?.helperTextXml}</small>}
         </>
     );
 };
