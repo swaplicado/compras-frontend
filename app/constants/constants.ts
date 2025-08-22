@@ -10,10 +10,10 @@ const constants = {
     //Array de ids de roles
     ROLES: {
         ADMINISTRADOR_ID: 1,
-        COMPRADOR_ID: 1,
-        CONTADOR_ID: 2,
-        PAGADOR_ID: 3,
-        PROVEEDOR_ID: 4,
+        COMPRADOR_ID: 2,
+        CONTADOR_ID: 3,
+        PAGADOR_ID: 4,
+        PROVEEDOR_ID: 5,
     },
     
     //Rutas de peticiones backend (transactions-backend, users-backend, compras-backend, etc.)
