@@ -6,6 +6,7 @@ import { Dropdown } from 'primereact/dropdown';
 import constants from '@/app/constants/constants';
 import DateFormatter from '@/app/components/commons/formatDate';
 import { Calendar } from 'primereact/calendar';
+import { InputNumber } from 'primereact/inputnumber';
 
 interface InvoiceFieldsProps {
     dialogMode: 'create' | 'edit' | 'view' | 'review';
@@ -322,17 +323,19 @@ export const InvoiceFields = ({ dialogMode, oDps, setODps, errors, setErrors, oP
                             data-pr-my="left center-2"
                             style={{ fontSize: '1rem', cursor: 'pointer' }}
                         ></i>
-                        <InputText
+                        <InputNumber
                             type="text"
                             placeholder={t('uploadDialog.amount.placeholder')}
                             className={`w-full ${errors.amount ? 'p-invalid' : ''}`}
                             value={oDps.amount}
                             onChange={(e) => {
-                                setODps((prev: any) => ({ ...prev, amount: e.target.value }));
+                                setODps((prev: any) => ({ ...prev, amount: e.value }));
                                 setErrors((prev: any) => ({ ...prev, amount: false }));
                             }}
                             disabled={disabled}
                             maxLength={50}
+                            minFractionDigits={2}
+                            maxFractionDigits={2}
                         />
                         {errors.amount && <small className="p-error">{t('uploadDialog.amount.helperText')}</small>}
                     </div>
@@ -355,7 +358,7 @@ export const InvoiceFields = ({ dialogMode, oDps, setODps, errors, setErrors, oP
                         <Dropdown 
                             value={oDps.currency} 
                             onChange={(e) => {
-                                setODps((prev: any) => ({ ...prev, currency: e.target.value }));
+                                setODps((prev: any) => ({ ...prev, currency: e.value }));
                                 setErrors((prev: any) => ({ ...prev, currency: false }));
                             }} 
                             options={lCurrencies} 
@@ -379,17 +382,19 @@ export const InvoiceFields = ({ dialogMode, oDps, setODps, errors, setErrors, oP
                             data-pr-my="left center-2"
                             style={{ fontSize: '1rem', cursor: 'pointer' }}
                         ></i>
-                        <InputText
+                        <InputNumber
                             type="text"
                             placeholder={t('uploadDialog.exchange_rate.placeholder')}
                             className={`w-full ${errors.exchange_rate ? 'p-invalid' : ''}`}
                             value={oDps.exchange_rate}
                             onChange={(e) => {
-                                setODps((prev: any) => ({ ...prev, exchange_rate: e.target.value }));
+                                setODps((prev: any) => ({ ...prev, exchange_rate: e.value }));
                                 setErrors((prev: any) => ({ ...prev, exchange_rate: false }));
                             }}
                             disabled={disabled}
                             maxLength={50}
+                            minFractionDigits={2}
+                            maxFractionDigits={2}
                         />
                         {errors.exchange_rate && <small className="p-error">{t('uploadDialog.exchange_rate.helperText')}</small>}
                     </div>

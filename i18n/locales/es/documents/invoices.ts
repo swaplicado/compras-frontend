@@ -148,6 +148,20 @@ const invoices = {
             tooltip: "Selecciona la fecha de pago de la factura.",
             tooltipReview: "Esta es la fecha de pago asociada a la factura.",
         },
+        percentOption: {
+            label: "Porcentaje de pago:",
+            placeholder: "Selecciona porcentaje de pago",
+            helperText: "Por favor selecciona una opcion.",
+            tooltip: "Selecciona el porcentaje de pago de la factura.",
+            tooltipReview: "Este es el porcentaje de pago de la factura.",
+        },
+        aceptNotes: {
+            label: "Notas de factura:",
+            placeholder: "Ingresa las notas de las factura",
+            helperText: "Por favor ingresa las notas.",
+            tooltip: "Notas de la factura.",
+            tooltipReview: "Estas son las notas de la factura.",
+        },
         files: {
             label: "* Archivos de factura:",
             placeholderMultiple: "Suelte los archivos aquí para comenzar a cargarlos",
@@ -178,7 +192,7 @@ const invoices = {
             uploadValidXmlError: "Error al enviar el xml para su validación"
         },
         rejectComments: {
-            label: "Comentarios:",
+            label: "Comentarios de aprobación/rechazo:",
             placeholder: "Ingresa los comentarios.",
             helperText: "Por favor ingresa los comentarios de rechazo. Luego vuelve a presionar el botón de rechazar.",
             tooltip: "Ingresa los comentarios de rechazo si la factura es rechazada. Luego vuelve a presionar el botón de rechazar.",
@@ -240,6 +254,7 @@ const invoices = {
             files: "Archivos",
             date: "Fecha de emisión",
             payday: "Fecha de pago",
+            payment_percentage: "Porcentaje de pago",
         },
         currentPageReportTemplate: "Mostrando {first} a {last} de {totalRecords} registros",
         emptyMessage: "Sin datos para mostrar.",   

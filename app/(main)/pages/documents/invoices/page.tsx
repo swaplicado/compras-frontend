@@ -37,6 +37,9 @@ interface reviewFormData {
     amount: string;
     exchangeRate: string;
     xml_date: string;
+    payment_percentage: string;
+    notes: string;
+    authz_acceptance_notes: string;
 }
 
 interface dataDps {
@@ -163,7 +166,10 @@ const TableDemo = () => {
                         amount: data[i].amount,
                         currency: data[i].currency,
                         exchange_rate: data[i].exchange_rate,
-                        payday: data[i].payday
+                        payday: data[i].payment_date,
+                        payment_percentage: data[i].payment_percentage,
+                        notes: data[i].notes,
+                        authz_acceptance_notes: data[i].authz_acceptance_notes
                     });
                 }
                 setLDps(dps);
@@ -633,7 +639,10 @@ const TableDemo = () => {
             currency: e.data.currency,
             amount: e.data.amount,
             exchangeRate: e.data.exchange_rate,
-            xml_date: e.data.date
+            xml_date: e.data.date,
+            payment_percentage: e.data.payment_percentage,
+            notes: e.data.notes,
+            authz_acceptance_notes: e.data.authz_acceptance_notes
         };
         setFormData(data);
         setDialogMode('review');
@@ -763,6 +772,9 @@ const TableDemo = () => {
                         <Column field="company_rfc" header="id" hidden />
                         <Column field="company_tax_regime" header="id" hidden />
                         <Column field="dateFormated" header="dateFormated" hidden/>
+                        <Column field="payment_percentage" header='payment_percentage' hidden />
+                        <Column field="notes" header="notes" hidden/>
+                        <Column field="authz_acceptance_notes" header="authz_acceptance_notes" hidden/>
                         <Column
                             field="company"
                             header={t('invoicesTable.columns.company')}

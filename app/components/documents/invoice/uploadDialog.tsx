@@ -15,7 +15,6 @@ import { FileUpload } from 'primereact/fileupload';
 import { InputTextarea } from 'primereact/inputtextarea';
 import moment from 'moment';
 import { Calendar } from 'primereact/calendar';
-import { Nullable } from 'primereact/ts-helpers';
 import { addLocale } from 'primereact/api';
 import DateFormatter from '@/app/components/commons/formatDate';
 import { CustomFileViewer } from './fileViewer';
@@ -25,6 +24,8 @@ import { ProgressSpinner } from 'primereact/progressspinner';
 import { findFiscalRegime } from '@/app/(main)/utilities/files/catFinder';
 import { findCurrency } from '@/app/(main)/utilities/files/catFinder';
 import { getExtensionFileByName } from '@/app/(main)/utilities/files/fileValidator';
+import { SelectButton } from 'primereact/selectbutton';
+import { InputNumber, InputNumberValueChangeEvent } from 'primereact/inputnumber';
 interface reviewFormData {
     company: { id: string; name: string };
     partner: { id: string; name: string };
@@ -43,6 +44,9 @@ interface reviewFormData {
     amount: string;
     exchangeRate: string;
     xml_date: string;
+    payment_percentage: string;
+    notes: string;
+    authz_acceptance_notes: string;
 }
 
 interface UploadDialogProps {
@@ -117,12 +121,10 @@ export default function UploadDialog({
     const message = useRef<Messages>(null);
     const { t } = useTranslation('invoices');
     const { t: tCommon } = useTranslation('common');
-    const [rejectComments, setRejectComments] = useState('');
     const [isRejected, setIsRejected] = useState(false);
     const [successMessage, setSuccessMessage] = useState('');
     const successTitle = dialogMode == 'create' ? t('uploadDialog.animationSuccess.title') : t('uploadDialog.animationSuccess.titleReview');
     const errorTitle = dialogMode == 'create' ? t('uploadDialog.animationError.title') : t('uploadDialog.animationError.titleReview');
-    const [payDate, setPayDate] = useState<Nullable<Date>>(null);
     const [oDps, setODps] = useState<any>({
         serie: '',
         folio: '',
@@ -155,6 +157,15 @@ export default function UploadDialog({
     const [loadingValidateXml, setLoadingValidateXml] = useState(false);
     const [lUrlFiles, setLUrlFiles] = useState<any[]>([]);
     const [loadingUrlsFiles, setLoadingUrlsFiles] = useState(false);
+    const [percentOption, setPercentOption] = useState<string | undefined>();
+
+    const [lWarnings, setlWarnings] = useState<any>([]);
+
+    const lPercentOptions = [
+        'Todo',
+        'Parcial',
+        'Nada'
+    ];
 
     useEffect(() => {
         if (xmlValidateErrors.addedXml && xmlValidateErrors.isValid && xmlValidateErrors.errors.length == 0) {
@@ -232,7 +243,7 @@ export default function UploadDialog({
             //           (oValidUser.isProvider ? oValidUser.isProviderMexico : isLocalProvider)
             //         : false,
             includeXml: false,
-            rejectComments: dialogMode === 'review' && isRejected && rejectComments.trim() === '',
+            rejectComments: dialogMode === 'review' && isRejected && oDps.authz_acceptance_notes.trim() === '',
             xmlValidateFile: xmlUploadRef.current?.getFiles().length === 0
         };
         setErrors(newErrors);
@@ -288,7 +299,9 @@ export default function UploadDialog({
                 date: moment(oDps.xml_date).format('YYYY-MM-DD'),
                 currency: oDps.currency?.id || '',
                 amount: oDps.amount,
-                exchange_rate: oDps.exchange_rate
+                exchange_rate: oDps.exchange_rate,
+                payment_method: oDps.payment_method?.id || '',
+                fiscal_use: oDps.use_cfdi?.id || ''
             };
 
             formData.append('document', JSON.stringify(document));
@@ -333,26 +346,36 @@ export default function UploadDialog({
         }
     };
 
+    useEffect(() =>  {
+        if(percentOption == "Todo"){
+            setODps((prev: any) => ({ ...prev, payment_percentage: 100 }));
+        } else if(percentOption == "Nada"){
+            setODps((prev: any) => ({ ...prev, payment_percentage: 0 }));
+        }
+    }, [percentOption])
+
     const handleReview = async (reviewOption: string) => {
         try {
             setLoading(true);
 
             if (reviewOption == constants.REVIEW_REJECT) {
                 setIsRejected(true);
-                if (!rejectComments.trim()) {
+                if (!oDps.authz_acceptance_notes.trim()) {
                     setErrors((prev) => ({ ...prev, rejectComments: true }));
                     return;
                 }
             }
 
-            const date = payDate ? DateFormatter(payDate, 'YYYY-MM-DD') : '';
+            const date = oDps.payday ? DateFormatter(oDps.payday, 'YYYY-MM-DD') : '';
             const route = '/transactions/documents/' + reviewFormData?.dpsId + '/set-authz/';
             const response = await axios.post(constants.API_AXIOS_PATCH, {
                 route,
                 jsonData: {
                     authz_code: reviewOption,
-                    authz_acceptance_notes: rejectComments,
-                    payday: date
+                    authz_acceptance_notes: oDps.authz_acceptance_notes,
+                    payment_date: date,
+                    payment_percentage: oDps.payment_percentage,
+                    notes: oDps.notes
                 }
             });
 
@@ -427,6 +450,34 @@ export default function UploadDialog({
         }
     };
 
+    const getlWarnings = async (dpsId: string | number) => {
+        try {
+            const route = "/transactions/documents/" + dpsId + "/warnings/";
+            const response = await axios.get(constants.API_AXIOS_GET, {
+                params: {
+                    route: route,
+                }
+            });
+
+            if (response.status === 200) {
+                const data = response.data.data || [];
+                
+                let lWarnings: any[] = [];
+                for (const item of data) {
+                    const warnings = item.warning;
+                    for ( const sWarn of warnings.warnings) {
+                        lWarnings.push(sWarn);
+                    }
+                }
+                setlWarnings(lWarnings);
+            } else {
+                throw new Error(`${t('errors.getUrlsFilesError')}: ${response.statusText}`);
+            }
+        } catch (error) {
+            
+        }
+    }
+
     useEffect(() => {
         setResultUpload('waiting');
         setErrors({
@@ -481,11 +532,10 @@ export default function UploadDialog({
             setSelectProvider({ ...reviewFormData.partner, country: constants.COUNTRIES.MEXICO_ID });
             setSelectReference(reviewFormData.reference);
             setIsRejected(false);
-            setRejectComments('');
             setTotalSize(0);
-            setPayDate(reviewFormData.payday ? new Date(reviewFormData.payday + 'T00:00:00') : null);
-
+            
             setODps({
+                dpsId: reviewFormData.dpsId,
                 serie: reviewFormData.series,
                 folio: reviewFormData.number,
                 xml_date: reviewFormData.xml_date,
@@ -498,9 +548,14 @@ export default function UploadDialog({
                 amount: reviewFormData.amount,
                 currency: findCurrency(lCurrencies, reviewFormData.currency),
                 exchange_rate: reviewFormData.exchangeRate,
+                payment_percentage: reviewFormData.payment_percentage,
+                notes: reviewFormData.notes,
+                authz_acceptance_notes: reviewFormData.authz_acceptance_notes,
+                payday: reviewFormData.payday ? new Date(reviewFormData.payday + 'T00:00:00') : null
             });
 
             getlUrlFilesDps();
+            getlWarnings(reviewFormData.dpsId);
         }
     }, [visible, oValidUser.isInternalUser, partnerId]);
 
@@ -571,9 +626,9 @@ export default function UploadDialog({
                 cols={30}
                 autoResize
                 className={`w-full ${errors.rejectComments ? 'p-invalid' : ''}`}
-                value={rejectComments}
+                value={oDps.authz_acceptance_notes}
                 onChange={(e) => {
-                    setRejectComments(e.target.value);
+                    setODps( (prev: any) => ({ ...prev, authz_acceptance_notes: e.target.value } ));
                     setErrors((prev) => ({ ...prev, rejectComments: false }));
                 }}
                 disabled={dialogMode === 'view'}
@@ -586,11 +641,24 @@ export default function UploadDialog({
     const inputRef = useRef<HTMLInputElement>(null);
     useEffect(() => {
         setTimeout(() => {
-            if (inputRef.current && payDate) {
-                inputRef.current.value = DateFormatter(payDate);
+            if (inputRef.current && oDps.payday) {
+                inputRef.current.value = DateFormatter(oDps.payday);
             }
         }, 100);
-    }, [payDate]);
+    }, [oDps.payday]);
+
+    useEffect(() => {
+        if (oDps.payment_percentage) {
+            if (oDps.payment_percentage == 100) {
+                setPercentOption(lPercentOptions[0]);
+            } else if (oDps.payment_percentage == 0) {
+                setPercentOption(lPercentOptions[2]);
+            } else {
+                setPercentOption(lPercentOptions[1]);
+            }
+                
+        }
+    }, [oDps.payment_percentage])
 
     return (
         <div className="flex justify-content-center">
@@ -622,6 +690,30 @@ export default function UploadDialog({
                 {resultUpload === 'waiting' && (
                     <div className="col-12">
                         {renderInfoButton()}
+
+                        {dialogMode == 'review' && lWarnings.length > 0 && (
+                                <div className="field col-12 md:col-12">
+                                    <div className="formgrid grid">
+                                        <div className="col">
+                                        <label>{t('uploadDialog.xml_warnings.label')}</label>
+                                            &nbsp;
+                                            <Tooltip target=".custom-target-icon" />
+                                            <i
+                                                className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
+                                                data-pr-tooltip={t('uploadDialog.xml_warnings.tooltip')}
+                                                data-pr-position="right"
+                                                data-pr-my="left center-2"
+                                                style={{ fontSize: '1rem', cursor: 'pointer' }}
+                                            ></i>
+                                            <ul>
+                                                { lWarnings.map((warning: any, index: number) => (
+                                                    <li key={index} className='text-orange-500'>{warning}</li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
 
                         <div className="p-fluid formgrid grid">
                             {renderDropdownField(
@@ -770,26 +862,97 @@ export default function UploadDialog({
                                                     style={{ fontSize: '1rem', cursor: 'pointer' }}
                                                 ></i>
                                                 <Calendar
-                                                    value={payDate}
+                                                    value={oDps.payday}
                                                     placeholder={t('uploadDialog.payDay.placeholder')}
-                                                    onChange={(e) => setPayDate(e.value)}
+                                                    onChange={(e) => setODps((prev: any) => ({ ...prev, payDate: e.value }))}
                                                     showIcon
                                                     locale="es"
                                                     inputRef={inputRef}
                                                     onSelect={() => {
-                                                        if (inputRef.current && payDate) {
-                                                            inputRef.current.value = DateFormatter(payDate);
+                                                        if (inputRef.current && oDps.payday) {
+                                                            inputRef.current.value = DateFormatter(oDps.payday);
                                                         }
                                                     }}
                                                     onBlur={() => {
-                                                        if (inputRef.current && payDate) {
-                                                            inputRef.current.value = DateFormatter(payDate);
+                                                        if (inputRef.current && oDps.payday) {
+                                                            inputRef.current.value = DateFormatter(oDps.payday);
                                                         }
                                                     }}
                                                 />
                                             </div>
                                         </div>
                                     </div>
+                                ))}
+                            {dialogMode == 'view' ||
+                                (dialogMode == 'review' && (
+                                    <>
+                                        <div className="field col-12 md:col-6">
+                                            <div className="formgrid grid">
+                                                <div className="col">
+                                                    <label>{t('uploadDialog.percentOption.label')}</label>
+                                                    &nbsp;
+                                                    <Tooltip target=".custom-target-icon" />
+                                                    <i
+                                                        className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
+                                                        data-pr-tooltip={t('uploadDialog.percentOption.tooltip')}
+                                                        data-pr-position="right"
+                                                        data-pr-my="left center-2"
+                                                        style={{ fontSize: '1rem', cursor: 'pointer' }}
+                                                    ></i>
+                                                    <SelectButton value={percentOption} onChange={(e) => setPercentOption(e.value)}  options={lPercentOptions} style={{ height: '2rem', marginTop: '5px' }}/>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        { percentOption == 'Parcial' || oDps.payment_percentage > -1 ? (
+                                                <div className="field col-12 md:col-6">
+                                                    <div className="formgrid grid">
+                                                        <div className="col">
+                                                            <label>{t('uploadDialog.percentOption.label')}</label>
+                                                            &nbsp;
+                                                            <Tooltip target=".custom-target-icon" />
+                                                            <i
+                                                                className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
+                                                                data-pr-tooltip={t('uploadDialog.percentOption.tooltip')}
+                                                                data-pr-position="right"
+                                                                data-pr-my="left center-2"
+                                                                style={{ fontSize: '1rem', cursor: 'pointer' }}
+                                                            ></i>
+                                                            <div className="p-inputgroup flex-1">
+                                                                <span className="p-inputgroup-addon">%</span>
+                                                                <InputNumber placeholder="Porcentaje" value={oDps.payment_percentage} onChange={(e) => setODps( (prev: any) => ({ ...prev, payment_percentage: e.value }) )} min={0} max={100} />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                        ) : ''}
+
+                                        <div className="field col-12 md:col-12">
+                                            <div className="formgrid grid">
+                                                <div className="col">
+                                                    <label>{t('uploadDialog.aceptNotes.label')}</label>
+                                                    &nbsp;
+                                                    <Tooltip target=".custom-target-icon" />
+                                                    <i
+                                                        className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
+                                                        data-pr-tooltip={t('uploadDialog.aceptNotes.tooltip')}
+                                                        data-pr-position="right"
+                                                        data-pr-my="left center-2"
+                                                        style={{ fontSize: '1rem', cursor: 'pointer' }}
+                                                    ></i>
+                                                    <InputTextarea
+                                                        id="notes"
+                                                        rows={3}
+                                                        cols={30}
+                                                        autoResize
+                                                        className={`w-full`}
+                                                        value={oDps.notes}
+                                                        onChange={(e) => setODps( (prev: any) => ({ ...prev, notes: e.target.value } ))}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </>
                                 ))}
 
                             {dialogMode !== 'view' && dialogMode !== 'review' && (isXmlValid || (selectProvider ? selectProvider.country != constants.COUNTRIES.MEXICO_ID : false)) && (
@@ -834,9 +997,7 @@ export default function UploadDialog({
                             (dialogMode == 'review' &&
                                 (!loadingUrlsFiles ? (
                                     // Estos son datos de prueba, falta funcion para cargar datos reales (en proceso)
-                                    <CustomFileViewer
-                                        lFiles={ lUrlFiles }
-                                    />
+                                    <CustomFileViewer lFiles={lUrlFiles} />
                                 ) : (
                                     <ProgressSpinner style={{ width: '50px', height: '50px' }} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />
                                 )))}
