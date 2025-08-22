@@ -14,6 +14,11 @@
             "label": "Documentos",
             "items": [
                 { 
+                    "label": "Órdenes compras", 
+                    "icon": "bx bx-file bx-sm", 
+                    "to": "/pages/documents/orders"
+                },
+                { 
                     "label": "Facturas", 
                     "icon": "bx bx-file bx-sm", 
                     "to": "/pages/documents/invoices"

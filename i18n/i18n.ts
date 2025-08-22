@@ -5,6 +5,7 @@ import { initReactI18next } from 'react-i18next';
 // Importaciones de los namespaces
 import esLogin from './locales/es/auth/login';
 import esInvoices from './locales/es/documents/invoices';
+import esOrders from './locales/es/documents/orders';
 import common from './locales/es/commons';
 import esTopBar from './locales/es/topBar/topBar';
 import esChangePassword from './locales/es/changePassword/changePassword';
@@ -22,6 +23,7 @@ i18n
       es: {
         login: esLogin,
         invoices: esInvoices,
+        orders: esOrders,
         common: common,
         topBar: esTopBar,
         changePassword: esChangePassword,
