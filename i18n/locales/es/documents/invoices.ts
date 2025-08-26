@@ -31,7 +31,7 @@ const invoices = {
             tooltipReview: "Este es el proveedor asociado a la factura.",
         },
         company:  {
-            label: "* Entidad comercial:",
+            label: "* Empresa:",
             placeholder: "Selecciona una empresa",
             helperText: "Por favor selecciona una empresa.",
             tooltip: "Selecciona la empresa a la que pertenece la factura.",
@@ -93,11 +93,11 @@ const invoices = {
             tooltipReview: "Este es el RFC del emisor de la factura.",
         },
         tax_regime_issuer: {
-            label: "* Regimen fiscal emisor",
-            placeholder: "ingresa regimen fiscal emisor",
-            helperText: "Por favor ingresa el regimen fiscal del emisor.",
-            tooltip: "Ingresa el regimen fiscal del emisor de la factura.",
-            tooltipReview: "Este es el regimen fiscal del emisor de la factura."
+            label: "* Régimen fiscal emisor",
+            placeholder: "ingresa régimen fiscal emisor",
+            helperText: "Por favor ingresa el régimen fiscal del emisor.",
+            tooltip: "Ingresa el régimen fiscal del emisor de la factura.",
+            tooltipReview: "Este es el régimen fiscal del emisor de la factura."
         },
         rfc_receiver: {
             label: "* RFC receptor",
@@ -107,11 +107,11 @@ const invoices = {
             tooltipReview: "Este es el RFC del receptor de la factura.",
         },
         tax_regime_receiver: {
-            label: "* Regimen fiscal receptor",
-            placeholder: "ingresa regimen fiscal receptor",
-            helperText: "Por favor ingresa el regimen fiscal del receptor.",
-            tooltip: "Ingresa el regimen fiscal del receptor de la factura.",
-            tooltipReview: "Este es el regimen fiscal del receptor de la factura.",
+            label: "* Régimen fiscal receptor",
+            placeholder: "ingresa régimen fiscal receptor",
+            helperText: "Por favor ingresa el régimen fiscal del receptor.",
+            tooltip: "Ingresa el régimen fiscal del receptor de la factura.",
+            tooltipReview: "Este es el régimen fiscal del receptor de la factura.",
         },
         use_cfdi: {
             label: "* Uso CFDI",
@@ -244,7 +244,7 @@ const invoices = {
     },
     invoicesTable: {
         columns: {
-            company: "Entidad comercial",
+            company: "Empresa",
             provider_name: "Proveedor",
             serie: "Serie",
             folio: "Folio",

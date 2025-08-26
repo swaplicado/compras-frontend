@@ -1,6 +1,5 @@
 'use client';
 import React, { useContext, useRef, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { classNames } from 'primereact/utils';
 import { LayoutContext } from '../../../../layout/context/layoutcontext';
 import { Button } from 'primereact/button';
@@ -9,6 +8,8 @@ import loaderScreen from '@/app/components/commons/loaderScreen';
 import axios from 'axios';
 import { InputText } from 'primereact/inputtext';
 import { useTranslation } from 'react-i18next';
+import { Tooltip } from 'primereact/tooltip';
+import 'boxicons/css/boxicons.min.css';
 
 const ResetPassword = () => {
     const { layoutConfig } = useContext(LayoutContext);
@@ -21,6 +22,7 @@ const ResetPassword = () => {
     const { t: tCommon } = useTranslation('common');
     const [ expiredTime, setExpiredTime ] = useState('');
     const [ secretEmail, setSecretEmail ] = useState('');
+    const [ noSecretEmail, setNoSecretEmail ] = useState(false);
 
     const containerClassName = classNames('surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden, background-image', {
         'p-input-filled': layoutConfig.inputStyle === 'filled'
@@ -50,8 +52,13 @@ const ResetPassword = () => {
             });
 
             if (result.status === 200) {
-                setExpiredTime(result.data.data.expired_time);
-                setSecretEmail(result.data.data.secret_email);
+                if (result.data.data.expired_time && result.data.data.secret_email) {
+                    setExpiredTime(result.data.data.expired_time);
+                    setSecretEmail(result.data.data.secret_email);
+                } else {
+                    setNoSecretEmail(true);
+                }
+                
                 setSendResultOk(true);
             }
         } catch (error) {
@@ -100,9 +107,17 @@ const ResetPassword = () => {
                     { !sendResultOk && (
                         <div className='w-full surface-card py-8 px-5 sm:px-8' style={{ borderRadius: '53px' }}>
                             <div className='mb-5'>
-                                <p className='mb-5 w-full md:w-30rem'>
-                                    <span className='text-600 font-medium'>{t('description')}</span>
-                                </p>
+                                <ul className='mb-5 w-full md:w-30rem'>
+                                    <li>
+                                        {t('descriptionProvider')}
+                                    </li>
+                                    <li>
+                                        {t('descriptionExtProvider')}
+                                    </li>
+                                    <li>
+                                        {t('descriptionInternalUser')}
+                                    </li>
+                                </ul>
                                 <label htmlFor='Usuario' className='block text-900 text-xl font-medium mb-2'>
                                     {t('resetPassword.label')}
                                 </label>
@@ -131,11 +146,25 @@ const ResetPassword = () => {
                         </div>
                     ) }
 
-                    {sendResultOk && (
+                    {sendResultOk && !noSecretEmail && (
                         <div className='w-full max-w-screen-md mx-auto surface-card py-8 px-5 sm:px-8' style={{ borderRadius: '53px' }}>
                             <div className='mb-5'>
                                 <label htmlFor='username' className='block text-900 text-xl font-medium mb-2'>
                                     {t('emailSentMessage', { secretEmail, expiredTime })}
+                                </label>
+                            </div>
+                        
+                            <div className='flex align-items-center justify-content-between mb-5 gap-5'>
+                                <Button label={t('btnBackToLogin')} className="flex align-items-center justify-content-center bg-primary font-bold border-round " onClick={handleExit}></Button>
+                            </div>
+                        </div>
+                    )}
+
+                    {sendResultOk && noSecretEmail && (
+                        <div className='w-full max-w-screen-md mx-auto surface-card py-8 px-5 sm:px-8' style={{ borderRadius: '53px' }}>
+                            <div className='mb-5'>
+                                <label htmlFor='username' className='block text-900 text-xl font-medium mb-2'>
+                                    {t('noSecretEmail', { username })}
                                 </label>
                             </div>
                         

@@ -2,10 +2,11 @@
     "mainRoute": "https://backend-users-test-515680676790.us-central1.run.app",
     "apiKey": "AIzaSyDlskxETi2HFbsl2AWwBzktGkoUtUwnktU",
     "groups": [
-        { "id": 1, "name": "comprador" },
-        { "id": 2, "name": "contador" },
-        { "id": 3, "name": "pagador" },
-        { "id": 4, "name": "proveedor" }
+        { "id": 1, "name": "admin" },
+        { "id": 2, "name": "comprador" },
+        { "id": 3, "name": "contador" },
+        { "id": 4, "name": "pagador" },
+        { "id": 5, "name": "proveedor" }
     ],
     "apiTransactionsUrl" : "https://transaction-backend-test-515680676790.europe-west1.run.app/api"
 }

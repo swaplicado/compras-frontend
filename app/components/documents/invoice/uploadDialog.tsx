@@ -234,7 +234,7 @@ export default function UploadDialog({
             reference: !selectReference,
             provider: oValidUser.isInternalUser && !selectProvider,
             company: !selectCompany,
-            folio: oDps.folio.trim() === '',
+            folio: false,
             files: (fileUploadRef.current?.getFiles().length || 0) === 0,
             includePdf: fileUploadRef.current?.getFiles().length || 0 > 0 ? !fileUploadRef.current?.getFiles().some((file: { type: string }) => file.type === 'application/pdf') : false,
             // includeXml:
@@ -248,20 +248,38 @@ export default function UploadDialog({
         };
         setErrors(newErrors);
 
-        const newODpsErrors = {
-            folio: oDps.folio.trim() === '',
-            xml_date: oDps.xml_date == '',
-            payment_method: oDps.payment_method.trim() === '',
-            rfc_issuer: oDps.rfc_issuer.trim() === '',
-            tax_regime_issuer: oDps.tax_regime_issuer ? false : true,
-            rfc_receiver: oDps.rfc_receiver.trim() === '',
-            tax_regime_receiver: oDps.tax_regime_receiver ? false : true,
-            use_cfdi: oDps.use_cfdi.trim() === '',
-            amount: oDps.amount.trim() === '',
-            currency: oDps.currency == '',
-            exchange_rate: oDps.exchange_rate.trim() === ''
-        };
-        setODpsErrors(newODpsErrors);
+        const newODpsErrors = {};
+        if (!isXmlValid) {
+            const newODpsErrors = {
+                folio: oDps.folio.trim() === '',
+                xml_date: oDps.xml_date == '',
+                payment_method: oDps.payment_method.trim() === '',
+                rfc_issuer: oDps.rfc_issuer.trim() === '',
+                tax_regime_issuer: oDps.tax_regime_issuer ? false : true,
+                rfc_receiver: oDps.rfc_receiver.trim() === '',
+                tax_regime_receiver: oDps.tax_regime_receiver ? false : true,
+                use_cfdi: oDps.use_cfdi.trim() === '',
+                amount: oDps.amount.trim() === '',
+                currency: oDps.currency == '',
+                exchange_rate: oDps.exchange_rate.trim() === ''
+            };
+            setODpsErrors(newODpsErrors);
+        } else {
+            const newODpsErrors = {
+                folio: false,
+                xml_date: false,
+                payment_method: false,
+                rfc_issuer: false,
+                tax_regime_issuer: false,
+                rfc_receiver: false,
+                tax_regime_receiver: false,
+                use_cfdi: false,
+                amount: false,
+                currency: false,
+                exchange_rate: false
+            };
+            setODpsErrors(newODpsErrors);
+        }
 
         return !Object.values(newErrors).some(Boolean) && !Object.values(newODpsErrors).some(Boolean);
     };
@@ -351,6 +369,7 @@ export default function UploadDialog({
             setODps((prev: any) => ({ ...prev, payment_percentage: 100 }));
         } else if(percentOption == "Nada"){
             setODps((prev: any) => ({ ...prev, payment_percentage: 0 }));
+            setODps((prev: any) => ({ ...prev, payday: '' }));
         }
     }, [percentOption])
 
@@ -648,15 +667,18 @@ export default function UploadDialog({
     }, [oDps.payday]);
 
     useEffect(() => {
-        if (oDps.payment_percentage) {
-            if (oDps.payment_percentage == 100) {
-                setPercentOption(lPercentOptions[0]);
-            } else if (oDps.payment_percentage == 0) {
-                setPercentOption(lPercentOptions[2]);
-            } else {
-                setPercentOption(lPercentOptions[1]);
-            }
-                
+        console.log(oDps.payment_percentage);
+        if (oDps.payment_percentage > 100) {
+            setODps((prev: any) => ({ ...prev, payment_percentage: 100 }));
+        }
+
+        if (oDps.payment_percentage == 100) {
+            setPercentOption(lPercentOptions[0]);
+        } else if (oDps.payment_percentage == 0 || !(oDps.payment_percentage > 0)) {
+            setPercentOption(lPercentOptions[2]);
+            setODps((prev: any) => ({ ...prev, payday: '' }));
+        } else {
+            setPercentOption(lPercentOptions[1]);
         }
     }, [oDps.payment_percentage])
 
@@ -707,7 +729,9 @@ export default function UploadDialog({
                                             ></i>
                                             <ul>
                                                 { lWarnings.map((warning: any, index: number) => (
-                                                    <li key={index} className='text-orange-500'>{warning}</li>
+                                                    <li key={index} className='bx bxs-error'>
+                                                        {warning}
+                                                    </li>
                                                 ))}
                                             </ul>
                                         </div>
@@ -848,6 +872,46 @@ export default function UploadDialog({
 
                             {dialogMode == 'view' ||
                                 (dialogMode == 'review' && (
+                                    <>
+                                    <div className="field col-12 md:col-6">
+                                        <div className="formgrid grid">
+                                            <div className="col">
+                                                <label>{t('uploadDialog.percentOption.label')}</label>
+                                                &nbsp;
+                                                <Tooltip target=".custom-target-icon" />
+                                                <i
+                                                    className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
+                                                    data-pr-tooltip={t('uploadDialog.percentOption.tooltip')}
+                                                    data-pr-position="right"
+                                                    data-pr-my="left center-2"
+                                                    style={{ fontSize: '1rem', cursor: 'pointer' }}
+                                                ></i>
+                                                <SelectButton value={percentOption} onChange={(e) => setPercentOption(e.value)}  options={lPercentOptions} style={{ height: '2rem', marginTop: '5px' }}/>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="field col-12 md:col-6">
+                                        <div className="formgrid grid">
+                                            <div className="col">
+                                                <label>{t('uploadDialog.percentOption.label')}</label>
+                                                &nbsp;
+                                                <Tooltip target=".custom-target-icon" />
+                                                <i
+                                                    className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
+                                                    data-pr-tooltip={t('uploadDialog.percentOption.tooltip')}
+                                                    data-pr-position="right"
+                                                    data-pr-my="left center-2"
+                                                    style={{ fontSize: '1rem', cursor: 'pointer' }}
+                                                ></i>
+                                                <div className="p-inputgroup flex-1">
+                                                    <span className="p-inputgroup-addon">%</span>
+                                                    <InputNumber placeholder="Porcentaje" value={oDps.payment_percentage} onChange={(e) => setODps( (prev: any) => ({ ...prev, payment_percentage: e.value }) )} min={0} max={100} />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <div className="field col-12 md:col-6">
                                         <div className="formgrid grid">
                                             <div className="col">
@@ -864,10 +928,11 @@ export default function UploadDialog({
                                                 <Calendar
                                                     value={oDps.payday}
                                                     placeholder={t('uploadDialog.payDay.placeholder')}
-                                                    onChange={(e) => setODps((prev: any) => ({ ...prev, payDate: e.value }))}
+                                                    onChange={(e) => setODps((prev: any) => ({ ...prev, payday: e.value }))}
                                                     showIcon
                                                     locale="es"
                                                     inputRef={inputRef}
+                                                    disabled={ !(oDps.payment_percentage > 0) }
                                                     onSelect={() => {
                                                         if (inputRef.current && oDps.payday) {
                                                             inputRef.current.value = DateFormatter(oDps.payday);
@@ -882,77 +947,34 @@ export default function UploadDialog({
                                             </div>
                                         </div>
                                     </div>
-                                ))}
-                            {dialogMode == 'view' ||
-                                (dialogMode == 'review' && (
-                                    <>
-                                        <div className="field col-12 md:col-6">
-                                            <div className="formgrid grid">
-                                                <div className="col">
-                                                    <label>{t('uploadDialog.percentOption.label')}</label>
-                                                    &nbsp;
-                                                    <Tooltip target=".custom-target-icon" />
-                                                    <i
-                                                        className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                                                        data-pr-tooltip={t('uploadDialog.percentOption.tooltip')}
-                                                        data-pr-position="right"
-                                                        data-pr-my="left center-2"
-                                                        style={{ fontSize: '1rem', cursor: 'pointer' }}
-                                                    ></i>
-                                                    <SelectButton value={percentOption} onChange={(e) => setPercentOption(e.value)}  options={lPercentOptions} style={{ height: '2rem', marginTop: '5px' }}/>
-                                                </div>
+
+                                    <div className="field col-12 md:col-12">
+                                        <div className="formgrid grid">
+                                            <div className="col">
+                                                <label>{t('uploadDialog.aceptNotes.label')}</label>
+                                                &nbsp;
+                                                <Tooltip target=".custom-target-icon" />
+                                                <i
+                                                    className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
+                                                    data-pr-tooltip={t('uploadDialog.aceptNotes.tooltip')}
+                                                    data-pr-position="right"
+                                                    data-pr-my="left center-2"
+                                                    style={{ fontSize: '1rem', cursor: 'pointer' }}
+                                                ></i>
+                                                <InputTextarea
+                                                    id="notes"
+                                                    rows={3}
+                                                    cols={30}
+                                                    autoResize
+                                                    className={`w-full`}
+                                                    value={oDps.notes}
+                                                    onChange={(e) => setODps( (prev: any) => ({ ...prev, notes: e.target.value } ))}
+                                                />
                                             </div>
                                         </div>
-
-                                        { percentOption == 'Parcial' || oDps.payment_percentage > -1 ? (
-                                                <div className="field col-12 md:col-6">
-                                                    <div className="formgrid grid">
-                                                        <div className="col">
-                                                            <label>{t('uploadDialog.percentOption.label')}</label>
-                                                            &nbsp;
-                                                            <Tooltip target=".custom-target-icon" />
-                                                            <i
-                                                                className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                                                                data-pr-tooltip={t('uploadDialog.percentOption.tooltip')}
-                                                                data-pr-position="right"
-                                                                data-pr-my="left center-2"
-                                                                style={{ fontSize: '1rem', cursor: 'pointer' }}
-                                                            ></i>
-                                                            <div className="p-inputgroup flex-1">
-                                                                <span className="p-inputgroup-addon">%</span>
-                                                                <InputNumber placeholder="Porcentaje" value={oDps.payment_percentage} onChange={(e) => setODps( (prev: any) => ({ ...prev, payment_percentage: e.value }) )} min={0} max={100} />
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                        ) : ''}
-
-                                        <div className="field col-12 md:col-12">
-                                            <div className="formgrid grid">
-                                                <div className="col">
-                                                    <label>{t('uploadDialog.aceptNotes.label')}</label>
-                                                    &nbsp;
-                                                    <Tooltip target=".custom-target-icon" />
-                                                    <i
-                                                        className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                                                        data-pr-tooltip={t('uploadDialog.aceptNotes.tooltip')}
-                                                        data-pr-position="right"
-                                                        data-pr-my="left center-2"
-                                                        style={{ fontSize: '1rem', cursor: 'pointer' }}
-                                                    ></i>
-                                                    <InputTextarea
-                                                        id="notes"
-                                                        rows={3}
-                                                        cols={30}
-                                                        autoResize
-                                                        className={`w-full`}
-                                                        value={oDps.notes}
-                                                        onChange={(e) => setODps( (prev: any) => ({ ...prev, notes: e.target.value } ))}
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
+                                    </div>
                                     </>
+
                                 ))}
 
                             {dialogMode !== 'view' && dialogMode !== 'review' && (isXmlValid || (selectProvider ? selectProvider.country != constants.COUNTRIES.MEXICO_ID : false)) && (
