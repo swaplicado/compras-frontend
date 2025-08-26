@@ -1,6 +1,4 @@
-import { animationSuccess } from "@/app/components/commons/animationResponse";
-
-export default {
+const changePassword = {
     title: "Cambio de contraseña",
     newPassword: {
         label: "Nueva contraseña",
@@ -29,3 +27,5 @@ export default {
         updateError: "Error al actualizar la contraseña. Por favor, intenta nuevamente más tarde.",
     },
 }
+
+export default changePassword;

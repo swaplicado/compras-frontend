@@ -2,10 +2,11 @@
     "mainRoute": "https://gateway-backend-compras-4p99zqdp.uc.gateway.dev/v1",
     "apiKey": "AIzaSyDlskxETi2HFbsl2AWwBzktGkoUtUwnktU",
     "groups": [
-        { "id": 1, "name": "comprador" },
-        { "id": 2, "name": "contador" },
-        { "id": 3, "name": "pagador" },
-        { "id": 4, "name": "proveedor" }
+        { "id": 1, "name": "admin" },
+        { "id": 2, "name": "comprador" },
+        { "id": 3, "name": "contador" },
+        { "id": 4, "name": "pagador" },
+        { "id": 5, "name": "proveedor" }
     ],
     "apiTransactionsUrl" : "https://transaction-backend-368437194061.us-central1.run.app/api"
 }
