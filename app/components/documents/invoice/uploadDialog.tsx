@@ -317,7 +317,7 @@ export default function UploadDialog({
                 date: moment(oDps.xml_date).format('YYYY-MM-DD'),
                 currency: oDps.currency?.id || '',
                 amount: oDps.amount,
-                exchange_rate: oDps.exchange_rate,
+                exchange_rate: oDps.exchange_rate ? oDps.exchange_rate : 0,
                 payment_method: oDps.payment_method?.id || '',
                 fiscal_use: oDps.use_cfdi?.id || ''
             };
