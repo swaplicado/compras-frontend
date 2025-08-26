@@ -729,7 +729,8 @@ export default function UploadDialog({
                                             ></i>
                                             <ul>
                                                 { lWarnings.map((warning: any, index: number) => (
-                                                    <li key={index} className='bx bxs-error'>
+                                                    <li key={index}>
+                                                        <i className='bx bxs-error' style={{color: '#FFD700'}}></i>
                                                         {warning}
                                                     </li>
                                                 ))}
@@ -839,7 +840,8 @@ export default function UploadDialog({
                                                     ></i>
                                                     <ul>
                                                         {xmlValidateErrors.warnings.map((warnings: any, index: number) => (
-                                                            <li key={index} className="col-12 md:col-12 text-orange-500">
+                                                            <li key={index} className="col-12 md:col-12">
+                                                                <i className='bx bxs-error' style={{color: '#FFD700'}}></i>
                                                                 {warnings}
                                                             </li>
                                                         ))}
