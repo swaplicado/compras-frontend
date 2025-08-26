@@ -174,7 +174,7 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
             
             <div className="layout-topbar-menu">
                 <div className="flex align-items-center justify-content-center text-2xl">
-                    <b>{nameUser} - {roleUser}</b>
+                    <b>{nameUser}</b>
                 </div>
             </div>
 

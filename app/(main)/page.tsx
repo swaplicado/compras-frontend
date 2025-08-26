@@ -26,7 +26,7 @@ const Dashboard = () => {
     const getDps = async (isInternalUser: boolean) => {
         try {
             const route = !isInternalUser ? constants.ROUTE_GET_DPS_BY_PARTNER_ID : constants.ROUTE_GET_DPS_BY_AREA_ID;
-            const params = !isInternalUser ? { route: route, partner_id: partnerId } : { route: route, functional_area_ids: Array.isArray(functionalAreas) ? functionalAreas : '[' + functionalAreas + ']' };
+            const params = !isInternalUser ? { route: route, partner_id: partnerId } : { route: route, functional_area: Array.isArray(functionalAreas) ?  functionalAreas : [functionalAreas] };
             const response = await axios.get(constants.API_AXIOS_GET, {
                 params: params
             });

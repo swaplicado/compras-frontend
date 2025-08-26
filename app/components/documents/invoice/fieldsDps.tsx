@@ -221,7 +221,7 @@ export const InvoiceFields = ({ dialogMode, oDps, setODps, errors, setErrors, oP
                             optionLabel='name'
                             disabled={disabled}
                             filter
-                            placeholder='Selecciona regimen fiscal emisor'
+                            placeholder='Selecciona régimen fiscal emisor'
                             className={`w-full ${errors.tax_regime_issuer ? 'p-invalid' : ''}`} 
                         />
                         {errors.tax_regime_issuer && <small className="p-error">{t('uploadDialog.tax_regime_issuer.helperText')}</small>}
@@ -277,7 +277,7 @@ export const InvoiceFields = ({ dialogMode, oDps, setODps, errors, setErrors, oP
                             optionLabel='name' 
                             disabled={disabled}
                             filter
-                            placeholder='Selecciona regimen fiscal receptor'
+                            placeholder='Selecciona régimen fiscal receptor'
                             className={`w-full ${errors.tax_regime_receiver ? 'p-invalid' : ''}`}
                         />
                         {errors.tax_regime_receiver && <small className="p-error">{t('uploadDialog.tax_regime_receiver.helperText')}</small>}
