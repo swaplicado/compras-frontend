@@ -76,7 +76,6 @@ const TableDemo = () => {
     const userId = Cookies.get('userId') ? JSON.parse(Cookies.get('userId') || '') : null;
     const partnerId = Cookies.get('partnerId') ? JSON.parse(Cookies.get('partnerId') || '') : null;
     const partnerCountry = Cookies.get('partnerCountry') ? JSON.parse(Cookies.get('partnerCountry') || '') : null;
-    const functionalAreas = Cookies.get('functional_areas') ? JSON.parse(Cookies.get('functional_areas') || '[]') : [];
     const [oValidUser, setOValidUser] = useState({ isInternalUser: false, isProvider: false, isProviderMexico: true });
     const [lProviders, setLProviders] = useState<any[]>([]);
     const [lCompanies, setLCompanies] = useState<any[]>([]);
@@ -101,6 +100,18 @@ const TableDemo = () => {
             life: 300000
         });
     };
+
+    const getFunctionalArea = () =>  {
+        let areas = Cookies.get('functional_areas') ? JSON.parse(Cookies.get('functional_areas') || '[]') : [];
+        areas = Array.isArray(areas) ? areas : [areas];
+        if (areas.length == 1) {
+            return areas[0];
+        } else {
+            return areas;
+        }
+    }
+
+    const functionalAreas = getFunctionalArea();
 
     const getDpsDates = async () => {
         try {
@@ -129,7 +140,7 @@ const TableDemo = () => {
         try {
             const route = !isInternalUser ? constants.ROUTE_GET_DPS_BY_PARTNER_ID : constants.ROUTE_GET_DPS_BY_AREA_ID;
             const params = !isInternalUser ? { route: route, partner_id: partnerId, transaction_class: constants.TRANSACTION_CLASS_COMPRAS, document_type: constants.DOC_TYPE_INVOICE } : 
-                { route: route, functional_area: Array.isArray(functionalAreas) ?  functionalAreas : [functionalAreas] };
+                { route: route, functional_area: functionalAreas, transaction_class: constants.TRANSACTION_CLASS_COMPRAS, document_type: constants.DOC_TYPE_INVOICE };
             const response = await axios.get(constants.API_AXIOS_GET, {
                 params: params
             });
@@ -155,7 +166,7 @@ const TableDemo = () => {
                         company_rfc: data[i].company.fiscal_id,
                         company_tax_regime: data[i].company.fiscal_regime,
                         dateFormated: DateFormatter(data[i].date),
-                        company: data[i].company.full_name,
+                        company: data[i].company.trade_name,
                         provider_name: data[i].partner.trade_name,
                         serie: data[i].series,
                         folio: data[i].number,
