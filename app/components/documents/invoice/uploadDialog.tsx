@@ -453,7 +453,8 @@ export default function UploadDialog({
                 Object.keys(data.files).forEach((key) => {
                     lUrls.push({
                         url: data.files[key],
-                        extension: getExtensionFileByName(key)
+                        extension: getExtensionFileByName(key),
+                        name: key
                     });
                 });
                 setLUrlFiles(lUrls);

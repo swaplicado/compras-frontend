@@ -19,8 +19,10 @@ export const CustomFileViewer = ({ lFiles }: fileViewerProps) => {
     const [index, setIndex] = useState(0);
     const [loading, setLoading] = useState(false);
     const [fileUrl, setFileUrl] = useState<string>('');
+    const [fileName, setFileName] = useState<string>('');
     const [hasError, setHasError] = useState(false);
     const { t } = useTranslation('invoices');
+    const [renderFiles, setRenderFiles] = useState<any[]>(['xml', 'xls', 'xlsx']);
 
     useEffect(() => {
         if (lFiles.length > 0) {
@@ -37,6 +39,7 @@ export const CustomFileViewer = ({ lFiles }: fileViewerProps) => {
             setLoading(true);
             loadFile(oFile.url);
         }
+        setFileName(oFile.name);
     }, [oFile]);
     
     const nextFile = () => {
@@ -97,6 +100,7 @@ export const CustomFileViewer = ({ lFiles }: fileViewerProps) => {
                 <Divider />
                 <div className='flex justify-content-between'>
                     <Button label="<" onClick={prevFile} className="mb-2" />
+                    <h5>{fileName}</h5>
                     <Button label=">" onClick={nextFile} className="mb-2" />
                 </div>
 
@@ -106,7 +110,7 @@ export const CustomFileViewer = ({ lFiles }: fileViewerProps) => {
                     </div>
                 )}
 
-                {!loading && !hasError && oFile.extension !== 'xml' && fileUrl && (
+                {!loading && !hasError && !renderFiles.includes(oFile.extension) && fileUrl && (
                     <iframe
                         src={fileUrl}
                         style={{ height: '500px', border: 'none', width: '100%' }}
@@ -116,10 +120,23 @@ export const CustomFileViewer = ({ lFiles }: fileViewerProps) => {
                     />
                 )}
 
-                {!loading && hasError && oFile.extension !== 'xml' && (
+                {!loading && hasError && !renderFiles.includes(oFile.extension) && (
                     <div className="flex justify-content-center align-items-center" style={{ height: '200px' }}>
                         <h3>{t('fileViewer.noFile')}</h3>
                     </div>
+                )}
+
+                {!loading && (oFile.extension == 'xls' || oFile.extension == 'xlsx') && (
+                    <>
+                    <div className="flex justify-content-center align-items-center" style={{ height: '100px' }}>
+                        <div className='flex flex-column gap-2'>
+                            <h3>No podemos mostrar archivos excel, descargalo para poder visualizarlo</h3>
+                        </div>
+                    </div>
+                        <div className='flex justify-content-center align-items-center'>
+                            <Button label='Descargar excel' onClick={() => window.open(fileUrl, '_blank')} />
+                        </div>
+                    </>
                 )}
 
                 {!loading && oFile.extension === 'xml' && (

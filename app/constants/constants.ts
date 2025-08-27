@@ -45,10 +45,10 @@ const constants = {
     },
 
     //Constantes para los archivos
-    maxFilesSize: 20 * 1024 * 1024, // 20 MB
-    maxFileSizeForHuman: '20 MB',
-    allowedExtensions: ['application/pdf', 'text/xml', 'image/png', 'image/jpeg'],
-    allowedExtensionsNames: 'application/pdf, text/xml, image/png, image/jpeg',
+    maxFilesSize: 25 * 1024 * 1024, // 20 MB
+    maxFileSizeForHuman: '25 MB',
+    allowedExtensions: ['application/pdf', 'text/xml', 'image/png', 'image/jpeg', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
+    allowedExtensionsNames: 'application/pdf, text/xml, image/png, image/jpeg, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     
     //catalogo de regimen fiscal
     CAT_FISCAL_REGIME: [
