@@ -134,7 +134,7 @@ export const CustomFileViewer = ({ lFiles }: fileViewerProps) => {
                         </div>
                     </div>
                         <div className='flex justify-content-center align-items-center'>
-                            <Button label='Descargar excel' onClick={() => window.open(fileUrl, '_blank')} />
+                            <Button label='Descargar excel' onClick={() => window.open(oFile.url, '_blank')} />
                         </div>
                     </>
                 )}
