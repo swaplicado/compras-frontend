@@ -189,7 +189,8 @@ const invoices = {
             uploadError: "Error al cargar la factura. Por favor, verifica los archivos y referencia y vuelve a intentarlo.",
             getReferencesError: "Error al obtener las referencias. Por favor, intenta nuevamente más tarde.",
             updateStatusError: "Error al actualizar el estado de la factura. Por favor, intenta nuevamente más tarde.",
-            uploadValidXmlError: "Error al enviar el xml para su validación"
+            uploadValidXmlError: "Error al enviar el xml para su validación.",
+            getCurrenciesError: "Error al obtener tipos de cambio."
         },
         rejectComments: {
             label: "Comentarios de aprobación/rechazo:",
@@ -258,11 +259,6 @@ const invoices = {
         },
         currentPageReportTemplate: "Mostrando {first} a {last} de {totalRecords} registros",
         emptyMessage: "Sin datos para mostrar.",   
-    },
-    fileViewer: {
-        btnShowFiles: "Mostrar archivos",
-        btnHideFiles: "Ocultar archivos",
-        noFile: "Archivo no disponible"
     }
 }
 

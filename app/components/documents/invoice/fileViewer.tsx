@@ -1,191 +1,225 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Button } from 'primereact/button';
 import { Divider } from 'primereact/divider';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import xmlFormatter from 'xml-formatter';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { useTranslation } from 'react-i18next';
 
-interface fileViewerProps {
-    lFiles: any[];
+interface FileInfo {
+    url: string;
+    name: string;
+    extension: string;
+    id?: string | number;
 }
 
-export const CustomFileViewer = ({ lFiles }: fileViewerProps) => {
-    const [xmlContent, setXmlContent] = useState('');
-    const [showFiles, setShowFiles] = useState(false);
-    const [oFile, setOFile] = useState<any>({});
-    const [index, setIndex] = useState(0);
-    const [loading, setLoading] = useState(false);
-    const [fileUrl, setFileUrl] = useState<string>('');
-    const [fileName, setFileName] = useState<string>('');
-    const [hasError, setHasError] = useState(false);
-    const { t } = useTranslation('invoices');
-    const [renderFiles, setRenderFiles] = useState<any[]>(['xml', 'xls', 'xlsx']);
+interface FileViewerProps {
+    lFiles: FileInfo[];
+}
 
+type FileExtension = 'xml' | 'xls' | 'xlsx' | 'pdf' | 'jpg' | 'jpeg' | 'png' | 'txt';
+
+export const CustomFileViewer: React.FC<FileViewerProps> = ({ lFiles }) => {
+    const [currentFileIndex, setCurrentFileIndex] = useState(0);
+    const [fileContent, setFileContent] = useState<string>('');
+    const [isExpanded, setIsExpanded] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [objectUrl, setObjectUrl] = useState<string>('');
+    const [error, setError] = useState<string>('');
+    const { t } = useTranslation('fileViewer');
+
+    // Memoized current file
+    const currentFile = useMemo(() => lFiles[currentFileIndex], [lFiles, currentFileIndex]);
+
+    // Supported file types for rendering
+    const supportedExtensions = useMemo(() => ['xml', 'pdf', 'jpg', 'jpeg', 'png', 'txt'], []);
+
+    // Clean up object URLs to prevent memory leaks
     useEffect(() => {
-        if (lFiles.length > 0) {
-            setOFile(lFiles[0]);
-        }
-    }, [lFiles]);
-
-    useEffect(() => {
-        if (!oFile.url) return;
-    
-        if (oFile.extension === 'xml') {
-            getXmlContent(oFile.url);
-        } else {
-            setLoading(true);
-            loadFile(oFile.url);
-        }
-        setFileName(oFile.name);
-    }, [oFile]);
-    
-    const nextFile = () => {
-        const nextIndex = (index + 1) % lFiles.length;
-        setIndex(nextIndex);
-        setOFile(lFiles[nextIndex]);
-    };
-
-    const prevFile = () => {
-        const prevIndex = (index - 1 + lFiles.length) % lFiles.length;
-        setIndex(prevIndex);
-        setOFile(lFiles[prevIndex]);
-    };
-
-    const getXmlContent = async (url: string) => {
-        try {
-            setLoading(true);
-            const response = await axios.get(url, {
-                responseType: 'text'
-            });
-            if (response.status !== 200) {
-                throw new Error('Network response was not ok');
+        return () => {
+            if (objectUrl) {
+                URL.revokeObjectURL(objectUrl);
             }
-            const data = response.data;
-            setXmlContent(data);
-        } catch (error) {
-            console.error('Error loading XML:', error);
+        };
+    }, [objectUrl]);
+
+    // Reset states when current file changes
+    useEffect(() => {
+        setError('');
+        setFileContent('');
+        if (objectUrl) {
+            URL.revokeObjectURL(objectUrl);
+            setObjectUrl('');
+        }
+
+        if (!currentFile?.url) return;
+
+        if (currentFile.extension === 'xml') {
+            fetchXmlContent(currentFile.url);
+        } else {
+            loadFile(currentFile.url);
+        }
+    }, [currentFile]);
+
+    const navigateFile = useCallback(
+        (direction: 'next' | 'prev') => {
+            setCurrentFileIndex((prevIndex) => {
+                if (direction === 'next') {
+                    return (prevIndex + 1) % lFiles.length;
+                } else {
+                    return (prevIndex - 1 + lFiles.length) % lFiles.length;
+                }
+            });
+        },
+        [lFiles.length]
+    );
+
+    const fetchXmlContent = async (url: string) => {
+        try {
+            setIsLoading(true);
+            const response: AxiosResponse<string> = await axios.get(url, {
+                responseType: 'text',
+                timeout: 10000
+            });
+
+            if (response.status !== 200) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+
+            setFileContent(response.data);
+        } catch (err) {
+            console.error('Error loading XML:', err);
+            setError(t('loadError', 'Error loading file'));
         } finally {
-            setLoading(false);
+            setIsLoading(false);
         }
     };
 
     const loadFile = async (url: string) => {
-        setLoading(true);
-        setHasError(false);
         try {
-            const response = await axios.get(url, {
-                responseType: 'blob'
+            setIsLoading(true);
+            const response: AxiosResponse<Blob> = await axios.get(url, {
+                responseType: 'blob',
+                timeout: 10000
             });
+
             if (response.status !== 200) {
-                throw new Error('Network response was not ok');
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
+
             const blob = response.data;
-            const objectUrl = URL.createObjectURL(blob);
-            setFileUrl(objectUrl);
+            const urlObject = URL.createObjectURL(blob);
+            setObjectUrl(urlObject);
         } catch (err) {
-            console.error('Error cargando archivo:', err);
-            setHasError(true);
-            setFileUrl('');
+            console.error('Error loading file:', err);
+            setError(t('loadError', 'Error loading file'));
         } finally {
-            setLoading(false);
+            setIsLoading(false);
         }
     };
 
-    const renderFile = () => {
-        return (
-            <div>
-                <Divider />
-                <div className='flex justify-content-between'>
-                    <Button label="<" onClick={prevFile} className="mb-2" />
-                    <h5>{fileName}</h5>
-                    <Button label=">" onClick={nextFile} className="mb-2" />
+    const renderFileContent = () => {
+        if (isLoading) {
+            return (
+                <div className="flex justify-content-center align-items-center" style={{ height: '500px' }}>
+                    <ProgressSpinner />
                 </div>
+            );
+        }
 
-                {loading && (
-                    <div className="flex justify-content-center align-items-center" style={{ height: '500px' }}>
-                        <ProgressSpinner />
-                    </div>
-                )}
+        if (error) {
+            return (
+                <div className="flex justify-content-center align-items-center" style={{ height: '200px' }}>
+                    <h3>{error}</h3>
+                </div>
+            );
+        }
 
-                {!loading && !hasError && !renderFiles.includes(oFile.extension) && fileUrl && (
-                    <iframe
-                        src={fileUrl}
-                        style={{ height: '500px', border: 'none', width: '100%' }}
-                        title="File Viewer"
-                        className="w-full border-1 border-gray-200"
-                        onLoad={() => setLoading(false)}
-                    />
-                )}
+        if (!currentFile) {
+            return (
+                <div className="flex justify-content-center align-items-center" style={{ height: '200px' }}>
+                    <h3>{t('noFiles')}</h3>
+                </div>
+            );
+        }
 
-                {!loading && hasError && !renderFiles.includes(oFile.extension) && (
+        switch (currentFile.extension as FileExtension) {
+            case 'xml':
+                return fileContent ? (
+                    <SyntaxHighlighter
+                        language="xml"
+                        style={atomDark}
+                        wrapLines
+                        showLineNumbers
+                        customStyle={{
+                            borderRadius: '8px',
+                            fontSize: '14px',
+                            height: '500px',
+                            width: '100%',
+                            overflow: 'auto'
+                        }}
+                    >
+                        {xmlFormatter(fileContent)}
+                    </SyntaxHighlighter>
+                ) : (
                     <div className="flex justify-content-center align-items-center" style={{ height: '200px' }}>
-                        <h3>{t('fileViewer.noFile')}</h3>
+                        <h3>{t('noFile')}</h3>
                     </div>
-                )}
+                );
 
-                {!loading && (oFile.extension == 'xls' || oFile.extension == 'xlsx') && (
-                    <>
+            case 'xls':
+            case 'xlsx':
+                return (
                     <div className="flex justify-content-center align-items-center" style={{ height: '100px' }}>
-                        <div className='flex flex-column gap-2'>
-                            <h3>No podemos mostrar archivos excel, descargalo para poder visualizarlo</h3>
+                        <div className="flex flex-column gap-2 align-items-center">
+                            <h3>{t('noPreview')}</h3>
+                            <Button label={t('downloadFile')} icon="pi pi-download" onClick={() => window.open(currentFile.url, '_blank')} />
                         </div>
                     </div>
-                        <div className='flex justify-content-center align-items-center'>
-                            <Button label='Descargar excel' onClick={() => window.open(oFile.url, '_blank')} />
-                        </div>
-                    </>
-                )}
+                );
 
-                {!loading && oFile.extension === 'xml' && (
-                    xmlContent != 'error' && xmlContent != '' ? (
-                        <SyntaxHighlighter
-                            language="xml"
-                            style={atomDark}
-                            wrapLines={true}
-                            showLineNumbers={true}
-                            customStyle={{
-                                borderRadius: '8px',
-                                fontSize: '14px',
-                                whiteSpace: 'pre-wrap',
-                                overflowWrap: 'anywhere',
-                                height: '500px',
-                                width: '100%'
-                            }}
-                            className="syntax-highlighter-code"
-                        >
-                            {xmlFormatter(xmlContent)}
-                        </SyntaxHighlighter>
-                    ) : (
-                        <div className="flex justify-content-center align-items-center" style={{ height: '200px' }}>
-                            <h3>{t('fileViewer.noFile')}</h3>
-                        </div>
-                    )
-                )}
-            </div>
-        );
+            default:
+                return objectUrl ? (
+                    <iframe src={objectUrl} style={{ height: '500px', border: 'none', width: '100%' }} title={`File Viewer: ${currentFile.name}`} className="w-full border-1 border-gray-200" />
+                ) : (
+                    <div className="flex justify-content-center align-items-center" style={{ height: '200px' }}>
+                        <h3>{t('noPreviewAvailable')}</h3>
+                    </div>
+                );
+        }
     };
 
-    return (
-        <>
-            <div className="mt-3 flex gap-2">
-                <Button label={ !showFiles ? t('fileViewer.btnShowFiles') : t('fileViewer.btnHideFiles')} onClick={() => setShowFiles(!showFiles)} className="mb-2" />
+    if (lFiles.length === 0) {
+        return (
+            <div className="mt-3">
+                <h3>{t('noFiles')}</h3>
             </div>
-            {showFiles && (
+        );
+    }
+
+    return (
+        <div className="mt-3">
+            <Button label={isExpanded ? t('btnHideFiles') : t('btnShowFiles')} onClick={() => setIsExpanded(!isExpanded)} className="mb-2" icon={isExpanded ? 'pi pi-eye-slash' : 'pi pi-eye'} />
+
+            {isExpanded && (
                 <div className="field col-12">
-                    <div className="formgrid grid">
-                        <div className="col">
-                            { lFiles.length > 0 ? (
-                                renderFile()
-                            ) : (
-                                <h3>Sin archivos para mostrar</h3>
-                            )}
+                    <Divider />
+                    <div className="flex justify-content-between align-items-center mb-3">
+                        <Button icon="pi pi-chevron-left" onClick={() => navigateFile('prev')} disabled={lFiles.length <= 1} className="p-button-text" />
+
+                        <div className="text-center">
+                            <h5 className="mb-1">{currentFile.name}</h5>
+                            <small className="text-color-secondary">{t('fileCounter', { current: currentFileIndex + 1, total: lFiles.length })}</small>
                         </div>
+
+                        <Button icon="pi pi-chevron-right" onClick={() => navigateFile('next')} disabled={lFiles.length <= 1} className="p-button-text" />
                     </div>
+
+                    {renderFileContent()}
                 </div>
             )}
-        </>
+        </div>
     );
 };
