@@ -7,6 +7,7 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import axios, { AxiosResponse, CancelTokenSource } from 'axios';
 import { useTranslation } from 'react-i18next';
+import { promises } from 'dns';
 
 interface FileInfo {
     url: string;
@@ -31,7 +32,8 @@ export const CustomFileViewer: React.FC<FileViewerProps> = ({ lFiles }) => {
     const { t } = useTranslation('fileViewer');
     const cancelTokenSourceRef = useRef<CancelTokenSource | null>(null);
     const previousObjectUrlRef = useRef<string>('');
-    const currentFile = useMemo(() => lFiles[currentFileIndex], [lFiles, currentFileIndex]);
+    // const currentFile = useMemo(() => lFiles[currentFileIndex], [lFiles, currentFileIndex]);
+    const [currentFile, setCurrentFile] = useState(lFiles[currentFileIndex]);
     const canRender = ['pdf', 'jpg', 'jpeg', 'png'];
 
     const cleanupResources = useCallback(() => {
@@ -56,6 +58,10 @@ export const CustomFileViewer: React.FC<FileViewerProps> = ({ lFiles }) => {
     }, [cleanupResources, objectUrl]);
 
     useEffect(() => {
+        setCurrentFile(lFiles[currentFileIndex]);
+    }, [currentFileIndex])
+
+    useEffect(() => {
         cleanupResources();
         setError('');
         setFileContent('');
@@ -67,7 +73,7 @@ export const CustomFileViewer: React.FC<FileViewerProps> = ({ lFiles }) => {
 
         if (!currentFile?.url) return;
 
-        if (currentFile.extension === 'xml') {
+        if (currentFile.extension == 'xml') {
             fetchXmlContent(currentFile.url);
         } else  if (canRender.includes(currentFile?.extension)){
             loadFile(currentFile.url);
@@ -77,7 +83,7 @@ export const CustomFileViewer: React.FC<FileViewerProps> = ({ lFiles }) => {
     const navigateFile = useCallback(
         (direction: 'next' | 'prev') => {
             setCurrentFileIndex((prevIndex) => {
-                if (direction === 'next') {
+                if (direction == 'next') {
                     return (prevIndex + 1) % lFiles.length;
                 } else {
                     return (prevIndex - 1 + lFiles.length) % lFiles.length;
@@ -114,6 +120,7 @@ export const CustomFileViewer: React.FC<FileViewerProps> = ({ lFiles }) => {
             }
         } finally {
             setIsLoading(false);
+            await new Promise((resolve) => setTimeout(resolve, 1000));
         }
     };
 
@@ -146,6 +153,7 @@ export const CustomFileViewer: React.FC<FileViewerProps> = ({ lFiles }) => {
             }
         } finally {
             setIsLoading(false);
+            await new Promise((resolve) => setTimeout(resolve, 1000));
         }
     };
 
@@ -174,57 +182,60 @@ export const CustomFileViewer: React.FC<FileViewerProps> = ({ lFiles }) => {
             );
         }
 
-        switch (currentFile.extension as FileExtension) {
-            case 'xml':
-                return fileContent ? (
-                    <SyntaxHighlighter
-                        language="xml"
-                        style={atomDark}
-                        wrapLines
-                        showLineNumbers
-                        customStyle={{
-                            borderRadius: '8px',
-                            fontSize: '14px',
-                            height: '500px',
-                            width: '100%',
-                            overflow: 'auto'
-                        }}
-                    >
-                        {xmlFormatter(fileContent)}
-                    </SyntaxHighlighter>
-                ) : (
-                    <div className="flex justify-content-center align-items-center" style={{ height: '200px' }}>
-                        <h3>{t('noFile')}</h3>
-                    </div>
-                );
-
-            case 'xls':
-            case 'xlsx':
-                return (
-                    <div className="flex justify-content-center align-items-center" style={{ height: '100px' }}>
-                        <div className="flex flex-column gap-2 align-items-center">
-                            <h3>{t('noPreview')}</h3>
-                            {/* <Button label={t('downloadFile')} icon="pi pi-download" onClick={() => window.open(currentFile.url, '_blank')} /> */}
+        if (currentFile && !isLoading) {
+            switch (currentFile.extension as FileExtension) {
+                case 'xml':
+                    return fileContent ? (
+                        <SyntaxHighlighter
+                            language="xml"
+                            style={atomDark}
+                            wrapLines
+                            showLineNumbers
+                            customStyle={{
+                                borderRadius: '8px',
+                                fontSize: '14px',
+                                height: '500px',
+                                width: '100%',
+                                overflow: 'auto'
+                            }}
+                        >
+                            {xmlFormatter(fileContent)}
+                        </SyntaxHighlighter>
+                    ) : (
+                        <div className="flex justify-content-center align-items-center" style={{ height: '200px' }}>
+                            <h3>{t('noFile')}</h3>
                         </div>
-                    </div>
-                );
-
-            case 'jpeg':
-            case 'jpg':
-            case 'png':
-                return (
-                    <div className="flex justify-content-center align-items-center" style={{ height: '500px' }}>
-                        <img src={objectUrl} alt={currentFile.name} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
-                    </div>
-                );
-            default:
-                return objectUrl ? (
-                    <iframe src={objectUrl} style={{ height: '500px', border: 'none', width: '100%' }} title={`File Viewer: ${currentFile.name}`} className="w-full border-1 border-gray-200" onLoad={() => setIsLoading(false)} />
-                ) : (
-                    <div className="flex justify-content-center align-items-center" style={{ height: '200px' }}>
-                        <h3>{t('noFile')}</h3>
-                    </div>
-                );
+                    );
+    
+                case 'xls':
+                case 'xlsx':
+                    return (
+                        <div className="flex justify-content-center align-items-center" style={{ height: '100px' }}>
+                            <div className="flex flex-column gap-2 align-items-center">
+                                <h3>{t('noPreview')}</h3>
+                                {/* <Button label={t('downloadFile')} icon="pi pi-download" onClick={() => window.open(currentFile.url, '_blank')} /> */}
+                            </div>
+                        </div>
+                    );
+    
+                case 'jpeg':
+                case 'jpg':
+                case 'png':
+                    return (
+                        <div className="flex justify-content-center align-items-center" style={{ height: '500px' }}>
+                            <img src={objectUrl} alt={currentFile.name} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+                        </div>
+                    );
+                default:
+                    return objectUrl ? (
+                        <iframe src={objectUrl} style={{ height: '500px', border: 'none', width: '100%' }} title={`File Viewer: ${currentFile.name}`} className="w-full border-1 border-gray-200" onLoad={() => setIsLoading(false)} />
+                    ) : (
+                        <div className="flex justify-content-center align-items-center" style={{ height: '200px' }}>
+                            <h3>{t('noFile')}</h3>
+                        </div>
+                    );
+            
+            }
         }
     };
 
