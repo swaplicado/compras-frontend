@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Button } from 'primereact/button';
 import { Divider } from 'primereact/divider';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import xmlFormatter from 'xml-formatter';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosResponse, CancelTokenSource } from 'axios';
 import { useTranslation } from 'react-i18next';
 
 interface FileInfo {
@@ -29,28 +29,38 @@ export const CustomFileViewer: React.FC<FileViewerProps> = ({ lFiles }) => {
     const [objectUrl, setObjectUrl] = useState<string>('');
     const [error, setError] = useState<string>('');
     const { t } = useTranslation('fileViewer');
-
-    // Memoized current file
+    const cancelTokenSourceRef = useRef<CancelTokenSource | null>(null);
+    const previousObjectUrlRef = useRef<string>('');
     const currentFile = useMemo(() => lFiles[currentFileIndex], [lFiles, currentFileIndex]);
 
-    // Supported file types for rendering
-    const supportedExtensions = useMemo(() => ['xml', 'pdf', 'jpg', 'jpeg', 'png', 'txt'], []);
+    const cleanupResources = useCallback(() => {
+        if (cancelTokenSourceRef.current) {
+            cancelTokenSourceRef.current.cancel('Operation canceled due to new request');
+            cancelTokenSourceRef.current = null;
+        }
 
-    // Clean up object URLs to prevent memory leaks
+        if (previousObjectUrlRef.current) {
+            URL.revokeObjectURL(previousObjectUrlRef.current);
+            previousObjectUrlRef.current = '';
+        }
+    }, []);
+
     useEffect(() => {
         return () => {
+            cleanupResources();
             if (objectUrl) {
                 URL.revokeObjectURL(objectUrl);
             }
         };
-    }, [objectUrl]);
+    }, [cleanupResources, objectUrl]);
 
-    // Reset states when current file changes
     useEffect(() => {
+        cleanupResources();
         setError('');
         setFileContent('');
+
         if (objectUrl) {
-            URL.revokeObjectURL(objectUrl);
+            previousObjectUrlRef.current = objectUrl;
             setObjectUrl('');
         }
 
@@ -79,9 +89,13 @@ export const CustomFileViewer: React.FC<FileViewerProps> = ({ lFiles }) => {
     const fetchXmlContent = async (url: string) => {
         try {
             setIsLoading(true);
+
+            cancelTokenSourceRef.current = axios.CancelToken.source();
+
             const response: AxiosResponse<string> = await axios.get(url, {
                 responseType: 'text',
-                timeout: 10000
+                timeout: 10000,
+                cancelToken: cancelTokenSourceRef.current.token
             });
 
             if (response.status !== 200) {
@@ -89,9 +103,14 @@ export const CustomFileViewer: React.FC<FileViewerProps> = ({ lFiles }) => {
             }
 
             setFileContent(response.data);
+            cancelTokenSourceRef.current = null;
         } catch (err) {
-            console.error('Error loading XML:', err);
-            setError(t('loadError', 'Error loading file'));
+            if (axios.isCancel(err)) {
+                console.log('Request canceled:', err.message);
+            } else {
+                console.error('Error loading XML:', err);
+                setError(t('loadError', 'Error loading file'));
+            }
         } finally {
             setIsLoading(false);
         }
@@ -100,9 +119,13 @@ export const CustomFileViewer: React.FC<FileViewerProps> = ({ lFiles }) => {
     const loadFile = async (url: string) => {
         try {
             setIsLoading(true);
+
+            cancelTokenSourceRef.current = axios.CancelToken.source();
+
             const response: AxiosResponse<Blob> = await axios.get(url, {
                 responseType: 'blob',
-                timeout: 10000
+                timeout: 10000,
+                cancelToken: cancelTokenSourceRef.current.token
             });
 
             if (response.status !== 200) {
@@ -112,9 +135,14 @@ export const CustomFileViewer: React.FC<FileViewerProps> = ({ lFiles }) => {
             const blob = response.data;
             const urlObject = URL.createObjectURL(blob);
             setObjectUrl(urlObject);
+            cancelTokenSourceRef.current = null;
         } catch (err) {
-            console.error('Error loading file:', err);
-            setError(t('loadError', 'Error loading file'));
+            if (axios.isCancel(err)) {
+                console.log('Request canceled:', err.message);
+            } else {
+                console.error('Error loading file:', err);
+                setError(t('loadError', 'Error loading file'));
+            }
         } finally {
             setIsLoading(false);
         }
@@ -182,7 +210,7 @@ export const CustomFileViewer: React.FC<FileViewerProps> = ({ lFiles }) => {
 
             default:
                 return objectUrl ? (
-                    <iframe src={objectUrl} style={{ height: '500px', border: 'none', width: '100%' }} title={`File Viewer: ${currentFile.name}`} className="w-full border-1 border-gray-200" />
+                    <iframe src={objectUrl} style={{ height: '500px', border: 'none', width: '100%' }} title={`File Viewer: ${currentFile.name}`} className="w-full border-1 border-gray-200" onLoad={() => setIsLoading(false)} />
                 ) : (
                     <div className="flex justify-content-center align-items-center" style={{ height: '200px' }}>
                         <h3>{t('noPreviewAvailable')}</h3>
