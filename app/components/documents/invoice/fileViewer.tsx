@@ -32,6 +32,7 @@ export const CustomFileViewer: React.FC<FileViewerProps> = ({ lFiles }) => {
     const cancelTokenSourceRef = useRef<CancelTokenSource | null>(null);
     const previousObjectUrlRef = useRef<string>('');
     const currentFile = useMemo(() => lFiles[currentFileIndex], [lFiles, currentFileIndex]);
+    const canRender = ['pdf', 'jpg', 'jpeg', 'png'];
 
     const cleanupResources = useCallback(() => {
         if (cancelTokenSourceRef.current) {
@@ -68,7 +69,7 @@ export const CustomFileViewer: React.FC<FileViewerProps> = ({ lFiles }) => {
 
         if (currentFile.extension === 'xml') {
             fetchXmlContent(currentFile.url);
-        } else {
+        } else  if (canRender.includes(currentFile?.extension)){
             loadFile(currentFile.url);
         }
     }, [currentFile]);
@@ -203,17 +204,25 @@ export const CustomFileViewer: React.FC<FileViewerProps> = ({ lFiles }) => {
                     <div className="flex justify-content-center align-items-center" style={{ height: '100px' }}>
                         <div className="flex flex-column gap-2 align-items-center">
                             <h3>{t('noPreview')}</h3>
-                            <Button label={t('downloadFile')} icon="pi pi-download" onClick={() => window.open(currentFile.url, '_blank')} />
+                            {/* <Button label={t('downloadFile')} icon="pi pi-download" onClick={() => window.open(currentFile.url, '_blank')} /> */}
                         </div>
                     </div>
                 );
 
+            case 'jpeg':
+            case 'jpg':
+            case 'png':
+                return (
+                    <div className="flex justify-content-center align-items-center" style={{ height: '500px' }}>
+                        <img src={objectUrl} alt={currentFile.name} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+                    </div>
+                );
             default:
                 return objectUrl ? (
                     <iframe src={objectUrl} style={{ height: '500px', border: 'none', width: '100%' }} title={`File Viewer: ${currentFile.name}`} className="w-full border-1 border-gray-200" onLoad={() => setIsLoading(false)} />
                 ) : (
                     <div className="flex justify-content-center align-items-center" style={{ height: '200px' }}>
-                        <h3>{t('noPreviewAvailable')}</h3>
+                        <h3>{t('noFile')}</h3>
                     </div>
                 );
         }
