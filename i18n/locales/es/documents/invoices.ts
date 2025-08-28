@@ -170,10 +170,10 @@ const invoices = {
             helperTextPdf: "Debe incluir un archivo PDF.",
             helperTextXml: "Debe incluir un archivo XML.",
             tooltip: "Selecciona los archivos de la factura (PDF y XML).",
-            invalidFileSize: "El tamaño máximo del archivo es de 1 MB.",
+            invalidFileSize: "El tamaño máximo por archivo es de 5 MB.",
             invalidFileSizeMessageSummary: "Archivo demasiado grande",
             invalidFileType: "Solo se permiten archivos PDF, XML, PNG Y JPEG.",
-            invalidAllFilesSize: "El tamaño máximo de los archivos es de 20 MB.",
+            invalidAllFilesSize: "El tamaño máximo de los archivos es de 25 MB.",
         },
         animationSuccess: {
             title: "Factura cargada.",

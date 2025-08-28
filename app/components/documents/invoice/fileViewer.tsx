@@ -5,9 +5,8 @@ import { ProgressSpinner } from 'primereact/progressspinner';
 import xmlFormatter from 'xml-formatter';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import axios, { AxiosResponse, CancelTokenSource } from 'axios';
+import axios from 'axios';
 import { useTranslation } from 'react-i18next';
-import { promises } from 'dns';
 
 interface FileInfo {
     url: string;
@@ -30,39 +29,16 @@ export const CustomFileViewer: React.FC<FileViewerProps> = ({ lFiles }) => {
     const [objectUrl, setObjectUrl] = useState<string>('');
     const [error, setError] = useState<string>('');
     const { t } = useTranslation('fileViewer');
-    const cancelTokenSourceRef = useRef<CancelTokenSource | null>(null);
     const previousObjectUrlRef = useRef<string>('');
     // const currentFile = useMemo(() => lFiles[currentFileIndex], [lFiles, currentFileIndex]);
     const [currentFile, setCurrentFile] = useState(lFiles[currentFileIndex]);
     const canRender = ['pdf', 'jpg', 'jpeg', 'png'];
-
-    const cleanupResources = useCallback(() => {
-        if (cancelTokenSourceRef.current) {
-            cancelTokenSourceRef.current.cancel('Operation canceled due to new request');
-            cancelTokenSourceRef.current = null;
-        }
-
-        if (previousObjectUrlRef.current) {
-            URL.revokeObjectURL(previousObjectUrlRef.current);
-            previousObjectUrlRef.current = '';
-        }
-    }, []);
-
-    useEffect(() => {
-        return () => {
-            cleanupResources();
-            if (objectUrl) {
-                URL.revokeObjectURL(objectUrl);
-            }
-        };
-    }, [cleanupResources, objectUrl]);
 
     useEffect(() => {
         setCurrentFile(lFiles[currentFileIndex]);
     }, [currentFileIndex])
 
     useEffect(() => {
-        cleanupResources();
         setError('');
         setFileContent('');
 
@@ -97,12 +73,8 @@ export const CustomFileViewer: React.FC<FileViewerProps> = ({ lFiles }) => {
         try {
             setIsLoading(true);
 
-            cancelTokenSourceRef.current = axios.CancelToken.source();
-
-            const response: AxiosResponse<string> = await axios.get(url, {
+            const response = await axios.get(url, {
                 responseType: 'text',
-                timeout: 10000,
-                cancelToken: cancelTokenSourceRef.current.token
             });
 
             if (response.status !== 200) {
@@ -110,7 +82,7 @@ export const CustomFileViewer: React.FC<FileViewerProps> = ({ lFiles }) => {
             }
 
             setFileContent(response.data);
-            cancelTokenSourceRef.current = null;
+            await new Promise((resolve) => setTimeout(resolve, 1000));
         } catch (err) {
             if (axios.isCancel(err)) {
                 console.log('Request canceled:', err.message);
@@ -128,12 +100,8 @@ export const CustomFileViewer: React.FC<FileViewerProps> = ({ lFiles }) => {
         try {
             setIsLoading(true);
 
-            cancelTokenSourceRef.current = axios.CancelToken.source();
-
-            const response: AxiosResponse<Blob> = await axios.get(url, {
+            const response = await axios.get(url, {
                 responseType: 'blob',
-                timeout: 10000,
-                cancelToken: cancelTokenSourceRef.current.token
             });
 
             if (response.status !== 200) {
@@ -143,7 +111,7 @@ export const CustomFileViewer: React.FC<FileViewerProps> = ({ lFiles }) => {
             const blob = response.data;
             const urlObject = URL.createObjectURL(blob);
             setObjectUrl(urlObject);
-            cancelTokenSourceRef.current = null;
+            await new Promise((resolve) => setTimeout(resolve, 1000));
         } catch (err) {
             if (axios.isCancel(err)) {
                 console.log('Request canceled:', err.message);
@@ -213,7 +181,6 @@ export const CustomFileViewer: React.FC<FileViewerProps> = ({ lFiles }) => {
                         <div className="flex justify-content-center align-items-center" style={{ height: '100px' }}>
                             <div className="flex flex-column gap-2 align-items-center">
                                 <h3>{t('noPreview')}</h3>
-                                {/* <Button label={t('downloadFile')} icon="pi pi-download" onClick={() => window.open(currentFile.url, '_blank')} /> */}
                             </div>
                         </div>
                     );

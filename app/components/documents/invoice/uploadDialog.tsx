@@ -1004,6 +1004,7 @@ export default function UploadDialog({
                                         allowedExtensionsNames={constants.allowedExtensionsNames}
                                         maxFilesSize={constants.maxFilesSize}
                                         maxFileSizeForHuman={constants.maxFileSizeForHuman}
+                                        maxUnitFileSize={constants.maxUnitFile}
                                         errorMessages={{
                                             invalidFileType: t('uploadDialog.files.invalidFileType'),
                                             invalidAllFilesSize: t('uploadDialog.files.invalidAllFilesSize'),

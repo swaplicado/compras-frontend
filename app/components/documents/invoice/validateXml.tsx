@@ -169,8 +169,8 @@ export const ValidateXml = ( { xmlUploadRef, oCompany, oPartner, user_id, oRef, 
                 onClearCallback={handleClearCallback}
                 allowedExtensionsNames='text/xml'
                 allowedExtensions={['text/xml']}
-                maxFilesSize={1 * 1024 * 1024}
-                maxFileSizeForHuman={'1 MB'}
+                maxFilesSize={2 * 1024 * 1024}
+                maxFileSizeForHuman={'2 MB'}
                 errorMessages={
                     {
                         invalidFileType: 'Solo se permite archivo XML',
