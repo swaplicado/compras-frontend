@@ -5,11 +5,12 @@ import { Tag } from 'primereact/tag';
 import { Messages } from 'primereact/messages';
 import { Button } from 'primereact/button';
 import { useTranslation } from 'react-i18next';
-import { validateFileType } from '@/app/(main)/utilities/files/fileValidator';
+import { validateFileType, validateFileSize } from '@/app/(main)/utilities/files/fileValidator';
 
 interface CustomFileUploadProps {
     fileUploadRef: React.RefObject<FileUpload>;
     totalSize: number;
+    maxUnitFileSize?: number;
     setTotalSize: React.Dispatch<React.SetStateAction<number>>;
     errors: {
         files?: boolean;
@@ -33,6 +34,7 @@ interface CustomFileUploadProps {
 export const CustomFileUpload = ({ 
         fileUploadRef, 
         totalSize, 
+        maxUnitFileSize,
         setTotalSize, 
         errors, 
         setErrors, 
@@ -126,6 +128,14 @@ export const CustomFileUpload = ({
         let validType = true;
 
         for (const file of e.files) {
+            if (maxUnitFileSize) {
+                if (!validateFileSize(file, maxUnitFileSize)) {
+                    addErrorMessage(errorMessages.invalidFileSize);
+                    fileUploadRef.current?.setFiles(validFiles);
+                    continue;
+                }
+            }
+
             if (!validateFileType(file, allowedExtensions)) {
                 validType = false;
                 continue;

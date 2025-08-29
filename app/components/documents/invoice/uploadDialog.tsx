@@ -453,7 +453,8 @@ export default function UploadDialog({
                 Object.keys(data.files).forEach((key) => {
                     lUrls.push({
                         url: data.files[key],
-                        extension: getExtensionFileByName(key)
+                        extension: getExtensionFileByName(key),
+                        name: key
                     });
                 });
                 setLUrlFiles(lUrls);
@@ -1005,6 +1006,7 @@ export default function UploadDialog({
                                         allowedExtensionsNames={constants.allowedExtensionsNames}
                                         maxFilesSize={constants.maxFilesSize}
                                         maxFileSizeForHuman={constants.maxFileSizeForHuman}
+                                        maxUnitFileSize={constants.maxUnitFile}
                                         errorMessages={{
                                             invalidFileType: t('uploadDialog.files.invalidFileType'),
                                             invalidAllFilesSize: t('uploadDialog.files.invalidAllFilesSize'),
