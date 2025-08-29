@@ -12,6 +12,7 @@ import esChangePassword from './locales/es/changePassword/changePassword';
 import esFooter from './locales/es/footer/footer';
 import esResetPassword from './locales/es/auth/resetPassword';
 import esLogout from './locales/es/auth/logout';
+import esFileViewer from './locales/es/documents/fileViewer';
 
 i18n
   .use(initReactI18next)
@@ -29,7 +30,8 @@ i18n
         changePassword: esChangePassword,
         footer: esFooter,
         resetPassword: esResetPassword,
-        logout: esLogout
+        logout: esLogout,
+        fileViewer: esFileViewer
       }
     },
     lng: "es",

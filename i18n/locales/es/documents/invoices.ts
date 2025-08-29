@@ -170,10 +170,10 @@ const invoices = {
             helperTextPdf: "Debe incluir un archivo PDF.",
             helperTextXml: "Debe incluir un archivo XML.",
             tooltip: "Selecciona los archivos de la factura (PDF y XML).",
-            invalidFileSize: "El tamaño máximo del archivo es de 1 MB.",
+            invalidFileSize: "El tamaño máximo por archivo es de 5 MB.",
             invalidFileSizeMessageSummary: "Archivo demasiado grande",
             invalidFileType: "Solo se permiten archivos PDF, XML, PNG Y JPEG.",
-            invalidAllFilesSize: "El tamaño máximo de los archivos es de 20 MB.",
+            invalidAllFilesSize: "El tamaño máximo de los archivos es de 25 MB.",
         },
         animationSuccess: {
             title: "Factura cargada.",
@@ -189,7 +189,8 @@ const invoices = {
             uploadError: "Error al cargar la factura. Por favor, verifica los archivos y referencia y vuelve a intentarlo.",
             getReferencesError: "Error al obtener las referencias. Por favor, intenta nuevamente más tarde.",
             updateStatusError: "Error al actualizar el estado de la factura. Por favor, intenta nuevamente más tarde.",
-            uploadValidXmlError: "Error al enviar el xml para su validación"
+            uploadValidXmlError: "Error al enviar el xml para su validación.",
+            getCurrenciesError: "Error al obtener tipos de cambio."
         },
         rejectComments: {
             label: "Comentarios de aprobación/rechazo:",
@@ -258,11 +259,6 @@ const invoices = {
         },
         currentPageReportTemplate: "Mostrando {first} a {last} de {totalRecords} registros",
         emptyMessage: "Sin datos para mostrar.",   
-    },
-    fileViewer: {
-        btnShowFiles: "Mostrar archivos",
-        btnHideFiles: "Ocultar archivos",
-        noFile: "Archivo no disponible"
     }
 }
 
