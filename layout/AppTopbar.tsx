@@ -161,7 +161,6 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
             { displayConfirmationChangeCompany ? confirmChangeCompanyDialog() : null }
             <Link href="/" className="layout-topbar-logo">
                 <img src={`/layout/images/aeth_logo.png`} alt="logo" />
-                <span>{companyName}</span>
             </Link>
 
             <button ref={menubuttonRef} type="button" className="p-link layout-menu-button layout-topbar-button" onClick={onMenuToggle}>

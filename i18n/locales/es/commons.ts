@@ -1,6 +1,6 @@
 const commons = {
-    btnShowInstructions: "Ver instrucciones",
-    btnHideInstructions: "Cerrar instrucciones",
+    btnShowInstructions: "Mostrar instrucciones",
+    btnHideInstructions: "Ocultar instrucciones",
     btnSelectFiles: "Seleccionar",
     btnUpload: "Cargar",
     btnCancel: "Cancelar",
@@ -10,7 +10,7 @@ const commons = {
     btnEdit: "Editar",
     btnSearch: "Busca",
     placeholderSearch: "Buscar  ",
-    btnCleanFilter: "Limpiar filtros",
+    btnCleanFilter: "Limpiar todo",
     tooltipCleanFilter: "Limpiar filtros aplicados",
     btnClear: "Limpiar",
     btnContinue: "Continuar",

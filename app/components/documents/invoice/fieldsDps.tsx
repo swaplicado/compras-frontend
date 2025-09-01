@@ -15,11 +15,14 @@ interface InvoiceFieldsProps {
     errors: any;
     setErrors: React.Dispatch<React.SetStateAction<any>>;
     oProvider: { id: string; name: string; country: number } | null;
+    oCompany: { id: string; name: string; fiscal_id: string; fiscal_regime_id: number } | null;
     lCurrencies: any[];
     lFiscalRegimes: any[];
+    lPaymentMethod: any[];
+    lUseCfdi: any[];
 }
 
-export const InvoiceFields = ({ dialogMode, oDps, setODps, errors, setErrors, oProvider, lCurrencies, lFiscalRegimes }: InvoiceFieldsProps) => {
+export const InvoiceFields = ({ dialogMode, oDps, setODps, errors, setErrors, oProvider, lCurrencies, lFiscalRegimes, lPaymentMethod, lUseCfdi }: InvoiceFieldsProps) => {
     const { t } = useTranslation('invoices');
     const { t: tCommon } = useTranslation('common');
     const [disabled, setDisabled] = useState(false);
@@ -56,29 +59,8 @@ export const InvoiceFields = ({ dialogMode, oDps, setODps, errors, setErrors, oP
 
     return (
         <>
-            <div className="field col-12 md:col-6">
+            <div className="field col-12 md:col-3">
                 <div className="formgrid grid">
-                    <div className="col">
-                        <label>{t('uploadDialog.serie.label')}</label>
-                        &nbsp;
-                        <Tooltip target=".custom-target-icon" />
-                        <i
-                            className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                            data-pr-tooltip={dialogMode === 'review' ? t('uploadDialog.serie.tooltipReview') : t('uploadDialog.serie.tooltip')}
-                            data-pr-position="right"
-                            data-pr-my="left center-2"
-                            style={{ fontSize: '1rem', cursor: 'pointer' }}
-                        ></i>
-                        <InputText
-                            type="text"
-                            placeholder={t('uploadDialog.serie.placeholder')}
-                            className="w-full"
-                            value={oDps.serie}
-                            onChange={(e) => setODps((prev: any) => ({ ...prev, serie: e.target.value }))}
-                            maxLength={25}
-                            disabled={disabled}
-                        />
-                    </div>
                     <div className="col">
                         <label>{t('uploadDialog.folio.label')}</label>
                         &nbsp;
@@ -107,7 +89,7 @@ export const InvoiceFields = ({ dialogMode, oDps, setODps, errors, setErrors, oP
                 </div>
             </div>
             
-            <div className="field col-12 md:col-6">
+            <div className="field col-12 md:col-9">
                 <div className="formgrid grid">
                     <div className="col">
                         <label>{t('uploadDialog.xml_date.label')}</label>
@@ -156,17 +138,18 @@ export const InvoiceFields = ({ dialogMode, oDps, setODps, errors, setErrors, oP
                             data-pr-my="left center-2"
                             style={{ fontSize: '1rem', cursor: 'pointer' }}
                         ></i>
-                        <InputText
-                            type="text"
-                            placeholder={t('uploadDialog.payment_method.placeholder')}
-                            className={`w-full ${errors.payment_method ? 'p-invalid' : ''}`}
-                            value={oDps.payment_method}
+                        <Dropdown 
+                            value={oDps.payment_method} 
                             onChange={(e) => {
-                                setODps((prev: any) => ({ ...prev, payment_method: e.target.value }));
+                                setODps((prev: any) => ({ ...prev, payment_method: e.value }));
                                 setErrors((prev: any) => ({ ...prev, payment_method: false }));
-                            }}
+                            }} 
+                            options={lPaymentMethod}
+                            optionLabel='name'
                             disabled={disabled}
-                            maxLength={50}
+                            filter
+                            placeholder='Selecciona método de pago'
+                            className={`w-full ${errors.payment_method ? 'p-invalid' : ''}`} 
                         />
                         {errors.payment_method && <small className="p-error">{t('uploadDialog.payment_method.helperText')}</small>}
                     </div>
@@ -195,7 +178,7 @@ export const InvoiceFields = ({ dialogMode, oDps, setODps, errors, setErrors, oP
                                 setODps((prev: any) => ({ ...prev, rfc_issuer: e.target.value }));
                                 setErrors((prev: any) => ({ ...prev, rfc_issuer: false }));
                             }}
-                            disabled={disabled}
+                            disabled={true}
                             maxLength={25}
                         />
                         {errors.rfc_issuer && <small className="p-error">{t('uploadDialog.rfc_issuer.helperText')}</small>}
@@ -219,7 +202,7 @@ export const InvoiceFields = ({ dialogMode, oDps, setODps, errors, setErrors, oP
                             }} 
                             options={lFiscalRegimes}
                             optionLabel='name'
-                            disabled={disabled}
+                            disabled={true}
                             filter
                             placeholder='Selecciona régimen fiscal emisor'
                             className={`w-full ${errors.tax_regime_issuer ? 'p-invalid' : ''}`} 
@@ -251,7 +234,7 @@ export const InvoiceFields = ({ dialogMode, oDps, setODps, errors, setErrors, oP
                                 setODps((prev: any) => ({ ...prev, rfc_receiver: e.target.value }));
                                 setErrors((prev: any) => ({ ...prev, rfc_receiver: false }));
                             }}
-                            disabled={disabled}
+                            disabled={true}
                             maxLength={25}
                         />
                         {errors.rfc_receiver && <small className="p-error">{t('uploadDialog.rfc_receiver.helperText')}</small>}
@@ -275,7 +258,7 @@ export const InvoiceFields = ({ dialogMode, oDps, setODps, errors, setErrors, oP
                             }} 
                             options={lFiscalRegimes} 
                             optionLabel='name' 
-                            disabled={disabled}
+                            disabled={true}
                             filter
                             placeholder='Selecciona régimen fiscal receptor'
                             className={`w-full ${errors.tax_regime_receiver ? 'p-invalid' : ''}`}
@@ -285,7 +268,7 @@ export const InvoiceFields = ({ dialogMode, oDps, setODps, errors, setErrors, oP
                 </div>
             </div>
 
-            <div className="field col-12 md:col-6">
+            <div className="field col-12 md:col-8">
                 <div className="formgrid grid">
                     <div className="col">
                         <label>{t('uploadDialog.use_cfdi.label')}</label>
@@ -298,21 +281,22 @@ export const InvoiceFields = ({ dialogMode, oDps, setODps, errors, setErrors, oP
                             data-pr-my="left center-2"
                             style={{ fontSize: '1rem', cursor: 'pointer' }}
                         ></i>
-                        <InputText
-                            type="text"
-                            placeholder={t('uploadDialog.use_cfdi.placeholder')}
-                            className={`w-full ${errors.use_cfdi ? 'p-invalid' : ''}`}
-                            value={oDps.use_cfdi}
+                        <Dropdown 
+                            value={oDps.use_cfdi} 
                             onChange={(e) => {
-                                setODps((prev: any) => ({ ...prev, use_cfdi: e.target.value }));
+                                setODps((prev: any) => ({ ...prev, use_cfdi: e.value }));
                                 setErrors((prev: any) => ({ ...prev, use_cfdi: false }));
                             }}
+                            options={lUseCfdi}
+                            optionLabel='name'
                             disabled={disabled}
-                            maxLength={25}
+                            filter
+                            placeholder='Selecciona método de pago'
+                            className={`w-full ${errors.use_cfdi ? 'p-invalid' : ''}`} 
                         />
                         {errors.use_cfdi && <small className="p-error">{t('uploadDialog.use_cfdi.helperText')}</small>}
                     </div>
-                    <div className="col">
+                    <div className="col-12 md:col-4">
                         <label>{t('uploadDialog.amount.label')}</label>
                         &nbsp;
                         <Tooltip target=".custom-target-icon" />
@@ -336,15 +320,16 @@ export const InvoiceFields = ({ dialogMode, oDps, setODps, errors, setErrors, oP
                             maxLength={50}
                             minFractionDigits={2}
                             maxFractionDigits={2}
+                            inputClassName="text-right"
                         />
                         {errors.amount && <small className="p-error">{t('uploadDialog.amount.helperText')}</small>}
                     </div>
                 </div>
             </div>
 
-            <div className="field col-12 md:col-6">
+            <div className="field col-12 md:col-4">
                 <div className="formgrid grid">
-                    <div className="col">
+                    <div className="col-12 md:col-5">
                         <label>{t('uploadDialog.currency.label')}</label>
                         &nbsp;
                         <Tooltip target=".custom-target-icon" />
@@ -395,6 +380,7 @@ export const InvoiceFields = ({ dialogMode, oDps, setODps, errors, setErrors, oP
                             maxLength={50}
                             minFractionDigits={2}
                             maxFractionDigits={2}
+                            inputClassName="text-right"
                         />
                         {errors.exchange_rate && <small className="p-error">{t('uploadDialog.exchange_rate.helperText')}</small>}
                     </div>

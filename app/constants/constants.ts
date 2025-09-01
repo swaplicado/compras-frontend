@@ -26,6 +26,8 @@ const constants = {
     ROUTE_GET_CURRENCIES: '/transactions/currencies/',
     ROUTE_GET_FISCAL_REGIMES: '/transactions/fiscal-regimes/',
     ROUTE_GET_URL_FILES_DPS: '/transactions/documents/signed-urls/',
+    ROUTE_GET_PAYMENT_METHODS: '/transactions/payment-methods/',
+    ROUTE_GET_USE_CFDI: '/transactions/cfdi-uses/',
 
     ROUTE_POST_VALIDATE_XML: '/transactions/documents/validate-xml/',
     ROUTE_POST_DOCUMENT_TRANSACTION: '/transactions/document-transaction/',

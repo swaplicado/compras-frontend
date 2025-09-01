@@ -13,6 +13,8 @@ import Cookies from 'js-cookie';
 import loaderScreen from '@/app/components/commons/loaderScreen';
 import { useTranslation } from 'react-i18next';
 
+axios.defaults.timeout = 45000;
+
 const LoginPage = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');

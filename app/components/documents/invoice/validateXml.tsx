@@ -5,6 +5,7 @@ import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { FileUpload } from 'primereact/fileupload';
 import constants from '@/app/constants/constants';
+import { findCurrency, findFiscalRegime, findPaymentMethod, findUseCfdi } from '@/app/(main)/utilities/files/catFinder';
 
 interface validateXmlProps {
     xmlUploadRef: React.RefObject<FileUpload>;
@@ -19,47 +20,17 @@ interface validateXmlProps {
     setODps: React.Dispatch<React.SetStateAction<any>>;
     lCurrencies: any[];
     lFiscalRegimes: any[];
+    lPaymentMethod: any[];
+    lUseCfdi: any[];
     setLoadingValidateXml?: React.Dispatch<React.SetStateAction<boolean>>;
     showToast?: (type: 'success' | 'info' | 'warn' | 'error', message: string, summaryText?: string) => void;
 }
 
-export const ValidateXml = ( { xmlUploadRef, oCompany, oPartner, user_id, oRef, errors, setErrors, setODps, lCurrencies, lFiscalRegimes, setLoadingValidateXml, showToast }: validateXmlProps ) => {
+export const ValidateXml = ( { xmlUploadRef, oCompany, oPartner, user_id, oRef, errors, setErrors, setODps, lCurrencies, lFiscalRegimes, lPaymentMethod, lUseCfdi, setLoadingValidateXml, showToast }: validateXmlProps ) => {
     const [totalSize, setTotalSize] = useState(0);
     const message = useRef<Messages>(null);
     const { t } = useTranslation('invoices');
     const { t: tCommon } = useTranslation('common');
-
-    const findFiscalRegime = (regime_id: number) => {
-        try {
-            const oFiscalRegime = lFiscalRegimes.map((item: any) => {
-                if (item.id == regime_id) {
-                    return item;
-                } else {
-                    return null;
-                }
-            }).filter(Boolean)[0];
-            
-            return oFiscalRegime || '';
-        } catch (error) {
-            return '';
-        }
-    }
-
-    const findCurrency = (currency_id: number) => {
-        try {
-            const oCurrency = lCurrencies.map((item: any) => {
-                if (item.id == currency_id) {
-                    return item;
-                } else {
-                    return null;
-                }
-            }).filter(Boolean)[0];
-
-            return oCurrency || '';
-        } catch (error) {
-            return '';
-        }
-    }
 
     const handleSubmitXml = async (validFiles: File[]) => {
         try {
@@ -84,16 +55,16 @@ export const ValidateXml = ( { xmlUploadRef, oCompany, oPartner, user_id, oRef, 
                 if (data.valid) {
                     const oDps = {
                         serie: data.data.serie,
-                        folio: data.data.folio,
+                        folio: data.data.serie ? (data.data.serie + '-' + data.data.folio) : data.data.folio,
                         xml_date: data.data.xml_date,
-                        payment_method: data.data.payment_method,
+                        payment_method: findPaymentMethod(lPaymentMethod, data.data.payment_method),
                         rfc_issuer: data.data.rfc_issuer,
-                        tax_regime_issuer: findFiscalRegime(data.data.tax_regime_issuer),
+                        tax_regime_issuer: findFiscalRegime(lFiscalRegimes, data.data.tax_regime_issuer),
                         rfc_receiver: data.data.rfc_receiver,
-                        tax_regime_receiver: findFiscalRegime(data.data.tax_regime_receiver),
-                        use_cfdi: data.data.use_cfdi,
+                        tax_regime_receiver: findFiscalRegime(lFiscalRegimes, data.data.tax_regime_receiver),
+                        use_cfdi: findUseCfdi(lUseCfdi, data.data.use_cfdi),
                         amount: data.data.amount,
-                        currency: findCurrency(data.data.currency),
+                        currency: findCurrency( lCurrencies, data.data.currency),
                         exchange_rate: data.data.exchange_rate
                     }
                     setODps(oDps);
