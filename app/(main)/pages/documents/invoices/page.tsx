@@ -19,6 +19,7 @@ import moment from 'moment';
 import { ReloadButton } from '@/app/components/commons/reloadButton';
 import { useIsMobile } from '@/app/components/commons/screenMobile';
 import { findCompany } from '@/app/(main)/utilities/files/catFinder';
+import { Dropdown } from 'primereact/dropdown';
 interface reviewFormData {
     company: { id: string; name: string; fiscal_id: string; fiscal_regime_id: number };
     partner: { id: string; name: string };
@@ -43,23 +44,23 @@ interface reviewFormData {
 }
 
 interface dataDps {
-    id_dps: number,
-    provider_id: number,
-    company_id: number,
-    dateFormated: string,
-    company: string,
-    provider_name: string,
-    serie: string,
-    folio: string,
-    reference: string,
-    files: number,
-    date: string,
-    acceptance: string,
-    authorization: string,
-    amount: number,
-    currency: string,
-    exchange_rate: number,
-    payday: string
+    id_dps: number;
+    provider_id: number;
+    company_id: number;
+    dateFormated: string;
+    company: string;
+    provider_name: string;
+    serie: string;
+    folio: string;
+    reference: string;
+    files: number;
+    date: string;
+    acceptance: string;
+    authorization: string;
+    amount: number;
+    currency: string;
+    exchange_rate: number;
+    payday: string;
 }
 
 const TableDemo = () => {
@@ -92,7 +93,9 @@ const TableDemo = () => {
     const [actualDate, setActualDate] = useState<string>('');
     const [showInfo, setShowInfo] = useState(false);
     const [loadingReferences, setLoadingReferences] = useState(false);
-    const [lAreas, setLAreas] = useState<any[]>([])
+    const [lAreas, setLAreas] = useState<any[]>([]);
+    const [lCompaniesFilter, setLCompaniesFilter] = useState<any[]>([]);
+    const [filterCompany, setFilterCompany] = useState<{ id: string; name: string; fiscal_id: string; fiscal_regime_id: number } | null>(null);
 
     const isMobile = useIsMobile();
 
@@ -105,7 +108,7 @@ const TableDemo = () => {
         });
     };
 
-    const getFunctionalArea = () =>  {
+    const getFunctionalArea = () => {
         let areas = Cookies.get('functional_areas') ? JSON.parse(Cookies.get('functional_areas') || '[]') : [];
         areas = Array.isArray(areas) ? areas : [areas];
         if (areas.length == 1) {
@@ -113,7 +116,7 @@ const TableDemo = () => {
         } else {
             return areas;
         }
-    }
+    };
 
     const functionalAreas = getFunctionalArea();
 
@@ -143,8 +146,9 @@ const TableDemo = () => {
     const getDps = async (isInternalUser: boolean) => {
         try {
             const route = !isInternalUser ? constants.ROUTE_GET_DPS_BY_PARTNER_ID : constants.ROUTE_GET_DPS_BY_AREA_ID;
-            const params = !isInternalUser ? { route: route, partner_id: partnerId, transaction_class: constants.TRANSACTION_CLASS_COMPRAS, document_type: constants.DOC_TYPE_INVOICE } : 
-                { route: route, functional_area: functionalAreas, transaction_class: constants.TRANSACTION_CLASS_COMPRAS, document_type: constants.DOC_TYPE_INVOICE };
+            const params = !isInternalUser
+                ? { route: route, partner_id: partnerId, transaction_class: constants.TRANSACTION_CLASS_COMPRAS, document_type: constants.DOC_TYPE_INVOICE }
+                : { route: route, functional_area: functionalAreas, transaction_class: constants.TRANSACTION_CLASS_COMPRAS, document_type: constants.DOC_TYPE_INVOICE };
             const response = await axios.get(constants.API_AXIOS_GET, {
                 params: params
             });
@@ -160,7 +164,7 @@ const TableDemo = () => {
                             reference += ', ';
                         }
                     }
-                    
+
                     dps.push({
                         id_dps: data[i].id,
                         provider_id: data[i].partner.id,
@@ -188,7 +192,7 @@ const TableDemo = () => {
                         payment_percentage: data[i].payment_percentage,
                         notes: data[i].notes,
                         authz_acceptance_notes: data[i].authz_acceptance_notes,
-                        payment_method: data[i].payment_method,
+                        payment_method: data[i].payment_method
                     });
                 }
                 setLDps(dps);
@@ -214,7 +218,7 @@ const TableDemo = () => {
                 params: {
                     route: route,
                     partner_id: partner_id,
-                    company_id: company_id,
+                    company_id: company_id
                 }
             });
 
@@ -293,6 +297,13 @@ const TableDemo = () => {
             if (response.status === 200) {
                 const data = response.data.data || [];
                 let lCompanies: any[] = [];
+                let lCompaniesFilter: any[] = [
+                    {
+                        id: null,
+                        external_id: null,
+                        name: 'Todas'
+                    }
+                ];
                 for (const item of data) {
                     lCompanies.push({
                         id: item.id,
@@ -301,8 +312,14 @@ const TableDemo = () => {
                         fiscal_id: item.fiscal_id,
                         fiscal_regime_id: item.fiscal_regime
                     });
+                    lCompaniesFilter.push({
+                        id: item.id,
+                        external_id: item.external_id,
+                        name: item.trade_name
+                    });
                 }
                 setLCompanies(lCompanies);
+                setLCompaniesFilter(lCompaniesFilter);
                 return true;
             } else {
                 throw new Error(`${t('errors.getCompaniesError')}: ${response.statusText}`);
@@ -331,7 +348,7 @@ const TableDemo = () => {
                         name: item.code
                     });
                 }
-                
+
                 setLCurrencies(lCurrencies);
             } else {
                 throw new Error(`${t('errors.getCurrenciesError')}: ${response.statusText}`);
@@ -346,7 +363,7 @@ const TableDemo = () => {
         const numero = parseInt(str, 10); // El segundo parámetro es la base (10 para decimal)
         return isNaN(numero) ? 0 : numero; // Manejo de valores no numéricos
     };
-    
+
     const getlFiscalRegime = async () => {
         try {
             const route = constants.ROUTE_GET_FISCAL_REGIMES;
@@ -375,7 +392,7 @@ const TableDemo = () => {
             showToast('error', error.response?.data?.error || t('errors.getFiscalRegimesError'), t('errors.getFiscalRegimesError'));
             return [];
         }
-    }
+    };
 
     const getlPaymentMethod = async () => {
         try {
@@ -404,7 +421,7 @@ const TableDemo = () => {
             showToast('error', error.response?.data?.error || t('errors.getPaymentMethodsError'), t('errors.getPaymentMethodsError'));
             return [];
         }
-    }
+    };
 
     const getlUseCfdi = async () => {
         try {
@@ -433,7 +450,7 @@ const TableDemo = () => {
             showToast('error', error.response?.data?.error || t('errors.getUseCfdiError'), t('errors.getUseCfdiError'));
             return [];
         }
-    }
+    };
 
     const getlAreas = async (company_id: string | number) => {
         try {
@@ -463,7 +480,7 @@ const TableDemo = () => {
             showToast('error', error.response?.data?.error || t('errors.getAreasError'), t('errors.getAreasError'));
             return [];
         }
-    }
+    };
 
     const clearFilter1 = () => {
         initFilters();
@@ -476,6 +493,26 @@ const TableDemo = () => {
 
         setFilters1(_filters1);
         setGlobalFilterValue1(value);
+    };
+
+    const handleCompanyFilterChange = (e: any) => {
+        const selectedCompany = e.value;
+        setFilterCompany(selectedCompany);
+
+        // Actualizar los filtros de la tabla
+        let _filters1 = { ...filters1 };
+
+        console.log(selectedCompany);
+
+        if (selectedCompany && selectedCompany.id !== null) {
+            // Si se selecciona una compañía, aplicar filtro
+            (_filters1['company'] as any).value = selectedCompany.name; // O selectedCompany.id dependiendo de tu estructura
+        } else {
+            // Si se limpia el filtro, establecer null
+            (_filters1['company'] as any).value = null;
+        }
+
+        setFilters1(_filters1);
     };
 
     useEffect(() => {
@@ -581,6 +618,7 @@ const TableDemo = () => {
             }
         });
         setGlobalFilterValue1('');
+        setFilterCompany(null);
     };
 
     // funcion para aplicar el filtro de company automatiamcamente al escribir en el input
@@ -639,50 +677,48 @@ const TableDemo = () => {
     };
 
     const startContent = (
-        <React.Fragment>
+        <div className="flex flex-1 justify-start">
             <Button
                 icon="pi pi-plus"
-                label={ !isMobile ? t('btnOpenDialogUpload') : ''}
+                label={!isMobile ? t('btnOpenDialogUpload') : ''}
                 className="mr-2"
                 rounded
-                disabled={ ( limitDate ? (moment(actualDate).isAfter(limitDate)  && !oValidUser.isInternalUser) : false ) }
+                disabled={limitDate ? moment(actualDate).isAfter(limitDate) && !oValidUser.isInternalUser : false}
                 onClick={() => {
                     setDialogMode('create');
                     setDialogVisible(true);
                 }}
-            />
-        </React.Fragment>
+            /> 
+            <Dropdown value={filterCompany} onChange={handleCompanyFilterChange} options={lCompaniesFilter} optionLabel="name" placeholder={t('filterByCompany.placeholder')} style={{ maxWidth: '14rem' }} filter showClear />
+        </div>
     );
 
     const centerContent = (
-        <div>
-            { !isMobile &&
+        <div className="flex flex-1 justify-center">
+            {!isMobile && (
                 <span className="p-input-icon-left mr-2">
                     <i className="pi pi-search" />
-                    <InputText className='w-full' value={globalFilterValue1} onChange={onGlobalFilterChange1} placeholder={tCommon('placeholderSearch')} />
+                    <InputText className="w-full" value={globalFilterValue1} onChange={onGlobalFilterChange1} placeholder={tCommon('placeholderSearch')} />
                 </span>
-            }
-            <Button 
-                type="button" 
-                icon="pi pi-filter-slash" 
-                label={ !isMobile ? tCommon('btnCleanFilter') : ''} 
-                onClick={clearFilter1} 
-                tooltip={tCommon('tooltipCleanFilter')} 
-                tooltipOptions={{ position: 'left' }} 
-            />
+            )}
+            <Button type="button" icon="pi pi-filter-slash" label={!isMobile ? tCommon('btnCleanFilter') : ''} onClick={clearFilter1} tooltip={tCommon('tooltipCleanFilter')} tooltipOptions={{ position: 'left' }} />
         </div>
     );
 
     const centerContentMobile = (
-        <div>
+        <div className="flex flex-1 justify-center">
             <span className="p-input-icon-left mr-2">
                 <i className="pi pi-search" />
-                <InputText className='w-full' value={globalFilterValue1} onChange={onGlobalFilterChange1} placeholder={tCommon('placeholderSearch')} />
+                <InputText className="w-full" value={globalFilterValue1} onChange={onGlobalFilterChange1} placeholder={tCommon('placeholderSearch')} />
             </span>
         </div>
     );
 
-    const endContent = <ReloadButton />;
+    const endContent = (
+        <div className="flex flex-1 justify-end">
+            <ReloadButton />
+        </div>
+    );
 
     const headerCard = (
         <div
@@ -730,7 +766,7 @@ const TableDemo = () => {
             e.originalEvent.preventDefault();
             return;
         }
-        
+
         setSelectedRow(e.data);
         let data = {
             company: findCompany(lCompanies, e.data.company_id),
@@ -752,9 +788,9 @@ const TableDemo = () => {
             xml_date: e.data.date,
             payment_percentage: e.data.payment_percentage,
             notes: e.data.notes,
-            authz_acceptance_notes: e.data.authz_acceptance_notes,
+            authz_acceptance_notes: e.data.authz_acceptance_notes
         };
-        
+
         setFormData(data);
         setDialogMode('review');
         setDialogVisible(true);
@@ -856,8 +892,18 @@ const TableDemo = () => {
                             lAreas={lAreas}
                         />
                     )}
-                    <Toolbar start={startContent} center={centerContent} end={endContent} className="border-bottom-1 surface-border surface-card shadow-1 transition-all transition-duration-300" style={{ borderRadius: '3rem', padding: '0.8rem' }} />
-                    { isMobile && <div><br /> {centerContentMobile}</div>}
+                    <Toolbar
+                        start={startContent}
+                        center={centerContent}
+                        end={endContent}
+                        className="grid grid-cols-3 gap-4 items-center border-bottom-1 surface-border surface-card shadow-1 transition-all transition-duration-300 w-full"
+                        style={{ borderRadius: '3rem', padding: '0.8rem' }}
+                    />
+                    {isMobile && (
+                        <div className="mt-4">
+                            <br /> {centerContentMobile}
+                        </div>
+                    )}
                     <br />
                     {renderInfoButton()}
                     <DataTable
@@ -893,18 +939,18 @@ const TableDemo = () => {
                         <Column field="issuer_tax_regime" header="id" hidden />
                         <Column field="company_rfc" header="id" hidden />
                         <Column field="receiver_tax_regime" header="id" hidden />
-                        <Column field="dateFormated" header="dateFormated" hidden/>
-                        <Column field="payment_percentage" header='payment_percentage' hidden />
-                        <Column field="notes" header="notes" hidden/>
-                        <Column field="authz_acceptance_notes" header="authz_acceptance_notes" hidden/>
-                        <Column field="useCfdi" header="useCfdi" hidden/>
-                        <Column field="payment_method" header="payment_method" hidden/>
+                        <Column field="dateFormated" header="dateFormated" hidden />
+                        <Column field="payment_percentage" header="payment_percentage" hidden />
+                        <Column field="notes" header="notes" hidden />
+                        <Column field="authz_acceptance_notes" header="authz_acceptance_notes" hidden />
+                        <Column field="useCfdi" header="useCfdi" hidden />
+                        <Column field="payment_method" header="payment_method" hidden />
                         <Column
                             field="company"
                             header={t('invoicesTable.columns.company')}
                             footer={t('invoicesTable.columns.company')}
                             sortable
-                            //comentado para usarse mas adelante    
+                            //comentado para usarse mas adelante
                             // filter
                             // filterPlaceholder="Buscar por nombre"
                             // style={{ minWidth: '12rem' }}
@@ -924,7 +970,7 @@ const TableDemo = () => {
                             hidden={!oValidUser.isInternalUser}
                             sortable
                         />
-                        <Column field="serie" header={t('invoicesTable.columns.serie')} footer={t('invoicesTable.columns.serie')} sortable hidden/>
+                        <Column field="serie" header={t('invoicesTable.columns.serie')} footer={t('invoicesTable.columns.serie')} sortable hidden />
                         <Column field="folio" header={t('invoicesTable.columns.folio')} footer={t('invoicesTable.columns.folio')} sortable />
                         <Column field="reference" header={t('invoicesTable.columns.reference')} footer={t('invoicesTable.columns.reference')} sortable />
                         <Column field="payday" header={t('invoicesTable.columns.payday')} footer={t('invoicesTable.columns.payday')} body={payDayBodyTemplate} sortable />

@@ -2,6 +2,9 @@ const invoices = {
     title: "Facturas",
     btnOpenDialogUpload: "Cargar factura",
     tooltipBtnOpenDialogUpload: "Cargar una nueva factura.",
+    filterByCompany: {
+        placeholder: 'Filtrar empresa',
+    },
     uploadDialog: { 
         headerCreate: "Cargar factura",
         headerReview: "Aceptar o rechazar factura",
