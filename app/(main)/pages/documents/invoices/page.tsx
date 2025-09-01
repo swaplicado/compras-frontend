@@ -92,6 +92,7 @@ const TableDemo = () => {
     const [actualDate, setActualDate] = useState<string>('');
     const [showInfo, setShowInfo] = useState(false);
     const [loadingReferences, setLoadingReferences] = useState(false);
+    const [lAreas, setLAreas] = useState<any[]>([])
 
     const isMobile = useIsMobile();
 
@@ -219,7 +220,15 @@ const TableDemo = () => {
 
             if (response.status === 200) {
                 const data = response.data.data || [];
+
                 let lReferences: any[] = [];
+                if (oValidUser.isInternalUser) {
+                    lReferences.push({
+                        id: 0,
+                        name: t('uploadDialog.reference.withOutReferenceOption')
+                    });
+                }
+
                 for (const item of data) {
                     lReferences.push({
                         id: item.id,
@@ -287,6 +296,7 @@ const TableDemo = () => {
                 for (const item of data) {
                     lCompanies.push({
                         id: item.id,
+                        external_id: item.external_id,
                         name: item.full_name,
                         fiscal_id: item.fiscal_id,
                         fiscal_regime_id: item.fiscal_regime
@@ -421,6 +431,36 @@ const TableDemo = () => {
             }
         } catch (error: any) {
             showToast('error', error.response?.data?.error || t('errors.getUseCfdiError'), t('errors.getUseCfdiError'));
+            return [];
+        }
+    }
+
+    const getlAreas = async (company_id: string | number) => {
+        try {
+            const route = constants.ROUTE_GET_AREAS;
+            const response = await axios.get(constants.API_AXIOS_GET, {
+                params: {
+                    route: route,
+                    company_id: company_id
+                }
+            });
+
+            if (response.status === 200) {
+                const data = response.data.data || [];
+                let lAreas: any[] = [];
+                for (const item of data) {
+                    lAreas.push({
+                        id: item.id,
+                        name: item.name
+                    });
+                }
+
+                setLAreas(lAreas);
+            } else {
+                throw new Error(`${t('errors.getAreasError')}: ${response.statusText}`);
+            }
+        } catch (error: any) {
+            showToast('error', error.response?.data?.error || t('errors.getAreasError'), t('errors.getAreasError'));
             return [];
         }
     }
@@ -782,6 +822,9 @@ const TableDemo = () => {
                                 lUseCfdi={lUseCfdi}
                                 loadingReferences={loadingReferences}
                                 showToast={showToast}
+                                getlAreas={getlAreas}
+                                setLAreas={setLAreas}
+                                lAreas={lAreas}
                             />
                         ) : (
                             ''
@@ -795,6 +838,7 @@ const TableDemo = () => {
                             lCompanies={lCompanies}
                             oValidUser={oValidUser}
                             partnerId={partnerId}
+                            partnerCountry={partnerCountry}
                             getlReferences={getlReferences}
                             setLReferences={setLReferences}
                             dialogMode={dialogMode}
@@ -807,6 +851,9 @@ const TableDemo = () => {
                             lUseCfdi={lUseCfdi}
                             loadingReferences={loadingReferences}
                             showToast={showToast}
+                            getlAreas={getlAreas}
+                            setLAreas={setLAreas}
+                            lAreas={lAreas}
                         />
                     )}
                     <Toolbar start={startContent} center={centerContent} end={endContent} className="border-bottom-1 surface-border surface-card shadow-1 transition-all transition-duration-300" style={{ borderRadius: '3rem', padding: '0.8rem' }} />
