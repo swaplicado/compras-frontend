@@ -3,6 +3,6 @@ export default {
     texto: "Por favor, espera mientras te redirigimos al login.",
     btnGotoLogin: "Ir al Login",
     errors: {
-        logoutError: "Error al cerrar sesión",
+        logoutError: "Error al cerrar sesión.",
     },
 }

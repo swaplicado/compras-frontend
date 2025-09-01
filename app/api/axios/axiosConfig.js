@@ -5,6 +5,7 @@ import appConfig from '/appConfig.json';
 const createApiInstance = (baseURL) => {
     const api = axios.create({
         baseURL: baseURL || appConfig.mainRoute, // Usa el parámetro o un valor por defecto
+        timeout: 45000,
     });
 
     api.interceptors.response.use(

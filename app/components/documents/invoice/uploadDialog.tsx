@@ -21,20 +21,20 @@ import { CustomFileViewer } from './fileViewer';
 import { ValidateXml } from './validateXml';
 import { InvoiceFields } from './fieldsDps';
 import { ProgressSpinner } from 'primereact/progressspinner';
-import { findFiscalRegime } from '@/app/(main)/utilities/files/catFinder';
-import { findCurrency } from '@/app/(main)/utilities/files/catFinder';
+import { findCurrency, findFiscalRegime, findUseCfdi, findPaymentMethod, findFiscalRegimeById } from '@/app/(main)/utilities/files/catFinder';
 import { getExtensionFileByName } from '@/app/(main)/utilities/files/fileValidator';
 import { SelectButton } from 'primereact/selectbutton';
-import { InputNumber, InputNumberValueChangeEvent } from 'primereact/inputnumber';
+import { InputNumber } from 'primereact/inputnumber';
+import { Divider } from 'primereact/divider';
 interface reviewFormData {
-    company: { id: string; name: string };
+    company: { id: string; name: string; fiscal_id: string; fiscal_regime_id: number };
     partner: { id: string; name: string };
     reference: { id: string; name: string };
     series: string;
     number: string;
     dpsId: string;
     payday: string;
-    paymentMethod: string;
+    payment_method: string;
     rfcIssuer: string;
     rfcReceiver: string;
     taxRegimeIssuer: string;
@@ -55,6 +55,8 @@ interface UploadDialogProps {
     lReferences: any[];
     lProviders: any[];
     lCompanies: any[];
+    lPaymentMethod: any[];
+    lUseCfdi: any[];
     oValidUser?: { isInternalUser: boolean; isProvider: boolean; isProviderMexico: boolean };
     partnerId?: string;
     partnerCountry?: number;
@@ -76,6 +78,8 @@ export default function UploadDialog({
     lReferences,
     lProviders,
     lCompanies,
+    lPaymentMethod,
+    lUseCfdi,
     oValidUser = { isInternalUser: false, isProvider: false, isProviderMexico: true },
     partnerId = '',
     partnerCountry = 0,
@@ -92,7 +96,7 @@ export default function UploadDialog({
 }: UploadDialogProps) {
     const [selectReference, setSelectReference] = useState<{ id: string; name: string } | null>(null);
     const [selectProvider, setSelectProvider] = useState<{ id: string; name: string; country: number } | null>(null);
-    const [selectCompany, setSelectCompany] = useState<{ id: string; name: string } | null>(null);
+    const [selectCompany, setSelectCompany] = useState<{ id: string; name: string; fiscal_id: string; fiscal_regime_id: number } | null>(null);
     const [totalSize, setTotalSize] = useState(0);
     const [loading, setLoading] = useState(false);
     const [resultUpload, setResultUpload] = useState<'waiting' | 'success' | 'error'>('waiting');
@@ -208,20 +212,37 @@ export default function UploadDialog({
         });
 
         if (dialogMode == 'create') {
-            setODps({
-                serie: '',
-                folio: '',
-                xml_date: '',
-                payment_method: '',
-                rfc_issuer: '',
-                tax_regime_issuer: '',
-                rfc_receiver: '',
-                tax_regime_receiver: '',
-                use_cfdi: '',
-                amount: '',
-                currency: '',
-                exchange_rate: ''
-            });
+            if (isLocalProvider) {
+                setODps({
+                    serie: '',
+                    folio: '',
+                    xml_date: '',
+                    payment_method: '',
+                    rfc_issuer: '',
+                    tax_regime_issuer: '',
+                    rfc_receiver: '',
+                    tax_regime_receiver: '',
+                    use_cfdi: '',
+                    amount: '',
+                    currency: '',
+                    exchange_rate: ''
+                });
+            } else {
+                setODps({
+                    serie: '',
+                    folio: '',
+                    xml_date: '',
+                    payment_method: '',
+                    rfc_issuer: 'XEXX010101000',
+                    tax_regime_issuer: '',
+                    rfc_receiver: selectCompany?.fiscal_id,
+                    tax_regime_receiver: findFiscalRegimeById(lFiscalRegimes, selectCompany ? selectCompany.fiscal_regime_id : '' ),
+                    use_cfdi: '',
+                    amount: '',
+                    currency: '',
+                    exchange_rate: ''
+                });
+            }
         }
     }, [selectProvider]);
 
@@ -249,19 +270,19 @@ export default function UploadDialog({
         setErrors(newErrors);
 
         const newODpsErrors = {};
-        if (!isXmlValid) {
+        if (!isXmlValid && selectProvider?.country != constants.COUNTRIES.MEXICO_ID) {
             const newODpsErrors = {
                 folio: oDps.folio.trim() === '',
                 xml_date: oDps.xml_date == '',
-                payment_method: oDps.payment_method.trim() === '',
+                payment_method: false,
                 rfc_issuer: oDps.rfc_issuer.trim() === '',
-                tax_regime_issuer: oDps.tax_regime_issuer ? false : true,
+                tax_regime_issuer: false,
                 rfc_receiver: oDps.rfc_receiver.trim() === '',
                 tax_regime_receiver: oDps.tax_regime_receiver ? false : true,
-                use_cfdi: oDps.use_cfdi.trim() === '',
-                amount: oDps.amount.trim() === '',
-                currency: oDps.currency == '',
-                exchange_rate: oDps.exchange_rate.trim() === ''
+                use_cfdi: false,
+                amount: oDps.amount ? false : true,
+                currency: oDps.currency ? false : true,
+                exchange_rate: oDps.exchange_rate ? false : true
             };
             setODpsErrors(newODpsErrors);
         } else {
@@ -283,6 +304,13 @@ export default function UploadDialog({
 
         return !Object.values(newErrors).some(Boolean) && !Object.values(newODpsErrors).some(Boolean);
     };
+
+    useEffect(() => {
+        const splitFolio = oDps.folio.split('-');
+        const series = splitFolio.length > 1 ? splitFolio[0] : '';
+
+        setODps((prev: any) => ({...prev,serie: series,}));
+    }, [oDps.folio])
 
     const handleSubmit = async () => {
         if (!validate()) return;
@@ -308,18 +336,22 @@ export default function UploadDialog({
             formData.append('user_id', userId.toString());
             formData.append('is_internal_user', oValidUser.isInternalUser ? 'True' : 'False');
 
+            const splitFolio = oDps.folio.split('-');
+            const number = splitFolio.length > 1 ? splitFolio[1] : splitFolio[0];
             const document = {
                 transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
                 document_type: constants.DOC_TYPE_INVOICE,
                 partner: selectProvider?.id || '',
                 series: oDps.serie,
-                number: oDps.folio,
+                number: number,
                 date: moment(oDps.xml_date).format('YYYY-MM-DD'),
                 currency: oDps.currency?.id || '',
                 amount: oDps.amount,
                 exchange_rate: oDps.exchange_rate ? oDps.exchange_rate : 0,
                 payment_method: oDps.payment_method?.id || '',
-                fiscal_use: oDps.use_cfdi?.id || ''
+                fiscal_use: oDps.use_cfdi?.id || '',
+                issuer_tax_regime: oDps.tax_regime_issuer?.id || '',
+                receiver_tax_regime: oDps.tax_regime_receiver?.id || '',
             };
 
             formData.append('document', JSON.stringify(document));
@@ -553,25 +585,25 @@ export default function UploadDialog({
             setSelectReference(reviewFormData.reference);
             setIsRejected(false);
             setTotalSize(0);
-            
+
             setODps({
                 dpsId: reviewFormData.dpsId,
                 serie: reviewFormData.series,
-                folio: reviewFormData.number,
+                folio: reviewFormData.series ? reviewFormData.series + '-' + reviewFormData.number : reviewFormData.number,
                 xml_date: reviewFormData.xml_date,
-                payment_method: reviewFormData.paymentMethod,
+                payment_method: findPaymentMethod(lPaymentMethod, reviewFormData.payment_method),
                 rfc_issuer: reviewFormData.rfcIssuer,
                 tax_regime_issuer: findFiscalRegime(lFiscalRegimes, reviewFormData.taxRegimeIssuer),
                 rfc_receiver: reviewFormData.rfcReceiver,
                 tax_regime_receiver: findFiscalRegime(lFiscalRegimes, reviewFormData.taxRegimeReceiver),
-                use_cfdi: reviewFormData.useCfdi,
+                use_cfdi: findUseCfdi(lUseCfdi, reviewFormData.useCfdi),
                 amount: reviewFormData.amount,
                 currency: findCurrency(lCurrencies, reviewFormData.currency),
                 exchange_rate: reviewFormData.exchangeRate,
                 payment_percentage: reviewFormData.payment_percentage,
                 notes: reviewFormData.notes,
                 authz_acceptance_notes: reviewFormData.authz_acceptance_notes,
-                payday: reviewFormData.payday ? new Date(reviewFormData.payday + 'T00:00:00') : null
+                payday: reviewFormData.payday ? new Date(reviewFormData.payday + 'T00:00:00') : null,
             });
 
             getlUrlFilesDps();
@@ -580,7 +612,13 @@ export default function UploadDialog({
     }, [visible, oValidUser.isInternalUser, partnerId]);
 
     const renderInfoButton = () => {
-        const instructionKey = dialogMode === 'create' ? 'uploadInstructions' : 'reviewInstructions';
+        let instructionKey = '';
+        if (dialogMode == 'create') {
+            instructionKey = oValidUser.isProvider ? ( oValidUser.isProviderMexico ? 'uploadInstructions' : 'uploadInstructionsForForeign' )  : 'uploadInstructions';            
+        } else {
+            instructionKey = 'reviewInstructions';
+        }
+
 
         const instructions = JSON.parse(JSON.stringify(t(`uploadDialog.${instructionKey}`, { returnObjects: true })));
 
@@ -669,7 +707,6 @@ export default function UploadDialog({
     }, [oDps.payday]);
 
     useEffect(() => {
-        console.log(oDps.payment_percentage);
         if (oDps.payment_percentage > 100) {
             setODps((prev: any) => ({ ...prev, payment_percentage: 100 }));
         }
@@ -816,6 +853,8 @@ export default function UploadDialog({
                                                 setODps={setODps}
                                                 lCurrencies={lCurrencies}
                                                 lFiscalRegimes={lFiscalRegimes}
+                                                lPaymentMethod={lPaymentMethod}
+                                                lUseCfdi={lUseCfdi}
                                                 setLoadingValidateXml={setLoadingValidateXml}
                                                 showToast={showToast}
                                             />
@@ -823,6 +862,7 @@ export default function UploadDialog({
                                     </div>
                                 </div>
                             )}
+                            <Divider></Divider>
                             {loadingValidateXml && <ProgressSpinner style={{ width: '50px', height: '50px' }} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />}
                             {(isXmlValid || (selectProvider ? selectProvider.country != constants.COUNTRIES.MEXICO_ID : false) || dialogMode == 'review') && (
                                 <>
@@ -852,7 +892,7 @@ export default function UploadDialog({
                                             </div>
                                         </div>
                                     )}
-                                    <InvoiceFields dialogMode={dialogMode} oProvider={selectProvider} oDps={oDps} setODps={setODps} errors={oDpsErros} setErrors={setODpsErrors} lCurrencies={lCurrencies} lFiscalRegimes={lFiscalRegimes} />
+                                    <InvoiceFields dialogMode={dialogMode} oProvider={selectProvider} oDps={oDps} setODps={setODps} errors={oDpsErros} setErrors={setODpsErrors} lCurrencies={lCurrencies} lFiscalRegimes={lFiscalRegimes} lPaymentMethod={lPaymentMethod} lUseCfdi={lUseCfdi} oCompany={selectCompany}/>
                                 </>
                             )}
 
@@ -910,7 +950,7 @@ export default function UploadDialog({
                                                 ></i>
                                                 <div className="p-inputgroup flex-1">
                                                     <span className="p-inputgroup-addon">%</span>
-                                                    <InputNumber placeholder="Porcentaje" value={oDps.payment_percentage} onChange={(e) => setODps( (prev: any) => ({ ...prev, payment_percentage: e.value }) )} min={0} max={100} />
+                                                    <InputNumber placeholder="Porcentaje" value={oDps.payment_percentage} onChange={(e) => setODps( (prev: any) => ({ ...prev, payment_percentage: e.value }) )} min={0} max={100} inputClassName="text-right"/>
                                                 </div>
                                             </div>
                                         </div>

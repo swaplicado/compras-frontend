@@ -8,6 +8,8 @@ import Cookies from 'js-cookie';
 import { Toast } from 'primereact/toast';
 import { useTranslation } from 'react-i18next';
 
+axios.defaults.timeout = 45000;
+
 const Logout = () => {
     const router = useRouter();
     const toast = useRef<Toast>(null);

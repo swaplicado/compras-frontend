@@ -11,7 +11,7 @@ const changePassword = {
         helperText: "Por favor ingresa la confirmación de la contraseña.",
     },
     btnShowPassword: {
-        tooltip: "Mostrar/ocultar contraseña",
+        tooltip: "Mostrar/ocultar contraseña.",
     },
     btnUpdatePassword: "Actualizar contraseña",
     animationSuccess: {
@@ -19,7 +19,7 @@ const changePassword = {
         text: "Tu contraseña ha sido cambiada correctamente.",
     },
     animationError: {
-        title: "No se pudo actualizar tu contraseña",
+        title: "No se pudo actualizar tu contraseña.",
         text: "Tu contraseña no ha sido cambiada. Intenta nuevamente más tarde.",
     },
     errors: {

@@ -5,7 +5,6 @@ import { Button } from 'primereact/button';
 import { Column } from 'primereact/column';
 import { DataTable, DataTableFilterMeta, DataTableRowClickEvent } from 'primereact/datatable';
 import { InputText } from 'primereact/inputtext';
-import type { Demo } from '@/types';
 import { Toolbar } from 'primereact/toolbar';
 import { Card } from 'primereact/card';
 import UploadDialog from '@/app/components/documents/invoice/uploadDialog';
@@ -19,15 +18,16 @@ import DateFormatter from '@/app/components/commons/formatDate';
 import moment from 'moment';
 import { ReloadButton } from '@/app/components/commons/reloadButton';
 import { useIsMobile } from '@/app/components/commons/screenMobile';
+import { findCompany } from '@/app/(main)/utilities/files/catFinder';
 interface reviewFormData {
-    company: { id: string; name: string };
+    company: { id: string; name: string; fiscal_id: string; fiscal_regime_id: number };
     partner: { id: string; name: string };
     reference: { id: string; name: string };
     series: string;
     number: string;
     dpsId: string;
     payday: string;
-    paymentMethod: string;
+    payment_method: string;
     rfcIssuer: string;
     rfcReceiver: string;
     taxRegimeIssuer: string;
@@ -54,7 +54,8 @@ interface dataDps {
     reference: string,
     files: number,
     date: string,
-    status: string,
+    acceptance: string,
+    authorization: string,
     amount: number,
     currency: string,
     exchange_rate: number,
@@ -81,6 +82,8 @@ const TableDemo = () => {
     const [lCompanies, setLCompanies] = useState<any[]>([]);
     const [lCurrencies, setLCurrencies] = useState<any[]>([]);
     const [lFiscalRegimes, setLFiscalRegimes] = useState<any[]>([]);
+    const [lPaymentMethod, setLPaymentMethod] = useState<any[]>([]);
+    const [lUseCfdi, setLUseCfdi] = useState<any[]>([]);
     const [lDps, setLDps] = useState<any[]>([]);
     const [selectedRow, setSelectedRow] = useState<any>(null);
     const lastClickTime = useRef<number>(0);
@@ -162,25 +165,29 @@ const TableDemo = () => {
                         provider_id: data[i].partner.id,
                         company_id: data[i].company.id,
                         provider_rfc: data[i].partner.fiscal_id,
-                        provider_tax_regime: data[i].partner.fiscal_regime,
+                        issuer_tax_regime: data[i].issuer_tax_regime ? data[i].issuer_tax_regime.code : '',
                         company_rfc: data[i].company.fiscal_id,
-                        company_tax_regime: data[i].company.fiscal_regime,
+                        receiver_tax_regime: data[i].receiver_tax_regime ? data[i].receiver_tax_regime.code : '',
                         dateFormated: DateFormatter(data[i].date),
+                        useCfdi: data[i].fiscal_use,
                         company: data[i].company.trade_name,
                         provider_name: data[i].partner.trade_name,
                         serie: data[i].series,
-                        folio: data[i].number,
+                        number: data[i].number,
+                        folio: data[i].series ? data[i].series + '-' + data[i].number : data[i].number,
                         reference: reference,
                         files: data[i].id,
                         date: data[i].date,
-                        status: data[i].authz_acceptance_name.toLowerCase(),
+                        acceptance: data[i].authz_acceptance_name.toLowerCase(),
+                        authorization: data[i].authz_authorization_name.toLowerCase(),
                         amount: data[i].amount,
                         currency: data[i].currency,
                         exchange_rate: data[i].exchange_rate,
                         payday: data[i].payment_date,
                         payment_percentage: data[i].payment_percentage,
                         notes: data[i].notes,
-                        authz_acceptance_notes: data[i].authz_acceptance_notes
+                        authz_acceptance_notes: data[i].authz_acceptance_notes,
+                        payment_method: data[i].payment_method,
                     });
                 }
                 setLDps(dps);
@@ -280,7 +287,9 @@ const TableDemo = () => {
                 for (const item of data) {
                     lCompanies.push({
                         id: item.id,
-                        name: item.full_name
+                        name: item.full_name,
+                        fiscal_id: item.fiscal_id,
+                        fiscal_regime_id: item.fiscal_regime
                     });
                 }
                 setLCompanies(lCompanies);
@@ -342,8 +351,9 @@ const TableDemo = () => {
                 let lFiscalRegime: any[] = [];
                 for (const item of data) {
                     lFiscalRegime.push({
-                        id: stringToInteger(item.code),
-                        name: item.name
+                        id: item.id,
+                        code: item.code,
+                        name: item.code + '-' + item.name
                     });
                 }
 
@@ -353,6 +363,64 @@ const TableDemo = () => {
             }
         } catch (error: any) {
             showToast('error', error.response?.data?.error || t('errors.getFiscalRegimesError'), t('errors.getFiscalRegimesError'));
+            return [];
+        }
+    }
+
+    const getlPaymentMethod = async () => {
+        try {
+            const route = constants.ROUTE_GET_PAYMENT_METHODS;
+            const response = await axios.get(constants.API_AXIOS_GET, {
+                params: {
+                    route: route
+                }
+            });
+
+            if (response.status === 200) {
+                const data = response.data.data || [];
+                let lPaymentMethod: any[] = [];
+                for (const item of data) {
+                    lPaymentMethod.push({
+                        id: item.code,
+                        name: item.code + '-' + item.name
+                    });
+                }
+
+                setLPaymentMethod(lPaymentMethod);
+            } else {
+                throw new Error(`${t('errors.getPaymentMethodsError')}: ${response.statusText}`);
+            }
+        } catch (error: any) {
+            showToast('error', error.response?.data?.error || t('errors.getPaymentMethodsError'), t('errors.getPaymentMethodsError'));
+            return [];
+        }
+    }
+
+    const getlUseCfdi = async () => {
+        try {
+            const route = constants.ROUTE_GET_USE_CFDI;
+            const response = await axios.get(constants.API_AXIOS_GET, {
+                params: {
+                    route: route
+                }
+            });
+
+            if (response.status === 200) {
+                const data = response.data.data || [];
+                let lUseCfdi: any[] = [];
+                for (const item of data) {
+                    lUseCfdi.push({
+                        id: item.code,
+                        name: item.code + '-' + item.name
+                    });
+                }
+
+                setLUseCfdi(lUseCfdi);
+            } else {
+                throw new Error(`${t('errors.getUseCfdiError')}: ${response.statusText}`);
+            }
+        } catch (error: any) {
+            showToast('error', error.response?.data?.error || t('errors.getUseCfdiError'), t('errors.getUseCfdiError'));
             return [];
         }
     }
@@ -399,6 +467,8 @@ const TableDemo = () => {
             await getlCompanies();
             await getlCurrencies();
             await getlFiscalRegime();
+            await getlPaymentMethod();
+            await getlUseCfdi();
             setLoading(false);
         };
         fetchReferences();
@@ -503,8 +573,12 @@ const TableDemo = () => {
         return formatCurrency(rowData.amount);
     };
 
-    const statusDpsBodyTemplate = (rowData: dataDps) => {
-        return <span className={`status-dps-badge status-${rowData.status}`}>{rowData.status}</span>;
+    const statusAcceptanceDpsBodyTemplate = (rowData: dataDps) => {
+        return <span className={`status-dps-badge status-${rowData.acceptance}`}>{rowData.acceptance}</span>;
+    };
+
+    const statusAuthDpsBodyTemplate = (rowData: dataDps) => {
+        return <span className={`status-dps-badge status-${rowData.authorization}`}>{rowData.authorization}</span>;
     };
 
     const fileBodyTemplate = (rowData: any) => {
@@ -526,33 +600,17 @@ const TableDemo = () => {
 
     const startContent = (
         <React.Fragment>
-            {limitDate ? (
-                moment(actualDate).isBefore(limitDate) || oValidUser.isInternalUser ? (
-                    <Button
-                        icon="pi pi-plus"
-                        label={ !isMobile ? t('btnOpenDialogUpload') : ''}
-                        className="mr-2"
-                        rounded
-                        onClick={() => {
-                            setDialogMode('create');
-                            setDialogVisible(true);
-                        }}
-                    />
-                ) : (
-                    ''
-                )
-            ) : (
-                <Button
-                    icon="pi pi-plus"
-                    label={ !isMobile ? t('btnOpenDialogUpload') : ''}
-                    className="mr-2"
-                    rounded
-                    onClick={() => {
-                        setDialogMode('create');
-                        setDialogVisible(true);
-                    }}
-                />
-            )}
+            <Button
+                icon="pi pi-plus"
+                label={ !isMobile ? t('btnOpenDialogUpload') : ''}
+                className="mr-2"
+                rounded
+                disabled={ ( limitDate ? (moment(actualDate).isAfter(limitDate)  && !oValidUser.isInternalUser) : false ) }
+                onClick={() => {
+                    setDialogMode('create');
+                    setDialogVisible(true);
+                }}
+            />
         </React.Fragment>
     );
 
@@ -632,29 +690,31 @@ const TableDemo = () => {
             e.originalEvent.preventDefault();
             return;
         }
+        
         setSelectedRow(e.data);
         let data = {
-            company: { id: e.data.company_id, name: e.data.company },
+            company: findCompany(lCompanies, e.data.company_id),
             partner: { id: e.data.provider_id, name: e.data.provider_name },
             reference: { id: e.data.id_dps, name: e.data.reference },
             series: e.data.serie,
-            number: e.data.folio,
+            number: e.data.number,
             dpsId: e.data.id_dps,
             payday: e.data.payday,
-            paymentMethod: e.data.payment_method,
+            payment_method: e.data.payment_method,
             rfcIssuer: e.data.provider_rfc,
             rfcReceiver: e.data.company_rfc,
-            taxRegimeIssuer: e.data.provider_tax_regime,
-            taxRegimeReceiver: e.data.company_tax_regime,
-            useCfdi: e.data.use_cfdi,
+            taxRegimeIssuer: e.data.issuer_tax_regime,
+            taxRegimeReceiver: e.data.receiver_tax_regime,
+            useCfdi: e.data.useCfdi,
             currency: e.data.currency,
             amount: e.data.amount,
             exchangeRate: e.data.exchange_rate,
             xml_date: e.data.date,
             payment_percentage: e.data.payment_percentage,
             notes: e.data.notes,
-            authz_acceptance_notes: e.data.authz_acceptance_notes
+            authz_acceptance_notes: e.data.authz_acceptance_notes,
         };
+        
         setFormData(data);
         setDialogMode('review');
         setDialogVisible(true);
@@ -718,6 +778,8 @@ const TableDemo = () => {
                                 userId={userId}
                                 lCurrencies={lCurrencies}
                                 lFiscalRegimes={lFiscalRegimes}
+                                lPaymentMethod={lPaymentMethod}
+                                lUseCfdi={lUseCfdi}
                                 loadingReferences={loadingReferences}
                                 showToast={showToast}
                             />
@@ -741,6 +803,8 @@ const TableDemo = () => {
                             userId={userId}
                             lCurrencies={lCurrencies}
                             lFiscalRegimes={lFiscalRegimes}
+                            lPaymentMethod={lPaymentMethod}
+                            lUseCfdi={lUseCfdi}
                             loadingReferences={loadingReferences}
                             showToast={showToast}
                         />
@@ -779,13 +843,15 @@ const TableDemo = () => {
                         <Column field="provider_id" header="id" hidden />
                         <Column field="company_id" header="id" hidden />
                         <Column field="provider_rfc" header="id" hidden />
-                        <Column field="provider_tax_regime" header="id" hidden />
+                        <Column field="issuer_tax_regime" header="id" hidden />
                         <Column field="company_rfc" header="id" hidden />
-                        <Column field="company_tax_regime" header="id" hidden />
+                        <Column field="receiver_tax_regime" header="id" hidden />
                         <Column field="dateFormated" header="dateFormated" hidden/>
                         <Column field="payment_percentage" header='payment_percentage' hidden />
                         <Column field="notes" header="notes" hidden/>
                         <Column field="authz_acceptance_notes" header="authz_acceptance_notes" hidden/>
+                        <Column field="useCfdi" header="useCfdi" hidden/>
+                        <Column field="payment_method" header="payment_method" hidden/>
                         <Column
                             field="company"
                             header={t('invoicesTable.columns.company')}
@@ -811,12 +877,13 @@ const TableDemo = () => {
                             hidden={!oValidUser.isInternalUser}
                             sortable
                         />
-                        <Column field="serie" header={t('invoicesTable.columns.serie')} footer={t('invoicesTable.columns.serie')} sortable />
+                        <Column field="serie" header={t('invoicesTable.columns.serie')} footer={t('invoicesTable.columns.serie')} sortable hidden/>
                         <Column field="folio" header={t('invoicesTable.columns.folio')} footer={t('invoicesTable.columns.folio')} sortable />
                         <Column field="reference" header={t('invoicesTable.columns.reference')} footer={t('invoicesTable.columns.reference')} sortable />
                         <Column field="payday" header={t('invoicesTable.columns.payday')} footer={t('invoicesTable.columns.payday')} body={payDayBodyTemplate} sortable />
                         <Column field="amount" header={t('invoicesTable.columns.amount')} footer={t('invoicesTable.columns.amount')} dataType="numeric" body={amountBodyTemplate} hidden sortable />
-                        <Column field="status" header={t('invoicesTable.columns.status')} footer={t('invoicesTable.columns.status')} body={statusDpsBodyTemplate} sortable />
+                        <Column field="acceptance" header={t('invoicesTable.columns.acceptance')} footer={t('invoicesTable.columns.acceptance')} body={statusAcceptanceDpsBodyTemplate} sortable />
+                        <Column field="authorization" header={t('invoicesTable.columns.authorization')} footer={t('invoicesTable.columns.authorization')} body={statusAuthDpsBodyTemplate} sortable />
                         <Column field="date" header={t('invoicesTable.columns.date')} footer={t('invoicesTable.columns.date')} body={dateBodyTemplate} sortable />
                         <Column field="files" header={t('invoicesTable.columns.files')} footer={t('invoicesTable.columns.files')} body={fileBodyTemplate} />
                     </DataTable>
