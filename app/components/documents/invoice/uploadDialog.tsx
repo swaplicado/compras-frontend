@@ -70,6 +70,9 @@ interface UploadDialogProps {
     lCurrencies: any[];
     lFiscalRegimes: any[];
     showToast?: (type: 'success' | 'info' | 'warn' | 'error', message: string, summaryText?: string) => void;
+    getlAreas: (company_id: string | number) => Promise<any>
+    setLAreas: React.Dispatch<React.SetStateAction<any[]>>;
+    lAreas: any[];
 }
 
 export default function UploadDialog({
@@ -92,7 +95,10 @@ export default function UploadDialog({
     userId,
     lCurrencies,
     lFiscalRegimes,
-    showToast
+    showToast,
+    getlAreas,
+    setLAreas,
+    lAreas
 }: UploadDialogProps) {
     const [selectReference, setSelectReference] = useState<{ id: string; name: string } | null>(null);
     const [selectProvider, setSelectProvider] = useState<{ id: string; name: string; country: number } | null>(null);
@@ -109,7 +115,8 @@ export default function UploadDialog({
         includePdf: false,
         includeXml: false,
         rejectComments: false,
-        xmlValidateFile: false
+        xmlValidateFile: false,
+        area: false
     });
     const [xmlValidateErrors, setXmlValidateErrors] = useState({
         includeXml: false,
@@ -162,8 +169,8 @@ export default function UploadDialog({
     const [lUrlFiles, setLUrlFiles] = useState<any[]>([]);
     const [loadingUrlsFiles, setLoadingUrlsFiles] = useState(false);
     const [percentOption, setPercentOption] = useState<string | undefined>();
-
     const [lWarnings, setlWarnings] = useState<any>([]);
+    const [selectArea, setSeletedArea] = useState<{id: string, name: string} | null>(null);
 
     const lPercentOptions = [
         'Todo',
@@ -208,7 +215,8 @@ export default function UploadDialog({
             includePdf: false,
             includeXml: false,
             rejectComments: false,
-            xmlValidateFile: false
+            xmlValidateFile: false,
+            area: false,
         });
 
         if (dialogMode == 'create') {
@@ -234,7 +242,7 @@ export default function UploadDialog({
                     xml_date: '',
                     payment_method: '',
                     rfc_issuer: 'XEXX010101000',
-                    tax_regime_issuer: '',
+                    tax_regime_issuer: findFiscalRegimeById(lFiscalRegimes, 0),
                     rfc_receiver: selectCompany?.fiscal_id,
                     tax_regime_receiver: findFiscalRegimeById(lFiscalRegimes, selectCompany ? selectCompany.fiscal_regime_id : '' ),
                     use_cfdi: '',
@@ -265,7 +273,8 @@ export default function UploadDialog({
             //         : false,
             includeXml: false,
             rejectComments: dialogMode === 'review' && isRejected && oDps.authz_acceptance_notes.trim() === '',
-            xmlValidateFile: xmlUploadRef.current?.getFiles().length === 0
+            xmlValidateFile: xmlUploadRef.current?.getFiles().length === 0,
+            area: selectReference ? ( selectReference.id == '0' ? !selectArea : false ) : false,
         };
         setErrors(newErrors);
 
@@ -330,7 +339,11 @@ export default function UploadDialog({
             });
 
             const route = constants.ROUTE_POST_DOCUMENT_TRANSACTION;
-            formData.append('ref_id', selectReference?.id || '');
+
+            const ref_id = selectReference ? ( selectReference.id != '0' ? selectReference?.id : '' ) : '';
+
+            formData.append('ref_id', ref_id);
+            formData.append('area_id', selectArea?.id || '');
             formData.append('route', route);
             formData.append('company', selectCompany?.id || '');
             formData.append('user_id', userId.toString());
@@ -338,7 +351,8 @@ export default function UploadDialog({
 
             const splitFolio = oDps.folio.split('-');
             const number = splitFolio.length > 1 ? splitFolio[1] : splitFolio[0];
-            const document = {
+            
+            let document = {
                 transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
                 document_type: constants.DOC_TYPE_INVOICE,
                 partner: selectProvider?.id || '',
@@ -354,7 +368,14 @@ export default function UploadDialog({
                 receiver_tax_regime: oDps.tax_regime_receiver?.id || '',
             };
 
+            if (!ref_id) {
+                document = Object.assign({}, document, {
+                    functional_area: selectArea?.id || ''
+                })
+            }
+
             formData.append('document', JSON.stringify(document));
+
             const response = await axios.post(constants.API_AXIOS_POST, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
@@ -391,6 +412,12 @@ export default function UploadDialog({
         setSelectCompany(oCompany);
         setErrors((prev) => ({ ...prev, company: false }));
         const result = await getlReferences(oCompany?.id, selectProvider?.id);
+        if (oCompany) {
+            await getlAreas?.(oCompany.external_id);
+        } else {
+            setLAreas([]);
+        }
+
         if (!result) {
             setSelectReference(null);
         }
@@ -541,7 +568,8 @@ export default function UploadDialog({
             includePdf: false,
             includeXml: false,
             rejectComments: false,
-            xmlValidateFile: false
+            xmlValidateFile: false,
+            area: false
         });
         setXmlValidateErrors({
             includeXml: false,
@@ -571,11 +599,14 @@ export default function UploadDialog({
             setSelectReference(null);
 
             setLReferences([]);
+            setLAreas([]);
             setTotalSize(0);
             fileUploadRef.current?.clear();
             message.current?.clear();
             if (!oValidUser.isInternalUser) {
                 setSelectProvider({ id: partnerId, name: '', country: partnerCountry });
+                console.log('partnerCountry, ', partnerCountry);
+                
             }
         }
 
@@ -823,6 +854,22 @@ export default function UploadDialog({
                                     (value) => {
                                         setSelectReference(value);
                                         setErrors((prev) => ({ ...prev, reference: false }));
+                                    },
+                                    !lReferences || lReferences.length == 0 || dialogMode === 'view' || dialogMode === 'review'
+                                )
+                            )}
+                            { selectReference?.id == '0' && (
+                                renderDropdownField(
+                                    t('uploadDialog.areas.label'),
+                                    dialogMode === 'review' ? t('uploadDialog.areas.tooltipReview') : t('uploadDialog.areas.tooltip'),
+                                    selectArea,
+                                    lAreas,
+                                    lAreas.length > 0 ? t('uploadDialog.areas.placeholder') : t('uploadDialog.areas.placeholderEmpty'),
+                                    'area',
+                                    t('uploadDialog.areas.helperText'),
+                                    (value) => {
+                                        setSeletedArea(value);
+                                        setErrors((prev) => ({ ...prev, area: false }));
                                     },
                                     !lReferences || lReferences.length == 0 || dialogMode === 'view' || dialogMode === 'review'
                                 )
