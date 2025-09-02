@@ -41,6 +41,7 @@ interface reviewFormData {
     payment_percentage: string;
     notes: string;
     authz_acceptance_notes: string;
+    functional_area: { id: string; name: string };
 }
 
 interface dataDps {
@@ -169,6 +170,7 @@ const TableDemo = () => {
                         id_dps: data[i].id,
                         provider_id: data[i].partner.id,
                         company_id: data[i].company.id,
+                        functional_area: data[i].functional_area?.name,
                         provider_rfc: data[i].partner.fiscal_id,
                         issuer_tax_regime: data[i].issuer_tax_regime ? data[i].issuer_tax_regime.code : '',
                         company_rfc: data[i].company.fiscal_id,
@@ -770,8 +772,9 @@ const TableDemo = () => {
         setSelectedRow(e.data);
         let data = {
             company: findCompany(lCompanies, e.data.company_id),
+            functional_area: { id: '', name: e.data.functional_area },
             partner: { id: e.data.provider_id, name: e.data.provider_name },
-            reference: { id: e.data.id_dps, name: e.data.reference },
+            reference: { id: '', name: e.data.reference },
             series: e.data.serie,
             number: e.data.number,
             dpsId: e.data.id_dps,
@@ -935,6 +938,7 @@ const TableDemo = () => {
                         <Column field="id_dps" header="id" hidden />
                         <Column field="provider_id" header="id" hidden />
                         <Column field="company_id" header="id" hidden />
+                        <Column field="functional_area" header="id" hidden />
                         <Column field="provider_rfc" header="id" hidden />
                         <Column field="issuer_tax_regime" header="id" hidden />
                         <Column field="company_rfc" header="id" hidden />

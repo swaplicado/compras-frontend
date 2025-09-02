@@ -34,7 +34,7 @@ const constants = {
     ROUTE_POST_DOCUMENT_TRANSACTION: '/transactions/document-transaction/',
 
     //Constantes de estados de las facturas
-    REVIEW_ACCEPT: 'A',
+    REVIEW_ACCEPT: 'O',
     REVIEW_REJECT: 'R',
     REVIEW_PENDING: 'P',
 

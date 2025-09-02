@@ -289,7 +289,7 @@ export const InvoiceFields = ({ dialogMode, oDps, setODps, errors, setErrors, oP
                             }}
                             options={lUseCfdi}
                             optionLabel='name'
-                            disabled={disabled}
+                            disabled={true}
                             filter
                             placeholder='Selecciona método de pago'
                             className={`w-full ${errors.use_cfdi ? 'p-invalid' : ''}`} 

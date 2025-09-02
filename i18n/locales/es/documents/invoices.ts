@@ -12,7 +12,7 @@ const invoices = {
             header: "Para cargar una factura, sigue estos pasos:",
             step1: "Selecciona una referencia para la factura.",
             step2: "Selecciona el XML de la factura para su validación, en cuanto selecciones el xml de la factura este se validará automáticamente.",
-            step3: "Una vez validado el XML, se mostrarán las observaciones del archivo que pudiera contener, sin no contiene errores criticos, se mostrarán los campos del archivo XML.",
+            step3: "Una vez validado el XML, se mostrarán las observaciones del archivo que pudiera contener marcados con un signo de advetencia amarillo, si no contiene errores criticos marcados en rojo y con una X, se mostrarán los campos del archivo XML para que pueda continuar.",
             step5: "Selecciona los archivos asociados a la factura en el campo 'Archivos de factura'.",
             step6: "Asegúrate de que los archivos no superen 5 MB cada uno y que en total no superen los 25 MB.",
             footer: `Puedes seleccionar varios archivos a la vez, pero asegúrate de que al menos uno sea un PDF.
@@ -165,11 +165,11 @@ const invoices = {
             tooltipReview: "Este es el monto de la factura.",
         },
         payDay: {
-            label: "Fecha tentativa de pago:",
+            label: "Fecha de pago:",
             placeholder: "Selecciona una fecha",
-            helperText: "Por favor selecciona una fecha.",
-            tooltip: "Selecciona la fecha de pago de la factura.",
-            tooltipReview: "Esta es la fecha de pago asociada a la factura.",
+            helperText: "Por favor selecciona una fecha de pago.",
+            tooltip: "Selecciona la fecha de pago de la factura solicitada por el comprador.",
+            tooltipReview: "Esta es la fecha de pago solicitada por el comprador de la factura.",
         },
         percentOption: {
             label: "Porcentaje de pago:",
