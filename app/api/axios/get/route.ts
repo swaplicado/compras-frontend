@@ -10,7 +10,7 @@ switch(ENVIRONMENT){
     case 'local':
         config = appConfigLocal;
         break;
-    case 'test':
+    case 'testing':
         config = appConfigTest;
         break;
     case 'production':
