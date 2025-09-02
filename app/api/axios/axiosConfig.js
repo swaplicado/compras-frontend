@@ -5,6 +5,8 @@ import appConfigLocal from '@/appConfigLocal.json';
 import appConfigTest from '@/appConfigTest.json';
 
 const ENVIRONMENT = process.env.REACT_APP_ENVIRONMENT || "local"
+console.log('ENVIRONMENT: ', ENVIRONMENT);
+
 var config = {};
 switch(ENVIRONMENT){
     case 'local':
