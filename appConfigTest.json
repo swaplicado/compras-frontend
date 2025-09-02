@@ -1,5 +1,5 @@
 {
-    "mainRoute": "https://compras-backend-368437194061.us-central1.run.app",
+    "mainRoute": "https://backend-users-test-515680676790.us-central1.run.app",
     "apiKey": "AIzaSyDlskxETi2HFbsl2AWwBzktGkoUtUwnktU",
     "groups": [
         { "id": 1, "name": "admin" },
@@ -8,5 +8,5 @@
         { "id": 4, "name": "pagador" },
         { "id": 5, "name": "proveedor" }
     ],
-    "apiTransactionsUrl" : "https://transaction-backend-368437194061.us-central1.run.app/api"
+    "apiTransactionsUrl" : "https://transaction-backend-test-515680676790.europe-west1.run.app/api"
 }

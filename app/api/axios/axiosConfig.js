@@ -1,10 +1,28 @@
 import axios from 'axios';
 import cookie from 'cookie'; // Importar la librería cookie para manejar las cookies
 import appConfig from '/appConfig.json';
+import appConfigLocal from '@/appConfigLocal.json';
+import appConfigTest from '@/appConfigTest.json';
+
+const ENVIRONMENT = process.env.REACT_APP_ENVIRONMENT || "local"
+var config = {};
+switch(ENVIRONMENT){
+    case 'local':
+        config = appConfigLocal;
+        break;
+    case 'test':
+        config = appConfigTest;
+        break;
+    case 'production':
+        config = appConfig;
+        break;
+    default:
+        config = appConfigLocal;
+}
 
 const createApiInstance = (baseURL) => {
     const api = axios.create({
-        baseURL: baseURL || appConfig.mainRoute, // Usa el parámetro o un valor por defecto
+        baseURL: baseURL || config.mainRoute,
         timeout: 45000,
     });
 
