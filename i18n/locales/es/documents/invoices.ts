@@ -286,6 +286,11 @@ const invoices = {
         },
         currentPageReportTemplate: "Mostrando {first} a {last} de {totalRecords} registros",
         emptyMessage: "Sin datos para mostrar.",   
+    },
+    helpText: {
+        buttonLabel: "Videos de ayuda",
+        buttonTooltip: "Ver tutorial de inicio de sesión",
+        dialogHeader: "Manual de Usuario",
     }
 }
 

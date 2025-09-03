@@ -21,6 +21,8 @@ import { useIsMobile } from '@/app/components/commons/screenMobile';
 import { findCompany } from '@/app/(main)/utilities/files/catFinder';
 import { Dropdown } from 'primereact/dropdown';
 import { MyToolbar } from '@/app/components/documents/invoice/myToolbar';
+import { DialogManual } from '@/app/components/videoManual/dialogManual'
+
 interface reviewFormData {
     company: { id: string; name: string; fiscal_id: string; fiscal_regime_id: number };
     partner: { id: string; name: string };
@@ -98,6 +100,7 @@ const TableDemo = () => {
     const [lAreas, setLAreas] = useState<any[]>([]);
     const [lCompaniesFilter, setLCompaniesFilter] = useState<any[]>([]);
     const [filterCompany, setFilterCompany] = useState<{ id: string; name: string; fiscal_id: string; fiscal_regime_id: number } | null>(null);
+    const [showManual, setShowManual] = useState(false);
 
     const isMobile = useIsMobile();
 
@@ -771,6 +774,20 @@ const TableDemo = () => {
                 <Button label={!showInfo ? tCommon('btnShowInstructions') : tCommon('btnHideInstructions')} icon="pi pi-info-circle" className="p-button-text p-button-secondary p-0" onClick={() => setShowInfo(!showInfo)} severity="info" />
                 {showInfo && (
                     <div className="p-3 border-1 border-round border-gray-200 bg-white mb-3 surface-border surface-card">
+                        <DialogManual 
+                            visible={showManual} 
+                            onHide={() => setShowManual(false)} 
+                            lVideos={[
+                                { url: 'https://drive.google.com/file/d/1zwjNZDj3fBgPqLf_KSp6szNFFFFlfJ4i/preview', title: 'Subir factura proveedor nacional' },
+                                { url: 'https://drive.google.com/file/d/1gS4NCC2EuSwbUL_fyD1D7o9uFcBNhKWl/preview', title: 'Subir factura proveedor extranjero' }
+                            ]} 
+                            setShowManual={setShowManual}
+                            helpText={ {
+                                buttonLabel: t('helpText.buttonLabel'),
+                                buttonTooltip: t('helpText.buttonTooltip'),
+                                dialogHeader: t('helpText.dialogHeader'),
+                            } }
+                        />
                         {Object.keys(instructions).map((key, index) => (
                             <div key={index}>
                                 <h6>{instructions[key].header}</h6>

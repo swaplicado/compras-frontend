@@ -41,7 +41,7 @@ export const DialogManual = ( { visible, onHide, lVideos, setShowManual, helpTex
                 header={helpText.dialogHeader}
                 visible={visible}
                 onHide={onHide}
-                style={{ width: isMobile ? '100%' : '50rem' }}
+                style={{ width: isMobile ? '100%' : '70rem' }}
                 pt={{ header: { className: 'pb-2 pt-2 border-bottom-1 surface-border' } }}
             >
                 <div className="p-fluid formgrid grid">
