@@ -84,7 +84,7 @@ const invoices = {
             label: "Serie:",
             placeholder: "Ingresa la serie",
             helperText: "Por favor ingresa la serie.",
-            tooltip: "Ingresa la serie de la factura si aplica.",
+            tooltip: "Ingresa la serie de la factura, si aplica.",
             tooltipReview: "Esta es la serie asociada a la factura.",
         },
         folio: {
@@ -174,13 +174,13 @@ const invoices = {
         percentOption: {
             label: "Porcentaje de pago:",
             placeholder: "Selecciona porcentaje de pago",
-            helperText: "Por favor selecciona una opcion.",
+            helperText: "Por favor selecciona una opción.",
             tooltip: "Selecciona el porcentaje de pago de la factura.",
             tooltipReview: "Este es el porcentaje de pago de la factura.",
         },
         aceptNotes: {
             label: "Notas de factura:",
-            placeholder: "Ingresa las notas de las factura",
+            placeholder: "Ingresa las notas de la factura",
             helperText: "Por favor ingresa las notas.",
             tooltip: "Notas de la factura.",
             tooltipReview: "Estas son las notas de la factura.",
@@ -205,7 +205,7 @@ const invoices = {
         },
         animationError: {
             title: "Error al cargar la factura.",
-            text: "Ocurrió un error al cargar la factura, vuelve a intentarlo mas tarde.",
+            text: "Ocurrió un error al cargar la factura, vuelve a intentarlo más tarde.",
             titleReview: "Error al revisar la factura.",
         },
         errors: {
@@ -235,7 +235,7 @@ const invoices = {
         getUseCfdiError: "Error al obtener los usos de CFDI. Por favor, intenta nuevamente más tarde.",
     },
     btnDownloadFiles: "Descargar archivos",
-    dpsDateLimitText: "Fecha limite de carga de facturas:",
+    dpsDateLimitText: "Fecha límite de carga de facturas:",
     dpsDateAfterLimitText: "La fecha límite para cargar facturas fue.",
     viewInstructions: {
         downloadFiles: {
@@ -246,12 +246,12 @@ const invoices = {
         reviewInvoice: {
             header: "Revisar una factura:",
             step1: "Presiona dos veces sobre la fila de la factura que deseas revisar.",
-            step2: "Al presionar dos veces, se abrirá un cuadro de diálogo el cual contiene más instrucciones para revisar la factura.",
+            step2: "Al presionar dos veces, se abrirá un cuadro de diálogo, el cual contiene más instrucciones para revisar la factura.",
         },
         uploadInvoice: {
             header: "Cargar una nueva factura:",
             step1: "Presiona el botón 'Cargar factura'",
-            step2: "Al presionar el botón, se abrirá un cuadro de diálogo el cual contiene más instrucciones para cargar una nueva factura.",
+            step2: "Al presionar el botón, se abrirá un cuadro de diálogo, el cual contiene más instrucciones para cargar una nueva factura.",
         },
         searchInvoices: {
             header: "Buscar facturas:",

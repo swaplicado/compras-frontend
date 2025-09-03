@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { FilterMatchMode, FilterOperator } from 'primereact/api';
 import { Button } from 'primereact/button';
-import { Column } from 'primereact/column';
+import { Column, ColumnFilterElementTemplateOptions } from 'primereact/column';
 import { DataTable, DataTableFilterMeta, DataTableRowClickEvent } from 'primereact/datatable';
 import { InputText } from 'primereact/inputtext';
 import { Toolbar } from 'primereact/toolbar';
@@ -20,6 +20,7 @@ import { ReloadButton } from '@/app/components/commons/reloadButton';
 import { useIsMobile } from '@/app/components/commons/screenMobile';
 import { findCompany } from '@/app/(main)/utilities/files/catFinder';
 import { Dropdown } from 'primereact/dropdown';
+import { MyToolbar } from '@/app/components/documents/invoice/myToolbar';
 interface reviewFormData {
     company: { id: string; name: string; fiscal_id: string; fiscal_regime_id: number };
     partner: { id: string; name: string };
@@ -623,20 +624,20 @@ const TableDemo = () => {
         setFilterCompany(null);
     };
 
-    // funcion para aplicar el filtro de company automatiamcamente al escribir en el input
-    // comentado para usarse mas adelante
-    // const applyCompanyFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
-    //     const value = e.target.value;
-    //     let _filters1 = { ...filters1 };
-    //     (_filters1['company'] as DataTableFilterMetaData).value = value;
-
-    //     setFilters1(_filters1);
-    //     setGlobalFilterValue1(value);
-    // };
-
-    // const companyFilterTemplate = (options: ColumnFilterElementTemplateOptions) => {
-    //     return <InputText value={options.value? options.value : ''} onChange={(e) => applyCompanyFilter(e)} placeholder="Buscar por nombre" />;
-    // };
+    const companyFilterTemplate = () => {
+        return (
+            <Dropdown 
+                value={filterCompany} 
+                onChange={handleCompanyFilterChange} 
+                options={lCompaniesFilter} 
+                optionLabel="name" 
+                placeholder={t('filterByCompany.placeholder')} 
+                className="max-w-12rem" 
+                filter 
+                showClear 
+            />
+        )
+    };
 
     const dateBodyTemplate = (rowData: dataDps) => {
         return DateFormatter(rowData.date);
@@ -677,50 +678,6 @@ const TableDemo = () => {
             </div>
         );
     };
-
-    const startContent = (
-        <div className="flex flex-1 justify-start">
-            <Button
-                icon="pi pi-plus"
-                label={!isMobile ? t('btnOpenDialogUpload') : ''}
-                className="mr-2"
-                rounded
-                disabled={limitDate ? moment(actualDate).isAfter(limitDate) && !oValidUser.isInternalUser : false}
-                onClick={() => {
-                    setDialogMode('create');
-                    setDialogVisible(true);
-                }}
-            /> 
-            <Dropdown value={filterCompany} onChange={handleCompanyFilterChange} options={lCompaniesFilter} optionLabel="name" placeholder={t('filterByCompany.placeholder')} style={{ maxWidth: '14rem' }} filter showClear />
-        </div>
-    );
-
-    const centerContent = (
-        <div className="flex flex-1 justify-center">
-            {!isMobile && (
-                <span className="p-input-icon-left mr-2">
-                    <i className="pi pi-search" />
-                    <InputText className="w-full" value={globalFilterValue1} onChange={onGlobalFilterChange1} placeholder={tCommon('placeholderSearch')} />
-                </span>
-            )}
-            <Button type="button" icon="pi pi-filter-slash" label={!isMobile ? tCommon('btnCleanFilter') : ''} onClick={clearFilter1} tooltip={tCommon('tooltipCleanFilter')} tooltipOptions={{ position: 'left' }} />
-        </div>
-    );
-
-    const centerContentMobile = (
-        <div className="flex flex-1 justify-center">
-            <span className="p-input-icon-left mr-2">
-                <i className="pi pi-search" />
-                <InputText className="w-full" value={globalFilterValue1} onChange={onGlobalFilterChange1} placeholder={tCommon('placeholderSearch')} />
-            </span>
-        </div>
-    );
-
-    const endContent = (
-        <div className="flex flex-1 justify-end">
-            <ReloadButton />
-        </div>
-    );
 
     const headerCard = (
         <div
@@ -895,18 +852,18 @@ const TableDemo = () => {
                             lAreas={lAreas}
                         />
                     )}
-                    <Toolbar
-                        start={startContent}
-                        center={centerContent}
-                        end={endContent}
-                        className="grid grid-cols-3 gap-4 items-center border-bottom-1 surface-border surface-card shadow-1 transition-all transition-duration-300 w-full"
-                        style={{ borderRadius: '3rem', padding: '0.8rem' }}
+                    <MyToolbar 
+                        isMobile={isMobile}
+                        disabledUpload={limitDate ? moment(actualDate).isAfter(limitDate) && !oValidUser.isInternalUser : false}
+                        setDialogMode={setDialogMode}
+                        setDialogVisible={setDialogVisible}
+                        globalFilterValue1={globalFilterValue1}
+                        onGlobalFilterChange1={onGlobalFilterChange1}
+                        clearFilter1={clearFilter1}
+                        filterCompany={filterCompany}
+                        handleCompanyFilterChange={handleCompanyFilterChange}
+                        lCompaniesFilter={lCompaniesFilter}
                     />
-                    {isMobile && (
-                        <div className="mt-4">
-                            <br /> {centerContentMobile}
-                        </div>
-                    )}
                     <br />
                     {renderInfoButton()}
                     <DataTable
@@ -954,14 +911,11 @@ const TableDemo = () => {
                             header={t('invoicesTable.columns.company')}
                             footer={t('invoicesTable.columns.company')}
                             sortable
-                            //comentado para usarse mas adelante
-                            // filter
-                            // filterPlaceholder="Buscar por nombre"
-                            // style={{ minWidth: '12rem' }}
-                            // showFilterMatchModes={false}
-                            // filterElement={companyFilterTemplate}
-                            // filterApply={<></>}
-                            // filterClear={<></>}
+                            filter
+                            showFilterMatchModes={false}
+                            filterElement={companyFilterTemplate}
+                            filterApply={<></>}
+                            filterClear={<></>}
                         />
                         <Column
                             field="provider_name"
