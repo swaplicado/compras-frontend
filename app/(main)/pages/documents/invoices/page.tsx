@@ -821,6 +821,7 @@ const TableDemo = () => {
                                 getlAreas={getlAreas}
                                 setLAreas={setLAreas}
                                 lAreas={lAreas}
+                                isMobile={isMobile}
                             />
                         ) : (
                             ''
@@ -850,6 +851,7 @@ const TableDemo = () => {
                             getlAreas={getlAreas}
                             setLAreas={setLAreas}
                             lAreas={lAreas}
+                            isMobile={isMobile}
                         />
                     )}
                     <MyToolbar 

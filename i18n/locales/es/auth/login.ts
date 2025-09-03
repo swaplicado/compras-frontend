@@ -11,4 +11,9 @@ export default {
     registerProvider: "Activar cuenta de proveedor",
     enterButton: "Entrar",
     footer: "Creado por: ",
+    helpText: {
+        buttonLabel: "Videos de ayuda",
+        buttonTooltip: "Ver tutorial de inicio de sesión",
+        dialogHeader: "Manual de Usuario",
+    }
 }

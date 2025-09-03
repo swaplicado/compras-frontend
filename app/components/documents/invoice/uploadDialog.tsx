@@ -74,6 +74,7 @@ interface UploadDialogProps {
     getlAreas: (company_id: string | number) => Promise<any>
     setLAreas: React.Dispatch<React.SetStateAction<any[]>>;
     lAreas: any[];
+    isMobile?: boolean;
 }
 
 export default function UploadDialog({
@@ -99,7 +100,8 @@ export default function UploadDialog({
     showToast,
     getlAreas,
     setLAreas,
-    lAreas
+    lAreas,
+    isMobile = false
 }: UploadDialogProps) {
     const [selectReference, setSelectReference] = useState<{ id: string; name: string } | null>(null);
     const [selectProvider, setSelectProvider] = useState<{ id: string; name: string; country: number } | null>(null);
@@ -765,7 +767,7 @@ export default function UploadDialog({
                 footer={footerContent}
                 // className="md:w-8 lg:w-6 xl:w-6"
                 pt={{ header: { className: 'pb-2 pt-2 border-bottom-1 surface-border' } }}
-                style={{ width: '70rem' }}
+                style={{ width: isMobile ? '100%' : '70rem' }}
             >
                 {animationSuccess({
                     show: resultUpload === 'success',
