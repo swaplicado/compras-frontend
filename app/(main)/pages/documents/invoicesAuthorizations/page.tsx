@@ -456,17 +456,11 @@ const InvoicesAuthorizations = () => {
             const route = constants.ROUTE_GET_FLOW_AUTHORIZATIONS;
             const response = await axios.get(constants.API_AXIOS_GET, {
                 params: {
-                    // route: route,
-                    // id_external_system: constants.ID_EXTERNAL_SYSTEM,
-                    // id_external_user: userExternalId,
-                    // id_model_type: constants.ID_MODEL_TYPE_DPS,
-                    // id_flow_type: constants.DOC_TYPE_INVOICE
-                    
                     route: route,
-                    id_external_system: 1,
-                    id_external_user: 49,
-                    id_model_type: 1,
-                    id_flow_type: 1
+                    id_external_system: constants.ID_EXTERNAL_SYSTEM,
+                    id_external_user: userExternalId,
+                    id_model_type: constants.ID_MODEL_TYPE_DPS,
+                    id_flow_type: constants.DOC_TYPE_INVOICE
                 }
             });
 
