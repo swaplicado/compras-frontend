@@ -12,6 +12,8 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import loaderScreen from '@/app/components/commons/loaderScreen';
 import { useTranslation } from 'react-i18next';
+import 'boxicons/css/boxicons.min.css';
+import { DialogManual } from '@/app/components/videoManual/dialogManual'
 
 axios.defaults.timeout = 45000;
 
@@ -25,6 +27,7 @@ const LoginPage = () => {
     const [loading, setLoading] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false); // Nuevo estado
     const { t } = useTranslation('login');
+    const [showManual, setShowManual] = useState(false);
 
     const containerClassName = classNames('surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden', {
         'p-input-filled': layoutConfig.inputStyle === 'filled'
@@ -60,6 +63,7 @@ const LoginPage = () => {
                 Cookies.set('companyId', JSON.stringify(lCompanies));
                 Cookies.set('companyLogo', response.data.userData.default_work_instance.logo_url);
                 Cookies.set('userId', response.data.userData.user.id);
+                Cookies.set('userExternalId', response.data.userData.user.attributes.external_id);
                 Cookies.set('groups', JSON.stringify(response.data.userData.user.groups));
                 Cookies.set('nameUser', response.data.userData.user.attributes.full_name);
                 Cookies.set('partnerId', response.data.userData.partner? response.data.userData.partner.id : null);
@@ -174,6 +178,22 @@ const LoginPage = () => {
                                 <a href='/auth/resetPassword' onClick={() => setLoading(true)} className='font-medium no-underline ml-2 text-right cursor-pointer' style={{ color: 'var(--primary-color)' }}>
                                     {t('registerProvider')}
                                 </a>
+                            </div>
+                            <div className='flex align-items-center justify-content-center mb-5 mt-2 gap-5'>
+                                <DialogManual 
+                                    visible={showManual} 
+                                    onHide={() => setShowManual(false)} 
+                                    lVideos={[
+                                        { url: 'https://drive.google.com/file/d/1i1voACNHIbv7bCoajRUi-yrCDDqBQ_oV/preview', title: 'Activar cuenta de proveedor' },
+                                        { url: 'https://drive.google.com/file/d/1BV-G_Xmz6uH6BzTu87BgV1hpspfm9V7b/preview', title: 'Activar usuario SIIE' }
+                                    ]} 
+                                    setShowManual={setShowManual}
+                                    helpText={ {
+                                        buttonLabel: t('helpText.buttonLabel'),
+                                        buttonTooltip: t('helpText.buttonTooltip'),
+                                        dialogHeader: t('helpText.dialogHeader'),
+                                    } }
+                                />
                             </div>
                             <Button label={t('enterButton')} className='w-full p-3 text-xl' onClick={handleLogin}></Button>
                         </div>

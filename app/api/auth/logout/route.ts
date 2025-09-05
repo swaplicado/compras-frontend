@@ -2,7 +2,25 @@ import { NextRequest, NextResponse } from 'next/server';
 import cookie from 'cookie';
 // import api from '../../axios/axiosConfig';
 import createApiInstance from '@/app/api/axios/axiosConfig';
-import appConfig from '../../../../appConfig.json';
+import appConfig from '@/appConfig.json';
+import appConfigLocal from '@/appConfigLocal.json';
+import appConfigTest from '@/appConfigTest.json';
+
+const ENVIRONMENT = process.env.REACT_APP_ENVIRONMENT || "local"
+var config = <any>{};
+switch(ENVIRONMENT){
+    case 'local':
+        config = appConfigLocal;
+        break;
+    case 'testing':
+        config = appConfigTest;
+        break;
+    case 'production':
+        config = appConfig;
+        break;
+    default:
+        config = appConfigLocal;
+}
 
 // Interfaz para estandarizar las respuestas de error
 interface ErrorResponse {
@@ -52,9 +70,9 @@ export async function POST(req: NextRequest) {
         let headersLogout = {};
 
         if (token) {
-            headersLogout = { headers: { 'Content-Type': 'application/json', Authorization: `Token ${token?.value}`, 'X-API-KEY': appConfig.apiKey } };
+            headersLogout = { headers: { 'Content-Type': 'application/json', Authorization: `Token ${token?.value}`, 'X-API-KEY': config.apiKey } };
         } else {
-            headersLogout = { headers: { 'Content-Type': 'application/json', 'X-API-KEY': appConfig.apiKey } };
+            headersLogout = { headers: { 'Content-Type': 'application/json', 'X-API-KEY': config.apiKey } };
         }
 
         const api = createApiInstance();

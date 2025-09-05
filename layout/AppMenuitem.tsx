@@ -15,7 +15,25 @@ const AppMenuitem = (props: AppMenuItemProps) => {
     const { activeMenu, setActiveMenu } = useContext(MenuContext);
     const item = props.item;
     const key = props.parentKey ? props.parentKey + '-' + props.index : String(props.index);
-    const isActiveRoute = item!.to && pathname === item!.to;
+
+    const checkParams = (item: any) => {
+        if (item!.to && item!.to.includes('?')) {
+            const params = item!.to.split('?')[1].split('&');
+            let match = true;
+            params.forEach((param: string) => {
+                const [key, value] = param.split('=');
+                if (searchParams.get(key) !== value) {
+                    match = false;
+                }
+            });
+            return match;
+        } else {
+            return true;
+        }
+    }
+    
+    const isActiveRoute = item!.to && pathname === item!.to.split('?')[0] && checkParams(item);
+    
     const active = activeMenu === key || activeMenu.startsWith(key + '-');
     const onRouteChange = (url: string) => {
         if (item!.to && item!.to === url) {
@@ -31,6 +49,13 @@ const AppMenuitem = (props: AppMenuItemProps) => {
     const itemClick = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
         //avoid processing disabled items
         if (item!.disabled) {
+            event.preventDefault();
+            return;
+        }
+
+        // Si es la misma ruta pero diferentes query params, forzar recarga
+        if (item!.to && pathname === item!.to.split('?')[0] && item!.to.includes('?')) {
+            window.location.href = item!.to;
             event.preventDefault();
             return;
         }

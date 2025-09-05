@@ -1,6 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
 import createApiInstance from '@/app/api/axios/axiosConfig';
 import appConfig from '@/appConfig.json';
+import appConfigLocal from '@/appConfigLocal.json';
+import appConfigTest from '@/appConfigTest.json';
+
+const ENVIRONMENT = process.env.REACT_APP_ENVIRONMENT || "local"
+var config = <any>{};
+switch(ENVIRONMENT){
+    case 'local':
+        config = appConfigLocal;
+        break;
+    case 'testing':
+        config = appConfigTest;
+        break;
+    case 'production':
+        config = appConfig;
+        break;
+    default:
+        config = appConfigLocal;
+}
 
 // Interfaz para estandarizar las respuestas de error
 interface ErrorResponse {
@@ -50,7 +68,7 @@ export async function GET(req: NextRequest) {
 
         // Configurar headers comunes
         const headers: Record<string, string> = {
-            'X-API-KEY': appConfig.apiKey
+            'X-API-KEY': config.apiKey
         };
 
         // Agregar token de autorización si existe
@@ -60,11 +78,11 @@ export async function GET(req: NextRequest) {
 
         let params: Record<string, any> = {};
         if (route) {
-            let baseUrl = appConfig.mainRoute;
+            let baseUrl = config.mainRoute;
             
             // Manejo especial para rutas de transacciones
             if (route.startsWith('/transactions/')) {
-                baseUrl = appConfig.apiTransactionsUrl;
+                baseUrl = config.apiTransactionsUrl;
                 route = route.replace('/transactions', '');
 
                 // Procesar parámetros de búsqueda

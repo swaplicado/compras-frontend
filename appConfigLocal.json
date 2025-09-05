@@ -1,5 +1,5 @@
 {
-    "mainRoute": "https://compras-backend-368437194061.us-central1.run.app",
+    "mainRoute": "http://127.0.0.1:8000",
     "apiKey": "AIzaSyDlskxETi2HFbsl2AWwBzktGkoUtUwnktU",
     "groups": [
         { "id": 1, "name": "admin" },
@@ -8,5 +8,5 @@
         { "id": 4, "name": "pagador" },
         { "id": 5, "name": "proveedor" }
     ],
-    "apiTransactionsUrl" : "https://transaction-backend-368437194061.us-central1.run.app/api"
+    "apiTransactionsUrl" : "http://192.168.7.78:8003/api"
 }

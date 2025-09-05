@@ -29,7 +29,7 @@ const orders = {
             label: "Serie:",
             placeholder: "Ingresa la serie",
             helperText: "Por favor ingresa la serie.",
-            tooltip: "Ingresa la serie de la orden de compra si aplica.",
+            tooltip: "Ingresa la serie de la orden de compra, si aplica.",
             tooltipReview: "Esta es la serie asociada a la orden de compra.",
         },
         folio: {
@@ -59,7 +59,7 @@ const orders = {
         }
     },
     errors: {
-        getordersError: "Error al obtener las ordenes de compra. Por favor, intenta nuevamente más tarde.",
+        getordersError: "Error al obtener las órdenes de compra. Por favor, intenta nuevamente más tarde.",
         getReferencesError: "Error al obtener las referencias. Por favor, intenta nuevamente más tarde.",
         downloadFilesError: "Error al descargar los archivos. Por favor, intenta nuevamente más tarde.",
         getFunctionalAreasError: "Error al obtener las áreas funcionales. Por favor, intenta nuevamente más tarde.",

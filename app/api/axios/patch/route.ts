@@ -2,6 +2,24 @@ import { NextRequest, NextResponse } from 'next/server';
 // import api from '@/app/api/axios/axiosConfig';
 import createApiInstance from '@/app/api/axios/axiosConfig';
 import appConfig from '@/appConfig.json';
+import appConfigLocal from '@/appConfigLocal.json';
+import appConfigTest from '@/appConfigTest.json';
+
+const ENVIRONMENT = process.env.REACT_APP_ENVIRONMENT || "local"
+var config = <any>{};
+switch(ENVIRONMENT){
+    case 'local':
+        config = appConfigLocal;
+        break;
+    case 'testing':
+        config = appConfigTest;
+        break;
+    case 'production':
+        config = appConfig;
+        break;
+    default:
+        config = appConfigLocal;
+}
 
 // Interfaz para estandarizar las respuestas de error
 interface ErrorResponse {
@@ -71,21 +89,21 @@ export async function POST(req: NextRequest) {
                 headers: {
                     'Content-Type': isFormData ? 'multipart/form-data' : 'application/json',
                     Authorization: `Token ${token?.value}`,
-                    'X-API-KEY': appConfig.apiKey,
+                    'X-API-KEY': config.apiKey,
                 },
             };
         } else {
             headers = {
                 headers: {
                     'Content-Type': isFormData ? 'multipart/form-data' : 'application/json',
-                    'X-API-KEY': appConfig.apiKey,
+                    'X-API-KEY': config.apiKey,
                 },
             };
         }
 
-        let baseUrl = appConfig.mainRoute;
+        let baseUrl = config.mainRoute;
         if (route.startsWith('/transactions/')) {
-            baseUrl = appConfig.apiTransactionsUrl;
+            baseUrl = config.apiTransactionsUrl;
             route = route.replace('/transactions', '');
         }
         const api = createApiInstance(baseUrl);

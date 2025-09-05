@@ -28,6 +28,7 @@ import { InputNumber } from 'primereact/inputnumber';
 import { Divider } from 'primereact/divider';
 interface reviewFormData {
     company: { id: string; name: string; fiscal_id: string; fiscal_regime_id: number };
+    functional_area: { id: string; name: string };
     partner: { id: string; name: string };
     reference: { id: string; name: string };
     series: string;
@@ -73,6 +74,7 @@ interface UploadDialogProps {
     getlAreas: (company_id: string | number) => Promise<any>
     setLAreas: React.Dispatch<React.SetStateAction<any[]>>;
     lAreas: any[];
+    isMobile?: boolean;
 }
 
 export default function UploadDialog({
@@ -98,7 +100,8 @@ export default function UploadDialog({
     showToast,
     getlAreas,
     setLAreas,
-    lAreas
+    lAreas,
+    isMobile = false
 }: UploadDialogProps) {
     const [selectReference, setSelectReference] = useState<{ id: string; name: string } | null>(null);
     const [selectProvider, setSelectProvider] = useState<{ id: string; name: string; country: number } | null>(null);
@@ -245,7 +248,7 @@ export default function UploadDialog({
                     tax_regime_issuer: findFiscalRegimeById(lFiscalRegimes, 0),
                     rfc_receiver: selectCompany?.fiscal_id,
                     tax_regime_receiver: findFiscalRegimeById(lFiscalRegimes, selectCompany ? selectCompany.fiscal_regime_id : '' ),
-                    use_cfdi: '',
+                    use_cfdi: findUseCfdi(lUseCfdi, "S01"),
                     amount: '',
                     currency: '',
                     exchange_rate: ''
@@ -453,7 +456,8 @@ export default function UploadDialog({
                     authz_acceptance_notes: oDps.authz_acceptance_notes,
                     payment_date: date,
                     payment_percentage: oDps.payment_percentage,
-                    notes: oDps.notes
+                    notes: oDps.notes,
+                    user_id: userId
                 }
             });
 
@@ -614,6 +618,7 @@ export default function UploadDialog({
             setSelectCompany(reviewFormData.company);
             setSelectProvider({ ...reviewFormData.partner, country: constants.COUNTRIES.MEXICO_ID });
             setSelectReference(reviewFormData.reference);
+            setSeletedArea(reviewFormData.functional_area);
             setIsRejected(false);
             setTotalSize(0);
 
@@ -762,7 +767,7 @@ export default function UploadDialog({
                 footer={footerContent}
                 // className="md:w-8 lg:w-6 xl:w-6"
                 pt={{ header: { className: 'pb-2 pt-2 border-bottom-1 surface-border' } }}
-                style={{ width: '70rem' }}
+                style={{ width: isMobile ? '100%' : '70rem' }}
             >
                 {animationSuccess({
                     show: resultUpload === 'success',
@@ -801,6 +806,7 @@ export default function UploadDialog({
                                                 { lWarnings.map((warning: any, index: number) => (
                                                     <li key={index}>
                                                         <i className='bx bxs-error' style={{color: '#FFD700'}}></i>
+                                                        &nbsp;&nbsp;
                                                         {warning}
                                                     </li>
                                                 ))}
@@ -858,7 +864,7 @@ export default function UploadDialog({
                                     !lReferences || lReferences.length == 0 || dialogMode === 'view' || dialogMode === 'review'
                                 )
                             )}
-                            { selectReference?.id == '0' && (
+                            { (selectReference?.id == '0' || (dialogMode == 'review' && selectReference?.name == '')) && (
                                 renderDropdownField(
                                     t('uploadDialog.areas.label'),
                                     dialogMode === 'review' ? t('uploadDialog.areas.tooltipReview') : t('uploadDialog.areas.tooltip'),
@@ -871,7 +877,7 @@ export default function UploadDialog({
                                         setSeletedArea(value);
                                         setErrors((prev) => ({ ...prev, area: false }));
                                     },
-                                    !lReferences || lReferences.length == 0 || dialogMode === 'view' || dialogMode === 'review'
+                                    !lAreas || lAreas.length == 0 || dialogMode == 'review'
                                 )
                             )}
 
@@ -931,6 +937,7 @@ export default function UploadDialog({
                                                         {xmlValidateErrors.warnings.map((warnings: any, index: number) => (
                                                             <li key={index} className="col-12 md:col-12">
                                                                 <i className='bx bxs-error' style={{color: '#FFD700'}}></i>
+                                                                &nbsp;&nbsp;
                                                                 {warnings}
                                                             </li>
                                                         ))}
@@ -952,6 +959,8 @@ export default function UploadDialog({
                                             <ul>
                                                 {xmlValidateErrors.errors.map((errors: any, index: number) => (
                                                     <li key={index} className="col-12 md:col-12 text-red-500">
+                                                        <i className='pi pi-times' style={{color: 'red'}}></i>
+                                                        &nbsp;&nbsp;
                                                         {errors}
                                                     </li>
                                                 ))}
@@ -964,7 +973,7 @@ export default function UploadDialog({
                             {dialogMode == 'view' ||
                                 (dialogMode == 'review' && (
                                     <>
-                                    <div className="field col-12 md:col-6">
+                                    <div className="field col-12 md:col-5">
                                         <div className="formgrid grid">
                                             <div className="col">
                                                 <label>{t('uploadDialog.percentOption.label')}</label>
@@ -982,7 +991,7 @@ export default function UploadDialog({
                                         </div>
                                     </div>
 
-                                    <div className="field col-12 md:col-6">
+                                    <div className="field col-12 md:col-3">
                                         <div className="formgrid grid">
                                             <div className="col">
                                                 <label>{t('uploadDialog.percentOption.label')}</label>
@@ -1003,7 +1012,7 @@ export default function UploadDialog({
                                         </div>
                                     </div>
 
-                                    <div className="field col-12 md:col-6">
+                                    <div className="field col-12 md:col-4">
                                         <div className="formgrid grid">
                                             <div className="col">
                                                 <label>{t('uploadDialog.payDay.label')}</label>
