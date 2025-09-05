@@ -18,6 +18,7 @@ const commons = {
     btnAccept: "Aceptar",
     btnReject: "Rechazar",
     btnDownload: "Descargar",
+    btnSend: "Enviar",
 
     btnReload: "Recargar",
     tooltipBtnReload: "Recargar la página",

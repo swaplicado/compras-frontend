@@ -220,6 +220,7 @@ const invoices = {
             placeholder: "Ingresa los comentarios.",
             helperText: "Por favor ingresa los comentarios de rechazo. Luego vuelve a presionar el botón de rechazar.",
             tooltip: "Ingresa los comentarios de rechazo si la factura es rechazada. Luego vuelve a presionar el botón de rechazar.",
+            tooltipReview: "Estos son los comentarios de aprobación/rechazo de la factura.",
         }
     },
     errors: {

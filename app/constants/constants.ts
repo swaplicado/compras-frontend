@@ -29,9 +29,15 @@ const constants = {
     ROUTE_GET_PAYMENT_METHODS: '/transactions/payment-methods/',
     ROUTE_GET_USE_CFDI: '/transactions/cfdi-uses/',
     ROUTE_GET_AREAS: '/transactions/fuctional-area/by-user/',
+    ROUTE_GET_FLOW_AUTHORIZATIONS: '/transactions/flow-models-by',
+    ROUTE_GET_DPS_AUTHORIZATION: '/transactions/user-documents/',
 
     ROUTE_POST_VALIDATE_XML: '/transactions/documents/validate-xml/',
     ROUTE_POST_DOCUMENT_TRANSACTION: '/transactions/document-transaction/',
+    ROUTE_POST_START_AUTHORIZATION: '/transactions/start-authorization/',
+
+    ROUTE_POST_AUTHORIZE_RESOURCE: '/transactions/authorize-resource/',
+    ROUTE_POST_REJECT_RESOURCE: '/transactions/reject-resource/',
 
     //Constantes de estados de las facturas
     REVIEW_ACCEPT: 'O',
@@ -89,6 +95,13 @@ const constants = {
     //Tipo de entidad
     ENTITY_TYPE_PERSON: 1,
     ENTITY_TYPE_ORGANITATION: 2,
+
+    //id de sistema externo
+    ID_EXTERNAL_SYSTEM: 1,
+
+    //id de modelo de flujo de autorizaciones
+    ID_MODEL_TYPE_DPS: 1,
+
 }
 
 export default constants;

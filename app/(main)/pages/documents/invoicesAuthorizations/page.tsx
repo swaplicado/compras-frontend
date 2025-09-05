@@ -5,7 +5,6 @@ import { Button } from 'primereact/button';
 import { Column } from 'primereact/column';
 import { DataTable, DataTableFilterMeta, DataTableRowClickEvent } from 'primereact/datatable';
 import { Card } from 'primereact/card';
-import UploadDialog from '@/app/components/documents/invoice/uploadDialog';
 import axios from 'axios';
 import loaderScreen from '@/app/components/commons/loaderScreen';
 import { Toast } from 'primereact/toast';
@@ -15,35 +14,11 @@ import constants from '@/app/constants/constants';
 import DateFormatter from '@/app/components/commons/formatDate';
 import moment from 'moment';
 import { useIsMobile } from '@/app/components/commons/screenMobile';
-import { findCompany } from '@/app/(main)/utilities/files/catFinder';
 import { Dropdown } from 'primereact/dropdown';
 import { MyToolbar } from '@/app/components/documents/invoice/myToolbar';
-import { DialogManual } from '@/app/components/videoManual/dialogManual'
-import { FlowAuthorizationDialog } from '@/app/components/documents/invoice/flowAuthorizationDialog';
-
-interface reviewFormData {
-    company: { id: string; name: string; fiscal_id: string; fiscal_regime_id: number };
-    partner: { id: string; name: string };
-    reference: { id: string; name: string };
-    series: string;
-    number: string;
-    dpsId: string;
-    payday: string;
-    payment_method: string;
-    rfcIssuer: string;
-    rfcReceiver: string;
-    taxRegimeIssuer: string;
-    taxRegimeReceiver: string;
-    useCfdi: string;
-    currency: string;
-    amount: string;
-    exchangeRate: string;
-    xml_date: string;
-    payment_percentage: string;
-    notes: string;
-    authz_acceptance_notes: string;
-    functional_area: { id: string; name: string };
-}
+import { DialogManual } from '@/app/components/videoManual/dialogManual';
+import { AuthorizationDialog } from '@/app/components/documents/invoice/authorizationDialog';
+import { useSearchParams } from 'next/navigation';
 
 interface dataDps {
     id_dps: number;
@@ -65,12 +40,12 @@ interface dataDps {
     payday: string;
 }
 
-const TableDemo = () => {
+const InvoicesAuthorizations = () => {
     const [filters1, setFilters1] = useState<DataTableFilterMeta>({});
     const [tableLoading, setTableLoading] = useState(true);
     const [globalFilterValue1, setGlobalFilterValue1] = useState('');
-    const [dialogVisible, setDialogVisible] = useState(false);
-    const [dialogMode, setDialogMode] = useState<'create' | 'edit' | 'view' | 'review'>('view');
+    // const [dialogVisible, setDialogVisible] = useState(false);
+    // const [dialogMode, setDialogMode] = useState<'create' | 'edit' | 'view' | 'review'>('view');
     const [lReferences, setLReferences] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const toast = useRef<Toast>(null);
@@ -92,7 +67,6 @@ const TableDemo = () => {
     const [lFlowAuthorization, setLFlowAuthorization] = useState<any[]>([]);
     const [selectedRow, setSelectedRow] = useState<any>(null);
     const lastClickTime = useRef<number>(0);
-    const [reviewFormData, setFormData] = useState<reviewFormData>();
     const [limitDate, setLimitDate] = useState<string | null>(null);
     const [actualDate, setActualDate] = useState<string>('');
     const [showInfo, setShowInfo] = useState(false);
@@ -102,6 +76,11 @@ const TableDemo = () => {
     const [filterCompany, setFilterCompany] = useState<{ id: string; name: string; fiscal_id: string; fiscal_regime_id: number } | null>(null);
     const [showManual, setShowManual] = useState(false);
     const [flowAuthDialogVisible, setFlowAuthDialogVisible] = useState(false);
+
+    const [authorizationDialogVisible, setAuthorizationDialogVisible] = useState(false);
+
+    const searchParams = useSearchParams();
+    const type = searchParams.get('type');
 
     const isMobile = useIsMobile();
 
@@ -151,10 +130,16 @@ const TableDemo = () => {
 
     const getDps = async (isInternalUser: boolean) => {
         try {
-            const route = !isInternalUser ? constants.ROUTE_GET_DPS_BY_PARTNER_ID : constants.ROUTE_GET_DPS_BY_AREA_ID;
-            const params = !isInternalUser
-                ? { route: route, partner_id: partnerId, transaction_class: constants.TRANSACTION_CLASS_COMPRAS, document_type: constants.DOC_TYPE_INVOICE }
-                : { route: route, functional_area: functionalAreas, transaction_class: constants.TRANSACTION_CLASS_COMPRAS, document_type: constants.DOC_TYPE_INVOICE };
+            console.log('type: ', type);
+            
+            const route = constants.ROUTE_GET_DPS_AUTHORIZATION;
+            const params = {
+                route: route,
+                type: type,
+                user_id: userExternalId,
+                document_type: 1
+            }
+            
             const response = await axios.get(constants.API_AXIOS_GET, {
                 params: params
             });
@@ -171,11 +156,23 @@ const TableDemo = () => {
                         }
                     }
 
+                    let nextAuth = '';
+                    let lAuth = [];
+                    if (data[i].flow_details) {
+                        if (data[i].flow_details.last_turn_action) {
+                            if (data[i].flow_details.last_turn_action.actors_of_action.length > 0) {
+                                nextAuth = data[i].flow_details.last_turn_action.actors_of_action[0].full_name;
+                                lAuth = data[i].flow_details.last_turn_action.actors_of_action;
+                            }
+                        }
+                    }
+
                     dps.push({
                         id_dps: data[i].id,
                         provider_id: data[i].partner.id,
                         company_id: data[i].company.id,
                         functional_area: data[i].functional_area?.name,
+                        lAuth: lAuth,
                         provider_rfc: data[i].partner.fiscal_id,
                         issuer_tax_regime: data[i].issuer_tax_regime ? data[i].issuer_tax_regime.code : '',
                         company_rfc: data[i].company.fiscal_id,
@@ -190,7 +187,7 @@ const TableDemo = () => {
                         reference: reference,
                         files: data[i].id,
                         date: data[i].date,
-                        acceptance: data[i].authz_acceptance_name.toLowerCase(),
+                        nextAuth: nextAuth,
                         authorization: data[i].authz_authorization_name.toLowerCase(),
                         amount: data[i].amount,
                         currency: data[i].currency.id,
@@ -366,11 +363,6 @@ const TableDemo = () => {
         }
     };
 
-    const stringToInteger = (str: string): number => {
-        const numero = parseInt(str, 10); // El segundo parámetro es la base (10 para decimal)
-        return isNaN(numero) ? 0 : numero; // Manejo de valores no numéricos
-    };
-
     const getlFiscalRegime = async () => {
         try {
             const route = constants.ROUTE_GET_FISCAL_REGIMES;
@@ -459,36 +451,6 @@ const TableDemo = () => {
         }
     };
 
-    const getlAreas = async (company_id: string | number) => {
-        try {
-            const route = constants.ROUTE_GET_AREAS;
-            const response = await axios.get(constants.API_AXIOS_GET, {
-                params: {
-                    route: route,
-                    company_id: company_id
-                }
-            });
-
-            if (response.status === 200) {
-                const data = response.data.data || [];
-                let lAreas: any[] = [];
-                for (const item of data) {
-                    lAreas.push({
-                        id: item.id,
-                        name: item.name
-                    });
-                }
-
-                setLAreas(lAreas);
-            } else {
-                throw new Error(`${t('errors.getAreasError')}: ${response.statusText}`);
-            }
-        } catch (error: any) {
-            showToast('error', error.response?.data?.error || t('errors.getAreasError'), t('errors.getAreasError'));
-            return [];
-        }
-    };
-
     const getFlowAuthorizations = async () => {
         try {
             const route = constants.ROUTE_GET_FLOW_AUTHORIZATIONS;
@@ -511,7 +473,6 @@ const TableDemo = () => {
             if (response.status === 200) {
                 const data = response.data.data || [];
                 let lFlowAuthorization: any[] = [];
-                console.log('data: ', data);
                 
                 for (const item of data.flow_models) {
                     lFlowAuthorization.push({
@@ -550,8 +511,6 @@ const TableDemo = () => {
         // Actualizar los filtros de la tabla
         let _filters1 = { ...filters1 };
 
-        console.log(selectedCompany);
-
         if (selectedCompany && selectedCompany.id !== null) {
             // Si se selecciona una compañía, aplicar filtro
             (_filters1['company'] as any).value = selectedCompany.name; // O selectedCompany.id dependiendo de tu estructura
@@ -580,14 +539,6 @@ const TableDemo = () => {
                 await getlProviders();
                 await getDps(true);
                 await getFlowAuthorizations();
-            }
-
-            if (groups.includes(constants.ROLES.PROVEEDOR_ID)) {
-                await getDpsDates();
-                const isProviderMexico = partnerCountry == constants.COUNTRIES.MEXICO_ID;
-                setOValidUser({ isInternalUser: false, isProvider: true, isProviderMexico: isProviderMexico });
-                // await getlReferences(partnerId);
-                await getDps(false);
             }
 
             await getlCompanies();
@@ -771,35 +722,11 @@ const TableDemo = () => {
             e.originalEvent.preventDefault();
             return;
         }
-
+        
         setSelectedRow(e.data);
-        let data = {
-            company: findCompany(lCompanies, e.data.company_id),
-            functional_area: { id: '', name: e.data.functional_area },
-            partner: { id: e.data.provider_id, name: e.data.provider_name },
-            reference: { id: '', name: e.data.reference },
-            series: e.data.serie,
-            number: e.data.number,
-            dpsId: e.data.id_dps,
-            payday: e.data.payday,
-            payment_method: e.data.payment_method,
-            rfcIssuer: e.data.provider_rfc,
-            rfcReceiver: e.data.company_rfc,
-            taxRegimeIssuer: e.data.issuer_tax_regime,
-            taxRegimeReceiver: e.data.receiver_tax_regime,
-            useCfdi: e.data.useCfdi,
-            currency: e.data.currency,
-            amount: e.data.amount,
-            exchangeRate: e.data.exchange_rate,
-            xml_date: e.data.date,
-            payment_percentage: e.data.payment_percentage,
-            notes: e.data.notes,
-            authz_acceptance_notes: e.data.authz_acceptance_notes
-        };
-
-        setFormData(data);
-        setDialogMode('review');
-        setDialogVisible(true);
+        // setDialogMode('review');
+        // setDialogVisible(true);
+        setAuthorizationDialogVisible(true);
     };
 
     const renderInfoButton = () => {
@@ -855,91 +782,29 @@ const TableDemo = () => {
                 {loading && loaderScreen()}
                 <Toast ref={toast} />
                 <Card header={headerCard} pt={{ content: { className: 'p-0' } }}>
-                    {limitDate ? (
-                        moment(actualDate).isBefore(limitDate) || oValidUser.isInternalUser ? (
-                            <UploadDialog
-                                visible={dialogVisible}
-                                onHide={() => setDialogVisible(false)}
-                                lReferences={lReferences}
-                                lProviders={lProviders}
-                                lCompanies={lCompanies}
-                                oValidUser={oValidUser}
-                                partnerId={partnerId}
-                                partnerCountry={partnerCountry}
-                                getlReferences={getlReferences}
-                                setLReferences={setLReferences}
-                                dialogMode={dialogMode}
-                                reviewFormData={reviewFormData}
-                                getDps={getDps}
-                                userId={userId}
-                                lCurrencies={lCurrencies}
-                                lFiscalRegimes={lFiscalRegimes}
-                                lPaymentMethod={lPaymentMethod}
-                                lUseCfdi={lUseCfdi}
-                                loadingReferences={loadingReferences}
-                                showToast={showToast}
-                                getlAreas={getlAreas}
-                                setLAreas={setLAreas}
-                                lAreas={lAreas}
-                                isMobile={isMobile}
-                            />
-                        ) : (
-                            ''
-                        )
-                    ) : (
-                        <UploadDialog
-                            visible={dialogVisible}
-                            onHide={() => setDialogVisible(false)}
-                            lReferences={lReferences}
-                            lProviders={lProviders}
-                            lCompanies={lCompanies}
-                            oValidUser={oValidUser}
-                            partnerId={partnerId}
-                            partnerCountry={partnerCountry}
-                            getlReferences={getlReferences}
-                            setLReferences={setLReferences}
-                            dialogMode={dialogMode}
-                            reviewFormData={reviewFormData}
-                            getDps={getDps}
-                            userId={userId}
-                            lCurrencies={lCurrencies}
-                            lFiscalRegimes={lFiscalRegimes}
-                            lPaymentMethod={lPaymentMethod}
-                            lUseCfdi={lUseCfdi}
-                            loadingReferences={loadingReferences}
-                            showToast={showToast}
-                            getlAreas={getlAreas}
-                            setLAreas={setLAreas}
-                            lAreas={lAreas}
-                            isMobile={isMobile}
-                        />
-                    )}
-
-                    { oValidUser.isInternalUser && (
-                        <FlowAuthorizationDialog 
-                            lFlowAuthorization={lFlowAuthorization}
-                            oDps={selectedRow}
-                            visible={flowAuthDialogVisible}
-                            onHide={() => setFlowAuthDialogVisible(false)}
-                            isMobile={isMobile}
-                            oValidUser={oValidUser}
-                            getDps={getDps}
-                            showToast={showToast}
-                            userExternalId={userExternalId}
-                        />
-                    )}
-
                     <MyToolbar 
                         isMobile={isMobile}
                         disabledUpload={limitDate ? moment(actualDate).isAfter(limitDate) && !oValidUser.isInternalUser : false}
-                        setDialogMode={setDialogMode}
-                        setDialogVisible={setDialogVisible}
                         globalFilterValue1={globalFilterValue1}
                         onGlobalFilterChange1={onGlobalFilterChange1}
                         clearFilter1={clearFilter1}
                         setFlowAuthDialogVisible={setFlowAuthDialogVisible}
+                        withBtnCreate={false}
+                        withBtnSendAuth={false}
                     />
                     <br />
+                    <AuthorizationDialog
+                        visible={authorizationDialogVisible}
+                        onHide={() => setAuthorizationDialogVisible(false)}
+                        isMobile={isMobile}
+                        oDps={selectedRow}
+                        lCurrencies={lCurrencies}
+                        lFiscalRegimes={lFiscalRegimes}
+                        lPaymentMethod={lPaymentMethod}
+                        lUseCfdi={lUseCfdi}
+                        userExternalId={userExternalId}
+                        getDps={getDps}
+                    />
                     {renderInfoButton()}
                     <DataTable
                         value={lDps}
@@ -981,6 +846,7 @@ const TableDemo = () => {
                         <Column field="authz_acceptance_notes" header="authz_acceptance_notes" hidden />
                         <Column field="useCfdi" header="useCfdi" hidden />
                         <Column field="payment_method" header="payment_method" hidden />
+                        <Column field="lAuth" header="lAuth" hidden />
                         <Column
                             field="company"
                             header={t('invoicesTable.columns.company')}
@@ -1008,7 +874,7 @@ const TableDemo = () => {
                         <Column field="reference" header={t('invoicesTable.columns.reference')} footer={t('invoicesTable.columns.reference')} sortable />
                         <Column field="payday" header={t('invoicesTable.columns.payday')} footer={t('invoicesTable.columns.payday')} body={payDayBodyTemplate} sortable />
                         <Column field="amount" header={t('invoicesTable.columns.amount')} footer={t('invoicesTable.columns.amount')} dataType="numeric" body={amountBodyTemplate} hidden sortable />
-                        <Column field="acceptance" header={t('invoicesTable.columns.acceptance')} footer={t('invoicesTable.columns.acceptance')} body={statusAcceptanceDpsBodyTemplate} sortable />
+                        <Column field="nextAuth" header={'Usuario en turno'} footer={'Prox. Auth'} sortable />
                         <Column field="authorization" header={t('invoicesTable.columns.authorization')} footer={t('invoicesTable.columns.authorization')} body={statusAuthDpsBodyTemplate} sortable />
                         <Column field="date" header={t('invoicesTable.columns.date')} footer={t('invoicesTable.columns.date')} body={dateBodyTemplate} sortable />
                         <Column field="files" header={t('invoicesTable.columns.files')} footer={t('invoicesTable.columns.files')} body={fileBodyTemplate} />
@@ -1019,4 +885,4 @@ const TableDemo = () => {
     );
 };
 
-export default TableDemo;
+export default InvoicesAuthorizations;

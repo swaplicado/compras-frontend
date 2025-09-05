@@ -17,16 +17,6 @@
                     "label": "Facturas", 
                     "icon": "bx bx-file bx-sm", 
                     "to": "/pages/documents/invoices"
-                },
-                { 
-                    "label": "Facturas por autorizar", 
-                    "icon": "bx bx-file bx-sm", 
-                    "to": "/pages/documents/invoicesAuthorizations?type=1"
-                },
-                { 
-                    "label": "Facturas en autorización", 
-                    "icon": "bx bx-file bx-sm", 
-                    "to": "/pages/documents/invoicesAuthorizations?type=2"
                 }
             ]
         }
