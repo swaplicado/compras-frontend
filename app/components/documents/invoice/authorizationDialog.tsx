@@ -178,7 +178,7 @@ export const AuthorizationDialog = ({
                     <div className="col-12 md:col-6 lg:col-6 xl:col-6 flex justify-content-end md:justify-content-start">
                         <Button label={tCommon('btnClose')} icon="pi pi-times" onClick={onHide} severity="secondary" disabled={loading} />
                     </div>
-                    { isUserAuth && (
+                    { isUserAuth && oDps?.authz_authorization_code == 'PR' && (
                         <div className="col-12 md:col-6 lg:col-6 xl:col-6 gap-4 flex justify-content-end">
                             <Button label={tCommon('btnReject')} icon="bx bx-dislike" onClick={handleReject} severity="danger" disabled={loading} className="order-1 md:order-0" />
                             <Button label={t('btnAuthorize')} icon="bx bx-like" onClick={handleAuthorization} severity="success" disabled={loading} className="order-0 md:order-1" />

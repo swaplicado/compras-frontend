@@ -189,6 +189,7 @@ const InvoicesAuthorizations = () => {
                         date: data[i].date,
                         nextAuth: nextAuth,
                         authorization: data[i].authz_authorization_name.toLowerCase(),
+                        authz_authorization_code: data[i].authz_authorization_code,
                         amount: data[i].amount,
                         currency: data[i].currency.id,
                         exchange_rate: data[i].exchange_rate,
@@ -841,6 +842,7 @@ const InvoicesAuthorizations = () => {
                         <Column field="useCfdi" header="useCfdi" hidden />
                         <Column field="payment_method" header="payment_method" hidden />
                         <Column field="lAuth" header="lAuth" hidden />
+                        <Column field="authz_authorization_code" header="authz_authorization_code" hidden />
                         <Column
                             field="company"
                             header={t('invoicesTable.columns.company')}
