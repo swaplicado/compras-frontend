@@ -151,7 +151,8 @@ export default function UploadDialog({
         use_cfdi: '',
         amount: '',
         currency: '',
-        exchange_rate: ''
+        exchange_rate: '',
+        uuid: ''
     });
     const [oDpsErros, setODpsErrors] = useState({
         folio: false,
@@ -369,6 +370,7 @@ export default function UploadDialog({
                 fiscal_use: oDps.use_cfdi?.id || '',
                 issuer_tax_regime: oDps.tax_regime_issuer?.id || '',
                 receiver_tax_regime: oDps.tax_regime_receiver?.id || '',
+                uuid: oDps.uuid || '',
             };
 
             if (!ref_id) {

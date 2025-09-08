@@ -65,7 +65,8 @@ export const ValidateXml = ( { xmlUploadRef, oCompany, oPartner, user_id, oRef, 
                         use_cfdi: findUseCfdi(lUseCfdi, data.data.use_cfdi),
                         amount: data.data.amount,
                         currency: findCurrency( lCurrencies, data.data.currency),
-                        exchange_rate: data.data.exchange_rate
+                        exchange_rate: data.data.exchange_rate,
+                        uuid: data.data.uuid
                     }
                     setODps(oDps);
                     setErrors((prev: any) => ({ ...prev, isValid: true, errors: data.errors }));
