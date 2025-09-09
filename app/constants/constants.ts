@@ -85,7 +85,7 @@ const constants = {
     ],
 
     //Tipo de documento
-    DOC_TYPE_INVOICE: 11,
+    DOC_TYPE_INVOICE: 41,
     DOC_TYPE_OC: 2,
 
     //Clase de transacciòn
