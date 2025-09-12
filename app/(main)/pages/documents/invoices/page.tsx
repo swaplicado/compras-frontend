@@ -17,7 +17,7 @@ import moment from 'moment';
 import { useIsMobile } from '@/app/components/commons/screenMobile';
 import { findCompany } from '@/app/(main)/utilities/files/catFinder';
 import { Dropdown } from 'primereact/dropdown';
-import { MyToolbar } from '@/app/components/documents/invoice/myToolbar';
+import { MyToolbar } from '@/app/components/documents/invoice/common/myToolbar';
 import { DialogManual } from '@/app/components/videoManual/dialogManual'
 import { FlowAuthorizationDialog } from '@/app/components/documents/invoice/flowAuthorizationDialog';
 
@@ -70,7 +70,7 @@ const TableDemo = () => {
     const [tableLoading, setTableLoading] = useState(true);
     const [globalFilterValue1, setGlobalFilterValue1] = useState('');
     const [dialogVisible, setDialogVisible] = useState(false);
-    const [dialogMode, setDialogMode] = useState<'create' | 'edit' | 'view' | 'review'>('view');
+    const [dialogMode, setDialogMode] = useState<'create' | 'edit' | 'view' | 'review' | 'authorization'>('view');
     const [lReferences, setLReferences] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const toast = useRef<Toast>(null);
@@ -503,15 +503,15 @@ const TableDemo = () => {
                     route: route,
                     id_external_system: 1,
                     id_external_user: 49,
+                    id_actor_type: 2,
                     id_model_type: 1,
-                    id_flow_type: 1
+                    id_flow_type: 1,
                 }
             });
 
             if (response.status === 200) {
                 const data = response.data.data || [];
                 let lFlowAuthorization: any[] = [];
-                console.log('data: ', data);
                 
                 for (const item of data.flow_models) {
                     lFlowAuthorization.push({
@@ -549,8 +549,6 @@ const TableDemo = () => {
 
         // Actualizar los filtros de la tabla
         let _filters1 = { ...filters1 };
-
-        console.log(selectedCompany);
 
         if (selectedCompany && selectedCompany.id !== null) {
             // Si se selecciona una compañía, aplicar filtro

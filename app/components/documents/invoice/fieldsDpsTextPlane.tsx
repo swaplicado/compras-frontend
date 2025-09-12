@@ -109,9 +109,6 @@ export const FieldsDpsTextPlane = ({
             )}
         </>
     );
-    useEffect(() => {
-        console.log('oDpsData: ', oDps);
-    }, [oDps])
 
     return (
         <>

@@ -4,20 +4,25 @@ import { Dropdown } from 'primereact/dropdown';
 import { InputText } from 'primereact/inputtext';
 import { ReloadButton } from '@/app/components/commons/reloadButton';
 import { useTranslation } from 'react-i18next';
+import { Calendar } from 'primereact/calendar';
+import { addLocale } from 'primereact/api';
 
 interface myToolbarPropps {
     isMobile: boolean;
     disabledUpload: boolean;
-    setDialogMode?: React.Dispatch<React.SetStateAction<'create' | 'edit' | 'view' | 'review'>>;
+    setDialogMode?: React.Dispatch<React.SetStateAction<'create' | 'edit' | 'view' | 'review' | 'authorization'>>;
     setDialogVisible?: React.Dispatch<React.SetStateAction<boolean>>;
     globalFilterValue1: string;
     onGlobalFilterChange1: (e: React.ChangeEvent<HTMLInputElement>) => void;
     clearFilter1: () => void;
     setFlowAuthDialogVisible?: React.Dispatch<React.SetStateAction<boolean>>;
+    setDpsDateFilter?: React.Dispatch<React.SetStateAction<string>>;
+    dpsDateFilter?: any;
     withBtnCreate?: boolean;
     withBtnSendAuth?: boolean;
     withBtnCleanFilter?: boolean;
     withSearch?: boolean;
+    withMounthFilter?: boolean;
 }
 
 export const MyToolbar = ({
@@ -29,15 +34,20 @@ export const MyToolbar = ({
     onGlobalFilterChange1,
     clearFilter1,
     setFlowAuthDialogVisible,
-    withBtnCreate = true,
-    withBtnSendAuth = true,
+    setDpsDateFilter,
+    dpsDateFilter,
+    withBtnCreate = false,
+    withBtnSendAuth = false,
     withBtnCleanFilter = true,
-    withSearch = true
+    withSearch = true,
+    withMounthFilter = true
 }: myToolbarPropps) => {
     const { t } = useTranslation('invoices');
     const { t: tCommon } = useTranslation('common');
 
     const renderBigScreen = () => {
+        addLocale('es', tCommon('calendar', { returnObjects: true }) as any);
+
         return (
             <div className="border-bottom-1 surface-border surface-card shadow-1 transition-all transition-duration-300 w-full shadow-4 p-3" style={{ borderRadius: '3rem' }}>
                 <div className="flex align-items-center justify-content-between flex-wrap gap-3">
@@ -67,6 +77,11 @@ export const MyToolbar = ({
                         )}
                     </div>
 
+                    {withMounthFilter && (
+                        <div className="flex align-items-center gap-2 flex-wrap">
+                            <Calendar value={dpsDateFilter || ''} onChange={(e: any) => setDpsDateFilter?.(e.value)} view="month" dateFormat="MM" locale="es"/>
+                        </div>
+                    )}
                     {withSearch && (
                         <div className="flex align-items-center gap-2 flex-wrap">
                             <span className="p-input-icon-left">

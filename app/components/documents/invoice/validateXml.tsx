@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { FileUpload } from 'primereact/fileupload';
 import constants from '@/app/constants/constants';
 import { findCurrency, findFiscalRegime, findPaymentMethod, findUseCfdi } from '@/app/(main)/utilities/files/catFinder';
+import DateFormatter from '../../commons/formatDate';
 
 interface validateXmlProps {
     xmlUploadRef: React.RefObject<FileUpload>;
@@ -18,6 +19,7 @@ interface validateXmlProps {
     };
     setErrors: React.Dispatch<React.SetStateAction<any>>;
     setODps: React.Dispatch<React.SetStateAction<any>>;
+    setIsXmlValid?: React.Dispatch<React.SetStateAction<any>>;
     lCurrencies: any[];
     lFiscalRegimes: any[];
     lPaymentMethod: any[];
@@ -26,7 +28,7 @@ interface validateXmlProps {
     showToast?: (type: 'success' | 'info' | 'warn' | 'error', message: string, summaryText?: string) => void;
 }
 
-export const ValidateXml = ( { xmlUploadRef, oCompany, oPartner, user_id, oRef, errors, setErrors, setODps, lCurrencies, lFiscalRegimes, lPaymentMethod, lUseCfdi, setLoadingValidateXml, showToast }: validateXmlProps ) => {
+export const ValidateXml = ( { xmlUploadRef, oCompany, oPartner, user_id, oRef, errors, setErrors, setODps, setIsXmlValid, lCurrencies, lFiscalRegimes, lPaymentMethod, lUseCfdi, setLoadingValidateXml, showToast }: validateXmlProps ) => {
     const [totalSize, setTotalSize] = useState(0);
     const message = useRef<Messages>(null);
     const { t } = useTranslation('invoices');
@@ -51,20 +53,54 @@ export const ValidateXml = ( { xmlUploadRef, oCompany, oPartner, user_id, oRef, 
 
             if (response.status === 200 || response.status === 201) {
                 const data = response.data.data;
-                
+                setIsXmlValid?.(data.valid);
                 if (data.valid) {
+                    //respaldo no borrar
+                    // const oDps = {
+                    //     serie: data.data.serie,
+                    //     folio: data.data.serie ? (data.data.serie + '-' + data.data.folio) : data.data.folio,
+                    //     xml_date: data.data.xml_date,
+                    //     payment_method: findPaymentMethod(lPaymentMethod, data.data.payment_method),
+                    //     rfc_issuer: data.data.rfc_issuer,
+                    //     tax_regime_issuer: findFiscalRegime(lFiscalRegimes, data.data.tax_regime_issuer),
+                    //     rfc_receiver: data.data.rfc_receiver,
+                    //     tax_regime_receiver: findFiscalRegime(lFiscalRegimes, data.data.tax_regime_receiver),
+                    //     use_cfdi: findUseCfdi(lUseCfdi, data.data.use_cfdi),
+                    //     amount: data.data.amount,
+                    //     currency: findCurrency( lCurrencies, data.data.currency),
+                    //     exchange_rate: data.data.exchange_rate,
+                    //     uuid: data.data.uuid
+                    // }
+
+                    const oPaymentMethod = findPaymentMethod(lPaymentMethod, data.data.payment_method);
+                    const payment_method = oPaymentMethod ? oPaymentMethod.name : '';
+                    const oIssuer_tax_regime = findFiscalRegime(lFiscalRegimes, data.data.tax_regime_issuer);
+                    const issuer_tax_regime = oIssuer_tax_regime ? oIssuer_tax_regime.name : '';
+                    const oUseCfdi = findUseCfdi(lUseCfdi, data.data.use_cfdi);
+                    const useCfdi = oUseCfdi ? oUseCfdi.name : '';
+                    const oReceiver_tax_regime = findFiscalRegime(lFiscalRegimes, data.data.tax_regime_receiver);
+                    const receiver_tax_regime = oReceiver_tax_regime ? oReceiver_tax_regime.name : '';
+                    const oCurrency = findCurrency( lCurrencies, data.data.currency);
+                    const currency = oCurrency ? oCurrency.name : '';
+
                     const oDps = {
                         serie: data.data.serie,
                         folio: data.data.serie ? (data.data.serie + '-' + data.data.folio) : data.data.folio,
-                        xml_date: data.data.xml_date,
-                        payment_method: findPaymentMethod(lPaymentMethod, data.data.payment_method),
-                        rfc_issuer: data.data.rfc_issuer,
-                        tax_regime_issuer: findFiscalRegime(lFiscalRegimes, data.data.tax_regime_issuer),
-                        rfc_receiver: data.data.rfc_receiver,
-                        tax_regime_receiver: findFiscalRegime(lFiscalRegimes, data.data.tax_regime_receiver),
-                        use_cfdi: findUseCfdi(lUseCfdi, data.data.use_cfdi),
+                        date: data.data.xml_date,
+                        dateFormated: DateFormatter(data.data.xml_date),
+                        oPaymentMethod: oPaymentMethod,
+                        payment_method: payment_method,
+                        provider_rfc: data.data.rfc_issuer,
+                        oIssuer_tax_regime: oIssuer_tax_regime,
+                        issuer_tax_regime: issuer_tax_regime,
+                        company_rfc: data.data.rfc_receiver,
+                        oReceiver_tax_regime: oReceiver_tax_regime,
+                        receiver_tax_regime: receiver_tax_regime,
+                        oUseCfdi: oUseCfdi,
+                        useCfdi: useCfdi,
                         amount: data.data.amount,
-                        currency: findCurrency( lCurrencies, data.data.currency),
+                        oCurrency: oCurrency,
+                        currency: currency,
                         exchange_rate: data.data.exchange_rate,
                         uuid: data.data.uuid
                     }
@@ -87,19 +123,20 @@ export const ValidateXml = ( { xmlUploadRef, oCompany, oPartner, user_id, oRef, 
     }
 
     const hanldeRemoveFile = () => {
+        setIsXmlValid?.(false);
         setODps({
             serie: "",
             folio: "",
-            xml_date: "",
+            date: "",
             payment_method: "",
-            rfc_issuer: "",
-            tax_regime_issuer: "",
-            rfc_receiver: "",
-            tax_regime_receiver: "",
-            use_cfdi: "",
+            provider_rfc: "",
+            issuer_tax_regime: "",
+            company_rfc: "",
+            receiver_tax_regime: "",
+            useCfdi: "",
             amount: "",
             currency: "",
-            exchange_rate: ""
+            exchange_rate: "",
         })
 
         setErrors(

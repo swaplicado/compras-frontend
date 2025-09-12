@@ -15,7 +15,7 @@ import DateFormatter from '@/app/components/commons/formatDate';
 import moment from 'moment';
 import { useIsMobile } from '@/app/components/commons/screenMobile';
 import { Dropdown } from 'primereact/dropdown';
-import { MyToolbar } from '@/app/components/documents/invoice/myToolbar';
+import { MyToolbar } from '@/app/components/documents/invoice/common/myToolbar';
 import { DialogManual } from '@/app/components/videoManual/dialogManual';
 import { AuthorizationDialog } from '@/app/components/documents/invoice/authorizationDialog';
 import { useSearchParams } from 'next/navigation';
@@ -130,13 +130,13 @@ const InvoicesAuthorizations = () => {
 
     const getDps = async (isInternalUser: boolean) => {
         try {
-            console.log('type: ', type);
             
             const route = constants.ROUTE_GET_DPS_AUTHORIZATION;
             const params = {
                 route: route,
                 type: type,
                 user_id: userExternalId,
+                id_actor_type: 2,
                 document_type: 1
             }
             
@@ -460,6 +460,7 @@ const InvoicesAuthorizations = () => {
                     route: route,
                     id_external_system: constants.ID_EXTERNAL_SYSTEM,
                     id_external_user: userExternalId,
+                    id_actor_type: 2,
                     id_model_type: constants.ID_MODEL_TYPE_DPS,
                     id_flow_type: constants.DOC_TYPE_INVOICE
                 }

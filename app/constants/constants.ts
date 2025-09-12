@@ -43,6 +43,11 @@ const constants = {
     REVIEW_ACCEPT: 'O',
     REVIEW_REJECT: 'R',
     REVIEW_PENDING: 'P',
+    REVIEW_ACCEPT_ID: 9,
+    REVIEW_REJECT_ID: 8,
+    REVIEW_PROCESS_ID: 2,
+    REVIEW_PENDING_ID: 1,
+    
 
     //Constantes de datatables
     TABLE_ROWS: [10, 25, 50],
@@ -85,7 +90,7 @@ const constants = {
     ],
 
     //Tipo de documento
-    DOC_TYPE_INVOICE: 11,
+    DOC_TYPE_INVOICE: 41,
     DOC_TYPE_OC: 2,
 
     //Clase de transacciòn
@@ -101,6 +106,10 @@ const constants = {
 
     //id de modelo de flujo de autorizaciones
     ID_MODEL_TYPE_DPS: 1,
+
+    //tipo de recurso en autorizaciones
+    RESOURCE_TYPE_PUR_INVOICE: 4,
+    RESOURCE_TYPE_PAYMENTS: 11,
 
 }
 

@@ -64,7 +64,7 @@ interface UploadDialogProps {
     setLReferences: React.Dispatch<React.SetStateAction<any[]>>;
     loadingReferences?: boolean;
     getlReferences: (company_id?: string, partner_id?: string) => Promise<boolean>;
-    dialogMode?: 'create' | 'edit' | 'view' | 'review';
+    dialogMode?: 'create' | 'edit' | 'view' | 'review' | 'authorization';
     reviewFormData?: reviewFormData;
     getDps?: (isInternalUser: boolean) => Promise<any>;
     userId: number;
@@ -611,8 +611,6 @@ export default function UploadDialog({
             message.current?.clear();
             if (!oValidUser.isInternalUser) {
                 setSelectProvider({ id: partnerId, name: '', country: partnerCountry });
-                console.log('partnerCountry, ', partnerCountry);
-                
             }
         }
 

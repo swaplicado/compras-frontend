@@ -20,7 +20,9 @@ const AppMenu = () => {
         groups = userGroups;
     }
 
-    const modelProvider: AppMenuItem[] = appConfig?.menuProveedor || [];
+    const config =  groups.includes(constants.ROLES.COMPRADOR_ID) ? appConfig : appConfigProvider
+
+    const modelProvider: AppMenuItem[] = config?.menu || [];
 
     return (
         <MenuProvider>
