@@ -1,5 +1,11 @@
 const invoices = {
-    title: "Facturas",
+    titleUpload: "Carga de facturas",
+    titleAccepted: "Facturas aceptadas",
+    titleRejected: "Facturas rechazadas",
+    titleUploadTooltip: "Pantalla para cargar las facturas",
+    titleAcceptedTooltip: "Pantalla para ver las facturas aceptadas",
+    titleRejectedTooltip: "Pantalla para ver las facturas rechazadas",
+
     btnOpenDialogUpload: "Cargar factura",
     tooltipBtnOpenDialogUpload: "Cargar una nueva factura.",
     filterByCompany: {

@@ -64,7 +64,7 @@ interface UploadDialogProps {
     setLReferences: React.Dispatch<React.SetStateAction<any[]>>;
     loadingReferences?: boolean;
     getlReferences: (company_id?: string, partner_id?: string) => Promise<boolean>;
-    dialogMode?: 'create' | 'edit' | 'view' | 'review';
+    dialogMode?: 'create' | 'edit' | 'view' | 'review' | 'authorization';
     reviewFormData?: reviewFormData;
     getDps?: (isInternalUser: boolean) => Promise<any>;
     userId: number;
@@ -151,7 +151,8 @@ export default function UploadDialog({
         use_cfdi: '',
         amount: '',
         currency: '',
-        exchange_rate: ''
+        exchange_rate: '',
+        uuid: ''
     });
     const [oDpsErros, setODpsErrors] = useState({
         folio: false,
@@ -369,6 +370,7 @@ export default function UploadDialog({
                 fiscal_use: oDps.use_cfdi?.id || '',
                 issuer_tax_regime: oDps.tax_regime_issuer?.id || '',
                 receiver_tax_regime: oDps.tax_regime_receiver?.id || '',
+                uuid: oDps.uuid || '',
             };
 
             if (!ref_id) {
@@ -609,8 +611,6 @@ export default function UploadDialog({
             message.current?.clear();
             if (!oValidUser.isInternalUser) {
                 setSelectProvider({ id: partnerId, name: '', country: partnerCountry });
-                console.log('partnerCountry, ', partnerCountry);
-                
             }
         }
 

@@ -1,5 +1,5 @@
 {
-    "menuProveedor": [
+    "menu": [
         {
             "label": "Inicio",
             "items": [
@@ -13,10 +13,26 @@
         {
             "label": "Documentos",
             "items": [
-                { 
-                    "label": "Facturas", 
-                    "icon": "bx bx-file bx-sm", 
-                    "to": "/pages/documents/invoices"
+                {
+                    "label": "Aceptación de facturas",
+                    "icon": "pi pi-fw pi-bookmark",
+                    "items": [
+                        {
+                            "label": "Carga de facturas",
+                            "icon": "pi pi-fw pi-bookmark",
+                            "to": "/pages/documents/invoices/uploading/upload"
+                        },
+                        {
+                            "label": "Facturas aceptadas",
+                            "icon": "pi pi-fw pi-bookmark",
+                            "to": "/pages/documents/invoices/uploading/accepted"
+                        },
+                        {
+                            "label": "Facturas rechazadas",
+                            "icon": "pi pi-fw pi-bookmark",
+                            "to": "/pages/documents/invoices/uploading/rejected"
+                        }
+                    ]
                 }
             ]
         }

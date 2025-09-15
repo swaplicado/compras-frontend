@@ -70,15 +70,10 @@ const TableDemo = () => {
             const route = !isInternalUser ? constants.ROUTE_GET_DPS_BY_PARTNER_ID : constants.ROUTE_GET_DPS_BY_AREA_ID;
             const params = !isInternalUser ? { route: route, partner_id: partnerId, transaction_class: 1, document_type: 21 } : 
                 { route: route, functional_area: Array.isArray(functionalAreas) ?  functionalAreas : [functionalAreas] };
-
-            console.log("params", params);
-            
-                
+             
             const response = await axios.get(constants.API_AXIOS_GET, {
                 params: params
             });
-
-            console.log("response", response);
             
             if (response.status === 200) {
                 const data = response.data.data || [];
@@ -191,7 +186,6 @@ const TableDemo = () => {
             }
 
             await getlCurrencies();
-            console.log("lCurrencies", lCurrencies);
             
             setLoading(false);
         };

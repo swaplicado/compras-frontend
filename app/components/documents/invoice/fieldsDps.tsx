@@ -9,7 +9,7 @@ import { Calendar } from 'primereact/calendar';
 import { InputNumber } from 'primereact/inputnumber';
 
 interface InvoiceFieldsProps {
-    dialogMode: 'create' | 'edit' | 'view' | 'review';
+    dialogMode: 'create' | 'edit' | 'view' | 'review' | 'authorization';
     oDps: any;
     setODps: React.Dispatch<React.SetStateAction<any>>;
     errors: any;
