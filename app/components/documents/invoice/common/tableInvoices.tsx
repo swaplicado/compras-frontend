@@ -12,6 +12,7 @@ import { MyToolbar } from '@/app/components/documents/invoice/common/myToolbar';
 import { useIsMobile } from '@/app/components/commons/screenMobile';
 import moment from 'moment';
 import { OverlayPanel } from 'primereact/overlaypanel';
+import { spawn } from 'node:child_process';
 
 interface columnsProps {
     acceptance: {
@@ -293,19 +294,41 @@ export const TableInvoices = ({
     const actorsOfActionBody = (rowData: any) => {
         const lActors = JSON.parse(rowData.actors_of_action);
 
+        const renderSimple = () => {
+            return (
+                <div className="flex justify-content-center align-items-center">
+                    {lActors[0].full_name}
+                </div>
+            );
+        }
+
+        const renderList = () => {
+            return (
+                <div className="flex justify-content-center align-items-center">
+                    {lActors[0].full_name}
+                    &nbsp;&nbsp;
+                    <Button type="button" icon="pi pi-list" onClick={(e) => op.current?.toggle(e)} />
+                    <OverlayPanel ref={op}>
+                        {
+                            lActors.map((actor: any, index: number) => (
+                                <div key={index}>
+                                    <p>{actor.full_name}</p>
+                                </div>
+                            ))
+                        }
+                    </OverlayPanel>
+                </div>
+            );
+        }
+
+        const renderActors = () => {
+            return (
+                lActors.length > 1 ? renderList() : renderSimple()
+            );
+        }
+
         return (
-            <div className="flex justify-content-center">
-                <Button type="button" icon="pi pi-list" onClick={(e) => op.current?.toggle(e)} />
-                <OverlayPanel ref={op}>
-                    {
-                        lActors.map((actor: any, index: number) => (
-                            <div key={index}>
-                                <p>{actor.full_name}</p>
-                            </div>
-                        ))
-                    }
-                </OverlayPanel>
-            </div>
+             renderActors()
         )
     }
 

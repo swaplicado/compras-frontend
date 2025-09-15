@@ -79,7 +79,7 @@ export const MyToolbar = ({
 
                     {withMounthFilter && (
                         <div className="flex align-items-center gap-2 flex-wrap">
-                            <Calendar value={dpsDateFilter || ''} onChange={(e: any) => setDpsDateFilter?.(e.value)} view="month" dateFormat="MM" locale="es"/>
+                            <Calendar value={dpsDateFilter || ''} onChange={(e: any) => setDpsDateFilter?.(e.value)} view="month" dateFormat="MM/yy" locale="es"/>
                         </div>
                     )}
                     {withSearch && (

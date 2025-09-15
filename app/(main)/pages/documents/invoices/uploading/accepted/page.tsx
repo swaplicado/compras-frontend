@@ -16,6 +16,7 @@ import { useIsMobile } from '@/app/components/commons/screenMobile';
 import { InvoiceDialog } from '@/app/components/documents/invoice/common/invoiceDialog';
 import { getDps } from "@/app/(main)/utilities/documents/invoice/dps";
 import { FlowAuthorizationDialog } from '@/app/components/documents/invoice/flowAuthorizationDialog';
+import { Tooltip } from 'primereact/tooltip';
 
 const Upload = () => {
     const [dialogVisible, setDialogVisible] = useState(false);
@@ -67,7 +68,18 @@ const Upload = () => {
                 height: '4rem'
             }}
         >
-            <h3 className="m-0 text-900 font-medium">{t('title')}</h3>
+            <h3 className="m-0 text-900 font-medium">
+                {t('titleAccepted')}
+                &nbsp;&nbsp;
+                <Tooltip target=".custom-target-icon" />
+                <i
+                    className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
+                    data-pr-tooltip={t('titleAcceptedTooltip')}
+                    data-pr-position="right"
+                    data-pr-my="left center-2"
+                    style={{ fontSize: '1rem', cursor: 'pointer' }}
+                ></i>
+            </h3>
             {limitDate && !oValidUser.isInternalUser && (
                 <h6 className="ml-3 text-700 font-medium" style={{ color: moment(actualDate).isAfter(limitDate) ? 'red' : 'black' }}>
                     {moment(actualDate).isBefore(limitDate) ? t('dpsDateLimitText') : t('dpsDateAfterLimitText')} {DateFormatter(limitDate)}

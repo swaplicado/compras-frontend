@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import AppMenuitem from './AppMenuitem';
 import { LayoutContext } from './context/layoutcontext';
 import { MenuProvider } from './context/menucontext';
@@ -12,23 +12,41 @@ import Cookies from 'js-cookie';
 import constants from '@/app/constants/constants';
 
 const AppMenu = () => {
-    let userGroups = Cookies.get('groups') ? JSON.parse(Cookies.get('groups') || '[]') : [];
-    let groups = [];
-    if (!Array.isArray(userGroups)) {
-        groups = [userGroups];
-    } else {
-        groups = userGroups;
+    const [modelProvider, setModelProvider] = useState<AppMenuItem[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        // Este código solo se ejecuta en el cliente
+        let userGroups = Cookies.get('groups') ? JSON.parse(Cookies.get('groups') || '[]') : [];
+        let groups = [];
+        
+        if (!Array.isArray(userGroups)) {
+            groups = [userGroups];
+        } else {
+            groups = userGroups;
+        }
+
+        const config = groups.includes(constants.ROLES.COMPRADOR_ID) ? appConfig : appConfigProvider;
+        setModelProvider(config?.menu || []);
+        setLoading(false);
+    }, []);
+
+    if (loading) {
+        // Puedes mostrar un loader o contenido vacío durante la hidratación
+        return (
+            <MenuProvider>
+                <ul className="layout-menu"></ul>
+            </MenuProvider>
+        );
     }
-
-    const config =  groups.includes(constants.ROLES.COMPRADOR_ID) ? appConfig : appConfigProvider
-
-    const modelProvider: AppMenuItem[] = config?.menu || [];
 
     return (
         <MenuProvider>
             <ul className="layout-menu">
                 {modelProvider.map((item, i) => {
-                    return !item?.seperator ? <AppMenuitem item={item} root={true} index={i} key={item.label} /> : <li className="menu-separator"></li>;
+                    return !item?.seperator ? 
+                        <AppMenuitem item={item} root={true} index={i} key={item.label} /> : 
+                        <li className="menu-separator" key={`separator-${i}`}></li>;
                 })}
             </ul>
         </MenuProvider>

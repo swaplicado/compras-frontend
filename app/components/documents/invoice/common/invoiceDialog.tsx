@@ -121,6 +121,7 @@ export const InvoiceDialog = ({
     const [isXmlValid, setIsXmlValid] = useState(false);
     const [resultUpload, setResultUpload] = useState<'waiting' | 'success' | 'error'>('waiting');
     const { t } = useTranslation('invoices');
+    const { t: tAuth } = useTranslation('authorizations');
     const { t: tCommon } = useTranslation('common');
     const [totalSize, setTotalSize] = useState(0);
     const [fileErrors, setFilesErrros] = useState({
@@ -628,12 +629,16 @@ export const InvoiceDialog = ({
         </div>
     );
 
-    const footerAccept = resultUpload === 'waiting' && oDps?.authz_authorization_code == 'P' && (
+    const footerAccept = resultUpload === 'waiting' && oDps?.authz_authorization_code == 'P' ? (
         <div className="flex flex-column md:flex-row justify-content-between gap-2">
             <Button label={tCommon('btnReject')} icon="bx bx-dislike" onClick={() => handleReview?.(constants.REVIEW_REJECT)} autoFocus disabled={loading} severity="danger" />
             <Button label={tCommon('btnAccept')} icon="bx bx-like" onClick={() => handleReview?.(constants.REVIEW_ACCEPT)} autoFocus disabled={loading} severity="success" />
         </div>
-    );
+    ):(
+        <div className="flex flex-column md:flex-row justify-content-start gap-2">
+            <Button label={tCommon('btnClose')} icon="bx bx-x" onClick={onHide} severity="secondary" disabled={loading} />
+        </div>
+    )
 
     const handleAuthorization = async () => {
         try {
@@ -653,7 +658,7 @@ export const InvoiceDialog = ({
             });
 
             if (response.status === 200) {
-                setSuccessMessage(t('flowAuthorization.animationSuccess.text'));
+                setSuccessMessage(tAuth('flowAuthorization.animationSuccess.text'));
                 setResultUpload('success');
                 if (getDps) {
                     await getDps(getDpsParams);
@@ -662,7 +667,7 @@ export const InvoiceDialog = ({
                 throw new Error(`${t('errors.sendAuthorizationAccept')}: ${response.statusText}`);
             }
         } catch (error: any) {
-            setErrorMessage(error.response?.data?.error || t('flowAuthorization.animationError.text'));
+            setErrorMessage(error.response?.data?.error || tAuth('flowAuthorization.animationError.text'));
             setResultUpload('error');
         } finally {
             setLoading?.(false);
@@ -686,7 +691,7 @@ export const InvoiceDialog = ({
             });
 
             if (response.status === 200) {
-                setSuccessMessage(t('flowAuthorization.animationSuccess.text'));
+                setSuccessMessage(tAuth('flowAuthorization.animationSuccess.text'));
                 setResultUpload('success');
                 if (getDps) {
                     await getDps(getDpsParams);
@@ -695,19 +700,23 @@ export const InvoiceDialog = ({
                 throw new Error(`${t('errors.sendAuthorizationReject')}: ${response.statusText}`);
             }
         } catch (error: any) {
-            setErrorMessage(error.response?.data?.error || t('flowAuthorization.animationError.text'));
+            setErrorMessage(error.response?.data?.error || tAuth('flowAuthorization.animationError.text'));
             setResultUpload('error');
         } finally {
             setLoading?.(false);
         }
     };
 
-    const footerAuth = resultUpload === 'waiting' && isUserAuth && oDps?.authz_authorization_code == 'PR' && (
+    const footerAuth = resultUpload === 'waiting' && isUserAuth && oDps?.authz_authorization_code == 'PR' ? (
         <div className="flex flex-column md:flex-row justify-content-between gap-2">
             <Button label={tCommon('btnReject')} icon="bx bx-dislike" onClick={handleReject} severity="danger" disabled={loading} />
             <Button label={'Autorizar'} icon="bx bx-like" onClick={handleAuthorization} severity="success" disabled={loading} />
         </div>
-    );
+    ):(
+        <div className="flex flex-column md:flex-row justify-content-start gap-2">
+            <Button label={tCommon('btnClose')} icon="bx bx-x" onClick={onHide} severity="secondary" disabled={loading} />
+        </div>
+    )
 
     const footerContent = dialogMode == 'create' ? footerCreate : dialogMode == 'review' ? footerAccept : dialogMode == 'authorization' ? footerAuth : '';
 

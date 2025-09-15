@@ -1,4 +1,8 @@
 const authorizations = {
+    titleMyAuth: 'Facturas por autorizar',
+    titleAllAuth: 'Autorización de facturas',
+    titleMyAuthTooltip: 'Pantalla para autorizar mis facturas en turno',
+    titleAllAuthTooltip: 'Pantalla para consultar flujo de autorización de facturas',
     flowAuthorization: {
         dialogHeader: "Flujo de autorización",
         flowAuthLabel: "Flujo de authorización",
