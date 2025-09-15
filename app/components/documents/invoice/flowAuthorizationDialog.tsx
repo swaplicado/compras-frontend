@@ -18,7 +18,8 @@ interface FlowAuthorizationDialogProps {
     onHide: () => void,
     isMobile: boolean,
     oValidUser?: { isInternalUser: boolean; isProvider: boolean; isProviderMexico: boolean };
-    getDps?: (isInternalUser: boolean) => Promise<any>;
+    getDps?: (params: any) => Promise<any>;
+    getDpsParams?: any;
     showToast: (type: 'success' | 'info' | 'warn' | 'error', message: string, summaryText?: string) => void
     userExternalId: string | number
 }
@@ -30,6 +31,7 @@ export const FlowAuthorizationDialog = ({
     isMobile,
     oValidUser = { isInternalUser: false, isProvider: false, isProviderMexico: true },
     getDps,
+    getDpsParams,
     oDps,
     showToast,
     userExternalId
@@ -100,7 +102,7 @@ export const FlowAuthorizationDialog = ({
                 route,
                 jsonData: {
                     id_external_system: 1,
-                    id_company: 0,
+                    id_company: oDps.company_external_id, //company id del dps id_company
                     id_flow_model: flowAuth?.id || '',
                     resource: {
                         code: oDps.number, //folio
@@ -111,18 +113,18 @@ export const FlowAuthorizationDialog = ({
                     },
                     deadline: null,
                     sent_by: userExternalId, //external user id
+                    id_actor_type: 2,
                     stakeholders: [],
                     notes: comments
                 }
             });
-            console.log('response, ', response);
-            
+
             if (response.status == 200) {
                 
                 setSuccessMessage(t('flowAuthorization.animationSuccess.text'));
                 setResultSendFlowAuth('success');
 
-                getDps?.(oValidUser.isInternalUser);
+                await getDps?.(getDpsParams);
             } else {
                 throw new Error('');
             }

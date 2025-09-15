@@ -67,9 +67,11 @@ export const AuthorizationDialog = ({
                 route,
                 jsonData: {
                     id_external_system: 1,
+                    // id_company: 0, //company id del dps id_company
                     id_resource_type: 1,
                     external_resource_id: oDps.id_dps,
                     external_user_id: userExternalId,
+                    id_actor_type: 2,
                     notes: comments
                 }
             });
@@ -103,6 +105,7 @@ export const AuthorizationDialog = ({
                     id_resource_type: 1,
                     external_resource_id: oDps.id_dps,
                     external_user_id: userExternalId,
+                    id_actor_type: 2,
                     notes: comments
                 }
             });
