@@ -19,7 +19,7 @@ export const getOUser = () => {
     const userGroups = Cookies.get('groups') ? JSON.parse(Cookies.get('groups') || '[]') : [];
     const functional_areas = getFunctionalArea();
     const partnerId = Cookies.get('partnerId') ? JSON.parse(Cookies.get('partnerId') || '') : null;
-    const partnerName = Cookies.get('partnerName') ? JSON.parse(Cookies.get('partnerName') || '') : null;
+    const partnerName = Cookies.get('partnerName') ? Cookies.get('partnerName') : null;
     const partnerCountry = Cookies.get('partnerCountry') ? JSON.parse(Cookies.get('partnerCountry') || '') : null;
 
     let groups = [];

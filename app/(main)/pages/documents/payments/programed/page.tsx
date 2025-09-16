@@ -62,12 +62,23 @@ const consultPayment = () => {
 
     const getPaymentsProgramed = async () =>  {
         setLoading(true);
-        const params = {
-            route: constants.ROUTE_GET_PAYMENTS_BY_AREA_ID,
-            functional_area_id: userFunctionalAreas,
-            start_date: startDate,
-            end_date: endDate,
-            payment_status_id: constants.PAYMENT_STATUS_PROGRAMED_ID
+        let params: any = {};
+        if (oUser.isInternalUser) {
+            params = {
+                route: constants.ROUTE_GET_PAYMENTS_BY_AREA_ID,
+                functional_area_id: userFunctionalAreas,
+                start_date: startDate,
+                end_date: endDate,
+                payment_status_id: constants.PAYMENT_STATUS_PROGRAMED_ID
+            }
+        } else {
+            params = {
+                route: constants.ROUTE_GET_PAYMENTS_BY_PARTNER_ID,
+                partner_id: oUser.oProvider.id,
+                start_date: startDate,
+                end_date: endDate,
+                payment_status_id: constants.PAYMENT_STATUS_PROGRAMED_ID
+            }
         }
 
         await getPayments({
