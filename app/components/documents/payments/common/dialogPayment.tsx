@@ -45,8 +45,6 @@ export const DialogPayment = ({
     const [lEntries, setLEntries] = useState<any[]>([]);
     
     useEffect(() => {
-        console.log(oPayment);
-        
         const fetch = async () => {
             const getEntriesProps = {
                 payment_id: oPayment?.id,
@@ -62,10 +60,6 @@ export const DialogPayment = ({
 
         fetch();
     }, [visible]);
-
-    useEffect(() => {
-        console.log('lEntries: ', lEntries);
-    }, [lEntries])
 
     return (
         <div className="flex justify-content-center">

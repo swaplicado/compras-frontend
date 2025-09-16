@@ -35,6 +35,9 @@ interface TablePaymentsProps {
     withSearch?: boolean;
     handleRowClick?: (row: DataTableRowClickEvent) => void;
     handleDoubleClick?: (row: DataTableRowClickEvent) => void;
+    withMounthFilter?: boolean;
+    dateFilter?: any;
+    setDateFilter?: React.Dispatch<React.SetStateAction<any>>;
 }
 
 export const TablePayments = ({
@@ -45,6 +48,9 @@ export const TablePayments = ({
     withSearch,
     handleRowClick,
     handleDoubleClick,
+    withMounthFilter,
+    dateFilter,
+    setDateFilter,
 }: TablePaymentsProps) => {
     const [filters, setFilters] = useState<DataTableFilterMeta>({});
     const [tableLoading, setTableLoading] = useState(true);
@@ -54,7 +60,6 @@ export const TablePayments = ({
     // const { t } = useTranslation('invoices');
     // const { t: tCommon } = useTranslation('common');
     const isMobile = useIsMobile();
-    const [dpsDateFilter, setDpsDateFilter] = useState<any>(null);
 
 //*********** FILTROS DE TABLA ***********
     const initFilters = () => {
@@ -157,20 +162,10 @@ export const TablePayments = ({
 //*********** INIT ***********
     useEffect(() => {
         const Init = async () => {
-            // setLoading(true);
-
             initFilters();
-            setDpsDateFilter(new Date);
-            // await getlCompanies();
-
-            // setLoading(false);
         }
         Init();
     }, [])
-
-    useEffect(() => {
-        
-    }, [dpsDateFilter])
 
     return (
         <>
@@ -180,13 +175,13 @@ export const TablePayments = ({
                 globalFilterValue1={globalFilterValue}
                 onGlobalFilterChange1={onGlobalFilterChange}
                 clearFilter1={clearFilter}
-                dpsDateFilter={dpsDateFilter}
-                setDpsDateFilter={setDpsDateFilter}
+                dpsDateFilter={dateFilter}
+                setDpsDateFilter={setDateFilter}
                 withBtnCreate={false}
                 withBtnSendAuth={false}
                 withBtnCleanFilter={false}
                 withSearch={withSearch}
-                withMounthFilter={false}
+                withMounthFilter={withMounthFilter}
             />
             <br />
             <DataTable

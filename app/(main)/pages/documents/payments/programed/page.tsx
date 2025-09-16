@@ -28,6 +28,7 @@ const consultPayment = () => {
     const { t: tCommon } = useTranslation('common');
     const [userFunctionalAreas, setUserFunctionalAreas] = useState<any>(null);
     const [oUser, setOUser] = useState<any>(null);
+    const [dateFilter, setDateFilter] = useState<any>(null);
 
     //constantes para el dialog
     const [visible, setDialogVisible] = useState(false);
@@ -154,11 +155,17 @@ const consultPayment = () => {
             const oUser = await getOUser();
             setUserFunctionalAreas(user_functional_areas);
             setOUser(oUser);
-            setStartDate(moment(new Date).startOf('month').format('YYYY-MM-DD'));
-            setEndtDate(moment(new Date).endOf('month').format('YYYY-MM-DD'));
+            setDateFilter(new Date);
         }
         fetch();
     }, [])
+
+    useEffect(() => {
+        if (dateFilter) {
+            setStartDate(moment(dateFilter).startOf('month').format('YYYY-MM-DD'));
+            setEndtDate(moment(dateFilter).endOf('month').format('YYYY-MM-DD'));
+        }
+    }, [dateFilter])
 
     useEffect(() => {
         const init = async () => {
@@ -168,10 +175,6 @@ const consultPayment = () => {
             init();
         }
     }, [userFunctionalAreas, oUser, startDate, endDate])
-
-    useEffect(() => {
-        console.log('lPayments: ', lPayments);
-    }, [lPayments])
 
     return (
         <div className="grid">
@@ -196,6 +199,8 @@ const consultPayment = () => {
                         columnsProps={columnsProps}
                         handleRowClick={handleRowClick}
                         handleDoubleClick={handleDoubleClick}
+                        setDateFilter={setDateFilter}
+                        dateFilter={dateFilter}
                     />
                 </Card>
             </div>

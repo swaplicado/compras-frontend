@@ -82,8 +82,6 @@ export const getPayments = async ( props: getPaymentsProps  ) => {
                     payment_status: data[i].payment_status,
                 });
             }
-            console.log('api payments: ', payments);
-            
             props.setLPayments(payments);
             return true
         } else {
