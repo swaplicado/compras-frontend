@@ -8,9 +8,7 @@ import moment from 'moment';
 import { Toast } from 'primereact/toast';
 import { Card } from 'primereact/card';
 import loaderScreen from '@/app/components/commons/loaderScreen';
-import Cookies from 'js-cookie';
 import { DataTable, DataTableFilterMeta, DataTableRowClickEvent } from 'primereact/datatable';
-import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { Tooltip } from 'primereact/tooltip';
 import { TablePayments } from '@/app/components/documents/payments/common/tablePayments';
@@ -42,8 +40,8 @@ const consultPayment = () => {
         currency_name: { hidden: false },
         app_date: { hidden: false },
         req_date: { hidden: false },
-        sched_date_n: { hidden: false },
-        exec_date_n: { hidden: true },
+        sched_date_n: { hidden: true },
+        exec_date_n: { hidden: false },
         amount: { hidden: false },
         payment_way: { hidden: false },
         payment_status: { hidden: false }
@@ -59,14 +57,14 @@ const consultPayment = () => {
         });
     };
 
-    const getPaymentsProgramed = async () =>  {
+    const getPaymentsExecuted = async () =>  {
         setLoading(true);
         const params = {
             route: constants.ROUTE_GET_PAYMENTS_BY_AREA_ID,
             functional_area_id: userFunctionalAreas,
             start_date: startDate,
             end_date: endDate,
-            payment_status_id: constants.PAYMENT_STATUS_PROGRAMED_ID
+            payment_status_id: constants.PAYMENT_STATUS_EXECUTED_ID
         }
 
         await getPayments({
@@ -75,7 +73,6 @@ const consultPayment = () => {
             setLPayments: setLPayments,
             showToast: showToast 
         });
-
         setLoading(false);
     }
 
@@ -162,7 +159,7 @@ const consultPayment = () => {
 
     useEffect(() => {
         const init = async () => {
-            await getPaymentsProgramed();
+            await getPaymentsExecuted();
         }
         if (userFunctionalAreas && startDate && endDate) {
             init();
@@ -188,7 +185,7 @@ const consultPayment = () => {
                         oPayment={oPayment}
                         setOPayment={setOPayment}
                         dialogMode={dialogMode}
-                        dialogType={'programed'}
+                        dialogType={'executed'}
                     />
                     <TablePayments 
                         lPayments={lPayments}

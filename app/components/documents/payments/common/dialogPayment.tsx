@@ -23,6 +23,7 @@ interface DialogPaymentProps {
     oPayment: any;
     setOPayment: React.Dispatch<React.SetStateAction<any>>;
     dialogMode: 'view' | 'edit';
+    dialogType: 'programed' | 'executed';
     showToast?: (type: 'success' | 'info' | 'warn' | 'error', message: string, summaryText?: string) => void;
 }
 
@@ -35,6 +36,7 @@ export const DialogPayment = ({
     oPayment,
     setOPayment,
     dialogMode,
+    dialogType,
     showToast
 }: DialogPaymentProps) => {
     const { t } = useTranslation('payments');
@@ -133,21 +135,39 @@ export const DialogPayment = ({
                         errors: formErrors,
                         errorMessage: ''
                     })}
-                    {RenderFile({
-                        label: 'F. programado',
-                        tooltip: '',
-                        value: oPayment?.sched_date_n_format,
-                        disabled: true,
-                        mdCol: 3,
-                        type: 'text',
-                        onChange: (value) => null,
-                        options: [],
-                        placeholder: '',
-                        errorKey: '',
-                        errors: formErrors,
-                        errorMessage: ''
-                    })}
-                    {/* ******************** */}
+                    
+                    { dialogType == 'programed' && (
+                        RenderFile({
+                            label: 'F. programado',
+                            tooltip: '',
+                            value: oPayment?.sched_date_n_format,
+                            disabled: true,
+                            mdCol: 3,
+                            type: 'text',
+                            onChange: (value) => null,
+                            options: [],
+                            placeholder: '',
+                            errorKey: '',
+                            errors: formErrors,
+                            errorMessage: ''
+                        })
+                    )}
+                    { dialogType == 'executed' && (
+                        RenderFile({
+                            label: 'F. ejecutado',
+                            tooltip: '',
+                            value: oPayment?.exec_date_n_format,
+                            disabled: true,
+                            mdCol: 3,
+                            type: 'text',
+                            onChange: (value) => null,
+                            options: [],
+                            placeholder: '',
+                            errorKey: '',
+                            errors: formErrors,
+                            errorMessage: ''
+                        })
+                    )}
                     {RenderFile({
                         label: 'F. requerido',
                         tooltip: '',
@@ -204,6 +224,38 @@ export const DialogPayment = ({
                         errors: formErrors,
                         errorMessage: ''
                     })}
+                    { dialogType == 'executed' && (
+                        RenderFile({
+                            label: 'T. cambio ejecutado',
+                            tooltip: '',
+                            value: oPayment?.exchange_rate_exec,
+                            disabled: true,
+                            mdCol: 3,
+                            type: 'number',
+                            onChange: (value) => null,
+                            options: [],
+                            placeholder: '',
+                            errorKey: '',
+                            errors: formErrors,
+                            errorMessage: ''
+                        })
+                    )}
+                    { dialogType == 'executed' && (
+                        RenderFile({
+                            label: 'Monto local ejecutado',
+                            tooltip: '',
+                            value: oPayment?.amount_loc_exec,
+                            disabled: true,
+                            mdCol: 3,
+                            type: 'number',
+                            onChange: (value) => null,
+                            options: [],
+                            placeholder: '',
+                            errorKey: '',
+                            errors: formErrors,
+                            errorMessage: ''
+                        })
+                    )}
                     {RenderFile({
                         label: 'Metodo de pago',
                         tooltip: '',

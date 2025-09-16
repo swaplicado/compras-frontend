@@ -209,7 +209,7 @@ export const TablePayments = ({
                 onRowClick={(e) => (handleRowClick?.(e))}
                 onRowDoubleClick={(e) => (handleDoubleClick?.(e))}
                 metaKeySelection={false}
-                sortField="date"
+                sortField="benef_trade_name"
                 sortOrder={-1}
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                 // currentPageReportTemplate={t('invoicesTable.currentPageReportTemplate')}
@@ -247,17 +247,17 @@ export const TablePayments = ({
                 <Column field="benef_account" header="benef_account" hidden />
                 <Column field="sched_at" header="sched_at" hidden />
                 <Column field="exec_at" header="exec_at" hidden />
-                <Column field="company_trade_name" header="Empresa" hidden={ columnsProps?.company_trade_name.hidden } />
-                <Column field="folio" header="Folio" hidden={ columnsProps?.company_trade_name.hidden } />
-                <Column field="benef_trade_name" header="Beneficiario" hidden={ columnsProps?.benef_trade_name.hidden } />
-                <Column field="currency_name" header="Moneda" hidden={ columnsProps?.currency_name.hidden } />
-                <Column field="app_date" header="F. creación" body={appDateBodyTemplate} hidden={ columnsProps?.app_date.hidden } />
-                <Column field="req_date" header="F. requerido" body={reqDateBodyTemplate} hidden={ columnsProps?.req_date.hidden } />
-                <Column field="sched_date_n" header="F. programado" body={schedDateBodyTemplate} hidden={ columnsProps?.sched_date_n.hidden } />
-                <Column field="exec_date_n" header="F. ejecutado" body={execDateBodyTemplate} hidden={ columnsProps?.exec_date_n.hidden }/>
-                <Column field="amount" header="Monto programado" body={amountBodyTemplate} hidden={ columnsProps?.amount.hidden }/>
-                <Column field="payment_way" header="Metodo de pago" hidden={ columnsProps?.payment_way.hidden }/>
-                <Column field="payment_status" header="Estatus" hidden={ columnsProps?.payment_status.hidden }/>
+                <Column field="company_trade_name" header="Empresa" sortable hidden={ columnsProps?.company_trade_name.hidden } />
+                <Column field="folio" header="Folio" sortable hidden={ columnsProps?.company_trade_name.hidden } />
+                <Column field="benef_trade_name" header="Beneficiario" sortable hidden={ columnsProps?.benef_trade_name.hidden } />
+                <Column field="currency_name" header="Moneda" sortable hidden={ columnsProps?.currency_name.hidden } />
+                <Column field="app_date" header="F. creación" body={appDateBodyTemplate} sortable hidden={ columnsProps?.app_date.hidden } />
+                <Column field="req_date" header="F. requerido" body={reqDateBodyTemplate} sortable hidden={ columnsProps?.req_date.hidden } />
+                <Column field="sched_date_n" header="F. programado" body={schedDateBodyTemplate} sortable hidden={ columnsProps?.sched_date_n.hidden } />
+                <Column field="exec_date_n" header="F. ejecutado" body={execDateBodyTemplate} sortable hidden={ columnsProps?.exec_date_n.hidden }/>
+                <Column field="amount" header="Monto programado" body={amountBodyTemplate} sortable hidden={ columnsProps?.amount.hidden }/>
+                <Column field="payment_way" header="Metodo de pago" sortable hidden={ columnsProps?.payment_way.hidden }/>
+                <Column field="payment_status" header="Estatus" sortable hidden={ columnsProps?.payment_status.hidden }/>
             </DataTable>
         </>
     );
