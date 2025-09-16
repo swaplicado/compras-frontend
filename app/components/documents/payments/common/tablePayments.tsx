@@ -12,6 +12,7 @@ import { MyToolbar } from '@/app/components/documents/invoice/common/myToolbar';
 import { useIsMobile } from '@/app/components/commons/screenMobile';
 import moment from 'moment';
 import { OverlayPanel } from 'primereact/overlaypanel';
+import { getlCompanies } from '@/app/(main)/utilities/documents/common/companyUtils'
 
 interface columnsProps {
     company_trade_name: { hidden: boolean },
@@ -38,6 +39,7 @@ interface TablePaymentsProps {
     withMounthFilter?: boolean;
     dateFilter?: any;
     setDateFilter?: React.Dispatch<React.SetStateAction<any>>;
+    showToast?: (type: 'success' | 'info' | 'warn' | 'error', message: string, summaryText?: string) => void;
 }
 
 export const TablePayments = ({
@@ -51,14 +53,15 @@ export const TablePayments = ({
     withMounthFilter,
     dateFilter,
     setDateFilter,
+    showToast
 }: TablePaymentsProps) => {
     const [filters, setFilters] = useState<DataTableFilterMeta>({});
     const [tableLoading, setTableLoading] = useState(true);
     const [globalFilterValue, setGlobalFilterValue] = useState('');
     const [filterCompany, setFilterCompany] = useState<{ id: string; name: string; fiscal_id: string; fiscal_regime_id: number } | null>(null);
     const [lCompaniesFilter, setLCompaniesFilter] = useState<any[]>([]);
-    // const { t } = useTranslation('invoices');
-    // const { t: tCommon } = useTranslation('common');
+    const { t } = useTranslation('payments');
+    const { t: tCommon } = useTranslation('common');
     const isMobile = useIsMobile();
 
 //*********** FILTROS DE TABLA ***********
@@ -106,7 +109,7 @@ export const TablePayments = ({
 
         if (selectedCompany && selectedCompany.id !== null) {
             // Si se selecciona una compañía, aplicar filtro
-            (_filters['company'] as any).value = selectedCompany.name; // O selectedCompany.id dependiendo de tu estructura
+            (_filters['company'] as any).value = selectedCompany.name;
         } else {
             // Si se limpia el filtro, establecer null
             (_filters['company'] as any).value = null;
@@ -162,6 +165,12 @@ export const TablePayments = ({
 //*********** INIT ***********
     useEffect(() => {
         const Init = async () => {
+            // const getlCompaniesProps = {
+            //     setLCompaniesFilter: setLCompaniesFilter,
+            //     showToast: showToast
+            // }
+
+            // await getlCompanies(getlCompaniesProps);
             initFilters();
         }
         Init();
@@ -193,9 +202,8 @@ export const TablePayments = ({
                 showGridlines
                 filters={filters}
                 filterDisplay="menu"
-                // loading={tableLoading}
                 responsiveLayout="scroll"
-                // emptyMessage={t('invoicesTable.emptyMessage')}
+                emptyMessage={tCommon('datatable.emptyMessage')}
                 scrollable
                 scrollHeight="40rem"
                 selectionMode="single"
@@ -207,7 +215,7 @@ export const TablePayments = ({
                 sortField="benef_trade_name"
                 sortOrder={-1}
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-                // currentPageReportTemplate={t('invoicesTable.currentPageReportTemplate')}
+                currentPageReportTemplate={tCommon('datatable.currentPageReportTemplate')}
                 resizableColumns
             >
                 <Column field="id" header="id" hidden />
@@ -242,17 +250,17 @@ export const TablePayments = ({
                 <Column field="benef_account" header="benef_account" hidden />
                 <Column field="sched_at" header="sched_at" hidden />
                 <Column field="exec_at" header="exec_at" hidden />
-                <Column field="company_trade_name" header="Empresa" sortable hidden={ columnsProps?.company_trade_name.hidden } />
-                <Column field="folio" header="Folio" sortable hidden={ columnsProps?.company_trade_name.hidden } />
-                <Column field="benef_trade_name" header="Beneficiario" sortable hidden={ columnsProps?.benef_trade_name.hidden } />
-                <Column field="currency_name" header="Moneda" sortable hidden={ columnsProps?.currency_name.hidden } />
-                <Column field="app_date" header="F. creación" body={appDateBodyTemplate} sortable hidden={ columnsProps?.app_date.hidden } />
-                <Column field="req_date" header="F. requerido" body={reqDateBodyTemplate} sortable hidden={ columnsProps?.req_date.hidden } />
-                <Column field="sched_date_n" header="F. programado" body={schedDateBodyTemplate} sortable hidden={ columnsProps?.sched_date_n.hidden } />
-                <Column field="exec_date_n" header="F. ejecutado" body={execDateBodyTemplate} sortable hidden={ columnsProps?.exec_date_n.hidden }/>
-                <Column field="amount" header="Monto programado" body={amountBodyTemplate} sortable hidden={ columnsProps?.amount.hidden }/>
-                <Column field="payment_way" header="Metodo de pago" sortable hidden={ columnsProps?.payment_way.hidden }/>
-                <Column field="payment_status" header="Estatus" sortable hidden={ columnsProps?.payment_status.hidden }/>
+                <Column field="company_trade_name" header={t('datatable.columns.company_trade_name')} sortable hidden={ columnsProps?.company_trade_name.hidden } />
+                <Column field="folio" header={t('datatable.columns.folio')} sortable hidden={ columnsProps?.company_trade_name.hidden } />
+                <Column field="benef_trade_name" header={t('datatable.columns.benef_trade_name')} sortable hidden={ columnsProps?.benef_trade_name.hidden } />
+                <Column field="currency_name" header={t('datatable.columns.currency_name')} sortable hidden={ columnsProps?.currency_name.hidden } />
+                <Column field="app_date" header={t('datatable.columns.app_date')} body={appDateBodyTemplate} sortable hidden={ columnsProps?.app_date.hidden } />
+                <Column field="req_date" header={t('datatable.columns.req_date')} body={reqDateBodyTemplate} sortable hidden={ columnsProps?.req_date.hidden } />
+                <Column field="sched_date_n" header={t('datatable.columns.sched_date_n')} body={schedDateBodyTemplate} sortable hidden={ columnsProps?.sched_date_n.hidden } />
+                <Column field="exec_date_n" header={t('datatable.columns.exec_date_n')} body={execDateBodyTemplate} sortable hidden={ columnsProps?.exec_date_n.hidden }/>
+                <Column field="amount" header={t('datatable.columns.amount')} body={amountBodyTemplate} sortable hidden={ columnsProps?.amount.hidden }/>
+                <Column field="payment_way" header={t('datatable.columns.payment_way')} sortable hidden={ columnsProps?.payment_way.hidden }/>
+                <Column field="payment_status" header={t('datatable.columns.payment_status')} sortable hidden={ columnsProps?.payment_status.hidden }/>
             </DataTable>
         </>
     );

@@ -184,11 +184,12 @@ const consultPayment = () => {
                         onHide={() => setDialogVisible(false)}
                         isMobile={isMobile}
                         footerContent={dialogFooterContent}
-                        headerTitle={'Pago programado'}
+                        headerTitle={t('executed.title')}
                         oPayment={oPayment}
                         setOPayment={setOPayment}
                         dialogMode={dialogMode}
                         dialogType={'executed'}
+                        setLoading={setLoading}
                     />
                     <TablePayments 
                         lPayments={lPayments}
