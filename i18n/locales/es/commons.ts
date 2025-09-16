@@ -43,6 +43,11 @@ const commons = {
       monthNamesShort: ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'],
       today: 'Hoy',
       clear: 'Limpiar'
+    },
+
+    datatable: {
+        emptyMessage: "Sin datos para mostrar.",
+        currentPageReportTemplate: "Mostrando {first} a {last} de {totalRecords} registros",
     }
 };
 
