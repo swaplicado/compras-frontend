@@ -361,7 +361,7 @@ export const TableInvoices = ({
 
     const op = useRef<any>(null);
     const actorsOfActionBody = (rowData: any) => {
-        const lActors = JSON.parse(rowData.actors_of_action);
+        const lActors = rowData?.actors_of_action ? JSON.parse(rowData.actors_of_action) : [{full_name: 'No hay actores'}];
 
         const renderSimple = () => {
             return (
