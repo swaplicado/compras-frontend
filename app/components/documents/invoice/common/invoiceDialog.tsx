@@ -497,6 +497,7 @@ export const InvoiceDialog = ({
 
     //INIT
     useEffect(() => {
+        setLUrlFiles([]);
         setLoadingReferences?.(false);
         setOCompany(null);
         setOProvider(null);
@@ -568,12 +569,21 @@ export const InvoiceDialog = ({
                     currency: oCurrency.name
                 }));
             }, 100);
+            setTimeout(() => {
+                if (visible) {
+                    console.log('lFilesInit: ', lUrlFiles);
+                    getlUrlFilesDps();
+                }
+            }, 200);
 
-            getlUrlFilesDps();
         }
 
         if (dialogMode == 'review') {
-            setFooterMode('edit');
+            if (oDps?.authz_authorization_code == 'P' && oDps.acceptance != 'ok') {
+                setFooterMode('edit');
+            } else {
+                setFooterMode('view');
+            }
         } else if (dialogMode == 'authorization') {
             setFooterMode('view');
         }
