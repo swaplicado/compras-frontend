@@ -7,6 +7,7 @@ const commons = {
     btnClose: "Cerrar",
     btnSave: "Guardar",
     btnDelete: "Eliminar",
+    btnDeleteTooltip: "Eliminar factura",
     btnEdit: "Editar",
     btnSearch: "Busca",
     placeholderSearch: "Buscar  ",

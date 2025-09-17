@@ -12,15 +12,18 @@ import { MyToolbar } from '@/app/components/documents/invoice/common/myToolbar';
 import { useIsMobile } from '@/app/components/commons/screenMobile';
 import moment from 'moment';
 import { OverlayPanel } from 'primereact/overlaypanel';
-import { spawn } from 'node:child_process';
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 
 interface columnsProps {
     acceptance: {
         hidden: boolean
-    }
+    },
     actors_of_action: {
         hidden: boolean
-    }
+    },
+    delete: {
+        hidden: boolean
+    },
 }
 
 interface TableInvoicesProps {
@@ -73,6 +76,9 @@ export const TableInvoices = ({
             hidden: false
         },
         actors_of_action: {
+            hidden: true
+        },
+        delete: {
             hidden: true
         }
     }
@@ -179,6 +185,51 @@ export const TableInvoices = ({
             setLoading(false);
         }
     };
+
+    const accept = async (id_dps: any) => {
+        try {
+            setLoading(true);
+            const route = '/transactions/documents/'+id_dps+'/delete-document/'
+            const response = await axios.post(constants.API_AXIOS_DELETE, {
+                params: {
+                    route: route
+                }
+            });
+
+            if (response.status == 200) {
+                getDps(getDpsParams);
+            } else {
+                throw new Error(`Error al eliminar la factura: ${response.statusText}`);
+            }
+        } catch (error: any) {
+            showToast?.('error', error.response?.data?.error || 'Error al eliminar la factura', 'Error al eliminar la factura');
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const reject = (id_dps: any) => {
+        
+    }
+
+    const deleteDps = async (rowData: any) => {
+        try {
+            const id_dps = rowData.id_dps;
+            const folio = rowData.folio;
+            confirmDialog({
+                message: '¿Quieres eliminar esta factura: ' + folio + '?',
+                header: 'Delete Confirmation',
+                icon: 'pi pi-info-circle',
+                acceptClassName: 'p-button-danger',
+                acceptLabel: 'Si',
+                rejectLabel: 'No',
+                accept: () => accept(id_dps),
+                reject: () => reject(id_dps)
+            });
+        } catch (error: any) {
+            
+        }
+    }
 
     //*********** FILTROS DE TABLA ***********
     const initFilters = () => {
@@ -290,6 +341,24 @@ export const TableInvoices = ({
         );
     };
 
+    const deleteBodyTemplate = (rowData: any) => {
+        return (
+            <div className="flex align-items-center justify-content-center">
+                <Button
+                    label={tCommon('btnDelete')}
+                    icon="bx bx-trash bx-sm"
+                    severity='danger'
+                    className="p-button-rounded"
+                    onClick={() => deleteDps(rowData)}
+                    tooltip={tCommon('btnDeleteTooltip')}
+                    tooltipOptions={{ position: 'top' }}
+                    size="small"
+                    disabled={loading}
+                />
+            </div>
+        );
+    };
+
     const op = useRef<any>(null);
     const actorsOfActionBody = (rowData: any) => {
         const lActors = JSON.parse(rowData.actors_of_action);
@@ -383,6 +452,7 @@ export const TableInvoices = ({
 
     return (
         <>
+            <ConfirmDialog />
             <MyToolbar 
                 isMobile={isMobile}
                 disabledUpload={false}
@@ -466,6 +536,7 @@ export const TableInvoices = ({
                 <Column field="authorization" header={t('invoicesTable.columns.authorization')} footer={t('invoicesTable.columns.authorization')} body={statusAuthDpsBodyTemplate} sortable />
                 <Column field="date" header={t('invoicesTable.columns.date')} footer={t('invoicesTable.columns.date')} body={dateBodyTemplate} sortable />
                 <Column field="files" header={t('invoicesTable.columns.files')} footer={t('invoicesTable.columns.files')} body={fileBodyTemplate} />
+                <Column field="id_dps" header={'Eliminar'} footer={'Eliminar'} body={deleteBodyTemplate} hidden={ columnsProps?.delete.hidden } />
             </DataTable>
         </>
     );

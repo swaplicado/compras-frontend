@@ -523,6 +523,8 @@ const Upload = () => {
                         showToast={showToast}
                         oValidUser={oValidUser}
                         setLoading={setLoading}
+                        loadingReferences={loadingReferences}
+                        setLoadingReferences={setLoadingReferences}
                     />
                     <TableInvoices
                         getDpsParams={getDpsParams}

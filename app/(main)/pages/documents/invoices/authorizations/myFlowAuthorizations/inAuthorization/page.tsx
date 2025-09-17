@@ -579,6 +579,9 @@ const Upload = () => {
                             },
                             actors_of_action: {
                                 hidden: false
+                            },
+                            delete: {
+                                hidden: true
                             }
                         }}
                     />

@@ -3,6 +3,7 @@ const constants = {
     API_AXIOS_POST: '/api/axios/post',
     API_AXIOS_GET: '/api/axios/get',
     API_AXIOS_PATCH: '/api/axios/patch',
+    API_AXIOS_DELETE: '/api/axios/delete',
 
     //timeout para las peticiones axios (de momento no se usa)
     TIMEOUT: 5000,

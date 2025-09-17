@@ -15,7 +15,7 @@ import { Button } from 'primereact/button';
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
 import axios from 'axios';
-import { findFiscalRegimeById, findUseCfdi, findPaymentMethod, findFiscalRegime, findCurrency } from '@/app/(main)/utilities/files/catFinder';
+import { findFiscalRegimeById, findUseCfdi, findPaymentMethod, findFiscalRegime, findCurrency, findCompany } from '@/app/(main)/utilities/files/catFinder';
 import { CustomFileUpload } from '@/app/components/documents/invoice/customFileUpload';
 import { Messages } from 'primereact/messages';
 import { CustomFileViewer } from '@/app/components/documents/invoice/fileViewer';
@@ -55,6 +55,8 @@ interface InvoiceDialogProps {
     setLoadingReferences?: React.Dispatch<React.SetStateAction<any>>;
     isUserAuth?: boolean;
     userExternalId?: any;
+    isEdit?: boolean;
+    typeEdit?: 'acceptance' | 'authorization';
 }
 
 interface renderFieldProps {
@@ -102,7 +104,9 @@ export const InvoiceDialog = ({
     loadingReferences,
     setLoadingReferences,
     isUserAuth,
-    userExternalId
+    userExternalId,
+    isEdit,
+    typeEdit,
 }: InvoiceDialogProps) => {
     const [oCompany, setOCompany] = useState<any>(null);
     const [oProvider, setOProvider] = useState<any>(null);
@@ -461,6 +465,10 @@ export const InvoiceDialog = ({
         }
     };
 
+    // const handleEdit = () => {
+        
+    // }
+
     const getlUrlFilesDps = async () => {
         try {
             setLoadingUrlsFiles(true);
@@ -579,7 +587,7 @@ export const InvoiceDialog = ({
         }
 
         if (dialogMode == 'review') {
-            if (oDps?.authz_authorization_code == 'P' && oDps.acceptance != 'ok') {
+            if (oDps?.authz_authorization_code == 'P' && oDps?.acceptance == 'pendiente') {
                 setFooterMode('edit');
             } else {
                 setFooterMode('view');
@@ -639,7 +647,7 @@ export const InvoiceDialog = ({
         </div>
     );
 
-    const footerAccept = resultUpload === 'waiting' && oDps?.authz_authorization_code == 'P' ? (
+    const footerAccept = resultUpload === 'waiting' && oDps?.authz_authorization_code == 'P' && oDps.acceptance == 'pendiente' ? (
         <div className="flex flex-column md:flex-row justify-content-between gap-2">
             <Button label={tCommon('btnReject')} icon="bx bx-dislike" onClick={() => handleReview?.(constants.REVIEW_REJECT)} autoFocus disabled={loading} severity="danger" />
             <Button label={tCommon('btnAccept')} icon="bx bx-like" onClick={() => handleReview?.(constants.REVIEW_ACCEPT)} autoFocus disabled={loading} severity="success" />
