@@ -16,7 +16,7 @@ import { DialogPayment } from '@/app/components/documents/payments/common/dialog
 import { useIsMobile } from '@/app/components/commons/screenMobile';
 import { Button } from "primereact/button";
 
-const consultPayment = () => {
+const ConsultPaymentExecuted = () => {
     const [startDate, setStartDate] = useState<string>('');
     const [endDate, setEndtDate] = useState<string>('');
     const [lPayments, setLPayments] = useState<any[]>([]);
@@ -217,4 +217,4 @@ const consultPayment = () => {
     )
 }
 
-export default consultPayment;
+export default ConsultPaymentExecuted;
