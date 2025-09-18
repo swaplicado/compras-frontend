@@ -160,7 +160,7 @@ export const InvoiceDialog = ({
         exchange_rate: false
     });
     const [authErrors, setAuthErrors] = useState({
-        authz_authorization_notes: false
+        auth_notes: false
     });
     const [reviewErrors, setReviewErrors] = useState({
         rejectComments: false
@@ -701,10 +701,10 @@ export const InvoiceDialog = ({
 
     const handleReject = async () => {
         try {
-            if (!oDps.authz_authorization_notes) {
+            if (!oDps.auth_notes) {
                 setAuthErrors({
                     ...authErrors,
-                    authz_authorization_notes: true
+                    auth_notes: true
                 });
                 return;
             }
@@ -1111,13 +1111,12 @@ export const InvoiceDialog = ({
                                                     maxLength={500}
                                                     autoResize
                                                     disabled={true}
-                                                    className={`w-full ${authErrors.authz_authorization_notes ? 'p-invalid' : ''} `}
+                                                    className={`w-full`}
                                                     value={ oDps?.authz_authorization_notes }
                                                     onChange={(e) => {
                                                         setODps((prev: any) => ({ ...prev, authz_authorization_notes: e.target.value }));
                                                     }}
                                                 />
-                                                {authErrors.authz_authorization_notes && <small className="p-error">Ingresa comentarios para rechazar</small>}
                                             </div>
                                         </div>
                                     </div>
@@ -1137,14 +1136,14 @@ export const InvoiceDialog = ({
                                                         cols={30}
                                                         maxLength={500}
                                                         autoResize
-                                                        disabled={oDps?.authz_authorization_code != 'PR' || isReviewAuth}
-                                                        className={`w-full ${authErrors.authz_authorization_notes ? 'p-invalid' : ''} `}
+                                                        disabled={oDps?.authz_authorization_code != 'PR' || !isReviewAuth}
+                                                        className={`w-full ${authErrors.auth_notes ? 'p-invalid' : ''} `}
                                                         value={ oDps?.auth_notes }
                                                         onChange={(e) => {
                                                             setODps((prev: any) => ({ ...prev, auth_notes: e.target.value }));
                                                         }}
                                                     />
-                                                    {authErrors.authz_authorization_notes && <small className="p-error">Ingresa comentarios para rechazar</small>}
+                                                    {authErrors.auth_notes && <small className="p-error">Ingresa comentarios para rechazar</small>}
                                                 </div>
                                             </div>
                                         </div>

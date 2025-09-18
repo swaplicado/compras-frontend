@@ -549,7 +549,6 @@ const Upload = () => {
                         setLoading={setLoading}
                         isEdit={isEdit}
                         typeEdit={typeEdit}
-                        isReviewAuth={true}
                     />
 
                     <TableInvoices

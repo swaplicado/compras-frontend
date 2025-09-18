@@ -539,7 +539,7 @@ const Upload = () => {
                         setLoading={setLoading}
                         userExternalId={userExternalId}
                         isUserAuth={isUserAuth}
-
+                        isReviewAuth={true}
                     />
 
                     { oValidUser.isInternalUser && (
