@@ -486,7 +486,7 @@ const Upload = () => {
             await getlFiscalRegime();
             await getlPaymentMethod();
             await getlUseCfdi();
-            setLoading(false);
+            // setLoading(false);
         };
         fetchReferences();
     }, []);

@@ -425,10 +425,10 @@ const Upload = () => {
     };
 
     const handleDoubleClick = (e: DataTableRowClickEvent) => {
-        if (!oValidUser.isInternalUser) {
-            e.originalEvent.preventDefault();
-            return;
-        }
+        // if (!oValidUser.isInternalUser) {
+        //     e.originalEvent.preventDefault();
+        //     return;
+        // }
 
         setSelectedRow(e.data);
         setDialogMode('review');
@@ -490,7 +490,7 @@ const Upload = () => {
             await getlFiscalRegime();
             await getlPaymentMethod();
             await getlUseCfdi();
-            setLoading(false);
+            // setLoading(false);
         };
         fetchReferences();
     }, []);

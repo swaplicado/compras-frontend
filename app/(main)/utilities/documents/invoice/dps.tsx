@@ -53,6 +53,7 @@ export const getDps = async ( props: getDpsProps  ) => {
                     serie: data[i].series,
                     number: data[i].number,
                     folio: data[i].series ? data[i].series + '-' + data[i].number : data[i].number,
+                    hiddenFolio: data[i].folio,
                     reference: reference,
                     files: data[i].id,
                     date: data[i].date,

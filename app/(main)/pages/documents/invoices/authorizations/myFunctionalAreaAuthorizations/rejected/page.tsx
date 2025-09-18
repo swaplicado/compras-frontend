@@ -510,7 +510,7 @@ const Upload = () => {
             await getlPaymentMethod();
             await getlUseCfdi();
             // await getFlowAuthorizations();
-            setLoading(false);
+            // setLoading(false);
         };
         fetchReferences();
     }, []);
@@ -549,6 +549,7 @@ const Upload = () => {
                         setLoading={setLoading}
                         isEdit={isEdit}
                         typeEdit={typeEdit}
+                        isReviewAuth={true}
                     />
 
                     <TableInvoices

@@ -105,7 +105,7 @@ export const FlowAuthorizationDialog = ({
                     id_company: oDps.company_external_id, //company id del dps id_company
                     id_flow_model: flowAuth?.id || '',
                     resource: {
-                        code: oDps.number, //folio
+                        code: oDps.number ? oDps.number : oDps.hiddenFolio , //folio
                         name: oDps.provider_name, //proveedor
                         content: {},
                         external_id: oDps.id_dps,

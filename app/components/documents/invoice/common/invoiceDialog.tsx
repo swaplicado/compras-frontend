@@ -57,6 +57,7 @@ interface InvoiceDialogProps {
     userExternalId?: any;
     isEdit?: boolean;
     typeEdit?: 'acceptance' | 'authorization';
+    isReviewAuth?: boolean
 }
 
 interface renderFieldProps {
@@ -107,6 +108,7 @@ export const InvoiceDialog = ({
     userExternalId,
     isEdit,
     typeEdit,
+    isReviewAuth
 }: InvoiceDialogProps) => {
     const [oCompany, setOCompany] = useState<any>(null);
     const [oProvider, setOProvider] = useState<any>(null);
@@ -380,9 +382,9 @@ export const InvoiceDialog = ({
             });
 
             if (response.status === 200 || response.status === 201) {
+                getDps?.(getDpsParams);
                 setSuccessMessage(response.data.data.success || t('uploadDialog.animationSuccess.text'));
                 setResultUpload('success');
-                getDps?.(getDpsParams);
             } else {
                 throw new Error(t('uploadDialog.errors.updateStatusError'));
             }
@@ -675,16 +677,17 @@ export const InvoiceDialog = ({
                     external_resource_id: oDps.id_dps,
                     external_user_id: userExternalId,
                     id_actor_type: 2,
-                    notes: oDps.authz_authorization_notes
+                    // notes: oDps.authz_authorization_notes
+                    notes: oDps.auth_notes || ''
                 }
             });
 
             if (response.status === 200) {
-                setSuccessMessage('Factura autorizada');
-                setResultUpload('success');
                 if (getDps) {
                     await getDps(getDpsParams);
                 }
+                setSuccessMessage('Factura autorizada');
+                setResultUpload('success');
             } else {
                 throw new Error(`Factura autorizada: ${response.statusText}`);
             }
@@ -717,16 +720,17 @@ export const InvoiceDialog = ({
                     external_resource_id: oDps.id_dps,
                     external_user_id: userExternalId,
                     id_actor_type: 2,
-                    notes: oDps.authz_authorization_notes
+                    // notes: oDps.authz_authorization_notes
+                    notes: oDps.auth_notes || ''
                 }
             });
 
             if (response.status === 200) {
-                setSuccessMessage('La factura ha sido rechazada');
-                setResultUpload('success');
                 if (getDps) {
                     await getDps(getDpsParams);
                 }
+                setSuccessMessage('La factura ha sido rechazada');
+                setResultUpload('success');
             } else {
                 throw new Error(`Error al rechazar la factura: ${response.statusText}`);
             }
@@ -808,9 +812,9 @@ export const InvoiceDialog = ({
             });
 
             if (response.status === 200 || response.status === 201) {
+                await getDps?.(getDpsParams);
                 setSuccessMessage('Factura editada');
                 setResultUpload('success');
-                await getDps?.(getDpsParams);
             } else {
                 throw new Error(t('uploadDialog.errors.updateStatusError'));
             }
@@ -848,11 +852,11 @@ export const InvoiceDialog = ({
             });
     
             if (response.status === 200 || response.status === 201) {
-                setSuccessMessage('Factura editada');
-                setResultUpload('success');
                 if (getDps) {
                     await getDps(getDpsParams);
                 }
+                setSuccessMessage('Factura editada');
+                setResultUpload('success');
             } else {
                 new Error(`Error al editar la factura: ${response.statusText}`);
             }
@@ -1090,34 +1094,64 @@ export const InvoiceDialog = ({
                             </div>
                         )}
 
-                        {(dialogMode == 'authorization') &&
-                            <div className={`field col-12 md:col-12`}>
-                                <div className="formgrid grid">
-                                    <div className="col">
-                                        <label data-pr-tooltip="">Comentarios de la autorización</label>
-                                        &nbsp;
-                                        <Tooltip target=".custom-target-icon" />
-                                        <i className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge" data-pr-tooltip={t('comments.tooltip')} data-pr-position="right" data-pr-my="left center-2" style={{ fontSize: '1rem', cursor: 'pointer' }}></i>
-                                        <div>
-                                            <InputTextarea
-                                                id="comments"
-                                                rows={3}
-                                                cols={30}
-                                                maxLength={500}
-                                                autoResize
-                                                disabled={oDps?.authz_authorization_code != 'PR'}
-                                                className={`w-full ${authErrors.authz_authorization_notes ? 'p-invalid' : ''} `}
-                                                value={ oDps?.authz_authorization_notes }
-                                                onChange={(e) => {
-                                                    setODps((prev: any) => ({ ...prev, authz_authorization_notes: e.target.value }));
-                                                }}
-                                            />
-                                            {authErrors.authz_authorization_notes && <small className="p-error">Ingresa comentarios para rechazar</small>}
+                        {(dialogMode == 'authorization' || isReviewAuth) && (
+                            <>
+                                <div className={`field col-12 md:col-12`}>
+                                    <div className="formgrid grid">
+                                        <div className="col">
+                                            <label data-pr-tooltip="">Comentarios de la autorización</label>
+                                            &nbsp;
+                                            <Tooltip target=".custom-target-icon" />
+                                            <i className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge" data-pr-tooltip={t('comments.tooltip')} data-pr-position="right" data-pr-my="left center-2" style={{ fontSize: '1rem', cursor: 'pointer' }}></i>
+                                            <div>
+                                                <InputTextarea
+                                                    id="comments"
+                                                    rows={3}
+                                                    cols={30}
+                                                    maxLength={500}
+                                                    autoResize
+                                                    disabled={true}
+                                                    className={`w-full ${authErrors.authz_authorization_notes ? 'p-invalid' : ''} `}
+                                                    value={ oDps?.authz_authorization_notes }
+                                                    onChange={(e) => {
+                                                        setODps((prev: any) => ({ ...prev, authz_authorization_notes: e.target.value }));
+                                                    }}
+                                                />
+                                                {authErrors.authz_authorization_notes && <small className="p-error">Ingresa comentarios para rechazar</small>}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        }
+                                { isReviewAuth && (
+                                    <div className={`field col-12 md:col-12`}>
+                                        <div className="formgrid grid">
+                                            <div className="col">
+                                                <label data-pr-tooltip="">Tus comentarios de la autorización</label>
+                                                &nbsp;
+                                                <Tooltip target=".custom-target-icon" />
+                                                <i className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge" data-pr-tooltip={t('comments.tooltip')} data-pr-position="right" data-pr-my="left center-2" style={{ fontSize: '1rem', cursor: 'pointer' }}></i>
+                                                <div>
+                                                    <InputTextarea
+                                                        id="comments"
+                                                        rows={3}
+                                                        cols={30}
+                                                        maxLength={500}
+                                                        autoResize
+                                                        disabled={oDps?.authz_authorization_code != 'PR' || isReviewAuth}
+                                                        className={`w-full ${authErrors.authz_authorization_notes ? 'p-invalid' : ''} `}
+                                                        value={ oDps?.auth_notes }
+                                                        onChange={(e) => {
+                                                            setODps((prev: any) => ({ ...prev, auth_notes: e.target.value }));
+                                                        }}
+                                                    />
+                                                    {authErrors.authz_authorization_notes && <small className="p-error">Ingresa comentarios para rechazar</small>}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </>
+                        )}
 
                         {(dialogMode == 'view' || dialogMode == 'review' || dialogMode == 'authorization') &&
                             (!loadingUrlsFiles ? (
