@@ -55,8 +55,8 @@ const Upload = () => {
     const [filters, setFilters] = useState<DataTableFilterMeta>({});
     const isMobile = useIsMobile();
     const [getDpsParams, setGetDpsParams] = useState<any>(null);
-    const [isEdit, setIsEdit] = useState(false);
-    const [typeEdit, setTypeEdit] = useState('authorization');
+    const [isEdit, setIsEdit] = useState<boolean>(false);
+    const [typeEdit, setTypeEdit] = useState<'acceptance' | 'authorization'>('authorization');
 
     const headerCard = (
         <div
@@ -467,6 +467,7 @@ const Upload = () => {
             return;
         }
 
+        setIsEdit(true);
         setSelectedRow(e.data);
         setDialogMode('review');
         setDialogVisible(true);
@@ -546,6 +547,8 @@ const Upload = () => {
                         showToast={showToast}
                         oValidUser={oValidUser}
                         setLoading={setLoading}
+                        isEdit={isEdit}
+                        typeEdit={typeEdit}
                     />
 
                     <TableInvoices

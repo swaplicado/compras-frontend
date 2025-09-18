@@ -590,7 +590,13 @@ export const InvoiceDialog = ({
         }
 
         if (dialogMode == 'review') {
-            if (oDps?.authz_authorization_code == 'P' && oDps?.acceptance == 'pendiente') {
+            console.log('dialogMode: ', dialogMode);
+            console.log((oDps?.authz_authorization_code == 'P' && oDps?.acceptance == 'pendiente') || (isEdit && typeEdit == 'authorization'));
+            console.log('isEdit: ', isEdit);
+            console.log('typeEdit: ', typeEdit);
+
+            
+            if ((oDps?.authz_authorization_code == 'P' && oDps?.acceptance == 'pendiente') || (isEdit && typeEdit == 'authorization')) {
                 setFooterMode('edit');
             } else {
                 setFooterMode('view');
@@ -792,6 +798,43 @@ export const InvoiceDialog = ({
         }
     },[isEdit, typeEdit])
 
+    const handleEditAuthorize = async () => {
+        try {
+            setLoading?.(true);
+            const date = oDps.payday ? DateFormatter(oDps.payday, 'YYYY-MM-DD') : '';
+            const route = '/transactions/documents/' + oDps.id_dps + '/update-authz-acceptance-fields/';
+            const response = await axios.post(constants.API_AXIOS_PATCH, {
+                route,
+                jsonData: {
+                    authz_acceptance_notes: oDps.authz_acceptance_notes,
+                    payment_date: date,
+                    payment_percentage: oDps.payment_percentage,
+                    notes: oDps.notes,
+                    user_id: userId
+                }
+            });
+
+            if (response.status === 200 || response.status === 201) {
+                setSuccessMessage('Factura editada');
+                setResultUpload('success');
+                await getDps?.(getDpsParams);
+            } else {
+                throw new Error(t('uploadDialog.errors.updateStatusError'));
+            }
+        } catch (error: any) {
+            showToast?.('error', error.response?.data?.error || 'Error al editar la factura');
+        } finally {
+            setLoading?.(false);
+        }
+    }
+
+    const footerEditAuth = resultUpload === 'waiting' ? (
+        <div className="flex flex-column md:flex-row justify-content-between gap-2">
+            <Button label={tCommon('btnClose')} icon="bx bx-x" onClick={onHide} severity="secondary" disabled={loading} />
+            <Button label={tCommon('btnEdit')} icon="bx bx-like" onClick={() => handleEditAuthorize?.()} autoFocus disabled={loading} severity="success" />
+        </div>
+    ) : ('')
+
     const handleEditAcceptance = async () => {
         try {
             setLoading?.(true);
@@ -848,6 +891,10 @@ export const InvoiceDialog = ({
             if (isEdit) {
                 if (typeEdit == 'acceptance') {
                     footerContent = footerEditAccepted;
+                }
+
+                if (typeEdit == 'authorization') {
+                    footerContent = footerEditAuth;
                 }
             }
             break;
