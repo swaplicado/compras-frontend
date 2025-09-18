@@ -792,7 +792,7 @@ export const InvoiceDialog = ({
         }
     },[isEdit, typeEdit])
 
-    const handleEdit = async () => {
+    const handleEditAcceptance = async () => {
         try {
             setLoading?.(true);
             const formData = new FormData();
@@ -805,6 +805,8 @@ export const InvoiceDialog = ({
             formData.append('file_ids', JSON.stringify(lFilesToEdit));
             const route = '/transactions/documents/' + oDps.id_dps + '/update-files/'
             formData.append('route', route);
+            formData.append('user_id', userId.toString());
+
             const response = await axios.post(constants.API_AXIOS_PATCH, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
@@ -828,7 +830,7 @@ export const InvoiceDialog = ({
     const footerEditAccepted = resultUpload === 'waiting' ? (
         <div className="flex flex-column md:flex-row justify-content-between gap-2">
             <Button label={tCommon('btnClose')} icon="bx bx-x" onClick={onHide} severity="secondary" disabled={loading} />
-            <Button label={tCommon('btnEdit')} icon="bx bx-like" onClick={() => handleEdit?.()} autoFocus disabled={loading} severity="success" />
+            <Button label={tCommon('btnEdit')} icon="bx bx-like" onClick={() => handleEditAcceptance?.()} autoFocus disabled={loading} severity="success" />
         </div>
     ) : ('')
 
