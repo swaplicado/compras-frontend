@@ -55,6 +55,8 @@ const Upload = () => {
     const [filters, setFilters] = useState<DataTableFilterMeta>({});
     const isMobile = useIsMobile();
     const [getDpsParams, setGetDpsParams] = useState<any>(null);
+    const [isEdit, setIsEdit] = useState(false);
+    const [typeEdit, setTypeEdit] = useState('authorization');
 
     const headerCard = (
         <div
@@ -562,7 +564,7 @@ const Upload = () => {
                         setDialogMode={setDialogMode}
                         setDialogVisible={setDialogVisible}
                         setFlowAuthDialogVisible={setFlowAuthDialogVisible}
-                        withMounthFilter={false}
+                        withMounthFilter={true}
                         columnsProps = {{
                             acceptance: {
                                 hidden: true

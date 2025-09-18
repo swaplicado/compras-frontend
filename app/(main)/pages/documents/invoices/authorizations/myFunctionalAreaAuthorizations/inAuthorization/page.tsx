@@ -481,8 +481,8 @@ const Upload = () => {
                 groups = userGroups;
             }
 
-            const start_date = moment(new Date).startOf('month').format('YYYY-MM-DD');
-            const end_date = moment(new Date).endOf('month').format('YYYY-MM-DD');
+            // const start_date = moment(new Date).startOf('month').format('YYYY-MM-DD');
+            // const end_date = moment(new Date).endOf('month').format('YYYY-MM-DD');
 
             if (groups.includes(constants.ROLES.COMPRADOR_ID)) {
                 const route = constants.ROUTE_GET_DPS_AUTHORIZATIONS_BY_FUNCTIONAL_AREA;
@@ -492,8 +492,6 @@ const Upload = () => {
                     document_type: constants.RESOURCE_TYPE_PUR_INVOICE,
                     user_id: userId,
                     auth_status: constants.REVIEW_PROCESS_ID,
-                    start_date: start_date,
-                    end_date: end_date
                 };
                 setGetDpsParams({ params, errorMessage: t('errors.getInvoicesError'), setLDps, showToast });
 

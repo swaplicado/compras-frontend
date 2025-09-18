@@ -35,6 +35,7 @@ const constants = {
     ROUTE_GET_PAYMENTS_BY_AREA_ID: '/transactions/payments/by-functional-area/',
     ROUTE_GET_PAYMENTS_BY_PARTNER_ID: '/transactions/payments/by-partner/',
     ROUTE_GET_DPS_AUTHORIZATIONS_BY_FUNCTIONAL_AREA: '/transactions/my-document-auth/',
+    ROUTE_GET_LIST_DOC_FILES: '/transactions/documents/list-doc-files/',
 
     ROUTE_POST_VALIDATE_XML: '/transactions/documents/validate-xml/',
     ROUTE_POST_DOCUMENT_TRANSACTION: '/transactions/document-transaction/',

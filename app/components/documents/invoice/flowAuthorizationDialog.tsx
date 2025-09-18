@@ -109,7 +109,7 @@ export const FlowAuthorizationDialog = ({
                         name: oDps.provider_name, //proveedor
                         content: {},
                         external_id: oDps.id_dps,
-                        resource_type: 1
+                        resource_type: constants.RESOURCE_TYPE_PUR_INVOICE
                     },
                     deadline: null,
                     sent_by: userExternalId, //external user id
@@ -207,7 +207,7 @@ export const FlowAuthorizationDialog = ({
                                 </div>
                             </div>
                         </div>
-                        <div className="field col-12 md:col-12">
+                        {/* <div className="field col-12 md:col-12">
                             <div className="formgrid grid">
                                 <div className="col">
                                     <label>{t('flowAuthorization.comments.label')}</label>
@@ -234,7 +234,7 @@ export const FlowAuthorizationDialog = ({
                                     />
                                 </div>
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                 )}
             </Dialog>

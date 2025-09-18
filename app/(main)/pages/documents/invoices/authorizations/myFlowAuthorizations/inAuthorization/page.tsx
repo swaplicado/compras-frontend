@@ -486,7 +486,7 @@ const Upload = () => {
                     type: 1,
                     user_id: userExternalId,
                     id_actor_type: 2,
-                    document_type: 1
+                    document_type: constants.RESOURCE_TYPE_PUR_INVOICE
                 };
                 setGetDpsParams({ params, errorMessage: t('errors.getInvoicesError'), setLDps, showToast });
 

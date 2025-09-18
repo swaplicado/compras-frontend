@@ -67,7 +67,8 @@ export const getDps = async ( props: getDpsProps  ) => {
                     authz_acceptance_notes: data[i].authz_acceptance_notes,
                     payment_method: data[i].payment_method,
                     actors_of_action: actors_of_action ? JSON.stringify(actors_of_action) : '',
-                    authz_authorization_code: data[i].authz_authorization_code ? data[i].authz_authorization_code : ''
+                    authz_authorization_code: data[i].authz_authorization_code ? data[i].authz_authorization_code : '',
+                    authz_authorization_notes: data[i].authz_authorization_notes ? data[i].authz_authorization_notes : ''
                 });
             }
             props.setLDps(dps);

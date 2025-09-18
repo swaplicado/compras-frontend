@@ -23,7 +23,7 @@ import { getExtensionFileByName } from '@/app/(main)/utilities/files/fileValidat
 import DateFormatter from '@/app/components/commons/formatDate';
 import { animationSuccess, animationError } from '@/app/components/commons/animationResponse';
 import { XmlWarnings } from '@/app/components/documents/invoice/common/xmlWarnings';
-import { create } from 'domain';
+import { FieldsEditAcceptance } from '@/app/components/documents/invoice/fieldsEditAcceptance';
 interface InvoiceDialogProps {
     visible: boolean;
     onHide: () => void;
@@ -113,6 +113,7 @@ export const InvoiceDialog = ({
     const [oReference, setOReference] = useState<any>(null);
     const [oArea, setOArea] = useState<any>(null);
     const fileUploadRef = useRef<FileUpload>(null);
+    const fileEditAcceptRef = useRef<FileUpload>(null);
     const xmlUploadRef = useRef<FileUpload>(null);
     const [xmlValidateErrors, setXmlValidateErrors] = useState({
         includeXml: false,
@@ -156,6 +157,9 @@ export const InvoiceDialog = ({
         currency: false,
         exchange_rate: false
     });
+    const [authErrors, setAuthErrors] = useState({
+        authz_authorization_notes: false
+    });
     const [reviewErrors, setReviewErrors] = useState({
         rejectComments: false
     });
@@ -168,6 +172,9 @@ export const InvoiceDialog = ({
     const [errorTitle, setErrorTitle] = useState<string>('');
     const [errorMessage, setErrorMessage] = useState<string>('');
     const [footerMode, setFooterMode] = useState<'view' | 'edit'>('view');
+    const [lFilesNames, setLFilesNames] = useState<any[]>([]);
+    const [loadingFileNames, setLoadingFileNames] = useState<boolean>(false);
+    const [lFilesToEdit, setLFilesToEdit] = useState<any[]>([]);
 
     const renderField = (props: renderFieldProps) => (
         <>
@@ -264,7 +271,7 @@ export const InvoiceDialog = ({
         const newDpsErros = {};
         if (!isXmlValid && oProvider?.country != constants.COUNTRIES.MEXICO_ID) {
             const newDpsErros = {
-                folio: oDps.folio?.trim() === '',
+                folio: false,
                 date: oDps.date == '',
                 payment_method: false,
                 provider_rfc: oDps.provider_rfc?.trim() === '',
@@ -465,10 +472,6 @@ export const InvoiceDialog = ({
         }
     };
 
-    // const handleEdit = () => {
-        
-    // }
-
     const getlUrlFilesDps = async () => {
         try {
             setLoadingUrlsFiles(true);
@@ -647,15 +650,17 @@ export const InvoiceDialog = ({
         </div>
     );
 
-    const footerAccept = resultUpload === 'waiting' && oDps?.authz_authorization_code == 'P' && oDps.acceptance == 'pendiente' ? (
+    const footerAccept = resultUpload === 'waiting' && oDps?.authz_authorization_code == 'P' && oDps?.acceptance == 'pendiente' ? (
         <div className="flex flex-column md:flex-row justify-content-between gap-2">
             <Button label={tCommon('btnReject')} icon="bx bx-dislike" onClick={() => handleReview?.(constants.REVIEW_REJECT)} autoFocus disabled={loading} severity="danger" />
             <Button label={tCommon('btnAccept')} icon="bx bx-like" onClick={() => handleReview?.(constants.REVIEW_ACCEPT)} autoFocus disabled={loading} severity="success" />
         </div>
     ):(
-        <div className="flex flex-column md:flex-row justify-content-start gap-2">
-            <Button label={tCommon('btnClose')} icon="bx bx-x" onClick={onHide} severity="secondary" disabled={loading} />
-        </div>
+        resultUpload === 'waiting' && (
+            <div className="flex flex-column md:flex-row justify-content-start gap-2">
+                <Button label={tCommon('btnClose')} icon="bx bx-x" onClick={onHide} severity="secondary" disabled={loading} />
+            </div>
+        )
     )
 
     const handleAuthorization = async () => {
@@ -671,21 +676,21 @@ export const InvoiceDialog = ({
                     external_resource_id: oDps.id_dps,
                     external_user_id: userExternalId,
                     id_actor_type: 2,
-                    notes: oDps.comments
+                    notes: oDps.authz_authorization_notes
                 }
             });
 
             if (response.status === 200) {
-                setSuccessMessage(tAuth('flowAuthorization.animationSuccess.text'));
+                setSuccessMessage('Factura autorizada');
                 setResultUpload('success');
                 if (getDps) {
                     await getDps(getDpsParams);
                 }
             } else {
-                throw new Error(`${t('errors.sendAuthorizationAccept')}: ${response.statusText}`);
+                throw new Error(`Factura autorizada: ${response.statusText}`);
             }
         } catch (error: any) {
-            setErrorMessage(error.response?.data?.error || tAuth('flowAuthorization.animationError.text'));
+            setErrorMessage(error.response?.data?.error || 'Factura autorizada');
             setResultUpload('error');
         } finally {
             setLoading?.(false);
@@ -694,31 +699,40 @@ export const InvoiceDialog = ({
 
     const handleReject = async () => {
         try {
+            if (!oDps.authz_authorization_notes) {
+                setAuthErrors({
+                    ...authErrors,
+                    authz_authorization_notes: true
+                });
+                return;
+            }
+
             setLoading?.(true);
             const route = constants.ROUTE_POST_REJECT_RESOURCE;
             const response = await axios.post(constants.API_AXIOS_PATCH, {
                 route,
                 jsonData: {
+                    id_company: oDps.company_external_id,
                     id_external_system: 1,
-                    id_resource_type: 1,
+                    id_resource_type: constants.RESOURCE_TYPE_PUR_INVOICE,
                     external_resource_id: oDps.id_dps,
                     external_user_id: userExternalId,
                     id_actor_type: 2,
-                    notes: oDps.comments
+                    notes: oDps.authz_authorization_notes
                 }
             });
 
             if (response.status === 200) {
-                setSuccessMessage(tAuth('flowAuthorization.animationSuccess.text'));
+                setSuccessMessage('La factura ha sido rechazada');
                 setResultUpload('success');
                 if (getDps) {
                     await getDps(getDpsParams);
                 }
             } else {
-                throw new Error(`${t('errors.sendAuthorizationReject')}: ${response.statusText}`);
+                throw new Error(`Error al rechazar la factura: ${response.statusText}`);
             }
         } catch (error: any) {
-            setErrorMessage(error.response?.data?.error || tAuth('flowAuthorization.animationError.text'));
+            setErrorMessage(error.response?.data?.error || 'Error al rechazar la factura');
             setResultUpload('error');
         } finally {
             setLoading?.(false);
@@ -731,12 +745,116 @@ export const InvoiceDialog = ({
             <Button label={'Autorizar'} icon="bx bx-like" onClick={handleAuthorization} severity="success" disabled={loading} />
         </div>
     ):(
-        <div className="flex flex-column md:flex-row justify-content-start gap-2">
-            <Button label={tCommon('btnClose')} icon="bx bx-x" onClick={onHide} severity="secondary" disabled={loading} />
-        </div>
+        resultUpload === 'waiting' && (
+            <div className="flex flex-column md:flex-row justify-content-start gap-2">
+                <Button label={tCommon('btnClose')} icon="bx bx-x" onClick={onHide} severity="secondary" disabled={loading} />
+            </div>
+        )
     )
 
-    const footerContent = dialogMode == 'create' ? footerCreate : dialogMode == 'review' ? footerAccept : dialogMode == 'authorization' ? footerAuth : '';
+    const getlFilesNames = async () => {
+        try {
+            setLoadingFileNames(true);
+            const route = constants.ROUTE_GET_LIST_DOC_FILES;
+            const response = await axios.get(constants.API_AXIOS_GET, {
+                params:{
+                    route: route,
+                    document_id: oDps.id_dps
+                }
+            });
+
+            if (response.status === 200) {
+                const data = response.data.data || [];
+                let files = []
+                for (let i = 0; i < data.files.length; i++) {
+                    files.push({
+                        id: data.files[i].id,
+                        name: data.files[i].filename,
+                        extension: getExtensionFileByName(data.files[i].filename),
+                    })
+                }
+                setLFilesNames(files);
+            } else {
+                throw new Error(`Error al obtener los archivos: ${response.statusText}`);
+            }
+        } catch (error: any) {
+            showToast?.('error', error.response?.data?.error || 'Error al obtener los archivos');
+        } finally {
+            setLoadingFileNames(false);
+        }
+    }
+
+    useEffect(() => {
+        if (isEdit) {
+            if (typeEdit == 'acceptance') {
+                getlFilesNames();
+            }
+        }
+    },[isEdit, typeEdit])
+
+    const handleEdit = async () => {
+        try {
+            setLoading?.(true);
+            const formData = new FormData();
+            const files = fileEditAcceptRef.current?.getFiles() || [];
+    
+            files.forEach((file: string | Blob) => {
+                formData.append('files', file);
+            });
+    
+            formData.append('file_ids', JSON.stringify(lFilesToEdit));
+            const route = '/transactions/documents/' + oDps.id_dps + '/update-files/'
+            formData.append('route', route);
+            const response = await axios.post(constants.API_AXIOS_PATCH, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+    
+            if (response.status === 200 || response.status === 201) {
+                setSuccessMessage('Factura editada');
+                setResultUpload('success');
+                if (getDps) {
+                    await getDps(getDpsParams);
+                }
+            } else {
+                new Error(`Error al editar la factura: ${response.statusText}`);
+            }
+        } catch (error: any) {
+            showToast?.('error', error.response?.data?.error || 'Error al editar la factura');
+        } finally {
+            setLoading?.(false);
+        }
+    }
+
+    const footerEditAccepted = resultUpload === 'waiting' ? (
+        <div className="flex flex-column md:flex-row justify-content-between gap-2">
+            <Button label={tCommon('btnClose')} icon="bx bx-x" onClick={onHide} severity="secondary" disabled={loading} />
+            <Button label={tCommon('btnEdit')} icon="bx bx-like" onClick={() => handleEdit?.()} autoFocus disabled={loading} severity="success" />
+        </div>
+    ) : ('')
+
+    // let footerContent = dialogMode == 'create' ? footerCreate : dialogMode == 'review' ? footerAccept : dialogMode == 'authorization' ? footerAuth : '';
+    let footerContent;
+    switch (dialogMode) {
+        case 'create':
+            footerContent = footerCreate;
+            break;
+        case 'review':
+            if (!isEdit) {
+                footerContent = footerAccept;
+            }
+
+            if (isEdit) {
+                if (typeEdit == 'acceptance') {
+                    footerContent = footerEditAccepted;
+                }
+            }
+            break;
+        case 'authorization':
+            footerContent = footerAuth;
+            break;
+        default:
+            break;
+    }
 
     return (
         <div className="flex justify-content-center">
@@ -929,13 +1047,68 @@ export const InvoiceDialog = ({
                                 </div>
                             </div>
                         )}
+
+                        {(dialogMode == 'authorization') &&
+                            <div className={`field col-12 md:col-12`}>
+                                <div className="formgrid grid">
+                                    <div className="col">
+                                        <label data-pr-tooltip="">Comentarios de la autorización</label>
+                                        &nbsp;
+                                        <Tooltip target=".custom-target-icon" />
+                                        <i className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge" data-pr-tooltip={t('comments.tooltip')} data-pr-position="right" data-pr-my="left center-2" style={{ fontSize: '1rem', cursor: 'pointer' }}></i>
+                                        <div>
+                                            <InputTextarea
+                                                id="comments"
+                                                rows={3}
+                                                cols={30}
+                                                maxLength={500}
+                                                autoResize
+                                                disabled={oDps?.authz_authorization_code != 'PR'}
+                                                className={`w-full ${authErrors.authz_authorization_notes ? 'p-invalid' : ''} `}
+                                                value={ oDps?.authz_authorization_notes }
+                                                onChange={(e) => {
+                                                    setODps((prev: any) => ({ ...prev, authz_authorization_notes: e.target.value }));
+                                                }}
+                                            />
+                                            {authErrors.authz_authorization_notes && <small className="p-error">Ingresa comentarios para rechazar</small>}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
                         {(dialogMode == 'view' || dialogMode == 'review' || dialogMode == 'authorization') &&
                             (!loadingUrlsFiles ? (
                                 // Estos son datos de prueba, falta funcion para cargar datos reales (en proceso)
                                 <CustomFileViewer lFiles={lUrlFiles} />
                             ) : (
-                                <ProgressSpinner style={{ width: '50px', height: '50px' }} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />
-                            ))}
+                                <div className='flex justify-content-center'>
+                                    <ProgressSpinner style={{ width: '50px', height: '50px' }} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />
+                                </div>
+                        ))}
+
+                        {dialogMode == 'review' && isEdit && typeEdit == 'acceptance' && (
+                            <>
+                                <Divider />
+                                {!loadingFileNames ? (
+                                    <FieldsEditAcceptance
+                                        fileUploadRef={fileEditAcceptRef}
+                                        totalSize={totalSize}
+                                        setTotalSize={setTotalSize}
+                                        fileErrors={fileErrors}
+                                        setFilesErrros={setFilesErrros}
+                                        message={message}
+                                        lFiles={lFilesNames}
+                                        setLFilesToEdit={setLFilesToEdit}
+                                    />
+                                 ) : (
+                                <div className='flex justify-content-center'>
+                                    <ProgressSpinner style={{ width: '50px', height: '50px' }} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />
+                                </div>
+                                )
+                                }
+                            </>
+                        )}
                     </>
                 )}
             </Dialog>
