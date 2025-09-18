@@ -582,7 +582,6 @@ export const InvoiceDialog = ({
             }, 100);
             setTimeout(() => {
                 if (visible) {
-                    console.log('lFilesInit: ', lUrlFiles);
                     getlUrlFilesDps();
                 }
             }, 200);
@@ -590,12 +589,6 @@ export const InvoiceDialog = ({
         }
 
         if (dialogMode == 'review') {
-            console.log('dialogMode: ', dialogMode);
-            console.log((oDps?.authz_authorization_code == 'P' && oDps?.acceptance == 'pendiente') || (isEdit && typeEdit == 'authorization'));
-            console.log('isEdit: ', isEdit);
-            console.log('typeEdit: ', typeEdit);
-
-            
             if ((oDps?.authz_authorization_code == 'P' && oDps?.acceptance == 'pendiente') || (isEdit && typeEdit == 'authorization')) {
                 setFooterMode('edit');
             } else {
@@ -678,7 +671,7 @@ export const InvoiceDialog = ({
                 jsonData: {
                     id_external_system: 1,
                     id_company: oDps.company_external_id,
-                    id_resource_type: 1,
+                    id_resource_type: constants.RESOURCE_TYPE_PUR_INVOICE,
                     external_resource_id: oDps.id_dps,
                     external_user_id: userExternalId,
                     id_actor_type: 2,
