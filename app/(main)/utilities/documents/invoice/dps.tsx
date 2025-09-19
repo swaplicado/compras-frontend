@@ -61,6 +61,7 @@ export const getDps = async ( props: getDpsProps  ) => {
                     authorization: data[i].authz_authorization_name?.toLowerCase(),
                     amount: data[i].amount,
                     currency: data[i].currency.id,
+                    currencyCode: data[i].currency.code,
                     exchange_rate: data[i].exchange_rate,
                     payday: data[i].payment_date,
                     payment_percentage: data[i].payment_percentage,

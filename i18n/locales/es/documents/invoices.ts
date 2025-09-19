@@ -291,6 +291,7 @@ const invoices = {
             folio: "Folio",
             reference: "Referencia",
             amount: "Cantidad",
+            currencyCode: "Moneda",
             acceptance: "Aceptación",
             authorization: "Autorización",
             files: "Archivos",
