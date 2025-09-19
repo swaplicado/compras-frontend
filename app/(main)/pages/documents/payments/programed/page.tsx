@@ -17,6 +17,14 @@ import { TablePayments } from '@/app/components/documents/payments/common/tableP
 import { DialogPayment } from '@/app/components/documents/payments/common/dialogPayment';
 import { useIsMobile } from '@/app/components/commons/screenMobile';
 import { Button } from "primereact/button";
+import { getExtensionFileByName } from '@/app/(main)/utilities/files/fileValidator';
+
+interface FileInfo {
+    url: string;
+    name: string;
+    extension: string;
+    id?: string | number;
+}
 
 const ConsultPaymentProgramded = () => {
     const [startDate, setStartDate] = useState<string>('');
@@ -34,6 +42,9 @@ const ConsultPaymentProgramded = () => {
     const [visible, setDialogVisible] = useState(false);
     const [oPayment, setOPayment] = useState<any>(null);
     const [dialogMode, setDialogMode] = useState<'view' | 'edit'>('view');
+    const [lFiles, setLFiles] = useState<FileInfo[]>([]);
+    const [loadingFiles, setLoadingFiles] = useState<boolean>(true);
+
     const isMobile = useIsMobile();
 
     const columnsProps = {
@@ -89,6 +100,40 @@ const ConsultPaymentProgramded = () => {
         });
 
         setLoading(false);
+    }
+
+    const getlFiles = async () => {
+        try {
+            setLoadingFiles(true);
+            const route = constants.ROUTE_GET_LIST_FILES_PAYMENTS;
+            const response = await axios.get(constants.API_AXIOS_GET, {
+                params: {
+                    route: route,
+                    payment_id: oPayment.id
+                }
+            });
+
+            if (response.status === 200) {
+                const data = response.data.data;
+                let files: any[] = [];
+                Object.keys(data.files).forEach((key) => {
+                    files.push({
+                        url: data.files[key],
+                        extension: getExtensionFileByName(key),
+                        name: key
+                    });
+                });
+                console.log('files: ', files);
+                
+                setLFiles(files);
+            } else {
+                throw new Error(`Error al obtener los archivos: ${response.statusText}`);
+            }
+        } catch (error: any) {
+            showToast?.('error', error.response?.data?.error || 'Error al obtener los archivos', 'Error al obtener los archivos');
+        } finally {
+            setLoadingFiles(false);
+        }
     }
 
 //*******OTROS*******
@@ -204,6 +249,9 @@ const ConsultPaymentProgramded = () => {
                         dialogMode={dialogMode}
                         dialogType={'programed'}
                         setLoading={setLoading}
+                        lFiles={lFiles}
+                        getlFiles={getlFiles}
+                        loadingFiles={loadingFiles}
                     />
                     <TablePayments 
                         lPayments={lPayments}

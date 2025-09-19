@@ -130,17 +130,21 @@ export const getEntries = async (props: getEntriesProps) => {
                     conv_rate_exec: data[i].conv_rate_exec,
                     entry_amount_exec: data[i].entry_amount_exec,
                     installment: data[i].installment,
+                    
                     document_bal_prev_app: data[i].document_bal_prev_app,
                     document_bal_unpd_app: data[i].document_bal_unpd_app,
                     document_bal_prev_exec: data[i].document_bal_prev_exec,
                     document_bal_unpd_exec: data[i].document_bal_unpd_exec,
                     document_uuid: data[i].document_uuid,
-                    document_folio: data[i].document_folio,
-                    document_date: data[i].document_date,
-                    document_amount: data[i].document_amount,
+                    
+                    document_n: data[i].document_n,
+                    
+                    document_folio: data[i].document_n ? (data[i].document_n.folio ? data[i].document_n.folio : 'N/A') : (data[i].document_folio ? data[i].document_folio : 'N/A'),
+                    document_date: data[i].document_n ? (data[i].document_n.date ? DateFormatter(data[i].document_n.date) : 'N/A') : (data[i].document_date ? DateFormatter(data[i].document_date) : 'N/A'),
+                    document_amount: data[i].document_n ? (data[i].document_n.amount ? data[i].document_n.amount : 'N/A') : (data[i].document_amount ? data[i].document_amount : 'N/A'),
+                    
                     payment: data[i].payment,
                     entry_currency: data[i].entry_currency,
-                    document_n: data[i].document_n,
                 });
             }
             props.setLEntries(entries);

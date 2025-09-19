@@ -13,6 +13,14 @@ import { formatCurrency } from '@/app/(main)/utilities/documents/common/currency
 import constants from "@/app/constants/constants";
 import { DataTable, DataTableFilterMeta, DataTableRowClickEvent } from 'primereact/datatable';
 import { Column } from 'primereact/column';
+import { CustomFileViewer } from '@/app/components/documents/invoice/fileViewer';
+
+interface FileInfo {
+    url: string;
+    name: string;
+    extension: string;
+    id?: string | number;
+}
 
 interface DialogPaymentProps {
     visible: boolean;
@@ -27,6 +35,9 @@ interface DialogPaymentProps {
     showToast?: (type: 'success' | 'info' | 'warn' | 'error', message: string, summaryText?: string) => void;
     setLoading?: React.Dispatch<React.SetStateAction<boolean>>;
     loading? : boolean;
+    lFiles: FileInfo[];
+    getlFiles:  () => Promise<any>;
+    loadingFiles?: boolean
 }
 
 export const DialogPayment = ({
@@ -42,6 +53,9 @@ export const DialogPayment = ({
     showToast,
     setLoading,
     loading,
+    lFiles,
+    getlFiles,
+    loadingFiles
 }: DialogPaymentProps) => {
     const { t } = useTranslation('payments');
     const { t: tCommon } = useTranslation('common');
@@ -60,8 +74,10 @@ export const DialogPayment = ({
 
             if (visible) {
                 await getEntries(getEntriesProps);
+                getlFiles();
             }
             setLoading?.(false);
+            
         }
 
         fetch();
@@ -351,6 +367,15 @@ export const DialogPayment = ({
                         <Column field="conv_rate_app" header={t('dialog.entriesTable.conv_rate_app')} />
                         <Column field="entry_amount_app" header={t('dialog.entriesTable.entry_amount_app')} />
                         <Column field="amount_loc_app" header={t('dialog.entriesTable.amount_loc_app')} />
+                        <Column field="installment" header={'Parcialidad'} />
+                        <Column field="document_bal_prev_app" header={'Saldo Ant. (Creación)'} hidden={dialogType != 'programed'} />
+                        <Column field="document_bal_unpd_app" header={'Saldo Insoluto (Creación)'} hidden={dialogType != 'programed'} />
+                        <Column field="document_bal_prev_exec" header={'Saldo Ant. (Pago)'} hidden={dialogType != 'executed'} />
+                        <Column field="document_bal_unpd_exec" header={'Saldo Insoluto (Pago)'} hidden={dialogType != 'executed'} />
+                        <Column field="document_uuid" header={'UUID Doc.'} hidden/>
+                        <Column field="document_folio" header={'Folio'} />
+                        <Column field="document_date" header={'Fecha Doc.'} />
+                        <Column field="document_amount" header={'Total Neto'} />
                     </DataTable>
                 </div>
                 <div className="p-fluid formgrid grid">
@@ -369,6 +394,13 @@ export const DialogPayment = ({
                         errorMessage: ''
                     })}
                 </div>
+                { !loadingFiles ? (
+                    <CustomFileViewer lFiles={lFiles}  />
+                ) : (
+                    <div className='flex justify-content-center'>
+                        <ProgressSpinner style={{ width: '50px', height: '50px' }} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />
+                    </div>
+                )}
             </Dialog>
         </div>
     );
