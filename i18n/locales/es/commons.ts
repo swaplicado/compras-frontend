@@ -20,6 +20,8 @@ const commons = {
     btnReject: "Rechazar",
     btnDownload: "Descargar",
     btnSend: "Enviar",
+    active: "Activo",
+    inactive: "Inactivo",
 
     btnReload: "Recargar",
     tooltipBtnReload: "Recargar la página",

@@ -86,6 +86,11 @@
                             "to": "/pages/documents/payments/executed"
                         }
                     ]
+                },
+                {
+                    "label": "Consulta de Proveedores",
+                    "icon": "pi pi-fw pi-bookmark", 
+                    "to": "/pages/partners/catalog"
                 }
             ]
         }
