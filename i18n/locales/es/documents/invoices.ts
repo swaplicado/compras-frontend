@@ -6,6 +6,13 @@ const invoices = {
     titleAcceptedTooltip: "Pantalla para ver las facturas aceptadas",
     titleRejectedTooltip: "Pantalla para ver las facturas rechazadas",
 
+    titleAuthorized: 'Facturas autorizadas',
+    titleInAuthorization: 'Facturas en autorización',
+    titleAuthorizedRejected: 'Facturas rechazadas',
+    titleAuthorizedTooltip: 'Pantalla para revisar las facturas autorizadas',
+    titleInAuthorizationTooltip: 'Pantalla para revisar las facturas en proceso de autorización',
+    titleAuthorizedRejectedTooltip: 'Pantalla para revisar las facturas rechazadas',
+
     btnOpenDialogUpload: "Cargar factura",
     tooltipBtnOpenDialogUpload: "Cargar una nueva factura.",
     filterByCompany: {

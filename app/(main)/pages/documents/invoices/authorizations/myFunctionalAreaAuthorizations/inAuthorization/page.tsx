@@ -55,6 +55,17 @@ const Upload = () => {
     const [filters, setFilters] = useState<DataTableFilterMeta>({});
     const isMobile = useIsMobile();
     const [getDpsParams, setGetDpsParams] = useState<any>(null);
+    const [columnsProps, setColumnsProps] = useState<any>({
+        acceptance: {
+            hidden: true
+        },
+        actors_of_action: {
+            hidden: false
+        },
+        delete: {
+            hidden: true
+        }
+    });
 
     const headerCard = (
         <div
@@ -69,12 +80,12 @@ const Upload = () => {
             }}
         >
             <h3 className="m-0 text-900 font-medium">
-                {t('titleAccepted')}
+                {t('titleInAuthorization')}
                 &nbsp;&nbsp;
                 <Tooltip target=".custom-target-icon" />
                 <i
                     className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                    data-pr-tooltip={t('titleAcceptedTooltip')}
+                    data-pr-tooltip={t('titleInAuthorizationTooltip')}
                     data-pr-position="right"
                     data-pr-my="left center-2"
                     style={{ fontSize: '1rem', cursor: 'pointer' }}
@@ -499,6 +510,35 @@ const Upload = () => {
                 await getlProviders();
             }
 
+            if (groups.includes(constants.ROLES.PROVEEDOR_ID)) {
+                const route = constants.ROUTE_GET_DPS_BY_PARTNER_ID;
+                const params = {
+                    route: route,
+                    partner_id: partnerId,
+                    document_type: constants.DOC_TYPE_INVOICE,
+                    transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
+                    authz_authorization: constants.REVIEW_PROCESS_ID,
+                    authz_acceptance: 9,
+                };
+                setGetDpsParams({ params, errorMessage: t('errors.getInvoicesError'), setLDps, showToast });
+
+                const isProviderMexico = partnerCountry == constants.COUNTRIES.MEXICO_ID;
+                setOValidUser({ isInternalUser: false, isProvider: true, isProviderMexico: isProviderMexico, oProvider: {id: partnerId, name: '', country: partnerCountry} });
+                // await getlProviders();
+
+                setColumnsProps({
+                    acceptance: {
+                        hidden: true
+                    },
+                    actors_of_action: {
+                        hidden: true
+                    },
+                    delete: {
+                        hidden: true
+                    }
+                })
+            }
+
             await getlCompanies();
             await getlCurrencies();
             await getlFiscalRegime();
@@ -561,17 +601,7 @@ const Upload = () => {
                         setDialogVisible={setDialogVisible}
                         setFlowAuthDialogVisible={setFlowAuthDialogVisible}
                         withMounthFilter={false}
-                        columnsProps = {{
-                            acceptance: {
-                                hidden: true
-                            },
-                            actors_of_action: {
-                                hidden: false
-                            },
-                            delete: {
-                                hidden: true
-                            }
-                        }}
+                        columnsProps = {columnsProps}
                     />
                 </Card>
             </div>

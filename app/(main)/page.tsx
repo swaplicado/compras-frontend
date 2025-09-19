@@ -5,6 +5,7 @@ import { Toast } from 'primereact/toast';
 import Cookies from 'js-cookie';
 import constants from '@/app/constants/constants';
 import axios from 'axios';
+import moment from 'moment';
 
 const Dashboard = () => {
     const [loading, setLoading] = useState(false);
@@ -23,10 +24,11 @@ const Dashboard = () => {
         });
     };
     
-    const getDps = async (isInternalUser: boolean) => {
+    const getDps = async (params: any) => {
         try {
-            const route = !isInternalUser ? constants.ROUTE_GET_DPS_BY_PARTNER_ID : constants.ROUTE_GET_DPS_BY_AREA_ID;
-            const params = !isInternalUser ? { route: route, partner_id: partnerId } : { route: route, functional_area: Array.isArray(functionalAreas) ?  functionalAreas : [functionalAreas] };
+            // const route = !isInternalUser ? constants.ROUTE_GET_DPS_BY_PARTNER_ID : constants.ROUTE_GET_DPS_BY_AREA_ID;
+            // const params = !isInternalUser ? { route: route, partner_id: partnerId } : { route: route, functional_area: Array.isArray(functionalAreas) ?  functionalAreas : [functionalAreas] };
+            
             const response = await axios.get(constants.API_AXIOS_GET, {
                 params: params
             });
@@ -54,14 +56,45 @@ const Dashboard = () => {
                 } else {
                     groups = userGroups;
                 }
-    
+
+                const start_date = moment(new Date).startOf('month').format('YYYY-MM-DD');
+                const end_date = moment(new Date).endOf('month').format('YYYY-MM-DD');
+
                 if (groups.includes(constants.ROLES.COMPRADOR_ID)) {
-                    await getDps(true);
+                    const route = constants.ROUTE_GET_DPS_BY_AREA_ID;
+                    const params = {
+                        route: route,
+                        functional_area: functionalAreas,
+                        transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
+                        document_type: constants.DOC_TYPE_INVOICE,
+                        authz_acceptance: constants.REVIEW_PENDING_ID,
+                        start_date: start_date,
+                        end_date: end_date
+                    };
+                    await getDps(params);   
                 }
     
                 if (groups.includes(constants.ROLES.PROVEEDOR_ID)) {
-                    await getDps(false);
+                    const route = constants.ROUTE_GET_DPS_BY_PARTNER_ID
+                    const params = {
+                        route: route,
+                        partner_id: partnerId,
+                        transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
+                        document_type: constants.DOC_TYPE_INVOICE,
+                        authz_acceptance: constants.REVIEW_PENDING_ID,
+                        start_date: start_date,
+                        end_date: end_date
+                    };
+                    await getDps(params);
                 }
+    
+                // if (groups.includes(constants.ROLES.COMPRADOR_ID)) {
+                //     await getDps(true);
+                // }
+    
+                // if (groups.includes(constants.ROLES.PROVEEDOR_ID)) {
+                //     await getDps(false);
+                // }
 
                 setLoading(false);
             };
