@@ -17,6 +17,7 @@ const commons = {
     btnContinue: "Continuar",
     btnBack: "Regresar",
     btnAccept: "Aceptar",
+    btnAcceptAndSend: "Aceptar y enviar",
     btnReject: "Rechazar",
     btnDownload: "Descargar",
     btnSend: "Enviar",

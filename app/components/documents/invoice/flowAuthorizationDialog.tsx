@@ -14,14 +14,17 @@ import { InputTextarea } from "primereact/inputtextarea";
 interface FlowAuthorizationDialogProps {
     lFlowAuthorization: any[],
     oDps: any;
-    visible: boolean,
-    onHide: () => void,
-    isMobile: boolean,
+    visible: boolean;
+    onHide: () => void;
+    isMobile: boolean;
     oValidUser?: { isInternalUser: boolean; isProvider: boolean; isProviderMexico: boolean };
     getDps?: (params: any) => Promise<any>;
     getDpsParams?: any;
-    showToast: (type: 'success' | 'info' | 'warn' | 'error', message: string, summaryText?: string) => void
-    userExternalId: string | number
+    showToast: (type: 'success' | 'info' | 'warn' | 'error', message: string, summaryText?: string) => void;
+    userExternalId: string | number;
+    ommitAcceptance?: boolean;
+    withAcceptance?: boolean;
+    handleAcceptance?: () => Promise<any>;
 }
 
 export const FlowAuthorizationDialog = ({
@@ -34,7 +37,10 @@ export const FlowAuthorizationDialog = ({
     getDpsParams,
     oDps,
     showToast,
-    userExternalId
+    userExternalId,
+    ommitAcceptance = false,
+    withAcceptance = false,
+    handleAcceptance
 }: FlowAuthorizationDialogProps ) => {
     const [loading, setLoading] = useState(false);
     const [flowAuth, setFlowAuth] = useState<any>(null);
@@ -66,7 +72,7 @@ export const FlowAuthorizationDialog = ({
             if (!oDps) {
                 showToast('info', 'Selecciona un renglon');
                 onHide();
-            } else if( oDps.acceptance != 'ok' ) {
+            } else if( oDps.acceptance != 'ok' && !ommitAcceptance ) {
                 showToast('info', 'La factura debe estar aceptada');
                 onHide();
             } else if( oDps.authorization != 'pendiente' ) {
@@ -96,6 +102,9 @@ export const FlowAuthorizationDialog = ({
 
         try {
             setLoading(true);
+            if (withAcceptance) {
+                await handleAcceptance?.();  
+            }
             
             const route = constants.ROUTE_POST_START_AUTHORIZATION;
             const response = await axios.post(constants.API_AXIOS_POST, {
@@ -124,7 +133,9 @@ export const FlowAuthorizationDialog = ({
                 setSuccessMessage(t('flowAuthorization.animationSuccess.text'));
                 setResultSendFlowAuth('success');
 
-                await getDps?.(getDpsParams);
+                if (!withAcceptance) {
+                    await getDps?.(getDpsParams);
+                }
             } else {
                 throw new Error('');
             }

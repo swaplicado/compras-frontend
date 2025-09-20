@@ -57,7 +57,8 @@ interface InvoiceDialogProps {
     userExternalId?: any;
     isEdit?: boolean;
     typeEdit?: 'acceptance' | 'authorization';
-    isReviewAuth?: boolean
+    isReviewAuth?: boolean,
+    handleReviewAndSendAuth?: () => Promise<any>;
 }
 
 interface renderFieldProps {
@@ -108,7 +109,8 @@ export const InvoiceDialog = ({
     userExternalId,
     isEdit,
     typeEdit,
-    isReviewAuth
+    isReviewAuth,
+    handleReviewAndSendAuth
 }: InvoiceDialogProps) => {
     const [oCompany, setOCompany] = useState<any>(null);
     const [oProvider, setOProvider] = useState<any>(null);
@@ -362,6 +364,7 @@ export const InvoiceDialog = ({
                 setIsRejected(true);
                 if (!oDps.authz_acceptance_notes.trim()) {
                     setReviewErrors((prev) => ({ ...prev, rejectComments: true }));
+                    showToast?.('info', 'Ingresa un comentario de rechazo de la factura');
                     return;
                 }
             }
@@ -655,6 +658,7 @@ export const InvoiceDialog = ({
         <div className="flex flex-column md:flex-row justify-content-between gap-2">
             <Button label={tCommon('btnReject')} icon="bx bx-dislike" onClick={() => handleReview?.(constants.REVIEW_REJECT)} autoFocus disabled={loading} severity="danger" />
             <Button label={tCommon('btnAccept')} icon="bx bx-like" onClick={() => handleReview?.(constants.REVIEW_ACCEPT)} autoFocus disabled={loading} severity="success" />
+            <Button label={tCommon('btnAcceptAndSend')} icon="bx bx-paper-plane" onClick={() => handleReviewAndSendAuth?.()} autoFocus disabled={loading} severity="success" />
         </div>
     ):(
         resultUpload === 'waiting' && (
@@ -706,6 +710,7 @@ export const InvoiceDialog = ({
                     ...authErrors,
                     auth_notes: true
                 });
+                showToast?.('info', 'Ingresa un comentario de rechazo de la factura');
                 return;
             }
 

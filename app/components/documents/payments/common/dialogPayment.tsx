@@ -396,7 +396,7 @@ export const DialogPayment = ({
                         errorMessage: ''
                     })}
                 </div>
-                { oUser.isInternalUser && (
+                { oUser?.isInternalUser && (
                     (!loadingFiles ? (
                         <CustomFileViewer lFiles={lFiles}  />
                     ) : (
