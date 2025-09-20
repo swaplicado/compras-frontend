@@ -37,7 +37,8 @@ interface DialogPaymentProps {
     loading? : boolean;
     lFiles: FileInfo[];
     getlFiles:  () => Promise<any>;
-    loadingFiles?: boolean
+    loadingFiles?: boolean;
+    oUser: any;
 }
 
 export const DialogPayment = ({
@@ -55,7 +56,8 @@ export const DialogPayment = ({
     loading,
     lFiles,
     getlFiles,
-    loadingFiles
+    loadingFiles,
+    oUser
 }: DialogPaymentProps) => {
     const { t } = useTranslation('payments');
     const { t: tCommon } = useTranslation('common');
@@ -184,7 +186,7 @@ export const DialogPayment = ({
                             errorMessage: ''
                         })
                     )}
-                    {RenderFile({
+                    {/* {RenderFile({
                         label: t('dialog.req_date_format'),
                         tooltip: t('dialog.req_date_formatTooltip'),
                         value: oPayment?.req_date_format,
@@ -197,7 +199,7 @@ export const DialogPayment = ({
                         errorKey: '',
                         errors: formErrors,
                         errorMessage: ''
-                    })}
+                    })} */}
                     {RenderFile({
                         label: t('dialog.amount'),
                         tooltip: t('dialog.amount'),
@@ -394,12 +396,14 @@ export const DialogPayment = ({
                         errorMessage: ''
                     })}
                 </div>
-                { !loadingFiles ? (
-                    <CustomFileViewer lFiles={lFiles}  />
-                ) : (
-                    <div className='flex justify-content-center'>
-                        <ProgressSpinner style={{ width: '50px', height: '50px' }} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />
-                    </div>
+                { oUser.isInternalUser && (
+                    (!loadingFiles ? (
+                        <CustomFileViewer lFiles={lFiles}  />
+                    ) : (
+                        <div className='flex justify-content-center'>
+                            <ProgressSpinner style={{ width: '50px', height: '50px' }} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />
+                        </div>
+                    ))
                 )}
             </Dialog>
         </div>

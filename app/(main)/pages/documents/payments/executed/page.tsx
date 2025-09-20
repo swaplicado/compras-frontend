@@ -249,6 +249,7 @@ const ConsultPaymentExecuted = () => {
                         lFiles={lFiles}
                         getlFiles={getlFiles}
                         loadingFiles={loadingFiles}
+                        oUser={oUser}
                     />
                     <TablePayments 
                         lPayments={lPayments}
