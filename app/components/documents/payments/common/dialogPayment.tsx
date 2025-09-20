@@ -14,6 +14,7 @@ import constants from "@/app/constants/constants";
 import { DataTable, DataTableFilterMeta, DataTableRowClickEvent } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { CustomFileViewer } from '@/app/components/documents/invoice/fileViewer';
+import { HistoryAuth } from '@/app/components/documents/invoice/historyAuth';
 
 interface FileInfo {
     url: string;
@@ -39,6 +40,10 @@ interface DialogPaymentProps {
     getlFiles:  () => Promise<any>;
     loadingFiles?: boolean;
     oUser: any;
+    withHistoryAuth?: boolean;
+    getHistoryAuth?: () => Promise<any>;
+    loadingHistoryAuth?: boolean;
+    lHistoryAuth?: any[];
 }
 
 export const DialogPayment = ({
@@ -57,13 +62,18 @@ export const DialogPayment = ({
     lFiles,
     getlFiles,
     loadingFiles,
-    oUser
+    oUser,
+    withHistoryAuth,
+    getHistoryAuth,
+    loadingHistoryAuth,
+    lHistoryAuth = []
 }: DialogPaymentProps) => {
     const { t } = useTranslation('payments');
     const { t: tCommon } = useTranslation('common');
     const formErrors = {};
     const [lEntries, setLEntries] = useState<any[]>([]);
     
+//****INIT****/
     useEffect(() => {
         const fetch = async () => {
             setLoading?.(true);
@@ -81,8 +91,13 @@ export const DialogPayment = ({
             setLoading?.(false);
             
         }
-
+        
         fetch();
+
+        if (withHistoryAuth && visible) {
+            getHistoryAuth?.();
+        }
+
     }, [visible]);
 
     return (
@@ -404,6 +419,18 @@ export const DialogPayment = ({
                             <ProgressSpinner style={{ width: '50px', height: '50px' }} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />
                         </div>
                     ))
+                )}
+
+                { withHistoryAuth && oUser?.isInternalUser && (
+                    loadingHistoryAuth ? (
+                        <div className='flex justify-content-center'>
+                            <ProgressSpinner style={{ width: '50px', height: '50px' }} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />
+                        </div>
+                    ) : (
+                        <HistoryAuth
+                            lHistory={lHistoryAuth}
+                        />
+                    )
                 )}
             </Dialog>
         </div>

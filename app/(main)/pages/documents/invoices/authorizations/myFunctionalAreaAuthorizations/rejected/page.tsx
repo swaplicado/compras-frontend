@@ -68,6 +68,8 @@ const Upload = () => {
             hidden: true
         }
     });
+    const [historyAuth, setHistoryAuth] = useState<any[]>([]);
+    const [loadingHistoryAuth, setLoadingHistoryAuth] = useState<boolean>(false);
 
     const headerCard = (
         <div
@@ -452,6 +454,42 @@ const Upload = () => {
         }
     }
 
+    const getHistoryAuth = async () => {
+        try {
+            setLoadingHistoryAuth(true);
+            const route = constants.ROUTE_GET_HISTORY_AUTH;
+            const response = await axios.get(constants.API_AXIOS_GET, {
+                params: {
+                    route: route,
+                    external_id: selectedRow.id_dps,
+                    resource_type: constants.RESOURCE_TYPE_PUR_INVOICE,
+                    id_company: selectedRow.company_external_id
+                }
+            });
+
+            if (response.status === 200) {
+                const data = response.data.data || [];
+                let history: any[] = [];
+
+                for (const item of data) {
+                    history.push({
+                        actioned_by: item.actioned_by ? item.actioned_by.full_name : '',
+                        status: item.flow_status.name,
+                        notes: item.notes,
+                        actioned_at: item.actioned_at ? DateFormatter(item.actioned_at, 'DD-MMM-YYYY HH:mm:ss') : ''
+                    });
+                }
+                setHistoryAuth(history);
+            } else {
+                throw new Error(`Error al obtener el historial de autorización: ${response.statusText}`);
+            }
+        } catch (error: any) {
+            showToast('error', error.response?.data?.error || 'Error al obtener el historial de autorización', 'Error al obtener el historial de autorización');
+        } finally {
+            setLoadingHistoryAuth(false);
+        }
+    }
+
     const handleRowClick = (e: DataTableRowClickEvent) => {
         if (!oValidUser.isInternalUser) {
             e.originalEvent.preventDefault();
@@ -589,6 +627,10 @@ const Upload = () => {
                         setLoading={setLoading}
                         isEdit={isEdit}
                         typeEdit={typeEdit}
+                        withHistoryAuth={true}
+                        getHistoryAuth={getHistoryAuth}
+                        loadingHistoryAuth={loadingHistoryAuth}
+                        lHistoryAuth={historyAuth}
                     />
 
                     <TableInvoices

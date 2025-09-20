@@ -24,6 +24,8 @@ import DateFormatter from '@/app/components/commons/formatDate';
 import { animationSuccess, animationError } from '@/app/components/commons/animationResponse';
 import { XmlWarnings } from '@/app/components/documents/invoice/common/xmlWarnings';
 import { FieldsEditAcceptance } from '@/app/components/documents/invoice/fieldsEditAcceptance';
+import { HistoryAuth } from '@/app/components/documents/invoice/historyAuth';
+
 interface InvoiceDialogProps {
     visible: boolean;
     onHide: () => void;
@@ -59,6 +61,10 @@ interface InvoiceDialogProps {
     typeEdit?: 'acceptance' | 'authorization';
     isReviewAuth?: boolean,
     handleReviewAndSendAuth?: () => Promise<any>;
+    withHistoryAuth?: boolean;
+    getHistoryAuth?: () => Promise<any>;
+    loadingHistoryAuth?: boolean;
+    lHistoryAuth?: any[];
 }
 
 interface renderFieldProps {
@@ -110,7 +116,11 @@ export const InvoiceDialog = ({
     isEdit,
     typeEdit,
     isReviewAuth,
-    handleReviewAndSendAuth
+    handleReviewAndSendAuth,
+    withHistoryAuth,
+    getHistoryAuth,
+    loadingHistoryAuth,
+    lHistoryAuth = []
 }: InvoiceDialogProps) => {
     const [oCompany, setOCompany] = useState<any>(null);
     const [oProvider, setOProvider] = useState<any>(null);
@@ -601,6 +611,10 @@ export const InvoiceDialog = ({
             }
         } else if (dialogMode == 'authorization') {
             setFooterMode('view');
+        }
+
+        if (withHistoryAuth && visible) {
+            getHistoryAuth?.();
         }
     }, [visible]);
 
@@ -1188,6 +1202,18 @@ export const InvoiceDialog = ({
                                 )
                                 }
                             </>
+                        )}
+
+                        { withHistoryAuth && oValidUser.isInternalUser && (
+                            loadingHistoryAuth ? (
+                                <div className='flex justify-content-center'>
+                                    <ProgressSpinner style={{ width: '50px', height: '50px' }} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />
+                                </div>
+                            ) : (
+                                <HistoryAuth
+                                    lHistory={lHistoryAuth}
+                                />
+                            )
                         )}
                     </>
                 )}

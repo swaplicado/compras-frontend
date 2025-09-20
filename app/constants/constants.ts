@@ -38,6 +38,7 @@ const constants = {
     ROUTE_GET_LIST_DOC_FILES: '/transactions/documents/list-doc-files/',
     ROUTE_GET_LIST_PARTNERS: '/transactions/partner-users/',
     ROUTE_GET_LIST_FILES_PAYMENTS: '/transactions/payments/signed-urls-payment/',
+    ROUTE_GET_HISTORY_AUTH: '/transactions/get-history-authorization',
 
     ROUTE_POST_VALIDATE_XML: '/transactions/documents/validate-xml/',
     ROUTE_POST_DOCUMENT_TRANSACTION: '/transactions/document-transaction/',

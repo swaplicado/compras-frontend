@@ -17,6 +17,7 @@ import { useIsMobile } from '@/app/components/commons/screenMobile';
 import { Button } from "primereact/button";
 import { getExtensionFileByName } from '@/app/(main)/utilities/files/fileValidator';
 import axios from 'axios';
+import DateFormatter from '@/app/components/commons/formatDate';
 
 interface FileInfo {
     url: string;
@@ -44,6 +45,8 @@ const ConsultPaymentExecuted = () => {
     const [lFiles, setLFiles] = useState<FileInfo[]>([]);
     const [loadingFiles, setLoadingFiles] = useState<boolean>(true);
     const isMobile = useIsMobile();
+    const [historyAuth, setHistoryAuth] = useState<any[]>([]);
+    const [loadingHistoryAuth, setLoadingHistoryAuth] = useState<boolean>(false);
 
     const columnsProps = {
         company_trade_name: { hidden: false },
@@ -130,6 +133,42 @@ const ConsultPaymentExecuted = () => {
             showToast?.('error', error.response?.data?.error || 'Error al obtener los archivos', 'Error al obtener los archivos');
         } finally {
             setLoadingFiles(false);
+        }
+    }
+
+    const getHistoryAuth = async () => {
+        try {
+            setLoadingHistoryAuth(true);
+            const route = constants.ROUTE_GET_HISTORY_AUTH;
+            const response = await axios.get(constants.API_AXIOS_GET, {
+                params: {
+                    route: route,
+                    external_id: oPayment.id,
+                    resource_type: constants.RESOURCE_TYPE_PAYMENTS,
+                    id_company: oPayment.company_external_id
+                }
+            });
+
+            if (response.status === 200) {
+                const data = response.data.data || [];
+                let history: any[] = [];
+
+                for (const item of data) {
+                    history.push({
+                        actioned_by: item.actioned_by ? item.actioned_by.full_name : '',
+                        status: item.flow_status.name,
+                        notes: item.notes,
+                        actioned_at: item.actioned_at ? DateFormatter(item.actioned_at, 'DD-MMM-YYYY HH:mm:ss') : ''
+                    });
+                }
+                setHistoryAuth(history);
+            } else {
+                throw new Error(`Error al obtener el historial de autorización: ${response.statusText}`);
+            }
+        } catch (error: any) {
+            showToast('error', error.response?.data?.error || 'Error al obtener el historial de autorización', 'Error al obtener el historial de autorización');
+        } finally {
+            setLoadingHistoryAuth(false);
         }
     }
 
@@ -250,6 +289,10 @@ const ConsultPaymentExecuted = () => {
                         getlFiles={getlFiles}
                         loadingFiles={loadingFiles}
                         oUser={oUser}
+                        withHistoryAuth={true}
+                        getHistoryAuth={getHistoryAuth}
+                        loadingHistoryAuth={loadingHistoryAuth}
+                        lHistoryAuth={historyAuth}
                     />
                     <TablePayments 
                         lPayments={lPayments}
