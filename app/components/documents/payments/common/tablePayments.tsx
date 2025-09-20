@@ -253,12 +253,12 @@ export const TablePayments = ({
                 <Column field="company_trade_name" header={t('datatable.columns.company_trade_name')} sortable hidden={ columnsProps?.company_trade_name.hidden } />
                 <Column field="folio" header={t('datatable.columns.folio')} sortable hidden={ columnsProps?.company_trade_name.hidden } />
                 <Column field="benef_trade_name" header={t('datatable.columns.benef_trade_name')} sortable hidden={ columnsProps?.benef_trade_name.hidden } />
-                <Column field="currency_name" header={t('datatable.columns.currency_name')} sortable hidden={ columnsProps?.currency_name.hidden } />
                 <Column field="app_date" header={t('datatable.columns.app_date')} body={appDateBodyTemplate} sortable hidden={ columnsProps?.app_date.hidden } />
                 <Column field="req_date" header={t('datatable.columns.req_date')} body={reqDateBodyTemplate} sortable hidden={ columnsProps?.req_date.hidden } />
                 <Column field="sched_date_n" header={t('datatable.columns.sched_date_n')} body={schedDateBodyTemplate} sortable hidden={ columnsProps?.sched_date_n.hidden } />
                 <Column field="exec_date_n" header={t('datatable.columns.exec_date_n')} body={execDateBodyTemplate} sortable hidden={ columnsProps?.exec_date_n.hidden }/>
                 <Column field="amount" header={t('datatable.columns.amount')} body={amountBodyTemplate} sortable hidden={ columnsProps?.amount.hidden }/>
+                <Column field="currency_code" header={t('datatable.columns.currency_name')} sortable hidden={ columnsProps?.currency_name.hidden } />
                 <Column field="payment_way" header={t('datatable.columns.payment_way')} sortable hidden={ columnsProps?.payment_way.hidden }/>
                 <Column field="payment_status" header={t('datatable.columns.payment_status')} sortable hidden={ columnsProps?.payment_status.hidden }/>
             </DataTable>

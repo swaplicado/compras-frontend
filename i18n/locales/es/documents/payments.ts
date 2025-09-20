@@ -5,8 +5,8 @@ const payments = {
         dialogTitle: 'Pago programado'
     },
     executed: {
-        title: 'Pagos ejecutados',
-        titleTooltip: 'Pantalla para consultar los pagos ejecutados'
+        title: 'Pagos operados',
+        titleTooltip: 'Pantalla para consultar los pagos operados'
     },
     dialog: {
         payment_status: 'Estatus',
@@ -63,7 +63,7 @@ const payments = {
             req_date: 'F. requerido',
             sched_date_n: 'F. programado',
             exec_date_n: 'F. ejecutado',
-            amount: 'Monto programado',
+            amount: 'Monto',
             payment_way: 'Metodo de pago',
             payment_status: 'Estatus'
         }

@@ -70,7 +70,7 @@ const Upload = () => {
             }}
         >
             <h3 className="m-0 text-900 font-medium">
-                {t('titleRejected')}
+                {t('titleAcceptanceRejected')}
                 &nbsp;&nbsp;
                 <Tooltip target=".custom-target-icon" />
                 <i

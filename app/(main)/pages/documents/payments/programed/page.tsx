@@ -52,12 +52,12 @@ const ConsultPaymentProgramded = () => {
         folio: { hidden: false },
         benef_trade_name: { hidden: false },
         currency_name: { hidden: false },
-        app_date: { hidden: false },
-        req_date: { hidden: false },
+        app_date: { hidden: true },
+        req_date: { hidden: true },
         sched_date_n: { hidden: false },
         exec_date_n: { hidden: true },
         amount: { hidden: false },
-        payment_way: { hidden: false },
+        payment_way: { hidden: true },
         payment_status: { hidden: false }
     }
 
@@ -193,10 +193,10 @@ const ConsultPaymentProgramded = () => {
     };
 
     const handleDoubleClick = (e: DataTableRowClickEvent) => {
-        if (!oUser.isInternalUser) {
-            e.originalEvent.preventDefault();
-            return;
-        }
+        // if (!oUser.isInternalUser) {
+        //     e.originalEvent.preventDefault();
+        //     return;
+        // }
 
         setORow(e.data);
         setOPayment(e.data);

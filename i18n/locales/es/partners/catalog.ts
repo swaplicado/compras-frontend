@@ -1,5 +1,5 @@
 const catalogPartners = {
-    title: "Catalogo de proveedores",
+    title: "Catálogo de proveedores",
     titleTooltip: "Pantalla para consultar los proveedores activos en sistema",
     datatable: {
         columns: {

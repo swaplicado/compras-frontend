@@ -88,7 +88,7 @@
                     ]
                 },
                 {
-                    "label": "Consulta de Proveedores",
+                    "label": "Catálogo Proveedores",
                     "icon": "pi pi-fw pi-bookmark", 
                     "to": "/pages/partners/catalog"
                 }

@@ -362,6 +362,10 @@ export const DialogPayment = ({
                         resizableColumns
                     >
                         <Column field="id" header="id" hidden />
+                        <Column field="document_uuid" header={'UUID Doc.'} />
+                        <Column field="document_folio" header={'Folio'} />
+                        <Column field="document_date" header={'Fecha Doc.'} />
+                        <Column field="document_amount" header={'Total Neto'} />
                         <Column field="amount" header={t('dialog.entriesTable.amount')} />
                         <Column field="currency_code" header={t('dialog.entriesTable.currency_code')} />
                         <Column field="conv_rate_app" header={t('dialog.entriesTable.conv_rate_app')} />
@@ -372,10 +376,6 @@ export const DialogPayment = ({
                         <Column field="document_bal_unpd_app" header={'Saldo Insoluto (Creación)'} hidden={dialogType != 'programed'} />
                         <Column field="document_bal_prev_exec" header={'Saldo Ant. (Pago)'} hidden={dialogType != 'executed'} />
                         <Column field="document_bal_unpd_exec" header={'Saldo Insoluto (Pago)'} hidden={dialogType != 'executed'} />
-                        <Column field="document_uuid" header={'UUID Doc.'} hidden/>
-                        <Column field="document_folio" header={'Folio'} />
-                        <Column field="document_date" header={'Fecha Doc.'} />
-                        <Column field="document_amount" header={'Total Neto'} />
                     </DataTable>
                 </div>
                 <div className="p-fluid formgrid grid">

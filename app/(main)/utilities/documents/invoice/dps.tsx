@@ -52,7 +52,7 @@ export const getDps = async ( props: getDpsProps  ) => {
                     provider_name: data[i].partner.trade_name,
                     serie: data[i].series,
                     number: data[i].number,
-                    folio: data[i].series ? data[i].series + '-' + data[i].number : data[i].number,
+                    folio: data[i].folio,
                     hiddenFolio: data[i].folio,
                     reference: reference,
                     files: data[i].id,
