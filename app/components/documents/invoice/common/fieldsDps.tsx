@@ -63,6 +63,7 @@ export const FieldsDps = ({
         'Parcial',
         'Nada'
     ];
+    const [minDate, setMinDate] = useState<any>(new Date());
 
     addLocale('es', tCommon('calendar', { returnObjects: true }) as any);
     
@@ -85,6 +86,7 @@ export const FieldsDps = ({
         } else if (oDps.payment_percentage == 0 || !(oDps.payment_percentage > 0)) {
             setPercentOption(lPercentOptions[2]);
             setODps((prev: any) => ({ ...prev, payday: '' }));
+            setErrors?.((prev: any) => ({ ...prev, payday: false }));
         } else {
             setPercentOption(lPercentOptions[1]);
         }
@@ -436,7 +438,10 @@ export const FieldsDps = ({
                                     <Calendar
                                         value={oDps.payday}
                                         placeholder={t('uploadDialog.payDay.placeholder')}
-                                        onChange={(e) => setODps((prev: any) => ({ ...prev, payday: e.value }))}
+                                        onChange={(e) => {
+                                            setODps((prev: any) => ({ ...prev, payday: e.value }));
+                                            setErrors?.((prev: any) => ({ ...prev, payday: false }));
+                                        }}
                                         showIcon
                                         locale="es"
                                         inputRef={inputRefPercentage}
@@ -451,7 +456,10 @@ export const FieldsDps = ({
                                                 inputRefPercentage.current.value = DateFormatter(oDps.payday);
                                             }
                                         }}
+                                        className={`w-full ${errors?.payday ? 'p-invalid' : ''} `}
+                                        minDate={minDate}
                                     />
+                                    {errors?.payday && <small className="p-error">Ingresa fecha de pago</small>}
                                 </div>
                             </div>
                         </div>

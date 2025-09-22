@@ -35,7 +35,7 @@ export const HistoryAuth = ({
                 currentPageReportTemplate={tCommon('datatable.currentPageReportTemplate')}
                 resizableColumns
             >
-                <Column field="actioned_by" header="Révisor"/>
+                <Column field="actioned_by" header="Revisor"/>
                 <Column field="status" header="Estatus"/>
                 <Column field="notes" header="Notas"/>
                 <Column field="actioned_at" header="Fecha"/>

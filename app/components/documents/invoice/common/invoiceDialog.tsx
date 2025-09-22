@@ -175,7 +175,9 @@ export const InvoiceDialog = ({
         auth_notes: false
     });
     const [reviewErrors, setReviewErrors] = useState({
-        rejectComments: false
+        rejectComments: false,
+        payday: false,
+        payment_percentage: false
     });
     const [modeFieldsDps, setModeFieldsDps] = useState<'view' | 'edit'>('view');
     const [loadingUrlsFiles, setLoadingUrlsFiles] = useState(false);
@@ -379,6 +381,14 @@ export const InvoiceDialog = ({
                 }
             }
 
+            if (reviewOption == constants.REVIEW_ACCEPT) {
+                if (!oDps.payday && oDps.payment_percentage > 0) {
+                    setReviewErrors((prev) => ({ ...prev, payday: true }));
+                    showToast?.('info', 'Ingresa una fecha de pago de la factura');
+                    return;
+                }
+            }
+
             const date = oDps.payday ? DateFormatter(oDps.payday, 'YYYY-MM-DD') : '';
             const route = '/transactions/documents/' + oDps?.id_dps + '/set-authz/';
 
@@ -571,6 +581,11 @@ export const InvoiceDialog = ({
             amount: false,
             currency: false,
             exchange_rate: false
+        });
+        setReviewErrors({
+            rejectComments: false,
+            payday: false,
+            payment_percentage: false
         });
 
         if ((dialogMode == 'review' || dialogMode == 'view' || dialogMode == 'authorization') && oDps) {
