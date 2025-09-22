@@ -12,15 +12,18 @@ import { MyToolbar } from '@/app/components/documents/invoice/common/myToolbar';
 import { useIsMobile } from '@/app/components/commons/screenMobile';
 import moment from 'moment';
 import { OverlayPanel } from 'primereact/overlaypanel';
-import { spawn } from 'node:child_process';
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 
 interface columnsProps {
     acceptance: {
         hidden: boolean
-    }
+    },
     actors_of_action: {
         hidden: boolean
-    }
+    },
+    delete: {
+        hidden: boolean
+    },
 }
 
 interface TableInvoicesProps {
@@ -73,6 +76,9 @@ export const TableInvoices = ({
             hidden: false
         },
         actors_of_action: {
+            hidden: true
+        },
+        delete: {
             hidden: true
         }
     }
@@ -179,6 +185,51 @@ export const TableInvoices = ({
             setLoading(false);
         }
     };
+
+    const accept = async (id_dps: any) => {
+        try {
+            setLoading(true);
+            const route = '/transactions/documents/'+id_dps+'/delete-document/'
+            const response = await axios.post(constants.API_AXIOS_DELETE, {
+                params: {
+                    route: route
+                }
+            });
+
+            if (response.status == 200) {
+                getDps(getDpsParams);
+            } else {
+                throw new Error(`Error al eliminar la factura: ${response.statusText}`);
+            }
+        } catch (error: any) {
+            showToast?.('error', error.response?.data?.error || 'Error al eliminar la factura', 'Error al eliminar la factura');
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const reject = (id_dps: any) => {
+        
+    }
+
+    const deleteDps = async (rowData: any) => {
+        try {
+            const id_dps = rowData.id_dps;
+            const folio = rowData.folio;
+            confirmDialog({
+                message: '¿Quieres eliminar esta factura: ' + folio + '?',
+                header: 'Confirma eliminación',
+                icon: 'pi pi-info-circle',
+                acceptClassName: 'p-button-danger',
+                acceptLabel: 'Si',
+                rejectLabel: 'No',
+                accept: () => accept(id_dps),
+                reject: () => reject(id_dps)
+            });
+        } catch (error: any) {
+            
+        }
+    }
 
     //*********** FILTROS DE TABLA ***********
     const initFilters = () => {
@@ -290,9 +341,27 @@ export const TableInvoices = ({
         );
     };
 
+    const deleteBodyTemplate = (rowData: any) => {
+        return (
+            <div className="flex align-items-center justify-content-center">
+                <Button
+                    label={tCommon('btnDelete')}
+                    icon="bx bx-trash bx-sm"
+                    severity='danger'
+                    className="p-button-rounded"
+                    onClick={() => deleteDps(rowData)}
+                    tooltip={tCommon('btnDeleteTooltip')}
+                    tooltipOptions={{ position: 'top' }}
+                    size="small"
+                    disabled={loading}
+                />
+            </div>
+        );
+    };
+
     const op = useRef<any>(null);
     const actorsOfActionBody = (rowData: any) => {
-        const lActors = JSON.parse(rowData.actors_of_action);
+        const lActors = rowData?.actors_of_action ? JSON.parse(rowData.actors_of_action) : [{full_name: 'No hay actores'}];
 
         const renderSimple = () => {
             return (
@@ -383,6 +452,7 @@ export const TableInvoices = ({
 
     return (
         <>
+            <ConfirmDialog />
             <MyToolbar 
                 isMobile={isMobile}
                 disabledUpload={false}
@@ -437,13 +507,14 @@ export const TableInvoices = ({
                 <Column field="company_rfc" header="id" hidden />
                 <Column field="receiver_tax_regime" header="id" hidden />
                 <Column field="dateFormated" header="dateFormated" hidden />
-                <Column field="payment_percentage" header="payment_percentage" hidden />
                 <Column field="notes" header="notes" hidden />
                 <Column field="authz_acceptance_notes" header="authz_acceptance_notes" hidden />
                 <Column field="useCfdi" header="useCfdi" hidden />
                 <Column field="payment_method" header="payment_method" hidden />
                 <Column field="actors_of_action" header="actors_of_action" hidden />
                 <Column field="authz_authorization_code" header="authz_authorization_code" hidden />
+                <Column field="authz_authorization_notes" header="authz_authorization_notes" hidden />
+                <Column field="hiddenFolio" header="hiddenFolio" hidden />
                 <Column field="company" header={t('invoicesTable.columns.company')} footer={t('invoicesTable.columns.company')} sortable filter showFilterMatchModes={false} filterElement={companyFilterTemplate} filterApply={<></>} filterClear={<></>} />
                 <Column
                     field="provider_name"
@@ -456,16 +527,20 @@ export const TableInvoices = ({
                     // hidden={!oValidUser.isInternalUser}
                     sortable
                 />
+                <Column field="date" header={t('invoicesTable.columns.date')} footer={t('invoicesTable.columns.date')} body={dateBodyTemplate} sortable />
                 <Column field="serie" header={t('invoicesTable.columns.serie')} footer={t('invoicesTable.columns.serie')} sortable hidden />
                 <Column field="folio" header={t('invoicesTable.columns.folio')} footer={t('invoicesTable.columns.folio')} sortable />
                 <Column field="reference" header={t('invoicesTable.columns.reference')} footer={t('invoicesTable.columns.reference')} sortable />
+                {/* <Column field="amount" header={t('invoicesTable.columns.reference')} footer={t('invoicesTable.columns.reference')} sortable /> */}
+                <Column field="amount" header={t('invoicesTable.columns.amount')} footer={t('invoicesTable.columns.amount')} dataType="numeric" body={amountBodyTemplate} sortable />
+                <Column field="currencyCode" header={t('invoicesTable.columns.currencyCode')} footer={t('invoicesTable.columns.currencyCode')} sortable />
                 <Column field="payday" header={t('invoicesTable.columns.payday')} footer={t('invoicesTable.columns.payday')} body={payDayBodyTemplate} sortable />
-                <Column field="amount" header={t('invoicesTable.columns.amount')} footer={t('invoicesTable.columns.amount')} dataType="numeric" body={amountBodyTemplate} hidden sortable />
+                <Column field="payment_percentage" header={t('invoicesTable.columns.payment_percentage')} />
                 <Column field="acceptance" header={t('invoicesTable.columns.acceptance')} footer={t('invoicesTable.columns.acceptance')} body={statusAcceptanceDpsBodyTemplate} sortable hidden={ columnsProps?.acceptance.hidden } />
                 <Column field="actors_of_action" header={'Usuario en turno'} footer={'Usuario en turno'} body={actorsOfActionBody} sortable hidden={ columnsProps?.actors_of_action.hidden } />
                 <Column field="authorization" header={t('invoicesTable.columns.authorization')} footer={t('invoicesTable.columns.authorization')} body={statusAuthDpsBodyTemplate} sortable />
-                <Column field="date" header={t('invoicesTable.columns.date')} footer={t('invoicesTable.columns.date')} body={dateBodyTemplate} sortable />
                 <Column field="files" header={t('invoicesTable.columns.files')} footer={t('invoicesTable.columns.files')} body={fileBodyTemplate} />
+                <Column field="id_dps" header={'Eliminar'} footer={'Eliminar'} body={deleteBodyTemplate} hidden={ columnsProps?.delete.hidden } />
             </DataTable>
         </>
     );

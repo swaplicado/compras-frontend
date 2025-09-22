@@ -401,7 +401,7 @@ export const FieldsDps = ({
                                     data-pr-my="left center-2"
                                     style={{ fontSize: '1rem', cursor: 'pointer' }}
                                 ></i>
-                                <SelectButton value={percentOption} disabled={footerMode == 'view'} onChange={(e) => setPercentOption(e.value)} options={lPercentOptions} style={{ height: '2rem', marginTop: '5px' }} />
+                                <SelectButton value={percentOption} disabled={footerMode == 'view'} onChange={(e) => setPercentOption(e.value)} options={lPercentOptions} style={{ height: '2rem', marginTop: '5px' }}/>
                             </div>
                         </div>
                     </div>

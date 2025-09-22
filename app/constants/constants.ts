@@ -3,6 +3,7 @@ const constants = {
     API_AXIOS_POST: '/api/axios/post',
     API_AXIOS_GET: '/api/axios/get',
     API_AXIOS_PATCH: '/api/axios/patch',
+    API_AXIOS_DELETE: '/api/axios/delete',
 
     //timeout para las peticiones axios (de momento no se usa)
     TIMEOUT: 5000,
@@ -31,6 +32,13 @@ const constants = {
     ROUTE_GET_AREAS: '/transactions/fuctional-area/by-user/',
     ROUTE_GET_FLOW_AUTHORIZATIONS: '/transactions/flow-models-by',
     ROUTE_GET_DPS_AUTHORIZATION: '/transactions/user-documents/',
+    ROUTE_GET_PAYMENTS_BY_AREA_ID: '/transactions/payments/by-functional-area/',
+    ROUTE_GET_PAYMENTS_BY_PARTNER_ID: '/transactions/payments/by-partner/',
+    ROUTE_GET_DPS_AUTHORIZATIONS_BY_FUNCTIONAL_AREA: '/transactions/my-document-auth/',
+    ROUTE_GET_LIST_DOC_FILES: '/transactions/documents/list-doc-files/',
+    ROUTE_GET_LIST_PARTNERS: '/transactions/partner-users/',
+    ROUTE_GET_LIST_FILES_PAYMENTS: '/transactions/payments/signed-urls-payment/',
+    ROUTE_GET_HISTORY_AUTH: '/transactions/get-history-authorization',
 
     ROUTE_POST_VALIDATE_XML: '/transactions/documents/validate-xml/',
     ROUTE_POST_DOCUMENT_TRANSACTION: '/transactions/document-transaction/',
@@ -56,6 +64,11 @@ const constants = {
     //pais id
     COUNTRIES: {
         MEXICO_ID: 150
+    },
+
+    //monedas id
+    CURRENCIES: {
+        MXN: 102
     },
 
     //Constantes para los archivos
@@ -111,6 +124,15 @@ const constants = {
     RESOURCE_TYPE_PUR_INVOICE: 4,
     RESOURCE_TYPE_PAYMENTS: 11,
 
+    //estatus de pagos
+    PAYMENT_STATUS_NEW_ID: 1,
+    PAYMENT_STATUS_IN_AUTH_ID: 2,
+    PAYMENT_STATUS_REJECTED_ID: 3,
+    PAYMENT_STATUS_PROGRAMED_ID: 4,
+    PAYMENT_STATUS_EXECUTED_ID: 5,
+    PAYMENT_STATUS_NOTIFIED_ID: 6,
+    PAYMENT_STATUS_COMP_ID: 7,
+    PAYMENT_STATUS_CANCELED_ID: 9,
 }
 
 export default constants;

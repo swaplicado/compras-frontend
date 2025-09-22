@@ -16,6 +16,7 @@ import { useIsMobile } from '@/app/components/commons/screenMobile';
 import { InvoiceDialog } from '@/app/components/documents/invoice/common/invoiceDialog';
 import { getDps } from "@/app/(main)/utilities/documents/invoice/dps"
 import { Tooltip } from 'primereact/tooltip';
+import { FlowAuthorizationDialog } from '@/app/components/documents/invoice/flowAuthorizationDialog';
 
 const Upload = () => {
     const [dialogVisible, setDialogVisible] = useState(false);
@@ -402,6 +403,76 @@ const Upload = () => {
         }
     };
 
+    const getFlowAuthorizations = async () => {
+        try {
+            const route = constants.ROUTE_GET_FLOW_AUTHORIZATIONS;
+            const response = await axios.get(constants.API_AXIOS_GET, {
+                params: {
+                    route: route,
+                    id_external_system: constants.ID_EXTERNAL_SYSTEM,
+                    id_external_user: userExternalId,
+                    id_actor_type: 2,
+                    id_model_type: constants.ID_MODEL_TYPE_DPS,
+                    id_flow_type: 1,
+                    id_resource_type: constants.RESOURCE_TYPE_PUR_INVOICE
+                }
+            });
+
+            if (response.status === 200) {
+                const data = response.data.data || [];
+                let lFlowAuthorization: any[] = [];
+                
+                for (const item of data.flow_models) {
+                    lFlowAuthorization.push({
+                        id: item.id,
+                        name: item.name,
+                        description: item.description
+                    });
+                }
+                
+                setLFlowAuthorization(lFlowAuthorization);
+            } else {
+                throw new Error(`${t('errors.getFlowAuthorizationsError')}: ${response.statusText}`);
+            }
+        } catch (error: any) {
+            
+        }
+    }
+
+    const handleAcceptance = async () => {
+        const date = selectedRow.payday ? DateFormatter(selectedRow.payday, 'YYYY-MM-DD') : '';
+        const route = '/transactions/documents/' + selectedRow?.id_dps + '/set-authz/';
+
+        const response = await axios.post(constants.API_AXIOS_PATCH, {
+            route,
+            jsonData: {
+                authz_code: constants.REVIEW_ACCEPT,
+                authz_acceptance_notes: selectedRow.authz_acceptance_notes,
+                payment_date: date,
+                payment_percentage: selectedRow.payment_percentage,
+                notes: selectedRow.notes,
+                user_id: userId
+            }
+        });
+
+        if (response.status === 200 || response.status === 201) {
+            getDps?.(getDpsParams);
+        }
+    };
+
+    const handleReviewAndSendAuth = async () => {
+        try {
+            setDialogVisible(false);
+            setTimeout(() => {
+                setFlowAuthDialogVisible(true);
+            }, 100);
+        } catch (error: any) {
+            showToast('error', error.response?.data?.error || 'Error al editar la factura');
+        } finally {
+            setLoading(false);
+        }
+    }
+
     const handleRowClick = (e: DataTableRowClickEvent) => {
         if (!oValidUser.isInternalUser) {
             e.originalEvent.preventDefault();
@@ -461,6 +532,7 @@ const Upload = () => {
 
                 setOValidUser({ isInternalUser: true, isProvider: false, isProviderMexico: false, oProvider: {} });
                 await getlProviders();
+                await getFlowAuthorizations();
             }
 
             if (groups.includes(constants.ROLES.PROVEEDOR_ID)) {
@@ -486,7 +558,7 @@ const Upload = () => {
             await getlFiscalRegime();
             await getlPaymentMethod();
             await getlUseCfdi();
-            setLoading(false);
+            // setLoading(false);
         };
         fetchReferences();
     }, []);
@@ -523,7 +595,27 @@ const Upload = () => {
                         showToast={showToast}
                         oValidUser={oValidUser}
                         setLoading={setLoading}
+                        loadingReferences={loadingReferences}
+                        setLoadingReferences={setLoadingReferences}
+                        handleReviewAndSendAuth={handleReviewAndSendAuth}
                     />
+                    { oValidUser.isInternalUser && (
+                        <FlowAuthorizationDialog 
+                            lFlowAuthorization={lFlowAuthorization}
+                            oDps={selectedRow}
+                            visible={flowAuthDialogVisible}
+                            onHide={() => setFlowAuthDialogVisible(false)}
+                            isMobile={isMobile}
+                            oValidUser={oValidUser}
+                            getDps={getDps}
+                            getDpsParams={getDpsParams}
+                            showToast={showToast}
+                            userExternalId={userExternalId}
+                            ommitAcceptance={true}
+                            withAcceptance={true}
+                            handleAcceptance={handleAcceptance}
+                        />
+                    )}
                     <TableInvoices
                         getDpsParams={getDpsParams}
                         setGetDpsParams={setGetDpsParams}

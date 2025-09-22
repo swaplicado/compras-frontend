@@ -55,6 +55,19 @@ const Upload = () => {
     const [filters, setFilters] = useState<DataTableFilterMeta>({});
     const isMobile = useIsMobile();
     const [getDpsParams, setGetDpsParams] = useState<any>(null);
+    const [columnsProps, setColumnsProps] = useState<any>({
+        acceptance: {
+            hidden: true
+        },
+        actors_of_action: {
+            hidden: false
+        },
+        delete: {
+            hidden: true
+        }
+    });
+    const [historyAuth, setHistoryAuth] = useState<any[]>([]);
+    const [loadingHistoryAuth, setLoadingHistoryAuth] = useState<boolean>(false);
 
     const headerCard = (
         <div
@@ -69,12 +82,12 @@ const Upload = () => {
             }}
         >
             <h3 className="m-0 text-900 font-medium">
-                {t('titleAccepted')}
+                {t('titleAuthorized')}
                 &nbsp;&nbsp;
                 <Tooltip target=".custom-target-icon" />
                 <i
                     className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                    data-pr-tooltip={t('titleAcceptedTooltip')}
+                    data-pr-tooltip={t('titleAuthorizedTooltip')}
                     data-pr-position="right"
                     data-pr-my="left center-2"
                     style={{ fontSize: '1rem', cursor: 'pointer' }}
@@ -439,6 +452,42 @@ const Upload = () => {
         }
     }
 
+    const getHistoryAuth = async () => {
+        try {
+            setLoadingHistoryAuth(true);
+            const route = constants.ROUTE_GET_HISTORY_AUTH;
+            const response = await axios.get(constants.API_AXIOS_GET, {
+                params: {
+                    route: route,
+                    external_id: selectedRow.id_dps,
+                    resource_type: constants.RESOURCE_TYPE_PUR_INVOICE,
+                    id_company: selectedRow.company_external_id
+                }
+            });
+
+            if (response.status === 200) {
+                const data = response.data.data || [];
+                let history: any[] = [];
+
+                for (const item of data) {
+                    history.push({
+                        actioned_by: item.actioned_by ? item.actioned_by.full_name : '',
+                        status: item.flow_status.name,
+                        notes: item.notes,
+                        actioned_at: item.actioned_at ? DateFormatter(item.actioned_at, 'DD-MMM-YYYY HH:mm:ss') : ''
+                    });
+                }
+                setHistoryAuth(history);
+            } else {
+                throw new Error(`Error al obtener el historial de autorización: ${response.statusText}`);
+            }
+        } catch (error: any) {
+            showToast('error', error.response?.data?.error || 'Error al obtener el historial de autorización', 'Error al obtener el historial de autorización');
+        } finally {
+            setLoadingHistoryAuth(false);
+        }
+    }
+
     const handleRowClick = (e: DataTableRowClickEvent) => {
         if (!oValidUser.isInternalUser) {
             e.originalEvent.preventDefault();
@@ -485,13 +534,13 @@ const Upload = () => {
             const end_date = moment(new Date).endOf('month').format('YYYY-MM-DD');
 
             if (groups.includes(constants.ROLES.COMPRADOR_ID)) {
-                const route = constants.ROUTE_GET_DPS_BY_AREA_ID;
+                const route = constants.ROUTE_GET_DPS_AUTHORIZATIONS_BY_FUNCTIONAL_AREA;
                 const params = {
                     route: route,
                     functional_area: functionalAreas,
-                    transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
-                    document_type: constants.DOC_TYPE_INVOICE,
-                    authz_acceptance: constants.REVIEW_ACCEPT_ID,
+                    document_type: constants.RESOURCE_TYPE_PUR_INVOICE,
+                    user_id: userId,
+                    auth_status: constants.REVIEW_ACCEPT_ID,
                     start_date: start_date,
                     end_date: end_date
                 };
@@ -502,21 +551,34 @@ const Upload = () => {
             }
 
             if (groups.includes(constants.ROLES.PROVEEDOR_ID)) {
-                const route = constants.ROUTE_GET_DPS_BY_PARTNER_ID
+                const route = constants.ROUTE_GET_DPS_BY_PARTNER_ID;
                 const params = {
                     route: route,
                     partner_id: partnerId,
-                    transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
                     document_type: constants.DOC_TYPE_INVOICE,
-                    authz_acceptance: constants.REVIEW_ACCEPT_ID,
+                    transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
+                    authz_authorization: constants.REVIEW_ACCEPT_ID,
+                    authz_acceptance: 9,
                     start_date: start_date,
                     end_date: end_date
                 };
                 setGetDpsParams({ params, errorMessage: t('errors.getInvoicesError'), setLDps, showToast });
 
-                await getDpsDates();
                 const isProviderMexico = partnerCountry == constants.COUNTRIES.MEXICO_ID;
                 setOValidUser({ isInternalUser: false, isProvider: true, isProviderMexico: isProviderMexico, oProvider: {id: partnerId, name: '', country: partnerCountry} });
+                // await getlProviders();
+                
+                setColumnsProps({
+                    acceptance: {
+                        hidden: true
+                    },
+                    actors_of_action: {
+                        hidden: true
+                    },
+                    delete: {
+                        hidden: true
+                    }
+                })
             }
 
             await getlCompanies();
@@ -524,7 +586,7 @@ const Upload = () => {
             await getlFiscalRegime();
             await getlPaymentMethod();
             await getlUseCfdi();
-            await getFlowAuthorizations();
+            // await getFlowAuthorizations();
             // setLoading(false);
         };
         fetchReferences();
@@ -562,22 +624,12 @@ const Upload = () => {
                         showToast={showToast}
                         oValidUser={oValidUser}
                         setLoading={setLoading}
+                        isReviewAuth={true}
+                        withHistoryAuth={true}
+                        getHistoryAuth={getHistoryAuth}
+                        loadingHistoryAuth={loadingHistoryAuth}
+                        lHistoryAuth={historyAuth}
                     />
-
-                    { oValidUser.isInternalUser && (
-                        <FlowAuthorizationDialog 
-                            lFlowAuthorization={lFlowAuthorization}
-                            oDps={selectedRow}
-                            visible={flowAuthDialogVisible}
-                            onHide={() => setFlowAuthDialogVisible(false)}
-                            isMobile={isMobile}
-                            oValidUser={oValidUser}
-                            getDps={getDps}
-                            getDpsParams={getDpsParams}
-                            showToast={showToast}
-                            userExternalId={userExternalId}
-                        />
-                    )}
 
                     <TableInvoices
                         getDpsParams={getDpsParams}
@@ -595,7 +647,8 @@ const Upload = () => {
                         setDialogMode={setDialogMode}
                         setDialogVisible={setDialogVisible}
                         setFlowAuthDialogVisible={setFlowAuthDialogVisible}
-                        withBtnSendAuth={ oValidUser.isInternalUser }
+                        withMounthFilter={true}
+                        columnsProps = {columnsProps}
                     />
                 </Card>
             </div>

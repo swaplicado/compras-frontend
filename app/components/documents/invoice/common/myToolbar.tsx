@@ -116,7 +116,9 @@ export const MyToolbar = ({
                             }}
                         />
                     )}
-                    {withBtnSendAuth && <Button icon="pi pi-send" label={''} className="mr-2" rounded />}
+                    {withBtnSendAuth && 
+                        <Button icon="pi pi-send" label={''} className="mr-2" rounded onClick={() => {setFlowAuthDialogVisible?.(true);}}/>
+                    }
                     <Button type="button" icon="pi pi-filter-slash" label={''} onClick={clearFilter1} tooltip={tCommon('tooltipCleanFilter')} tooltipOptions={{ position: 'left' }} />
                     <ReloadButton />
                 </div>

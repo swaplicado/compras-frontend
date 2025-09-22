@@ -7,7 +7,8 @@ const commons = {
     btnClose: "Cerrar",
     btnSave: "Guardar",
     btnDelete: "Eliminar",
-    btnEdit: "Editar",
+    btnDeleteTooltip: "Eliminar factura",
+    btnEdit: "Guardar",
     btnSearch: "Busca",
     placeholderSearch: "Buscar  ",
     btnCleanFilter: "Limpiar todo",
@@ -16,9 +17,12 @@ const commons = {
     btnContinue: "Continuar",
     btnBack: "Regresar",
     btnAccept: "Aceptar",
+    btnAcceptAndSend: "Aceptar y enviar",
     btnReject: "Rechazar",
     btnDownload: "Descargar",
     btnSend: "Enviar",
+    active: "Activo",
+    inactive: "Inactivo",
 
     btnReload: "Recargar",
     tooltipBtnReload: "Recargar la página",
@@ -43,6 +47,11 @@ const commons = {
       monthNamesShort: ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'],
       today: 'Hoy',
       clear: 'Limpiar'
+    },
+
+    datatable: {
+        emptyMessage: "Sin datos para mostrar.",
+        currentPageReportTemplate: "Mostrando {first} a {last} de {totalRecords} registros",
     }
 };
 

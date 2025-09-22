@@ -14,14 +14,17 @@ import { InputTextarea } from "primereact/inputtextarea";
 interface FlowAuthorizationDialogProps {
     lFlowAuthorization: any[],
     oDps: any;
-    visible: boolean,
-    onHide: () => void,
-    isMobile: boolean,
+    visible: boolean;
+    onHide: () => void;
+    isMobile: boolean;
     oValidUser?: { isInternalUser: boolean; isProvider: boolean; isProviderMexico: boolean };
     getDps?: (params: any) => Promise<any>;
     getDpsParams?: any;
-    showToast: (type: 'success' | 'info' | 'warn' | 'error', message: string, summaryText?: string) => void
-    userExternalId: string | number
+    showToast: (type: 'success' | 'info' | 'warn' | 'error', message: string, summaryText?: string) => void;
+    userExternalId: string | number;
+    ommitAcceptance?: boolean;
+    withAcceptance?: boolean;
+    handleAcceptance?: () => Promise<any>;
 }
 
 export const FlowAuthorizationDialog = ({
@@ -34,7 +37,10 @@ export const FlowAuthorizationDialog = ({
     getDpsParams,
     oDps,
     showToast,
-    userExternalId
+    userExternalId,
+    ommitAcceptance = false,
+    withAcceptance = false,
+    handleAcceptance
 }: FlowAuthorizationDialogProps ) => {
     const [loading, setLoading] = useState(false);
     const [flowAuth, setFlowAuth] = useState<any>(null);
@@ -66,7 +72,7 @@ export const FlowAuthorizationDialog = ({
             if (!oDps) {
                 showToast('info', 'Selecciona un renglon');
                 onHide();
-            } else if( oDps.acceptance != 'ok' ) {
+            } else if( oDps.acceptance != 'ok' && !ommitAcceptance ) {
                 showToast('info', 'La factura debe estar aceptada');
                 onHide();
             } else if( oDps.authorization != 'pendiente' ) {
@@ -96,6 +102,9 @@ export const FlowAuthorizationDialog = ({
 
         try {
             setLoading(true);
+            if (withAcceptance) {
+                await handleAcceptance?.();  
+            }
             
             const route = constants.ROUTE_POST_START_AUTHORIZATION;
             const response = await axios.post(constants.API_AXIOS_POST, {
@@ -105,11 +114,11 @@ export const FlowAuthorizationDialog = ({
                     id_company: oDps.company_external_id, //company id del dps id_company
                     id_flow_model: flowAuth?.id || '',
                     resource: {
-                        code: oDps.number, //folio
+                        code: oDps.folio ? oDps.folio : oDps.hiddenFolio , //folio
                         name: oDps.provider_name, //proveedor
                         content: {},
                         external_id: oDps.id_dps,
-                        resource_type: 1
+                        resource_type: constants.RESOURCE_TYPE_PUR_INVOICE
                     },
                     deadline: null,
                     sent_by: userExternalId, //external user id
@@ -124,7 +133,9 @@ export const FlowAuthorizationDialog = ({
                 setSuccessMessage(t('flowAuthorization.animationSuccess.text'));
                 setResultSendFlowAuth('success');
 
-                await getDps?.(getDpsParams);
+                if (!withAcceptance) {
+                    await getDps?.(getDpsParams);
+                }
             } else {
                 throw new Error('');
             }
@@ -207,7 +218,7 @@ export const FlowAuthorizationDialog = ({
                                 </div>
                             </div>
                         </div>
-                        <div className="field col-12 md:col-12">
+                        {/* <div className="field col-12 md:col-12">
                             <div className="formgrid grid">
                                 <div className="col">
                                     <label>{t('flowAuthorization.comments.label')}</label>
@@ -234,7 +245,7 @@ export const FlowAuthorizationDialog = ({
                                     />
                                 </div>
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                 )}
             </Dialog>

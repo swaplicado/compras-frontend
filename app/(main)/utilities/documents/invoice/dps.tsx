@@ -52,7 +52,8 @@ export const getDps = async ( props: getDpsProps  ) => {
                     provider_name: data[i].partner.trade_name,
                     serie: data[i].series,
                     number: data[i].number,
-                    folio: data[i].series ? data[i].series + '-' + data[i].number : data[i].number,
+                    folio: data[i].folio,
+                    hiddenFolio: data[i].folio,
                     reference: reference,
                     files: data[i].id,
                     date: data[i].date,
@@ -60,6 +61,7 @@ export const getDps = async ( props: getDpsProps  ) => {
                     authorization: data[i].authz_authorization_name?.toLowerCase(),
                     amount: data[i].amount,
                     currency: data[i].currency.id,
+                    currencyCode: data[i].currency.code,
                     exchange_rate: data[i].exchange_rate,
                     payday: data[i].payment_date,
                     payment_percentage: data[i].payment_percentage,
@@ -67,7 +69,8 @@ export const getDps = async ( props: getDpsProps  ) => {
                     authz_acceptance_notes: data[i].authz_acceptance_notes,
                     payment_method: data[i].payment_method,
                     actors_of_action: actors_of_action ? JSON.stringify(actors_of_action) : '',
-                    authz_authorization_code: data[i].authz_authorization_code ? data[i].authz_authorization_code : ''
+                    authz_authorization_code: data[i].authz_authorization_code ? data[i].authz_authorization_code : '',
+                    authz_authorization_notes: data[i].authz_authorization_notes ? data[i].authz_authorization_notes : ''
                 });
             }
             props.setLDps(dps);

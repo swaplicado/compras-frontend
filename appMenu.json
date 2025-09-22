@@ -34,7 +34,27 @@
                         }
                     ]
                 },
-                
+                {
+                    "label": "Facturas en autorización",
+                    "icon": "pi pi-fw pi-bookmark",
+                    "items": [
+                        {
+                            "label": "Facturas por autorizar",
+                            "icon": "pi pi-fw pi-bookmark",
+                            "to": "/pages/documents/invoices/authorizations/myFunctionalAreaAuthorizations/inAuthorization"
+                        },
+                        {
+                            "label": "Facturas autorizadas",
+                            "icon": "pi pi-fw pi-bookmark",
+                            "to": "/pages/documents/invoices/authorizations/myFunctionalAreaAuthorizations/authorized"
+                        },
+                        {
+                            "label": "Facturas rechazadas",
+                            "icon": "pi pi-fw pi-bookmark",
+                            "to": "/pages/documents/invoices/authorizations/myFunctionalAreaAuthorizations/rejected"
+                        }
+                    ]
+                },
                 {
                     "label": "Autorización de facturas",
                     "icon": "pi pi-fw pi-bookmark",
@@ -50,6 +70,27 @@
                             "to": "/pages/documents/invoices/authorizations/myFlowAuthorizations/inFlowAuthorization"
                         }
                     ]
+                },
+                {
+                    "label": "Pagos",
+                    "icon": "pi pi-fw pi-bookmark",
+                    "items": [
+                        {
+                            "label": "Pagos programados",
+                            "icon": "pi pi-fw pi-bookmark",
+                            "to": "/pages/documents/payments/programed"
+                        },
+                        {
+                            "label": "Pagos operados",
+                            "icon": "pi pi-fw pi-bookmark",
+                            "to": "/pages/documents/payments/executed"
+                        }
+                    ]
+                },
+                {
+                    "label": "Catálogo Proveedores",
+                    "icon": "pi pi-fw pi-bookmark", 
+                    "to": "/pages/partners/catalog"
                 }
             ]
         }

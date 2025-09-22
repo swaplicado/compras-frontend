@@ -1,5 +1,5 @@
 {
-    "mainRoute": "https://compras-backend-368437194061.us-central1.run.app",
+    "mainRoute": "https://gateway-backend-compras-4p99zqdp.uc.gateway.dev/v1",
     "apiKey": "AIzaSyDlskxETi2HFbsl2AWwBzktGkoUtUwnktU",
     "groups": [
         { "id": 1, "name": "admin" },

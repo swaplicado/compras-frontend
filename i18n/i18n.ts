@@ -14,7 +14,8 @@ import esResetPassword from './locales/es/auth/resetPassword';
 import esLogout from './locales/es/auth/logout';
 import esFileViewer from './locales/es/documents/fileViewer';
 import esAuthorizations from './locales/es/documents/authorizations';
-import authorizations from './locales/es/documents/authorizations';
+import esPayments from './locales/es/documents/payments';
+import esCatalogPartners from './locales/es/partners/catalog';
 
 i18n
   .use(initReactI18next)
@@ -34,7 +35,9 @@ i18n
         resetPassword: esResetPassword,
         logout: esLogout,
         fileViewer: esFileViewer,
-        authorizations: esAuthorizations
+        authorizations: esAuthorizations,
+        payments: esPayments,
+        catalogPartners: esCatalogPartners
       }
     },
     lng: "es",

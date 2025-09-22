@@ -54,6 +54,8 @@ const Upload = () => {
     const [filters, setFilters] = useState<DataTableFilterMeta>({});
     const isMobile = useIsMobile();
     const [getDpsParams, setGetDpsParams] = useState<any>(null);
+    const [isEdit, setIsEdit] = useState<boolean>(false);
+    const [typeEdit, setTypeEdit] = useState<'acceptance' | 'authorization'>('acceptance');
 
     const headerCard = (
         <div
@@ -68,7 +70,7 @@ const Upload = () => {
             }}
         >
             <h3 className="m-0 text-900 font-medium">
-                {t('titleRejected')}
+                {t('titleAcceptanceRejected')}
                 &nbsp;&nbsp;
                 <Tooltip target=".custom-target-icon" />
                 <i
@@ -423,14 +425,15 @@ const Upload = () => {
     };
 
     const handleDoubleClick = (e: DataTableRowClickEvent) => {
-        if (!oValidUser.isInternalUser) {
-            e.originalEvent.preventDefault();
-            return;
-        }
+        // if (!oValidUser.isInternalUser) {
+        //     e.originalEvent.preventDefault();
+        //     return;
+        // }
 
         setSelectedRow(e.data);
-        // setDialogMode('review');
-        // setDialogVisible(true);
+        setDialogMode('review');
+        setDialogVisible(true);
+        setIsEdit(true);
     };
 
     useEffect(() => {
@@ -444,6 +447,9 @@ const Upload = () => {
                 groups = userGroups;
             }
 
+            const start_date = moment(new Date).startOf('month').format('YYYY-MM-DD');
+            const end_date = moment(new Date).endOf('month').format('YYYY-MM-DD');
+
             if (groups.includes(constants.ROLES.COMPRADOR_ID)) {
                 const route = constants.ROUTE_GET_DPS_BY_AREA_ID;
                 const params = {
@@ -452,8 +458,8 @@ const Upload = () => {
                     transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
                     document_type: constants.DOC_TYPE_INVOICE,
                     authz_acceptance: constants.REVIEW_REJECT_ID,
-                    start_date: '2025-08-01',
-                    end_date: '2025-08-30'
+                    start_date: start_date,
+                    end_date: end_date
                 };
                 setGetDpsParams({ params, errorMessage: t('errors.getInvoicesError'), setLDps, showToast });
 
@@ -469,8 +475,8 @@ const Upload = () => {
                     transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
                     document_type: constants.DOC_TYPE_INVOICE,
                     authz_acceptance: constants.REVIEW_REJECT_ID,
-                    start_date: '2025-08-01',
-                    end_date: '2025-08-30'
+                    start_date: start_date,
+                    end_date: end_date
                 };
                 setGetDpsParams({ params, errorMessage: t('errors.getInvoicesError'), setLDps, showToast });
 
@@ -484,7 +490,7 @@ const Upload = () => {
             await getlFiscalRegime();
             await getlPaymentMethod();
             await getlUseCfdi();
-            setLoading(false);
+            // setLoading(false);
         };
         fetchReferences();
     }, []);
@@ -521,6 +527,8 @@ const Upload = () => {
                         showToast={showToast}
                         oValidUser={oValidUser}
                         setLoading={setLoading}
+                        isEdit={isEdit}
+                        typeEdit={typeEdit}
                     />
                     <TableInvoices
                         getDpsParams={getDpsParams}
@@ -538,6 +546,17 @@ const Upload = () => {
                         setDialogMode={setDialogMode}
                         setDialogVisible={setDialogVisible}
                         setFlowAuthDialogVisible={setFlowAuthDialogVisible}
+                        columnsProps = {{
+                            acceptance: {
+                                hidden: false
+                            },
+                            actors_of_action: {
+                                hidden: true
+                            },
+                            delete: {
+                                hidden: false
+                            }
+                        }}
                     />
                 </Card>
             </div>
