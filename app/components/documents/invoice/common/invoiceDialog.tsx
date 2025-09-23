@@ -25,6 +25,8 @@ import { animationSuccess, animationError } from '@/app/components/commons/anima
 import { XmlWarnings } from '@/app/components/documents/invoice/common/xmlWarnings';
 import { FieldsEditAcceptance } from '@/app/components/documents/invoice/fieldsEditAcceptance';
 import { HistoryAuth } from '@/app/components/documents/invoice/historyAuth';
+import { ToggleButton } from 'primereact/togglebutton';
+import { Checkbox } from "primereact/checkbox";
 
 interface InvoiceDialogProps {
     visible: boolean;
@@ -37,7 +39,7 @@ interface InvoiceDialogProps {
     dialogMode: 'create' | 'edit' | 'view' | 'review' | 'authorization';
     lReferences: any[];
     setLReferences: React.Dispatch<React.SetStateAction<any>>;
-    getlReferences: (company_id?: string, partner_id?: string) => Promise<boolean>;
+    getlReferences: (company_id?: string, partner_id?: string, filtered?: boolean) => Promise<boolean>;
     lProviders: any[];
     lCompanies: any[];
     lPaymentMethod: any[];
@@ -80,6 +82,8 @@ interface renderFieldProps {
     errorKey: string;
     errors?: any;
     errorMessage?: string;
+    renderLeftItem?: { item: React.ReactNode, mdCol: number};
+    renderRightItem?: { item: React.ReactNode, mdCol: number};
 }
 
 export const InvoiceDialog = ({
@@ -175,7 +179,9 @@ export const InvoiceDialog = ({
         auth_notes: false
     });
     const [reviewErrors, setReviewErrors] = useState({
-        rejectComments: false
+        rejectComments: false,
+        payday: false,
+        payment_percentage: false
     });
     const [modeFieldsDps, setModeFieldsDps] = useState<'view' | 'edit'>('view');
     const [loadingUrlsFiles, setLoadingUrlsFiles] = useState(false);
@@ -189,34 +195,57 @@ export const InvoiceDialog = ({
     const [lFilesNames, setLFilesNames] = useState<any[]>([]);
     const [loadingFileNames, setLoadingFileNames] = useState<boolean>(false);
     const [lFilesToEdit, setLFilesToEdit] = useState<any[]>([]);
+    const [filterReferences, setFilterReferences] = useState<boolean>(false);
 
     const renderField = (props: renderFieldProps) => (
         <>
             {props.type == 'dropdown' && (
-                <div className={`field col-12 md:col-${props.mdCol}`}>
-                    <div className="formgrid grid">
-                        <div className="col">
-                            <label data-pr-tooltip="">{props.label}</label>
-                            &nbsp;
-                            <Tooltip target=".custom-target-icon" />
-                            <i className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge" data-pr-tooltip={props.tooltip} data-pr-position="right" data-pr-my="left center-2" style={{ fontSize: '1rem', cursor: 'pointer' }}></i>
-                            <div>
-                                <Dropdown
-                                    value={props.value}
-                                    onChange={(e) => props.onChange?.(e.value)}
-                                    options={props.options}
-                                    optionLabel="name"
-                                    placeholder={props.placeholder}
-                                    filter
-                                    className={`w-full ${props.errors[props.errorKey] ? 'p-invalid' : ''}`}
-                                    showClear
-                                    disabled={props.disabled}
-                                />
-                                {props.errors[props.errorKey] && <small className="p-error">{props.errorMessage}</small>}
+                <>
+                    { props.renderLeftItem && (
+                        <div className={`field col-12 md:col-${props.renderLeftItem.mdCol}`}>
+                            <div className="formgrid grid">
+                                <div className="col">
+                                    {props.renderLeftItem.item}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className={`field col-12 md:col-${props.mdCol}`}>
+                        <div className="formgrid grid">
+                            <div className="col">
+                                <label data-pr-tooltip="">{props.label}</label>
+                                &nbsp;
+                                <Tooltip target=".custom-target-icon" />
+                                <i className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge" data-pr-tooltip={props.tooltip} data-pr-position="right" data-pr-my="left center-2" style={{ fontSize: '1rem', cursor: 'pointer' }}></i>
+                                <div>
+                                    <Dropdown
+                                        value={props.value}
+                                        onChange={(e) => props.onChange?.(e.value)}
+                                        options={props.options}
+                                        optionLabel="name"
+                                        placeholder={props.placeholder}
+                                        filter
+                                        className={`w-full ${props.errors[props.errorKey] ? 'p-invalid' : ''}`}
+                                        showClear
+                                        disabled={props.disabled}
+                                    />
+                                    {props.errors[props.errorKey] && <small className="p-error">{props.errorMessage}</small>}
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+
+                    { props.renderRightItem && (
+                        <div className={`field col-12 md:col-${props.renderRightItem.mdCol}`}>
+                            <div className="formgrid grid">
+                                <div className="col">
+                                    {props.renderRightItem.item}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </>
             )}
             {props.type == 'text' && (
                 <div className={`field col-12 md:col-${props.mdCol}`}>
@@ -375,6 +404,14 @@ export const InvoiceDialog = ({
                 if (!oDps.authz_acceptance_notes.trim()) {
                     setReviewErrors((prev) => ({ ...prev, rejectComments: true }));
                     showToast?.('info', 'Ingresa un comentario de rechazo de la factura');
+                    return;
+                }
+            }
+
+            if (reviewOption == constants.REVIEW_ACCEPT) {
+                if (!oDps.payday && oDps.payment_percentage > 0) {
+                    setReviewErrors((prev) => ({ ...prev, payday: true }));
+                    showToast?.('info', 'Ingresa una fecha de pago de la factura');
                     return;
                 }
             }
@@ -572,6 +609,11 @@ export const InvoiceDialog = ({
             currency: false,
             exchange_rate: false
         });
+        setReviewErrors({
+            rejectComments: false,
+            payday: false,
+            payment_percentage: false
+        });
 
         if ((dialogMode == 'review' || dialogMode == 'view' || dialogMode == 'authorization') && oDps) {
             const oPaymentMethod = findPaymentMethod(lPaymentMethod, oDps?.payment_method);
@@ -616,6 +658,8 @@ export const InvoiceDialog = ({
         if (withHistoryAuth && visible) {
             getHistoryAuth?.();
         }
+
+        setFilterReferences(false);
     }, [visible]);
 
     useEffect(() => {
@@ -921,6 +965,13 @@ export const InvoiceDialog = ({
             break;
     }
 
+    useEffect(() => {
+        const fetchReferences = async () => {
+            await getlReferences(oCompany?.id, oProvider?.id, !filterReferences);
+        }
+        fetchReferences();
+    }, [filterReferences])
+
     return (
         <div className="flex justify-content-center">
             <Dialog
@@ -982,23 +1033,49 @@ export const InvoiceDialog = ({
                             }
 
                             {loadingReferences == true ? (
-                                <ProgressSpinner style={{ width: '50px', height: '50px' }} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />
+                                <ProgressSpinner style={{ width: '50px', height: '50px' }} className='' strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />
                             ) : (
                                 renderField({
                                     label: t('uploadDialog.reference.label'),
                                     tooltip: t('uploadDialog.reference.tooltip'),
                                     value: dialogMode == 'create' ? oReference : oDps?.reference ? oDps.reference : 'Sin referencia',
                                     disabled: !lReferences || lReferences.length == 0 || dialogMode === 'view' || dialogMode === 'review',
-                                    mdCol: 6,
+                                    mdCol: dialogMode == 'create' ? 4 : 6,
                                     type: dialogMode == 'create' ? 'dropdown' : 'text',
                                     onChange: (value) => handleSelectReference(value),
                                     options: lReferences,
                                     placeholder: t('uploadDialog.reference.placeholder'),
                                     errorKey: 'reference',
                                     errors: formErrors,
-                                    errorMessage: t('uploadDialog.reference.helperText')
+                                    errorMessage: t('uploadDialog.reference.helperText'),
+                                    renderRightItem: {
+                                        item: (
+                                            <div className='pt-4'>
+                                                <Checkbox 
+                                                    inputId="ingredient1" 
+                                                    name="pizza" 
+                                                    value="Cheese" 
+                                                    onChange={(e: any) => { setFilterReferences(e.checked); setOReference(null)}} 
+                                                    checked={filterReferences}
+                                                    disabled={!lReferences || lReferences.length == 0}
+                                                />
+                                                <label className="ml-2">{t('uploadDialog.reference.checkboxLabel')}</label>
+                                            </div>
+                                        ),
+                                        mdCol: 2
+                                    }
                                 })
                             )}
+                            
+                            {oReference?.is_covered == 1 &&
+                                <ul>
+                                    <li className="col-12 md:col-12">
+                                        <i className='bx bxs-error' style={{color: '#FFD700'}}></i>
+                                        {t('uploadDialog.reference.referenceWarning')}
+                                    </li>
+                                </ul>
+                            }
+
                             {(oReference?.id == '0' || (dialogMode == 'review' && oDps?.reference == '')) &&
                                 renderField({
                                     label: t('uploadDialog.areas.label'),
@@ -1013,7 +1090,7 @@ export const InvoiceDialog = ({
                                     errorKey: 'area',
                                     errors: formErrors,
                                     errorMessage: t('uploadDialog.areas.helperText')
-                                })}
+                            })}
                         </div>
 
                         {dialogMode == 'create' && (oProvider ? oProvider.country == constants.COUNTRIES.MEXICO_ID : false) && (

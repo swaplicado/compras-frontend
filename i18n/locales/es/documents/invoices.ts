@@ -73,7 +73,9 @@ const invoices = {
             helperText: "Por favor selecciona una referencia.",
             tooltip: "Selecciona una referencia para la factura.",
             tooltipReview: "Esta es la referencia asociada a la factura.",
-            withOutReferenceOption: "Sin referencia."
+            withOutReferenceOption: "Sin referencia.",
+            checkboxLabel: "Mostrar todas",
+            referenceWarning: "La referencia ya esta facturada"
         },
         areas: {
             label: "Área: *",
