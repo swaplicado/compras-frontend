@@ -555,6 +555,9 @@ const Upload = () => {
                             },
                             delete: {
                                 hidden: false
+                            },
+                            authorization: {
+                                hidden: true
                             }
                         }}
                     />

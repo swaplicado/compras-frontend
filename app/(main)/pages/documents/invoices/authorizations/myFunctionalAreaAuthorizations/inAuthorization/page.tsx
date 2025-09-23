@@ -64,6 +64,9 @@ const Upload = () => {
         },
         delete: {
             hidden: true
+        },
+        authorization: {
+            hidden: false
         }
     });
     const [historyAuth, setHistoryAuth] = useState<any[]>([]);

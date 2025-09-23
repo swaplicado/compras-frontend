@@ -132,7 +132,7 @@ const Upload = () => {
         }
     };
 
-    const getlReferences = async (company_id = '', partner_id = '') => {
+    const getlReferences = async (company_id = '', partner_id = '', filtered = true) => {
         try {
             if (!company_id || !partner_id) {
                 setLReferences([]);
@@ -144,7 +144,8 @@ const Upload = () => {
                 params: {
                     route: route,
                     partner_id: partner_id,
-                    company_id: company_id
+                    company_id: company_id,
+                    filter_full: filtered
                 }
             });
 
@@ -155,14 +156,16 @@ const Upload = () => {
                 if (oValidUser.isInternalUser) {
                     lReferences.push({
                         id: 0,
-                        name: t('uploadDialog.reference.withOutReferenceOption')
+                        name: t('uploadDialog.reference.withOutReferenceOption'),
+                        is_covered: 0
                     });
                 }
 
                 for (const item of data) {
                     lReferences.push({
                         id: item.id,
-                        name: item.reference
+                        name: item.reference,
+                        is_covered: item.is_covered
                     });
                 }
 

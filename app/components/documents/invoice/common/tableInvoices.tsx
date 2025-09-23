@@ -24,6 +24,9 @@ interface columnsProps {
     delete: {
         hidden: boolean
     },
+    authorization: {
+        hidden: boolean
+    }
 }
 
 interface TableInvoicesProps {
@@ -80,6 +83,9 @@ export const TableInvoices = ({
         },
         delete: {
             hidden: true
+        },
+        authorization: {
+            hidden: false
         }
     }
 }: TableInvoicesProps) => {
@@ -535,10 +541,10 @@ export const TableInvoices = ({
                 <Column field="amount" header={t('invoicesTable.columns.amount')} footer={t('invoicesTable.columns.amount')} dataType="numeric" body={amountBodyTemplate} sortable />
                 <Column field="currencyCode" header={t('invoicesTable.columns.currencyCode')} footer={t('invoicesTable.columns.currencyCode')} sortable />
                 <Column field="payday" header={t('invoicesTable.columns.payday')} footer={t('invoicesTable.columns.payday')} body={payDayBodyTemplate} sortable />
-                <Column field="payment_percentage" header={t('invoicesTable.columns.payment_percentage')} />
+                <Column field="payment_percentage" header={t('invoicesTable.columns.payment_percentage')} footer={t('invoicesTable.columns.payment_percentage')} />
                 <Column field="acceptance" header={t('invoicesTable.columns.acceptance')} footer={t('invoicesTable.columns.acceptance')} body={statusAcceptanceDpsBodyTemplate} sortable hidden={ columnsProps?.acceptance.hidden } />
                 <Column field="actors_of_action" header={'Usuario en turno'} footer={'Usuario en turno'} body={actorsOfActionBody} sortable hidden={ columnsProps?.actors_of_action.hidden } />
-                <Column field="authorization" header={t('invoicesTable.columns.authorization')} footer={t('invoicesTable.columns.authorization')} body={statusAuthDpsBodyTemplate} sortable />
+                <Column field="authorization" header={t('invoicesTable.columns.authorization')} footer={t('invoicesTable.columns.authorization')} body={statusAuthDpsBodyTemplate} sortable hidden={ columnsProps?.authorization.hidden } />
                 <Column field="files" header={t('invoicesTable.columns.files')} footer={t('invoicesTable.columns.files')} body={fileBodyTemplate} />
                 <Column field="id_dps" header={'Eliminar'} footer={'Eliminar'} body={deleteBodyTemplate} hidden={ columnsProps?.delete.hidden } />
             </DataTable>
