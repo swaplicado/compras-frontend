@@ -38,7 +38,8 @@ interface renderFieldProps {
     errorKey: string,
     errors?: any,
     errorMessage?: string,
-    lOptions?: any[]
+    lOptions?: any[],
+    labelClass?: string
 }
 
 export const FieldsDps = ({
@@ -178,7 +179,7 @@ export const FieldsDps = ({
                 <div className={`field col-12 md:col-${props.mdCol}`}>
                     <div className="formgrid grid">
                         <div className="col">
-                            <label data-pr-tooltip="">{props.label}</label>
+                            <label className={`${props.labelClass}`}>{props.label}</label>
                             &nbsp;
                             <Tooltip target=".custom-target-icon" />
                             <i className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge" data-pr-tooltip={props.tooltip} data-pr-position="right" data-pr-my="left center-2" style={{ fontSize: '1rem', cursor: 'pointer' }}></i>
@@ -474,6 +475,7 @@ export const FieldsDps = ({
                         type: 'textArea',
                         placeholder: '',
                         errorKey: '',
+                        labelClass: 'opacity-100 text-blue-600'
                     })}
                     {renderField({
                         label: t('uploadDialog.rejectComments.label'),
@@ -486,7 +488,8 @@ export const FieldsDps = ({
                         placeholder: '',
                         errors: errors,
                         errorKey: 'rejectComments',
-                        errorMessage: t('uploadDialog.rejectComments.helperText')
+                        errorMessage: t('uploadDialog.rejectComments.helperText'),
+                        labelClass: 'font-bold opacity-100 text-blue-600'
                     })}
                 </div>
             )}
