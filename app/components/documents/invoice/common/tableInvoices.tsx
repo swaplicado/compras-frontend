@@ -521,6 +521,7 @@ export const TableInvoices = ({
                 <Column field="authz_authorization_code" header="authz_authorization_code" hidden />
                 <Column field="authz_authorization_notes" header="authz_authorization_notes" hidden />
                 <Column field="hiddenFolio" header="hiddenFolio" hidden />
+                <Column field="payment_amount" header="payment_amount" hidden />
                 <Column field="company" header={t('invoicesTable.columns.company')} footer={t('invoicesTable.columns.company')} sortable filter showFilterMatchModes={false} filterElement={companyFilterTemplate} filterApply={<></>} filterClear={<></>} />
                 <Column
                     field="provider_name"

@@ -65,15 +65,18 @@ export const FieldsDps = ({
         'Nada'
     ];
     const [minDate, setMinDate] = useState<any>(new Date());
+    const [paymentDefinition, setPaymentDefinition] = useState<any>();
 
     addLocale('es', tCommon('calendar', { returnObjects: true }) as any);
     
     useEffect(() =>  {
         if(percentOption == "Todo"){
             setODps((prev: any) => ({ ...prev, payment_percentage: 100 }));
+            calcAmountPercentage('percentage', 100);
         } else if(percentOption == "Nada"){
             setODps((prev: any) => ({ ...prev, payment_percentage: 0 }));
             setODps((prev: any) => ({ ...prev, payday: '' }));
+            calcAmountPercentage('percentage', 0);
         }
     }, [percentOption])
 
@@ -111,6 +114,49 @@ export const FieldsDps = ({
             }
         }, 100);
     }, [oDps.payday]);
+
+    useEffect(() => {
+        if (oDps.payment_amount > oDps.amount) {
+            setODps((prev: any) => ({ 
+                ...prev, 
+                payment_amount: oDps.amount 
+            }));
+        }
+
+        if (!oDps.payment_amount) {
+            calcAmountPercentage('percentage', oDps.payment_percentage);
+        }
+    }, [oDps.payment_amount])
+
+    const calcAmountPercentage = async (originEvent: string, value: number) => {
+        if (originEvent == 'amount') {
+            setPaymentDefinition(1);
+            if (value > oDps.amount) {
+                value = oDps.amount;
+            }
+            const paymentPercentage = (value * 100) / oDps.amount;
+            setODps((prev: any) => ({ 
+                ...prev, 
+                payment_percentage: Math.min(paymentPercentage, 100),
+                payment_amount: value,
+                payment_definition: 1
+            }));
+        }
+    
+        if (originEvent == 'percentage') {
+            setPaymentDefinition(2);
+            if (value > 100) {
+                value = 100;
+            }
+            const paymentAmount = (oDps.amount * value) / 100;
+            setODps((prev: any) => ({ 
+                ...prev, 
+                payment_amount: paymentAmount,
+                payment_percentage: value,
+                payment_definition: 2
+            }));
+        }
+    }
 
     const renderField = ( props: renderFieldProps ) => (
         <>
@@ -391,7 +437,7 @@ export const FieldsDps = ({
 
             { withFooterDps && (
                 <div className="p-fluid formgrid grid">
-                    <div className="field col-12 md:col-5">
+                    <div className="field col-12 md:col-4">
                         <div className="formgrid grid">
                             <div className="col">
                                 <label>{t('uploadDialog.percentOption.label')}</label>
@@ -408,7 +454,7 @@ export const FieldsDps = ({
                             </div>
                         </div>
                     </div>
-                    <div className="field col-12 md:col-3">
+                    <div className="field col-12 md:col-2">
                         <div className="formgrid grid">
                             <div className="col">
                                 <label>{t('uploadDialog.percentOption.label')}</label>
@@ -423,8 +469,44 @@ export const FieldsDps = ({
                                 ></i>
                                 <div className="p-inputgroup flex-1">
                                     <span className="p-inputgroup-addon">%</span>
-                                    <InputNumber placeholder="Porcentaje" disabled={footerMode == 'view'} value={oDps.payment_percentage} onChange={(e) => setODps( (prev: any) => ({ ...prev, payment_percentage: e.value }) )} min={0} max={100}  inputClassName="text-right"/>
+                                    <InputNumber 
+                                        placeholder="Porcentaje"
+                                        disabled={footerMode == 'view'}
+                                        value={oDps.payment_percentage}
+                                        onChange={(e: any) => {calcAmountPercentage('percentage', e.value);}} 
+                                        min={0} 
+                                        max={100}
+                                        maxFractionDigits={2}
+                                        inputClassName="text-right"
+                                    />
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="field col-12 md:col-2">
+                        <div className="formgrid grid">
+                            <div className="col">
+                                <label>{t('uploadDialog.amountOption.label')}</label>
+                                &nbsp;
+                                <Tooltip target=".custom-target-icon" />
+                                <i
+                                    className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
+                                    data-pr-tooltip={t('uploadDialog.amountOption.tooltip')}
+                                    data-pr-position="right"
+                                    data-pr-my="left center-2"
+                                    style={{ fontSize: '1rem', cursor: 'pointer' }}
+                                ></i>
+                                <InputNumber 
+                                    placeholder="Monto"
+                                    disabled={footerMode == 'view'}
+                                    value={oDps.payment_amount}
+                                    onChange={(e: any) => {calcAmountPercentage('amount', e.value)}}
+                                    minFractionDigits={2}
+                                    maxFractionDigits={2}
+                                    min={0}
+                                    max={oDps.amount}
+                                    inputClassName="text-right"
+                                />
                             </div>
                         </div>
                     </div>

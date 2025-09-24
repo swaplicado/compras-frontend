@@ -67,6 +67,8 @@ interface InvoiceDialogProps {
     getHistoryAuth?: () => Promise<any>;
     loadingHistoryAuth?: boolean;
     lHistoryAuth?: any[];
+    reviewErrors?: any;
+    setReviewErrors?: React.Dispatch<React.SetStateAction<any>>;
 }
 
 interface renderFieldProps {
@@ -124,7 +126,9 @@ export const InvoiceDialog = ({
     withHistoryAuth,
     getHistoryAuth,
     loadingHistoryAuth,
-    lHistoryAuth = []
+    lHistoryAuth = [],
+    reviewErrors,
+    setReviewErrors,
 }: InvoiceDialogProps) => {
     const [oCompany, setOCompany] = useState<any>(null);
     const [oProvider, setOProvider] = useState<any>(null);
@@ -178,11 +182,11 @@ export const InvoiceDialog = ({
     const [authErrors, setAuthErrors] = useState({
         auth_notes: false
     });
-    const [reviewErrors, setReviewErrors] = useState({
-        rejectComments: false,
-        payday: false,
-        payment_percentage: false
-    });
+    // const [reviewErrors, setReviewErrors] = useState({
+    //     rejectComments: false,
+    //     payday: false,
+    //     payment_percentage: false
+    // });
     const [modeFieldsDps, setModeFieldsDps] = useState<'view' | 'edit'>('view');
     const [loadingUrlsFiles, setLoadingUrlsFiles] = useState(false);
     const [lUrlFiles, setLUrlFiles] = useState<any[]>([]);
@@ -402,7 +406,7 @@ export const InvoiceDialog = ({
             if (reviewOption == constants.REVIEW_REJECT) {
                 setIsRejected(true);
                 if (!oDps.authz_acceptance_notes.trim()) {
-                    setReviewErrors((prev) => ({ ...prev, rejectComments: true }));
+                    setReviewErrors?.((prev: any) => ({ ...prev, rejectComments: true }));
                     showToast?.('info', 'Ingresa un comentario de rechazo de la factura');
                     return;
                 }
@@ -410,7 +414,7 @@ export const InvoiceDialog = ({
 
             if (reviewOption == constants.REVIEW_ACCEPT) {
                 if (!oDps.payday && oDps.payment_percentage > 0) {
-                    setReviewErrors((prev) => ({ ...prev, payday: true }));
+                    setReviewErrors?.((prev: any) => ({ ...prev, payday: true }));
                     showToast?.('info', 'Ingresa una fecha de pago de la factura');
                     return;
                 }
@@ -426,8 +430,10 @@ export const InvoiceDialog = ({
                     authz_acceptance_notes: oDps.authz_acceptance_notes,
                     payment_date: date,
                     payment_percentage: oDps.payment_percentage,
+                    payment_amount: oDps.payment_amount,
                     notes: oDps.notes,
-                    user_id: userId
+                    user_id: userId,
+                    payment_definition: oDps.payment_definition
                 }
             });
 
@@ -609,7 +615,7 @@ export const InvoiceDialog = ({
             currency: false,
             exchange_rate: false
         });
-        setReviewErrors({
+        setReviewErrors?.({
             rejectComments: false,
             payday: false,
             payment_percentage: false

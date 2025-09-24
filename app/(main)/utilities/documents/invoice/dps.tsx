@@ -65,6 +65,7 @@ export const getDps = async ( props: getDpsProps  ) => {
                     exchange_rate: data[i].exchange_rate,
                     payday: data[i].payment_date,
                     payment_percentage: data[i].payment_percentage,
+                    payment_amount: data[i].payment_amount,
                     notes: data[i].notes,
                     authz_acceptance_notes: data[i].authz_acceptance_notes,
                     payment_method: data[i].payment_method,

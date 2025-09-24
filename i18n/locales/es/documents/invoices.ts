@@ -189,11 +189,18 @@ const invoices = {
             tooltipReview: "Esta es la fecha de pago solicitada por el comprador de la factura.",
         },
         percentOption: {
-            label: "Porcentaje de pago:",
+            label: "% de pago:",
             placeholder: "Selecciona porcentaje de pago",
             helperText: "Por favor selecciona una opción.",
             tooltip: "Selecciona el porcentaje de pago de la factura.",
             tooltipReview: "Este es el porcentaje de pago de la factura.",
+        },
+        amountOption: {
+            label: "Monto pago:",
+            placeholder: "Monto de pago",
+            helperText: "Por favor ingresa el monto de pago.",
+            tooltip: "Ingresa el monto de pago de la factura.",
+            tooltipReview: "Este es el monto de pago de la factura.",
         },
         aceptNotes: {
             label: "Notas de factura:",

@@ -55,6 +55,11 @@ const Upload = () => {
     const [filters, setFilters] = useState<DataTableFilterMeta>({});
     const isMobile = useIsMobile();
     const [getDpsParams, setGetDpsParams] = useState<any>(null);
+    const [reviewErrors, setReviewErrors] = useState({
+            rejectComments: false,
+            payday: false,
+            payment_percentage: false
+        });
 
     const headerCard = (
         <div
@@ -453,8 +458,10 @@ const Upload = () => {
                 authz_acceptance_notes: selectedRow.authz_acceptance_notes,
                 payment_date: date,
                 payment_percentage: selectedRow.payment_percentage,
+                payment_amount: selectedRow.payment_amount,
                 notes: selectedRow.notes,
-                user_id: userId
+                user_id: userId,
+                payment_definition: selectedRow.payment_definition
             }
         });
 
@@ -465,6 +472,12 @@ const Upload = () => {
 
     const handleReviewAndSendAuth = async () => {
         try {
+            if (!selectedRow.payday && selectedRow.payment_percentage > 0) {
+                setReviewErrors((prev) => ({ ...prev, payday: true }));
+                showToast?.('info', 'Ingresa una fecha de pago de la factura');
+                return;
+            }
+
             setDialogVisible(false);
             setTimeout(() => {
                 setFlowAuthDialogVisible(true);
@@ -601,6 +614,8 @@ const Upload = () => {
                         loadingReferences={loadingReferences}
                         setLoadingReferences={setLoadingReferences}
                         handleReviewAndSendAuth={handleReviewAndSendAuth}
+                        reviewErrors={reviewErrors}
+                        setReviewErrors={setReviewErrors}
                     />
                     { oValidUser.isInternalUser && (
                         <FlowAuthorizationDialog 
