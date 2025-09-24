@@ -463,6 +463,30 @@ export const InvoiceDialog = ({
             const files = fileUploadRef.current?.getFiles() || [];
             const xmlFiles = xmlUploadRef.current?.getFiles() || [];
 
+            const xmlBaseName = xmlFiles[0].name.replace(/\.[^/.]+$/, "");
+            const xmlName = xmlFiles[0].name;
+
+            const hasSameFile = files.some(file => 
+                file.name === xmlName
+            );
+
+            if (hasSameFile) {
+                showToast?.('error', t('uploadDialog.files.hasSameFile', { xmlName }));
+                return;
+            }
+
+            const hasMatchingPDF = files.some(file => {
+                const isPDF = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+                const fileBaseName = file.name.replace(/\.[^/.]+$/, "");
+                return isPDF && fileBaseName === xmlBaseName;
+            });
+        
+            if (!hasMatchingPDF) {
+                showToast?.('error', t('uploadDialog.files.hasMatchingPDF', { xmlBaseName }));
+                return;
+            }
+
+
             files.forEach((file: string | Blob) => {
                 formData.append('files', file);
             });
@@ -517,6 +541,7 @@ export const InvoiceDialog = ({
             if (response.status === 200 || response.status === 201) {
                 setSuccessMessage(response.data.data.success || t('uploadDialog.animationSuccess.text'));
                 setResultUpload('success');
+                getDps?.(getDpsParams);
             } else {
                 throw new Error(t('uploadDialog.errors.uploadError'));
             }
@@ -524,8 +549,8 @@ export const InvoiceDialog = ({
             console.error('Error al subir archivos:', error);
             setErrorMessage(error.response?.data?.error || t('uploadDialog.errors.uploadError'));
             setResultUpload('error');
+            // getDps?.(getDpsParams);
         } finally {
-            getDps?.(getDpsParams);
             setLoading?.(false);
         }
     };
@@ -1104,7 +1129,7 @@ export const InvoiceDialog = ({
                                 <div className="field col-12 md:col-12">
                                     <div className="formgrid grid">
                                         <div className="col">
-                                            <label>xml</label>
+                                            <label>XML</label>
                                             &nbsp;
                                             <Tooltip target=".custom-target-icon" />
                                             <i
@@ -1158,7 +1183,7 @@ export const InvoiceDialog = ({
                             <div className="field col-12 md:col-12">
                                 <div className="formgrid grid">
                                     <div className="col">
-                                        <label>archivos</label>
+                                        <label>Archivos</label>
                                         &nbsp;
                                         <Tooltip target=".custom-target-icon" />
                                         <i
