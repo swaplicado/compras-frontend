@@ -45,7 +45,7 @@ export const ValidateXml = ( { xmlUploadRef, oCompany, oPartner, user_id, oRef, 
             formData.append('company_id', oCompany?.id || '');
             formData.append('partner_id', oPartner?.id || '');
             // formData.append('ref_id', oRef?.id || '');
-            formData.append('references', JSON.stringify(oRef));
+            formData.append('references', oRef[0].id != 0 ? JSON.stringify(oRef) : '[]');
             formData.append('user_id', user_id.toString());
 
             const response = await axios.post(constants.API_AXIOS_POST, formData, {
@@ -147,9 +147,11 @@ export const ValidateXml = ( { xmlUploadRef, oCompany, oPartner, user_id, oRef, 
             return false;
         }
 
-        for (let i = 0; i < oRef.length; i++) {
-            if (oRef[i].amount == 0) {
-                return true;
+        if (oRef.length > 1) {
+            for (let i = 0; i < oRef.length; i++) {
+                if (oRef[i].amount == 0) {
+                    return true;
+                }
             }
         }
 

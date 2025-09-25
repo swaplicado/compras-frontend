@@ -204,11 +204,11 @@ const invoices = {
             tooltipReview: "Este es el monto de pago de la factura.",
         },
         aceptNotes: {
-            label: "Notas de factura:",
-            placeholder: "Ingresa las notas de la factura",
-            helperText: "Por favor ingresa las notas.",
-            tooltip: "Notas de la factura.",
-            tooltipReview: "Estas son las notas de la factura.",
+            label: "Descripción de factura:",
+            placeholder: "Ingresa la descripción de la factura",
+            helperText: "Por favor ingresa la descripción.",
+            tooltip: "Descripción de la factura.",
+            tooltipReview: "Esta es la descripción de la factura.",
         },
         files: {
             label: "Archivos de factura: *",

@@ -10,6 +10,8 @@ import { Dropdown } from 'primereact/dropdown';
 import { Calendar } from 'primereact/calendar';
 import { addLocale } from 'primereact/api';
 import DateFormatter from '@/app/components/commons/formatDate';
+import { Checkbox } from "primereact/checkbox";
+import constants from '@/app/constants/constants';
 
 interface FieldsDpsProps {
     oDps: any;
@@ -156,6 +158,36 @@ export const FieldsDps = ({
                 payment_definition: 2
             }));
         }
+    }
+
+    const checkedIsPaymentLoc = () => {
+        if (footerMode == 'edit') {
+            if (oDps?.oPartner) {
+                if (oDps?.oPartner.country == constants.COUNTRIES.MEXICO_ID) {
+                    setODps( (prev: any) => ({ ...prev, is_payment_loc: true }) )
+                } else {
+                    setODps( (prev: any) => ({ ...prev, is_payment_loc: false }) )
+                }
+            }
+        }
+    }
+
+    useEffect(() => {
+        checkedIsPaymentLoc();
+    }, [])
+
+    const disabledIsPaymentLoc = () => {
+        let disabled = false;
+        if (footerMode == 'edit') {
+            if (oDps?.oPartner) {
+                if (oDps?.oPartner.country == constants.COUNTRIES.MEXICO_ID && oDps?.currency == 'MXN') {
+                    disabled = true;
+                }
+            }
+        } else {
+            disabled = true;
+        }
+        return disabled;
     }
 
     const renderField = ( props: renderFieldProps ) => (
@@ -434,119 +466,8 @@ export const FieldsDps = ({
                     })}
                 </div>
             )}
-
             { withFooterDps && (
-                <div className="p-fluid formgrid grid">
-                    <div className="field col-12 md:col-4">
-                        <div className="formgrid grid">
-                            <div className="col">
-                                <label>{t('uploadDialog.percentOption.label')}</label>
-                                &nbsp;
-                                <Tooltip target=".custom-target-icon" />
-                                <i
-                                    className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                                    data-pr-tooltip={t('uploadDialog.percentOption.tooltip')}
-                                    data-pr-position="right"
-                                    data-pr-my="left center-2"
-                                    style={{ fontSize: '1rem', cursor: 'pointer' }}
-                                ></i>
-                                <SelectButton value={percentOption} disabled={footerMode == 'view'} onChange={(e) => setPercentOption(e.value)} options={lPercentOptions} style={{ height: '2rem', marginTop: '5px' }}/>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="field col-12 md:col-2">
-                        <div className="formgrid grid">
-                            <div className="col">
-                                <label>{t('uploadDialog.percentOption.label')}</label>
-                                &nbsp;
-                                <Tooltip target=".custom-target-icon" />
-                                <i
-                                    className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                                    data-pr-tooltip={t('uploadDialog.percentOption.tooltip')}
-                                    data-pr-position="right"
-                                    data-pr-my="left center-2"
-                                    style={{ fontSize: '1rem', cursor: 'pointer' }}
-                                ></i>
-                                <div className="p-inputgroup flex-1">
-                                    <span className="p-inputgroup-addon">%</span>
-                                    <InputNumber 
-                                        placeholder="Porcentaje"
-                                        disabled={footerMode == 'view'}
-                                        value={oDps.payment_percentage}
-                                        onChange={(e: any) => {calcAmountPercentage('percentage', e.value);}} 
-                                        min={0} 
-                                        max={100}
-                                        maxFractionDigits={2}
-                                        inputClassName="text-right"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="field col-12 md:col-2">
-                        <div className="formgrid grid">
-                            <div className="col">
-                                <label>{t('uploadDialog.amountOption.label')}</label>
-                                &nbsp;
-                                <Tooltip target=".custom-target-icon" />
-                                <i
-                                    className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                                    data-pr-tooltip={t('uploadDialog.amountOption.tooltip')}
-                                    data-pr-position="right"
-                                    data-pr-my="left center-2"
-                                    style={{ fontSize: '1rem', cursor: 'pointer' }}
-                                ></i>
-                                <InputNumber 
-                                    placeholder="Monto"
-                                    disabled={footerMode == 'view'}
-                                    value={oDps.payment_amount}
-                                    onChange={(e: any) => {calcAmountPercentage('amount', e.value)}}
-                                    minFractionDigits={2}
-                                    maxFractionDigits={2}
-                                    min={0}
-                                    max={oDps.amount}
-                                    inputClassName="text-right"
-                                />
-                            </div>
-                        </div>
-                    </div>
-                    <div className={`field col-12 md:col-4`}>
-                        <div className="formgrid grid">
-                            <div className="col">
-                                <label data-pr-tooltip="">{t('uploadDialog.payDay.label')}</label>
-                                &nbsp;
-                                <Tooltip target=".custom-target-icon" />
-                                <i className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge" data-pr-tooltip={t('uploadDialog.payDay.tooltip')} data-pr-position="right" data-pr-my="left center-2" style={{ fontSize: '1rem', cursor: 'pointer' }}></i>
-                                <div>
-                                    <Calendar
-                                        value={oDps.payday}
-                                        placeholder={t('uploadDialog.payDay.placeholder')}
-                                        onChange={(e) => {
-                                            setODps((prev: any) => ({ ...prev, payday: e.value }));
-                                            setErrors?.((prev: any) => ({ ...prev, payday: false }));
-                                        }}
-                                        showIcon
-                                        locale="es"
-                                        inputRef={inputRefPercentage}
-                                        disabled={ (!(oDps.payment_percentage > 0) || (footerMode == 'view') ) }
-                                        onSelect={() => {
-                                            if (inputRefPercentage.current && oDps.payday) {
-                                                inputRefPercentage.current.value = DateFormatter(oDps.payday);
-                                            }
-                                        }}
-                                        onBlur={() => {
-                                            if (inputRefPercentage.current && oDps.payday) {
-                                                inputRefPercentage.current.value = DateFormatter(oDps.payday);
-                                            }
-                                        }}
-                                        className={`w-full ${errors?.payday ? 'p-invalid' : ''} `}
-                                        minDate={minDate}
-                                    />
-                                    {errors?.payday && <small className="p-error">Ingresa fecha de pago</small>}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <>
                     {renderField({
                         label: t('uploadDialog.aceptNotes.label'),
                         tooltip: t('uploadDialog.aceptNotes.tooltip'),
@@ -559,21 +480,162 @@ export const FieldsDps = ({
                         errorKey: '',
                         labelClass: 'opacity-100 text-blue-600'
                     })}
-                    {renderField({
-                        label: t('uploadDialog.rejectComments.label'),
-                        tooltip: t('uploadDialog.rejectComments.tooltip'),
-                        value: oDps?.authz_acceptance_notes,
-                        onChange: (value) => {setODps((prev: any) => ({ ...prev, authz_acceptance_notes: value })); setErrors?.((prev: any) => ({ ...prev, rejectComments: false })) },
-                        disabled: footerMode == 'view',
-                        mdCol: 12,
-                        type: 'textArea',
-                        placeholder: '',
-                        errors: errors,
-                        errorKey: 'rejectComments',
-                        errorMessage: t('uploadDialog.rejectComments.helperText'),
-                        labelClass: 'font-bold opacity-100 text-blue-600'
-                    })}
-                </div>
+                    <div className="p-fluid formgrid grid">
+                        <div className="field col-12 md:col-4">
+                            <div className="formgrid grid">
+                                <div className="col">
+                                    <label>{t('uploadDialog.percentOption.label')}</label>
+                                    &nbsp;
+                                    <Tooltip target=".custom-target-icon" />
+                                    <i
+                                        className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
+                                        data-pr-tooltip={t('uploadDialog.percentOption.tooltip')}
+                                        data-pr-position="right"
+                                        data-pr-my="left center-2"
+                                        style={{ fontSize: '1rem', cursor: 'pointer' }}
+                                    ></i>
+                                    <SelectButton value={percentOption} disabled={footerMode == 'view'} onChange={(e) => setPercentOption(e.value)} options={lPercentOptions} style={{ height: '2rem', marginTop: '5px' }}/>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="field col-12 md:col-2">
+                            <div className="formgrid grid">
+                                <div className="col">
+                                    <label>{t('uploadDialog.percentOption.label')}</label>
+                                    &nbsp;
+                                    <Tooltip target=".custom-target-icon" />
+                                    <i
+                                        className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
+                                        data-pr-tooltip={t('uploadDialog.percentOption.tooltip')}
+                                        data-pr-position="right"
+                                        data-pr-my="left center-2"
+                                        style={{ fontSize: '1rem', cursor: 'pointer' }}
+                                    ></i>
+                                    <div className="p-inputgroup flex-1">
+                                        <span className="p-inputgroup-addon">%</span>
+                                        <InputNumber 
+                                            placeholder="Porcentaje"
+                                            disabled={footerMode == 'view'}
+                                            value={oDps.payment_percentage}
+                                            onChange={(e: any) => {calcAmountPercentage('percentage', e.value);}} 
+                                            min={0} 
+                                            max={100}
+                                            maxFractionDigits={2}
+                                            inputClassName="text-right"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="field col-12 md:col-2">
+                            <div className="formgrid grid">
+                                <div className="col">
+                                    <label>{t('uploadDialog.amountOption.label')}</label>
+                                    &nbsp;
+                                    <Tooltip target=".custom-target-icon" />
+                                    <i
+                                        className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
+                                        data-pr-tooltip={t('uploadDialog.amountOption.tooltip')}
+                                        data-pr-position="right"
+                                        data-pr-my="left center-2"
+                                        style={{ fontSize: '1rem', cursor: 'pointer' }}
+                                    ></i>
+                                    <InputNumber 
+                                        placeholder="Monto"
+                                        disabled={footerMode == 'view'}
+                                        value={oDps.payment_amount}
+                                        onChange={(e: any) => {calcAmountPercentage('amount', e.value)}}
+                                        minFractionDigits={2}
+                                        maxFractionDigits={2}
+                                        min={0}
+                                        max={oDps.amount}
+                                        inputClassName="text-right"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        <div className={`field col-12 md:col-4`}>
+                            <div className="formgrid grid">
+                                <div className="col">
+                                    <label data-pr-tooltip="">{t('uploadDialog.payDay.label')}</label>
+                                    &nbsp;
+                                    <Tooltip target=".custom-target-icon" />
+                                    <i className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge" data-pr-tooltip={t('uploadDialog.payDay.tooltip')} data-pr-position="right" data-pr-my="left center-2" style={{ fontSize: '1rem', cursor: 'pointer' }}></i>
+                                    <div>
+                                        <Calendar
+                                            value={oDps.payday}
+                                            placeholder={t('uploadDialog.payDay.placeholder')}
+                                            onChange={(e) => {
+                                                setODps((prev: any) => ({ ...prev, payday: e.value }));
+                                                setErrors?.((prev: any) => ({ ...prev, payday: false }));
+                                            }}
+                                            showIcon
+                                            locale="es"
+                                            inputRef={inputRefPercentage}
+                                            disabled={ (!(oDps.payment_percentage > 0) || (footerMode == 'view') ) }
+                                            onSelect={() => {
+                                                if (inputRefPercentage.current && oDps.payday) {
+                                                    inputRefPercentage.current.value = DateFormatter(oDps.payday);
+                                                }
+                                            }}
+                                            onBlur={() => {
+                                                if (inputRefPercentage.current && oDps.payday) {
+                                                    inputRefPercentage.current.value = DateFormatter(oDps.payday);
+                                                }
+                                            }}
+                                            className={`w-full ${errors?.payday ? 'p-invalid' : ''} `}
+                                            minDate={minDate}
+                                        />
+                                        {errors?.payday && <small className="p-error">Ingresa fecha de pago</small>}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className={`field col-12 md:col-4`}>
+                            <div className="formgrid grid">
+                                <div className="col">
+                                        <Checkbox 
+                                            inputId="is_payment_loc" 
+                                            name="is_payment_loc" 
+                                            value="is_payment_loc" 
+                                            onChange={(e: any) => { setODps( (prev: any) => ({ ...prev, is_payment_loc: e.checked }) ) }} 
+                                            checked={ oDps?.is_payment_loc }
+                                            disabled={ disabledIsPaymentLoc() }
+                                        />
+                                        <label htmlFor="is_payment_loc" className="ml-2">Pago en moneda local</label>
+                                </div>
+                            </div>
+                        </div>
+                        {renderField({
+                            label: 'Intrucciones pago:',
+                            tooltip: '',
+                            value: oDps?.payment_notes,
+                            onChange: (value) => {setODps((prev: any) => ({ ...prev, payment_notes: value })); },
+                            disabled: footerMode == 'view',
+                            mdCol: 12,
+                            type: 'textArea',
+                            placeholder: '',
+                            errors: errors,
+                            errorKey: 'rejectComments',
+                            errorMessage: t('uploadDialog.rejectComments.helperText'),
+                            labelClass: 'opacity-100 text-blue-600'
+                        })}
+                        {renderField({
+                            label: t('uploadDialog.rejectComments.label'),
+                            tooltip: t('uploadDialog.rejectComments.tooltip'),
+                            value: oDps?.authz_acceptance_notes,
+                            onChange: (value) => {setODps((prev: any) => ({ ...prev, authz_acceptance_notes: value })); setErrors?.((prev: any) => ({ ...prev, rejectComments: false })) },
+                            disabled: footerMode == 'view',
+                            mdCol: 12,
+                            type: 'textArea',
+                            placeholder: '',
+                            errors: errors,
+                            errorKey: 'rejectComments',
+                            errorMessage: t('uploadDialog.rejectComments.helperText'),
+                            labelClass: 'font-bold opacity-100 text-blue-600'
+                        })}
+                    </div>
+                </>
             )}
         </>
     );

@@ -523,7 +523,9 @@ export const InvoiceDialog = ({
                     payment_amount: oDps.payment_amount,
                     notes: oDps.notes,
                     user_id: userId,
-                    payment_definition: oDps.payment_definition
+                    payment_definition: oDps.payment_definition,
+                    is_payment_loc: oDps.is_payment_loc,
+                    payment_notes: oDps.payment_notes
                 }
             });
 
@@ -587,8 +589,17 @@ export const InvoiceDialog = ({
 
             const route = constants.ROUTE_POST_DOCUMENT_TRANSACTION;
 
+            let lRef = lRefToValidateXml;
+            if (lRefToValidateXml.length == 1 && lRefToValidateXml[0].id != 0) {
+                lRef[0].amount = oDps.amount;
+            }
+
+            if (lRefToValidateXml[0].id == 0) {
+                lRef = [];
+            }
+
             // formData.append('ref_id', ref_id);
-            formData.append('references', JSON.stringify(lRefToValidateXml));
+            formData.append('references', JSON.stringify(lRef));
             formData.append('area_id', oArea?.id || '');
             formData.append('route', route);
             formData.append('company', oCompany?.id || '');
@@ -732,12 +743,14 @@ export const InvoiceDialog = ({
             payment_percentage: false
         });
 
-        if ((dialogMode == 'review' || dialogMode == 'view' || dialogMode == 'authorization') && oDps) {
+        if ((dialogMode == 'review' || dialogMode == 'view' || dialogMode == 'authorization') && (oDps ? true : false)) {
             const oPaymentMethod = findPaymentMethod(lPaymentMethod, oDps?.payment_method);
             const oIssuer_tax_regime = findFiscalRegime(lFiscalRegimes, oDps?.issuer_tax_regime);
             const oReceiver_tax_regime = findFiscalRegime(lFiscalRegimes, oDps?.receiver_tax_regime);
             const oUseCfdi = findUseCfdi(lUseCfdi, oDps?.useCfdi);
             const oCurrency = findCurrency(lCurrencies, oDps?.currency);
+
+            setLRefToValidateXml(oDps?.lReferences);
 
             setTimeout(() => {
                 setODps((prev: any) => ({
@@ -759,7 +772,6 @@ export const InvoiceDialog = ({
                     getlUrlFilesDps();
                 }
             }, 200);
-
         }
 
         if (dialogMode == 'review') {
@@ -777,8 +789,11 @@ export const InvoiceDialog = ({
         }
 
         setFilterReferences(false);
-        setLRefToValidateXml([]);
         setLReferences([]);
+
+        if (dialogMode == 'create') {
+            setLRefToValidateXml([]);
+        }
     }, [visible]);
 
     useEffect(() => {
@@ -988,8 +1003,11 @@ export const InvoiceDialog = ({
                     authz_acceptance_notes: oDps.authz_acceptance_notes,
                     payment_date: date,
                     payment_percentage: oDps.payment_percentage,
+                    payment_amount: oDps.payment_amount,
                     notes: oDps.notes,
-                    user_id: userId
+                    user_id: userId,
+                    is_payment_loc: oDps.is_payment_loc,
+                    payment_notes: oDps.payment_notes,
                 }
             });
 
@@ -1211,7 +1229,7 @@ export const InvoiceDialog = ({
                                     errorMessage: t('uploadDialog.areas.helperText')
                             })}
 
-                            {lRefToValidateXml && lRefToValidateXml[0]?.id != 0 &&
+                            {lRefToValidateXml && lRefToValidateXml[0]?.id != 0 && lRefToValidateXml?.length > 1 &&
                                 <div className={`field col-12 md:col-6`}>
                                     <div className="formgrid grid">
                                         <div className="col">
@@ -1223,7 +1241,7 @@ export const InvoiceDialog = ({
                                                             type="text"
                                                             className={`w-full`}
                                                             value={lRefToValidateXml[index]?.amount}
-                                                            disabled={false}
+                                                            disabled={dialogMode === 'view' || dialogMode === 'review'}
                                                             maxLength={50}
                                                             minFractionDigits={2}
                                                             maxFractionDigits={2}
@@ -1246,7 +1264,7 @@ export const InvoiceDialog = ({
                                 <div className="field col-12 md:col-12">
                                     <div className="formgrid grid">
                                         <div className="col">
-                                            <label>XML</label>
+                                            <label>XML:  <span className='font-italic'>Debe seleccionar una referencia para cargar el XML</span> </label>
                                             &nbsp;
                                             <Tooltip target=".custom-target-icon" />
                                             <i
