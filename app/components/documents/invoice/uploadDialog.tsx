@@ -900,7 +900,7 @@ export default function UploadDialog({
                                                 oCompany={selectCompany}
                                                 oPartner={selectProvider}
                                                 user_id={userId}
-                                                oRef={selectReference}
+                                                oRef={selectReference ? [selectReference] : []}
                                                 errors={xmlValidateErrors}
                                                 setErrors={setXmlValidateErrors}
                                                 setODps={setODps}
