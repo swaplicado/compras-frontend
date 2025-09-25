@@ -21,6 +21,7 @@ const invoices = {
         placeholder: 'Filtrar empresa',
     },
     uploadDialog: { 
+        btnAcceptSendAuth: "Aceptar y enviar a autorizar",
         headerCreate: "Cargar factura",
         headerReview: "Aceptar o rechazar factura",
         uploadInstructions: {

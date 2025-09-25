@@ -162,7 +162,8 @@ const Upload = () => {
                     lReferences.push({
                         id: 0,
                         name: t('uploadDialog.reference.withOutReferenceOption'),
-                        is_covered: 0
+                        is_covered: 0,
+                        functional_area_id: null
                     });
                 }
 
@@ -170,7 +171,8 @@ const Upload = () => {
                     lReferences.push({
                         id: item.id,
                         name: item.reference,
-                        is_covered: item.is_covered
+                        is_covered: item.is_covered,
+                        functional_area_id: item.functional_area_id
                     });
                 }
 
@@ -224,7 +226,8 @@ const Upload = () => {
             const route = constants.ROUTE_GET_COMPANIES;
             const response = await axios.get(constants.API_AXIOS_GET, {
                 params: {
-                    route: route
+                    route: route,
+                    user_id: userId,
                 }
             });
 
@@ -542,7 +545,8 @@ const Upload = () => {
                     document_type: constants.DOC_TYPE_INVOICE,
                     authz_acceptance: constants.REVIEW_PENDING_ID,
                     start_date: start_date,
-                    end_date: end_date
+                    end_date: end_date,
+                    user_id: userId
                 };
                 setGetDpsParams({ params, errorMessage: t('errors.getInvoicesError'), setLDps, showToast });
 

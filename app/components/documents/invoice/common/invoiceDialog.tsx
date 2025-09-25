@@ -27,6 +27,7 @@ import { FieldsEditAcceptance } from '@/app/components/documents/invoice/fieldsE
 import { HistoryAuth } from '@/app/components/documents/invoice/historyAuth';
 import { ToggleButton } from 'primereact/togglebutton';
 import { Checkbox } from "primereact/checkbox";
+import { MultiSelect } from 'primereact/multiselect';
 
 interface InvoiceDialogProps {
     visible: boolean;
@@ -77,7 +78,7 @@ interface renderFieldProps {
     value: any;
     disabled?: boolean;
     mdCol: number | 6;
-    type: 'text' | 'dropdown' | 'number' | 'textArea';
+    type: 'text' | 'dropdown' | 'number' | 'textArea' | 'multiselect';
     onChange?: (value: any) => void;
     options?: any[];
     placeholder: string;
@@ -132,7 +133,7 @@ export const InvoiceDialog = ({
 }: InvoiceDialogProps) => {
     const [oCompany, setOCompany] = useState<any>(null);
     const [oProvider, setOProvider] = useState<any>(null);
-    const [oReference, setOReference] = useState<any>(null);
+    const [oReference, setOReference] = useState<any[]>([]);
     const [oArea, setOArea] = useState<any>(null);
     const fileUploadRef = useRef<FileUpload>(null);
     const fileEditAcceptRef = useRef<FileUpload>(null);
@@ -200,6 +201,7 @@ export const InvoiceDialog = ({
     const [loadingFileNames, setLoadingFileNames] = useState<boolean>(false);
     const [lFilesToEdit, setLFilesToEdit] = useState<any[]>([]);
     const [filterReferences, setFilterReferences] = useState<boolean>(false);
+    const [lRefToValidateXml, setLRefToValidateXml] = useState<any[]>([]);
 
     const renderField = (props: renderFieldProps) => (
         <>
@@ -231,6 +233,62 @@ export const InvoiceDialog = ({
                                         placeholder={props.placeholder}
                                         filter
                                         className={`w-full ${props.errors[props.errorKey] ? 'p-invalid' : ''}`}
+                                        showClear
+                                        disabled={props.disabled}
+                                    />
+                                    {props.errors[props.errorKey] && <small className="p-error">{props.errorMessage}</small>}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    { props.renderRightItem && (
+                        <div className={`field col-12 md:col-${props.renderRightItem.mdCol}`}>
+                            <div className="formgrid grid">
+                                <div className="col">
+                                    {props.renderRightItem.item}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </>
+            )}
+            {props.type == 'multiselect' && (
+                <>
+                    { props.renderLeftItem && (
+                        <div className={`field col-12 md:col-${props.renderLeftItem.mdCol}`}>
+                            <div className="formgrid grid">
+                                <div className="col">
+                                    {props.renderLeftItem.item}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className={`field col-12 md:col-${props.mdCol}`}>
+                        <div className="formgrid grid">
+                            <div className="col">
+                                <div style={{ display: 'flex', alignItems: 'center'}}>
+                                    <label style={{ margin: 0, marginRight: '0.5rem' }}>{props.label}</label>
+                                    <Tooltip target=".custom-target-icon" />
+                                    <i className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge" 
+                                    data-pr-tooltip={props.tooltip} 
+                                    data-pr-position="right" 
+                                    data-pr-my="left center-2" 
+                                    style={{ fontSize: '1rem', cursor: 'pointer' }}></i>
+                                </div>
+                                <div style={{ width: '100%', position: 'relative' }}>
+                                    <MultiSelect
+                                        value={props.value}
+                                        onChange={(e) => props.onChange?.(e.value)}
+                                        options={props.options}
+                                        optionLabel="name"
+                                        placeholder={props.placeholder}
+                                        filter
+                                        className={`w-full ${props.errors[props.errorKey] ? 'p-invalid' : ''}`}
+                                        style={{ width: '100%' }}
+                                        maxSelectedLabels={2}
+                                        selectedItemsLabel="{0} seleccionados"
                                         showClear
                                         disabled={props.disabled}
                                     />
@@ -307,7 +365,8 @@ export const InvoiceDialog = ({
             provider: !oProvider,
             company: !oCompany,
             reference: !oReference,
-            area: oReference ? (oReference.id == '0' ? !oArea : false) : false,
+            // area: oReference ? (oReference.id == '0' ? !oArea : false) : false,
+            area: false,
             files: (fileUploadRef.current?.getFiles().length || 0) === 0,
             includePdf: fileUploadRef.current?.getFiles().length || 0 > 0 ? !fileUploadRef.current?.getFiles().some((file: { type: string }) => file.type === 'application/pdf') : false,
             includeXml: false,
@@ -359,7 +418,7 @@ export const InvoiceDialog = ({
     };
 
     const handleSelectCompany = async (oCompany: any) => {
-        setOReference(null);
+        setOReference([]);
         setOArea(null);
         setOCompany(oCompany);
         setFormErrors((prev: any) => ({ ...prev, company: false }));
@@ -372,12 +431,12 @@ export const InvoiceDialog = ({
         }
 
         if (!result) {
-            setOReference(null);
+            setOReference([]);
         }
     };
 
     const handleSelectedProvider = async (oProvider: any) => {
-        setOReference(null);
+        setOReference([]);
         setOArea(null);
         setOProvider(oProvider);
         setFormErrors((prev: any) => ({ ...prev, provider: false }));
@@ -388,8 +447,39 @@ export const InvoiceDialog = ({
         const result = await getlReferences(oCompany?.id, oProvider.id);
     };
 
+    const handleInputAmountReference = (index: number, newValue: number | null) => {
+        if (newValue && newValue > 999999999) {
+            newValue = 999999999;
+        }
+        
+        setLRefToValidateXml(prev => 
+            prev.map((item, i) => 
+                i == index ? { ...item, amount: newValue } : item
+            )
+        );
+    };
+
     const handleSelectReference = async (oReference: any) => {
-        setOReference(oReference);
+        const noReference = oReference?.some((ref: any) => 
+            ref.id == 0
+        );
+        let lref = [];
+        if (noReference) {
+            setOReference([lReferences[0]]);
+            setLRefToValidateXml([lReferences[0]]);
+        }else {
+            setOReference(oReference);
+            for (let i = 0; i < oReference.length; i++) {
+                lref.push({
+                    id: oReference[i].id,
+                    amount: 0,
+                    reference: oReference[i].name,
+                    functional_area_id: oReference[i].functional_area_id,
+                });
+            }
+            setLRefToValidateXml(lref);
+        }
+
         setOArea(null);
         setFormErrors((prev: any) => ({ ...prev, reference: false }));
     };
@@ -497,9 +587,8 @@ export const InvoiceDialog = ({
 
             const route = constants.ROUTE_POST_DOCUMENT_TRANSACTION;
 
-            const ref_id = oReference ? (oReference.id != '0' ? oReference?.id : '') : '';
-
-            formData.append('ref_id', ref_id);
+            // formData.append('ref_id', ref_id);
+            formData.append('references', JSON.stringify(lRefToValidateXml));
             formData.append('area_id', oArea?.id || '');
             formData.append('route', route);
             formData.append('company', oCompany?.id || '');
@@ -508,6 +597,8 @@ export const InvoiceDialog = ({
 
             const splitFolio = oDps.folio.split('-');
             const number = splitFolio.length > 1 ? splitFolio[1] : splitFolio[0];
+
+            const area_id = lRefToValidateXml[0].id == 0 ? oArea?.id : lRefToValidateXml[0].functional_area_id;
 
             let document = {
                 transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
@@ -523,14 +614,9 @@ export const InvoiceDialog = ({
                 fiscal_use: oDps.oUseCfdi?.id || '',
                 issuer_tax_regime: oDps.oIssuer_tax_regime?.id || '',
                 receiver_tax_regime: oDps.oReceiver_tax_regime?.id || '',
-                uuid: oDps.uuid || ''
+                uuid: oDps.uuid || '',
+                functional_area: area_id
             };
-
-            if (!ref_id) {
-                document = Object.assign({}, document, {
-                    functional_area: oArea?.id || ''
-                });
-            }
 
             formData.append('document', JSON.stringify(document));
 
@@ -595,7 +681,7 @@ export const InvoiceDialog = ({
         setLoadingReferences?.(false);
         setOCompany(null);
         setOProvider(null);
-        setOReference(null);
+        setOReference([]);
         setOArea(null);
         setXmlValidateErrors({
             includeXml: false,
@@ -691,6 +777,8 @@ export const InvoiceDialog = ({
         }
 
         setFilterReferences(false);
+        setLRefToValidateXml([]);
+        setLReferences([]);
     }, [visible]);
 
     useEffect(() => {
@@ -747,7 +835,7 @@ export const InvoiceDialog = ({
         <div className="flex flex-column md:flex-row justify-content-between gap-2">
             <Button label={tCommon('btnReject')} icon="bx bx-dislike" onClick={() => handleReview?.(constants.REVIEW_REJECT)} autoFocus disabled={loading} severity="danger" />
             <Button label={tCommon('btnAccept')} icon="bx bx-like" onClick={() => handleReview?.(constants.REVIEW_ACCEPT)} autoFocus disabled={loading} severity="success" />
-            <Button label={tCommon('btnAcceptAndSend')} icon="bx bx-paper-plane" onClick={() => handleReviewAndSendAuth?.()} autoFocus disabled={loading} severity="success" />
+            <Button label={t('uploadDialog.btnAcceptSendAuth')} icon="bx bx-paper-plane" onClick={() => handleReviewAndSendAuth?.()} autoFocus disabled={loading} severity="success" />
         </div>
     ):(
         resultUpload === 'waiting' && (
@@ -1072,7 +1160,7 @@ export const InvoiceDialog = ({
                                     value: dialogMode == 'create' ? oReference : oDps?.reference ? oDps.reference : 'Sin referencia',
                                     disabled: !lReferences || lReferences.length == 0 || dialogMode === 'view' || dialogMode === 'review',
                                     mdCol: dialogMode == 'create' ? 4 : 6,
-                                    type: dialogMode == 'create' ? 'dropdown' : 'text',
+                                    type: dialogMode == 'create' ? 'multiselect' : 'text',
                                     onChange: (value) => handleSelectReference(value),
                                     options: lReferences,
                                     placeholder: t('uploadDialog.reference.placeholder'),
@@ -1086,7 +1174,7 @@ export const InvoiceDialog = ({
                                                     inputId="ingredient1" 
                                                     name="pizza" 
                                                     value="Cheese" 
-                                                    onChange={(e: any) => { setFilterReferences(e.checked); setOReference(null)}} 
+                                                    onChange={(e: any) => { setFilterReferences(e.checked); setOReference([])}} 
                                                     checked={filterReferences}
                                                     disabled={!lReferences || lReferences.length == 0}
                                                 />
@@ -1098,7 +1186,7 @@ export const InvoiceDialog = ({
                                 })
                             )}
                             
-                            {oReference?.is_covered == 1 &&
+                            {oReference ? (oReference[0]?.is_covered == 1) : false &&
                                 <ul>
                                     <li className="col-12 md:col-12">
                                         <i className='bx bxs-error' style={{color: '#FFD700'}}></i>
@@ -1107,7 +1195,7 @@ export const InvoiceDialog = ({
                                 </ul>
                             }
 
-                            {(oReference?.id == '0' || (dialogMode == 'review' && oDps?.reference == '')) &&
+                            {(oReference ? (oReference[0]?.id == '0' || (dialogMode == 'review' && oDps?.reference == '')) : false) &&
                                 renderField({
                                     label: t('uploadDialog.areas.label'),
                                     tooltip: t('uploadDialog.areas.tooltip'),
@@ -1122,6 +1210,35 @@ export const InvoiceDialog = ({
                                     errors: formErrors,
                                     errorMessage: t('uploadDialog.areas.helperText')
                             })}
+
+                            {lRefToValidateXml && lRefToValidateXml[0]?.id != 0 &&
+                                <div className={`field col-12 md:col-6`}>
+                                    <div className="formgrid grid">
+                                        <div className="col">
+                                            {lRefToValidateXml.map((item: any, index: number) => (
+                                                <div className='field grid' key={index}>
+                                                    <label className='col-12 mb-2 md:col-3 md:mb-0 justify-content-end'>{item.reference}:</label>
+                                                    <div className='col-12 md:col-9'>
+                                                        <InputNumber
+                                                            type="text"
+                                                            className={`w-full`}
+                                                            value={lRefToValidateXml[index]?.amount}
+                                                            disabled={false}
+                                                            maxLength={50}
+                                                            minFractionDigits={2}
+                                                            maxFractionDigits={2}
+                                                            min={0}
+                                                            max={999999999}
+                                                            inputClassName="text-right"
+                                                            onChange={(e: any) => handleInputAmountReference(index, e.value)}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            }
                         </div>
 
                         {dialogMode == 'create' && (oProvider ? oProvider.country == constants.COUNTRIES.MEXICO_ID : false) && (
@@ -1144,7 +1261,7 @@ export const InvoiceDialog = ({
                                                 oCompany={oCompany}
                                                 oPartner={oProvider}
                                                 user_id={userId}
-                                                oRef={oReference}
+                                                oRef={lRefToValidateXml}
                                                 errors={xmlValidateErrors}
                                                 setErrors={setXmlValidateErrors}
                                                 setODps={setODps}

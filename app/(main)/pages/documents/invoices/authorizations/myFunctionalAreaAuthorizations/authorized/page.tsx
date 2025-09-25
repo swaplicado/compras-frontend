@@ -580,6 +580,9 @@ const Upload = () => {
                     },
                     delete: {
                         hidden: true
+                    },
+                    authorization: {
+                        hidden: false
                     }
                 })
             }
