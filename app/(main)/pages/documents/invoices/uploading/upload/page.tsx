@@ -88,6 +88,15 @@ const Upload = () => {
         </div>
     );
 
+    const showBtnCreate = () => {
+        let showBtn = true;
+        if (limitDate && !oValidUser.isInternalUser) {
+            showBtn = moment(actualDate).isBefore(limitDate);
+        }
+
+        return showBtn;
+    }
+
     const showToast = (type: 'success' | 'info' | 'warn' | 'error' = 'error', message: string, summaryText = 'Error:') => {
         toast.current?.show({
             severity: type,
@@ -635,7 +644,7 @@ const Upload = () => {
                         setDialogMode={setDialogMode}
                         setDialogVisible={setDialogVisible}
                         setFlowAuthDialogVisible={setFlowAuthDialogVisible}
-                        withBtnCreate={true}
+                        withBtnCreate={showBtnCreate()}
                     />
                 </Card>
             </div>
