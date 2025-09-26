@@ -14,6 +14,7 @@ import loaderScreen from '@/app/components/commons/loaderScreen';
 import { useTranslation } from 'react-i18next';
 import 'boxicons/css/boxicons.min.css';
 import { DialogManual } from '@/app/components/videoManual/dialogManual'
+import { Tooltip } from 'primereact/tooltip';
 
 axios.defaults.timeout = 45000;
 
@@ -131,7 +132,19 @@ const LoginPage = () => {
                             <div className='mb-5'>
                                 <label htmlFor='username' className='block text-900 text-xl font-medium mb-2'>
                                     {t('username')}
+                                    &nbsp;
+                                    <Tooltip target=".custom-target-icon" />
+                                    <i
+                                        className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
+                                        data-pr-tooltip={t('usernameTooltip')}
+                                        data-pr-position="right"
+                                        data-pr-my="left center-2"
+                                        style={{ fontSize: '1rem', cursor: 'pointer' }}
+                                    ></i>
                                 </label>
+                                <div>
+                                    <span className='text-xs font-medium mb-2'>{t('usernameSubLabel')}</span>
+                                </div>
                                 <InputText
                                     id='username'
                                     type='text'
