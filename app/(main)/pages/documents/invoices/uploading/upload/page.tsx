@@ -17,6 +17,8 @@ import { InvoiceDialog } from '@/app/components/documents/invoice/common/invoice
 import { getDps } from "@/app/(main)/utilities/documents/invoice/dps"
 import { Tooltip } from 'primereact/tooltip';
 import { FlowAuthorizationDialog } from '@/app/components/documents/invoice/flowAuthorizationDialog';
+import { Button } from 'primereact/button';
+import { DialogManual } from '@/app/components/videoManual/dialogManual';
 
 const Upload = () => {
     const [dialogVisible, setDialogVisible] = useState(false);
@@ -503,6 +505,53 @@ const Upload = () => {
         }
     }
 
+    const renderInfoButton = () => {
+        const instructions = JSON.parse(JSON.stringify(t(`viewInstructions`, { returnObjects: true })));
+        if (!instructions || Object.keys(instructions).length === 0) {
+            return null;
+        }
+
+        if (!oValidUser.isInternalUser) {
+            delete instructions['reviewInvoice'];
+        }
+
+        return (
+            <div className="pb-4">
+                <Button label={!showInfo ? tCommon('btnShowInstructions') : tCommon('btnHideInstructions')} icon="pi pi-info-circle" className="p-button-text p-button-secondary p-0" onClick={() => setShowInfo(!showInfo)} severity="info" />
+                {showInfo && (
+                    <div className="p-3 border-1 border-round border-gray-200 bg-white mb-3 surface-border surface-card">
+                        <DialogManual 
+                            visible={showManual} 
+                            onHide={() => setShowManual(false)} 
+                            lVideos={[
+                                { url: 'https://drive.google.com/file/d/1zwjNZDj3fBgPqLf_KSp6szNFFFFlfJ4i/preview', title: 'Subir factura proveedor nacional' },
+                                { url: 'https://drive.google.com/file/d/1gS4NCC2EuSwbUL_fyD1D7o9uFcBNhKWl/preview', title: 'Subir factura proveedor extranjero' }
+                            ]} 
+                            setShowManual={setShowManual}
+                            helpText={ {
+                                buttonLabel: t('helpText.buttonLabel'),
+                                buttonTooltip: t('helpText.buttonTooltip'),
+                                dialogHeader: t('helpText.dialogHeader'),
+                            } }
+                        />
+                        {Object.keys(instructions).map((key, index) => (
+                            <div key={index}>
+                                <h6>{instructions[key].header}</h6>
+                                <ul>
+                                    {Object.keys(instructions[key])
+                                        .filter((subKey) => subKey.startsWith('step'))
+                                        .map((subKey, subIndex) => (
+                                            <li key={subIndex}>{instructions[key][subKey]}</li>
+                                        ))}
+                                </ul>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+        );
+    };
+
     const handleRowClick = (e: DataTableRowClickEvent) => {
         if (!oValidUser.isInternalUser) {
             e.originalEvent.preventDefault();
@@ -649,6 +698,7 @@ const Upload = () => {
                             handleAcceptance={handleAcceptance}
                         />
                     )}
+                    {renderInfoButton()}
                     <TableInvoices
                         getDpsParams={getDpsParams}
                         setGetDpsParams={setGetDpsParams}
