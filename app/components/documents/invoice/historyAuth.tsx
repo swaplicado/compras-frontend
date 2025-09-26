@@ -38,7 +38,7 @@ export const HistoryAuth = ({
                 <Column field="actioned_by" header="Revisor"/>
                 <Column field="status" header="Estatus"/>
                 <Column field="notes" header="Notas"/>
-                <Column field="actioned_at" header="Fecha"/>
+                <Column field="actioned_at" header="Fecha-hora"/>
             </DataTable>
         </div>
     )
