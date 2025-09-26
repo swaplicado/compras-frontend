@@ -616,8 +616,8 @@ export const FieldsDps = ({
                             type: 'textArea',
                             placeholder: '',
                             errors: errors,
-                            errorKey: 'rejectComments',
-                            errorMessage: t('uploadDialog.rejectComments.helperText'),
+                            errorKey: '',
+                            errorMessage: '',
                             labelClass: 'opacity-100 text-blue-600'
                         })}
                         {renderField({
