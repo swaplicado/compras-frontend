@@ -1,8 +1,8 @@
 export default {
     title: "¡Bienvenido/a!",
     subTitle: "Ingresa tu cuenta para continuar",
-    username: "Usuario",
-    usernamePLaceholder: "Usuario",
+    username: "Usuario (Interno) / RFC (Proveedor) / ID Fiscal (Extranjero)",
+    usernamePLaceholder: "Usuario (Interno) / RFC (Proveedor) / ID Fiscal (Extranjero)",
     usernameHelper: "Por favor ingresa tu usuario.",
     password: "Contraseña",
     passwordPlaceholder: "Contraseña",
