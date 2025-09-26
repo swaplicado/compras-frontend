@@ -427,7 +427,10 @@ export const TableInvoices = ({
             if (params) {
                 await getDps(params);
             }
-            setLoading?.(false);
+            setTimeout(() => {
+                setLoading?.(false);
+            }, 5000);
+            // setLoading?.(false);
         }
         if (withMounthFilter) {
             if (getDpsParams) {
@@ -521,6 +524,11 @@ export const TableInvoices = ({
                 <Column field="authz_authorization_code" header="authz_authorization_code" hidden />
                 <Column field="authz_authorization_notes" header="authz_authorization_notes" hidden />
                 <Column field="hiddenFolio" header="hiddenFolio" hidden />
+                <Column field="payment_amount" header="payment_amount" hidden />
+                <Column field="is_payment_loc" header="is_payment_loc" hidden />
+                <Column field="payment_notes" header="payment_notes" hidden />
+                <Column field="lReferences" header="lReferences" hidden />
+                <Column field="oPartner" header="oPartner" hidden />
                 <Column field="company" header={t('invoicesTable.columns.company')} footer={t('invoicesTable.columns.company')} sortable filter showFilterMatchModes={false} filterElement={companyFilterTemplate} filterApply={<></>} filterClear={<></>} />
                 <Column
                     field="provider_name"

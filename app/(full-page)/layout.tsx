@@ -7,7 +7,7 @@ interface SimpleLayoutProps {
 }
 
 export const metadata: Metadata = {
-    title: 'compras',
+    title: 'Portal de compras',
     description: '',
     icons: {
         icon: '/aeth_logo.png'

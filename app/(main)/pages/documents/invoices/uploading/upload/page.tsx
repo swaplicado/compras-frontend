@@ -17,6 +17,8 @@ import { InvoiceDialog } from '@/app/components/documents/invoice/common/invoice
 import { getDps } from "@/app/(main)/utilities/documents/invoice/dps"
 import { Tooltip } from 'primereact/tooltip';
 import { FlowAuthorizationDialog } from '@/app/components/documents/invoice/flowAuthorizationDialog';
+import { Button } from 'primereact/button';
+import { DialogManual } from '@/app/components/videoManual/dialogManual';
 
 const Upload = () => {
     const [dialogVisible, setDialogVisible] = useState(false);
@@ -55,6 +57,11 @@ const Upload = () => {
     const [filters, setFilters] = useState<DataTableFilterMeta>({});
     const isMobile = useIsMobile();
     const [getDpsParams, setGetDpsParams] = useState<any>(null);
+    const [reviewErrors, setReviewErrors] = useState({
+            rejectComments: false,
+            payday: false,
+            payment_percentage: false
+        });
 
     const headerCard = (
         <div
@@ -166,7 +173,8 @@ const Upload = () => {
                     lReferences.push({
                         id: 0,
                         name: t('uploadDialog.reference.withOutReferenceOption'),
-                        is_covered: 0
+                        is_covered: 0,
+                        functional_area_id: null
                     });
                 }
 
@@ -174,7 +182,8 @@ const Upload = () => {
                     lReferences.push({
                         id: item.id,
                         name: item.reference,
-                        is_covered: item.is_covered
+                        is_covered: item.is_covered,
+                        functional_area_id: item.functional_area_id
                     });
                 }
 
@@ -228,7 +237,8 @@ const Upload = () => {
             const route = constants.ROUTE_GET_COMPANIES;
             const response = await axios.get(constants.API_AXIOS_GET, {
                 params: {
-                    route: route
+                    route: route,
+                    user_id: userId,
                 }
             });
 
@@ -462,8 +472,12 @@ const Upload = () => {
                 authz_acceptance_notes: selectedRow.authz_acceptance_notes,
                 payment_date: date,
                 payment_percentage: selectedRow.payment_percentage,
+                payment_amount: selectedRow.payment_amount,
                 notes: selectedRow.notes,
-                user_id: userId
+                user_id: userId,
+                payment_definition: selectedRow.payment_definition,
+                is_payment_loc: selectedRow.is_payment_loc,
+                payment_notes: selectedRow.payment_notes
             }
         });
 
@@ -474,6 +488,12 @@ const Upload = () => {
 
     const handleReviewAndSendAuth = async () => {
         try {
+            if (!selectedRow.payday && selectedRow.payment_percentage > 0) {
+                setReviewErrors((prev) => ({ ...prev, payday: true }));
+                showToast?.('info', 'Ingresa una fecha de pago de la factura');
+                return;
+            }
+
             setDialogVisible(false);
             setTimeout(() => {
                 setFlowAuthDialogVisible(true);
@@ -484,6 +504,53 @@ const Upload = () => {
             setLoading(false);
         }
     }
+
+    const renderInfoButton = () => {
+        const instructions = JSON.parse(JSON.stringify(t(`viewInstructions`, { returnObjects: true })));
+        if (!instructions || Object.keys(instructions).length === 0) {
+            return null;
+        }
+
+        if (!oValidUser.isInternalUser) {
+            delete instructions['reviewInvoice'];
+        }
+
+        return (
+            <div className="pb-4">
+                <Button label={!showInfo ? tCommon('btnShowInstructions') : tCommon('btnHideInstructions')} icon="pi pi-info-circle" className="p-button-text p-button-secondary p-0" onClick={() => setShowInfo(!showInfo)} severity="info" />
+                {showInfo && (
+                    <div className="p-3 border-1 border-round border-gray-200 bg-white mb-3 surface-border surface-card">
+                        <DialogManual 
+                            visible={showManual} 
+                            onHide={() => setShowManual(false)} 
+                            lVideos={[
+                                { url: 'https://drive.google.com/file/d/1zwjNZDj3fBgPqLf_KSp6szNFFFFlfJ4i/preview', title: 'Subir factura proveedor nacional' },
+                                { url: 'https://drive.google.com/file/d/1gS4NCC2EuSwbUL_fyD1D7o9uFcBNhKWl/preview', title: 'Subir factura proveedor extranjero' }
+                            ]} 
+                            setShowManual={setShowManual}
+                            helpText={ {
+                                buttonLabel: t('helpText.buttonLabel'),
+                                buttonTooltip: t('helpText.buttonTooltip'),
+                                dialogHeader: t('helpText.dialogHeader'),
+                            } }
+                        />
+                        {Object.keys(instructions).map((key, index) => (
+                            <div key={index}>
+                                <h6>{instructions[key].header}</h6>
+                                <ul>
+                                    {Object.keys(instructions[key])
+                                        .filter((subKey) => subKey.startsWith('step'))
+                                        .map((subKey, subIndex) => (
+                                            <li key={subIndex}>{instructions[key][subKey]}</li>
+                                        ))}
+                                </ul>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+        );
+    };
 
     const handleRowClick = (e: DataTableRowClickEvent) => {
         if (!oValidUser.isInternalUser) {
@@ -538,7 +605,8 @@ const Upload = () => {
                     document_type: constants.DOC_TYPE_INVOICE,
                     authz_acceptance: constants.REVIEW_PENDING_ID,
                     start_date: start_date,
-                    end_date: end_date
+                    end_date: end_date,
+                    user_id: userId
                 };
                 setGetDpsParams({ params, errorMessage: t('errors.getInvoicesError'), setLDps, showToast });
 
@@ -610,6 +678,8 @@ const Upload = () => {
                         loadingReferences={loadingReferences}
                         setLoadingReferences={setLoadingReferences}
                         handleReviewAndSendAuth={handleReviewAndSendAuth}
+                        reviewErrors={reviewErrors}
+                        setReviewErrors={setReviewErrors}
                     />
                     { oValidUser.isInternalUser && (
                         <FlowAuthorizationDialog 
@@ -628,6 +698,7 @@ const Upload = () => {
                             handleAcceptance={handleAcceptance}
                         />
                     )}
+                    {renderInfoButton()}
                     <TableInvoices
                         getDpsParams={getDpsParams}
                         setGetDpsParams={setGetDpsParams}

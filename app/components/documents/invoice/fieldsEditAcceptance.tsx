@@ -31,19 +31,24 @@ export const FieldsEditAcceptance = ({
     const { t: tAuth } = useTranslation('authorizations');
     const { t: tCommon } = useTranslation('common');
 
-    const [selectedCategories, setSelectedCategories] = useState<any[]>([]);
+    const [selectedFile, setselectedFile] = useState<any[]>([]);
+
+    useEffect(() => {
+        setselectedFile(lFiles.map((oFile) => oFile.id));
+        setLFilesToEdit(lFiles.map((oFile) => oFile.id));
+    }, [] )
 
     const onCategoryChange = (e: any) => {
-        let _selectedCategories = [...selectedCategories];
+        let _selectedFile = [...selectedFile];
 
         if (e.checked) {
-            _selectedCategories.push(e.value.id);
+            _selectedFile.push(e.value.id);
         } else {
-            _selectedCategories = _selectedCategories.filter((val) => val !== e.value.id);
+            _selectedFile = _selectedFile.filter((val) => val !== e.value.id);
         }
 
-        setSelectedCategories(_selectedCategories);
-        setLFilesToEdit(_selectedCategories);
+        setselectedFile(_selectedFile);
+        setLFilesToEdit(_selectedFile);
     };
 
     return (
@@ -65,7 +70,7 @@ export const FieldsEditAcceptance = ({
                             return (
                                 ( oFile.extension != 'xml' && oFile.name.slice(0,4) != 'ext_' ?
                                     <div key={oFile.name} className="flex align-items-center pt-2">
-                                        <Checkbox inputId={oFile.name} name="category" value={oFile} onChange={onCategoryChange} checked={selectedCategories.some((item) => item == oFile.id)} />
+                                        <Checkbox inputId={oFile.name} name="category" value={oFile} onChange={onCategoryChange} checked={selectedFile.some((item) => item == oFile.id)} />
                                         <label htmlFor={oFile.name} className="ml-2">
                                             {oFile.name}
                                         </label>

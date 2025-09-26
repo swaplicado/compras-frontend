@@ -14,59 +14,59 @@
             "label": "Documentos",
             "items": [
                 {
-                    "label": "Aceptación de facturas",
-                    "icon": "pi pi-fw pi-bookmark",
+                    "label": "Recepción de facturas",
+                    "icon": "pi pi-inbox",
                     "items": [
                         {
-                            "label": "Carga de facturas",
-                            "icon": "pi pi-fw pi-bookmark",
+                            "label": "Cargar facturas",
+                            "icon": "pi pi-upload",
                             "to": "/pages/documents/invoices/uploading/upload"
                         },
                         {
-                            "label": "Facturas aceptadas",
-                            "icon": "pi pi-fw pi-bookmark",
+                            "label": "Facturas recibidas",
+                            "icon": "pi pi-check-square",
                             "to": "/pages/documents/invoices/uploading/accepted"
                         },
                         {
                             "label": "Facturas rechazadas",
-                            "icon": "pi pi-fw pi-bookmark",
+                            "icon": "pi pi-times-circle",
                             "to": "/pages/documents/invoices/uploading/rejected"
                         }
                     ]
                 },
                 {
-                    "label": "Facturas en autorización",
-                    "icon": "pi pi-fw pi-bookmark",
+                    "label": "Consulta de autorizaciones",
+                    "icon": "pi pi-search",
                     "items": [
                         {
-                            "label": "Facturas por autorizar",
-                            "icon": "pi pi-fw pi-bookmark",
+                            "label": "En proceso de autorización",
+                            "icon": "pi pi-clock",
                             "to": "/pages/documents/invoices/authorizations/myFunctionalAreaAuthorizations/inAuthorization"
                         },
                         {
-                            "label": "Facturas autorizadas",
-                            "icon": "pi pi-fw pi-bookmark",
+                            "label": "Autorizadas",
+                            "icon": "pi pi-check-circle",
                             "to": "/pages/documents/invoices/authorizations/myFunctionalAreaAuthorizations/authorized"
                         },
                         {
-                            "label": "Facturas rechazadas",
-                            "icon": "pi pi-fw pi-bookmark",
+                            "label": "Rechazadas",
+                            "icon": "pi pi-times-circle",
                             "to": "/pages/documents/invoices/authorizations/myFunctionalAreaAuthorizations/rejected"
                         }
                     ]
                 },
                 {
                     "label": "Pagos",
-                    "icon": "pi pi-fw pi-bookmark",
+                    "icon": "pi pi-wallet",
                     "items": [
                         {
                             "label": "Pagos programados",
-                            "icon": "pi pi-fw pi-bookmark",
+                            "icon": "pi pi-calendar",
                             "to": "/pages/documents/payments/programed"
                         },
                         {
-                            "label": "Pagos operados",
-                            "icon": "pi pi-fw pi-bookmark",
+                            "label": "Pagos ejecutados",
+                            "icon": "pi pi-money-bill",
                             "to": "/pages/documents/payments/executed"
                         }
                     ]

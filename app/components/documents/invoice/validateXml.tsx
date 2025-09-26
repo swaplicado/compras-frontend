@@ -13,7 +13,7 @@ interface validateXmlProps {
     oCompany: { id: string; name: string } | null,
     oPartner: { id: string; name: string; country: number } | null,
     user_id: number,
-    oRef: { id: string; name: string } | null,
+    oRef: any[],
     errors: {
         includeXml?: boolean;
     };
@@ -44,7 +44,8 @@ export const ValidateXml = ( { xmlUploadRef, oCompany, oPartner, user_id, oRef, 
             formData.append('route', route);
             formData.append('company_id', oCompany?.id || '');
             formData.append('partner_id', oPartner?.id || '');
-            formData.append('ref_id', oRef?.id || '');
+            // formData.append('ref_id', oRef?.id || '');
+            formData.append('references', oRef[0].id != 0 ? JSON.stringify(oRef) : '[]');
             formData.append('user_id', user_id.toString());
 
             const response = await axios.post(constants.API_AXIOS_POST, formData, {
@@ -55,23 +56,6 @@ export const ValidateXml = ( { xmlUploadRef, oCompany, oPartner, user_id, oRef, 
                 const data = response.data.data;
                 setIsXmlValid?.(data.valid);
                 if (data.valid) {
-                    //respaldo no borrar
-                    // const oDps = {
-                    //     serie: data.data.serie,
-                    //     folio: data.data.serie ? (data.data.serie + '-' + data.data.folio) : data.data.folio,
-                    //     xml_date: data.data.xml_date,
-                    //     payment_method: findPaymentMethod(lPaymentMethod, data.data.payment_method),
-                    //     rfc_issuer: data.data.rfc_issuer,
-                    //     tax_regime_issuer: findFiscalRegime(lFiscalRegimes, data.data.tax_regime_issuer),
-                    //     rfc_receiver: data.data.rfc_receiver,
-                    //     tax_regime_receiver: findFiscalRegime(lFiscalRegimes, data.data.tax_regime_receiver),
-                    //     use_cfdi: findUseCfdi(lUseCfdi, data.data.use_cfdi),
-                    //     amount: data.data.amount,
-                    //     currency: findCurrency( lCurrencies, data.data.currency),
-                    //     exchange_rate: data.data.exchange_rate,
-                    //     uuid: data.data.uuid
-                    // }
-
                     const oPaymentMethod = findPaymentMethod(lPaymentMethod, data.data.payment_method);
                     const payment_method = oPaymentMethod ? oPaymentMethod.name : '';
                     const oIssuer_tax_regime = findFiscalRegime(lFiscalRegimes, data.data.tax_regime_issuer);
@@ -154,6 +138,26 @@ export const ValidateXml = ( { xmlUploadRef, oCompany, oPartner, user_id, oRef, 
         //necesario para el callback, aunque la funcion este vacia
     }
 
+    const isDisabled = () => {
+        if (oRef.length == 0) {
+            return true;
+        }
+
+        if (oRef[0].id == 0) {
+            return false;
+        }
+
+        if (oRef.length > 1) {
+            for (let i = 0; i < oRef.length; i++) {
+                if (oRef[i].amount == 0) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     useEffect(() => {
         if (xmlUploadRef.current) {
             xmlUploadRef.current.clear();
@@ -165,7 +169,7 @@ export const ValidateXml = ( { xmlUploadRef, oCompany, oPartner, user_id, oRef, 
     return (
         <>
             <CustomFileUpload 
-                disabled={ !oRef ? true : false }
+                disabled={ isDisabled() }
                 fileUploadRef={xmlUploadRef} 
                 totalSize={totalSize} 
                 setTotalSize={setTotalSize} 

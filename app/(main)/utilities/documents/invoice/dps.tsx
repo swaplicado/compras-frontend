@@ -25,16 +25,26 @@ export const getDps = async ( props: getDpsProps  ) => {
             let dps: any[] = [];
             for (let i = 0; i < data.length; i++) {
                 let reference = '';
+                let lReferences = [];
                 if (data[i].references) {
                     for (let j = 0; j < data[i].references.length; j++) {
                         reference += data[i].references[j].reference;
                         if (j < data[i].references.length - 1) {
                             reference += ', ';
                         }
+                        lReferences.push({
+                            reference: data[i].references[j].reference,
+                            amount: data[i].references[j].amount
+                        });
                     }   
                 }
 
                 const actors_of_action = data[i].flow_details?.last_turn_action?.actors_of_action;
+                const oPartner = {
+                    id: data[i]?.partner.id,
+                    name: data[i]?.partner.trade_name,
+                    country: data[i]?.partner.country
+                }
 
                 dps.push({
                     id_dps: data[i].id,
@@ -50,11 +60,13 @@ export const getDps = async ( props: getDpsProps  ) => {
                     useCfdi: data[i].fiscal_use,
                     company: data[i].company.trade_name,
                     provider_name: data[i].partner.trade_name,
+                    oPartner: oPartner,
                     serie: data[i].series,
                     number: data[i].number,
                     folio: data[i].folio,
                     hiddenFolio: data[i].folio,
                     reference: reference,
+                    lReferences: lReferences,
                     files: data[i].id,
                     date: data[i].date,
                     acceptance: data[i].authz_acceptance_name?.toLowerCase(),
@@ -65,12 +77,15 @@ export const getDps = async ( props: getDpsProps  ) => {
                     exchange_rate: data[i].exchange_rate,
                     payday: data[i].payment_date,
                     payment_percentage: data[i].payment_percentage,
+                    payment_amount: data[i].payment_amount,
                     notes: data[i].notes,
                     authz_acceptance_notes: data[i].authz_acceptance_notes,
                     payment_method: data[i].payment_method,
                     actors_of_action: actors_of_action ? JSON.stringify(actors_of_action) : '',
                     authz_authorization_code: data[i].authz_authorization_code ? data[i].authz_authorization_code : '',
-                    authz_authorization_notes: data[i].authz_authorization_notes ? data[i].authz_authorization_notes : ''
+                    authz_authorization_notes: data[i].authz_authorization_notes ? data[i].authz_authorization_notes : '',
+                    is_payment_loc: data[i].is_payment_loc,
+                    payment_notes: data[i].payment_notes
                 });
             }
             props.setLDps(dps);
