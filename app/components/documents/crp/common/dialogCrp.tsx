@@ -127,10 +127,6 @@ export const DialogCrp = ({
         }
     }, [visible]);
 
-    useEffect(() => {
-        console.log('oCrp: ', oCrp);
-    }, [oCrp]);
-
     return (
         <div className="flex justify-content-center">
             <Dialog header={headerTitle} visible={visible} onHide={onHide} footer={footerContent} pt={{ header: { className: 'pb-2 pt-2 border-bottom-1 surface-border' } }} style={{ width: isMobile ? '100%' : '70rem' }}>
@@ -158,7 +154,7 @@ export const DialogCrp = ({
                                     label: 'Empresa',
                                     tooltip: 'Empresa',
                                     value: oCrp?.oCompany,
-                                    disabled: dialogMode == 'view',
+                                    disabled: dialogMode == 'view' || dialogMode == 'edit',
                                     mdCol: 6,
                                     type: dialogMode == 'create' ? 'dropdown' : 'text',
                                     onChange: (value) => {
@@ -174,7 +170,7 @@ export const DialogCrp = ({
                                     label: 'Proveedor',
                                     tooltip: 'Proveedor',
                                     value: oCrp?.oProvider,
-                                    disabled: dialogMode == 'view',
+                                    disabled: dialogMode == 'view' || dialogMode == 'edit',
                                     mdCol: 6,
                                     type: dialogMode == 'create' ? 'dropdown' : 'text',
                                     onChange: (value) => {
@@ -187,16 +183,16 @@ export const DialogCrp = ({
                                     errorMessage: ''
                                 })}
 
-                                {(!loadinglPaymentsExec || dialogMode == 'view') && (
+                                {(!loadinglPaymentsExec || (dialogMode == 'view' || dialogMode == 'edit')) && (
                                     <>
-                                        { dialogMode == 'create' && (
+                                        { (dialogMode == 'create' || dialogMode == 'edit') && (
                                             <RenderField
                                                 label={'Pago'}
                                                 tooltip={'pago'}
                                                 value={oCrp?.oPay}
                                                 disabled={lPaymentsExec?.length == 0}
                                                 mdCol={6}
-                                                type={dialogMode == 'create' ? 'multiselect' : 'text'}
+                                                type={(dialogMode == 'create' || dialogMode == 'edit') ? 'multiselect' : 'text'}
                                                 onChange={(value) => {
                                                     setOCrp?.((prev: any) => ({ ...prev, oPay: value }));
                                                 }}
@@ -271,7 +267,7 @@ export const DialogCrp = ({
                                     </div>
                                 )}
 
-                                {oCrp?.oPay && (
+                                {oCrp?.oPay && dialogMode == 'create' && (
                                     <div className={`field col-12 md:col-12`}>
                                         <div className="formgrid grid">
                                             <div className="col">
@@ -301,7 +297,7 @@ export const DialogCrp = ({
                                 )}
                             </div>
                         )}
-                        {withBody && (isXmlValid || dialogMode == 'view') && (
+                        {withBody && (isXmlValid || dialogMode == 'create' || dialogMode == 'edit' || dialogMode == 'view') && (
                             <div className="p-fluid formgrid grid">
                                 {RenderField({
                                     label: 'RFC emisor:',

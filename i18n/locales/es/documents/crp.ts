@@ -15,6 +15,7 @@ const crp = {
     dialog: {
         uploadTitle: "Carga de CRP",
         viewTitle: "CRP",
+        editTitle: "Editar CRP",
         acceptedTitle: "CRP",
         rejectedTitle: "CRP",
     }

@@ -185,10 +185,64 @@ export const getPaymentsExecDetails = async ({
                     exec_date_n: DateFormatter(data.payments[i].exec_date_n)
                 })
             }
-            console.log(data.payments);
-            console.log(payments);
             
             setLPaymentsExecDetails(payments);
+        }
+    } catch (error: any) {
+        showToast?.('error', error.response?.data?.error || 'Error al obtener los pagos', 'Error al obtener los pagos');
+    }
+}
+
+interface getPaymentsPlusDocProps { 
+    setLPaymentsExec: React.Dispatch<React.SetStateAction<any[]>>;
+    setLPaymentsCrp: React.Dispatch<React.SetStateAction<any[]>>;
+    showToast?: (type: 'success' | 'info' | 'warn' | 'error', message: string, summaryText?: string) => void;
+    partner_id: any;
+    company_id: any;
+    document_id: any;
+}
+
+export const getPaymentsPlusDoc = async ({
+    setLPaymentsExec,
+    setLPaymentsCrp,
+    showToast,
+    partner_id,
+    company_id,
+    document_id,
+}: getPaymentsPlusDocProps) => {
+    try {
+        const route = constants.ROUTE_GET_PAYMENTS_PLUS_DOC;
+        const response = await axios.get(constants.API_AXIOS_GET, {
+            params: {
+                route: route,
+                partner_id: partner_id,
+                company_id: company_id,
+                document_id: document_id
+            }
+        });
+
+        if (response.status === 200) {
+            const data = response.data.data || [];
+            let payments: any[] = [];
+            for (let i = 0; i < data.length; i++) {
+                payments.push({
+                    id: data[i].id,
+                    name: data[i].folio + ' ' + data[i].amount + ' ' +data[i].currency + ' ' + DateFormatter(data[i].exec_date_n)
+                })
+            }
+            setLPaymentsExec(payments);
+
+            let paymentsCrp: any[] = [];
+            for (let i = 0; i < data.length; i++) {
+                if (data[i].in_document == 1) {
+                    paymentsCrp.push({
+                        id: data[i].id,
+                        name: data[i].folio + ' ' + data[i].amount + ' ' +data[i].currency + ' ' + DateFormatter(data[i].exec_date_n)
+                    })
+                }
+            }
+            setLPaymentsCrp(paymentsCrp);
+
         }
     } catch (error: any) {
         showToast?.('error', error.response?.data?.error || 'Error al obtener los pagos', 'Error al obtener los pagos');

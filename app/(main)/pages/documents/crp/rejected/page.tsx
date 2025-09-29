@@ -14,8 +14,13 @@ import { Tooltip } from 'primereact/tooltip';
 import { useIsMobile } from '@/app/components/commons/screenMobile';
 import { Button } from "primereact/button";
 import DateFormatter from '@/app/components/commons/formatDate';
-import { getCRP } from "@/app/(main)/utilities/documents/crp/crpUtilities";
+import { getCRP, getPaymentsExec, getPaymentsExecDetails, getPaymentsPlusDoc } from "@/app/(main)/utilities/documents/crp/crpUtilities";
 import { TableCrp } from "@/app/components/documents/crp/common/tableCrp";
+import { DialogCrp } from "@/app/components/documents/crp/common/dialogCrp";
+import { getlCompanies } from '@/app/(main)/utilities/documents/common/companyUtils';
+import { getlProviders } from '@/app/(main)/utilities/documents/common/providerUtils';
+import { getlAreas } from '@/app/(main)/utilities/documents/common/areaUtils';
+import { FileUpload } from "primereact/fileupload";
 import { getlUrlFilesDps } from "@/app/(main)/utilities/documents/common/filesUtils";
 
 const ConsultPaymentProgramded = () => {
@@ -29,11 +34,31 @@ const ConsultPaymentProgramded = () => {
     const [userFunctionalAreas, setUserFunctionalAreas] = useState<any>(null);
     const [oUser, setOUser] = useState<any>(null);
     const [dateFilter, setDateFilter] = useState<any>(null);
+    const [lCompaniesFilter, setLCompaniesFilter] = useState<any[]>([]);
 
     //constantes para el dialog
     const [visible, setDialogVisible] = useState(false);
-    const [oPayment, setOPayment] = useState<any>(null);
-    const [dialogMode, setDialogMode] = useState<'view' | 'edit'>('view');
+    const [oCrp, setOCrp] = useState<any>(null);
+    const [dialogMode, setDialogMode] = useState<'create' | 'view' | 'edit'>('view');
+    const [lCompanies, setLCompanies] = useState<any[]>([]);
+    const [lProviders, setLProviders] = useState<any[]>([]);
+    const [lAreas, setLAreas] = useState<any[]>([]);
+    const [lPaymentsExec, setLPaymentsExec] = useState<any[]>([]);
+    const [loadinglPaymentsExec, setLoadinglPaymentsExec] = useState<boolean>(false);
+    const fileUploadRef = useRef<FileUpload>(null);
+    const [isXmlValid, setIsXmlValid] = useState(false);
+    const [showing, setShowing] = useState<'body' | 'animationSuccess' | 'animationError'>('body');
+    const [successTitle, setSuccessTitle] = useState('CRP cargado');
+    const [successMessage, setSuccessMessage] = useState('');
+    const [errorTitle, setErrorTitle] = useState('Error al cargar el CRP');
+    const [errorMessage, setErrorMessage] = useState('');
+    const [formErrors, setFormErrors] = useState({
+        area: false
+    });
+    const [loadingFiles, setLoadingFiles] = useState(false);
+    const [lFiles, setLFiles] = useState<any[]>([]);
+    const [lPaymentsExecDetails, setLPaymentsExecDetails] = useState<any[]>([]);
+    const [lPaymentsCrp, setLPaymentsCrp] = useState<any[]>([]);
 
     const isMobile = useIsMobile();
 
@@ -95,6 +120,92 @@ const ConsultPaymentProgramded = () => {
         setLoading(false);
     }
 
+    const clean = () => {
+        setOCrp({
+            id: null,
+            dateFormatted: null,
+            oCompany: null,
+            oPartner: null,
+            company: null,
+            date: null,
+            folio: null,
+            uuid: null,
+            authz_acceptance_name: null,
+        })
+        setIsXmlValid(false);
+        setLPaymentsExec([]);
+        setShowing('body');
+    }
+
+    useEffect(() => {
+        if (visible) {
+            setShowing('body');
+        }
+    }, [visible])
+
+    const validate = () => {
+        const newFormErrors = {
+            area: !oCrp.functional_area
+        }
+        setFormErrors(newFormErrors);
+        
+        return !Object.values(newFormErrors).some(Boolean); 
+    }
+
+    const handleSubmit = async () => {
+        try {
+            setLoading(true);
+            
+            if (!validate()) {
+                return;
+            }
+
+            const route = constants.ROUTE_POST_UPDATE_CRP;            
+            let payments: any[] = [];
+            oCrp?.oPay.forEach((o: any) => {
+                payments.push(o.id)
+            });
+            
+            const response = await axios.post(constants.API_AXIOS_POST, {
+                route,
+                jsonData: {
+                    document_id: oCrp?.id,
+                    payments: payments,
+                    user_id: oUser.oUser.id
+                }
+            });
+
+            if (response.status === 200 || response.status === 201) {
+                setSuccessMessage('Se cargó el CRP con exito');
+                setShowing('animationSuccess');
+                await getLCrp();
+            } else {
+                throw new Error('');
+            }
+        } catch (error: any) {
+            setShowing('animationError');
+            setErrorMessage('Error al cargar el CRP');
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const configCrpToView = (data: any) =>  {
+        setOCrp((prev: any) => ({
+            ...prev,
+            id: data.id,
+            oCompany: data.oCompany.name,
+            oProvider: data.oProvider.name,
+            functional_area: data.functional_area.name,
+            rfc_issuer: data.oProvider.fiscal_id,
+            tax_regime_issuer: data.issuer_tax_regime,
+            rfc_receiver: data.oCompany.fiscal_id,
+            tax_regime_receiver: data.receiver_tax_regime,
+            xml_date: data.dateFormatted,
+            uuid: data.uuid
+        }));
+    }
+
 //*******OTROS*******
     const headerCard = (
         <div
@@ -109,7 +220,7 @@ const ConsultPaymentProgramded = () => {
             }}
         >
             <h3 className="m-0 text-900 font-medium">
-                {t('titleRejected')}
+                {t('titleUpload')}
                 &nbsp;&nbsp;
                 <Tooltip target=".custom-target-icon" />
                 <i
@@ -123,14 +234,25 @@ const ConsultPaymentProgramded = () => {
         </div>
     );
 
-    const dialogFooterContent = (
-        <div className="flex flex-column md:flex-row justify-content-start gap-2">
-            <Button label={tCommon('btnClose')} icon="bx bx-x" onClick={() => setDialogVisible(false)} severity="secondary" disabled={loading} />
-        </div>
-    )
+    const dialogFooterContent = () => {
+        return (
+            showing == 'body' && (
+                <div className="flex flex-column md:flex-row justify-content-between gap-2">
+                    <Button label={tCommon('btnClose')} icon="bx bx-x" onClick={() => setDialogVisible(false)} severity="secondary" disabled={loading} />
+                    <Button label={tCommon('btnEdit')} icon="pi pi-upload" onClick={() => handleSubmit()} disabled={loading} />
+                </div>
+            )
+        )
+    }
+
+    const dialogHeaderTitle = () => {
+        let title = t('dialog.editTitle');
+
+        return title;
+    }
 
     const lastClickTime = useRef<number>(0);
-    const [oRow, setORow] = useState<any>(null);
+    // const [oRow, setORow] = useState<any>(null);
     const handleRowClick = (e: DataTableRowClickEvent) => {
         if (!oUser.isInternalUser) {
             e.originalEvent.preventDefault();
@@ -143,25 +265,45 @@ const ConsultPaymentProgramded = () => {
         lastClickTime.current = currentTime;
 
         if (timeDiff > DOUBLE_CLICK_THRESHOLD) {
-            if (oRow && oRow.id === e.data.id) {
-                setORow(null);
+            if (oCrp && oCrp.id === e.data.id) {
+                setOCrp(null);
             } else {
-                setORow(e.data);
+                setOCrp(e.data);
             }
         }
     };
 
-    const handleDoubleClick = (e: DataTableRowClickEvent) => {
-        // if (!oUser.isInternalUser) {
-        //     e.originalEvent.preventDefault();
-        //     return;
-        // }
-
-        setORow(e.data);
-        setOPayment(e.data);
-        setDialogMode('view');
+    const handleDoubleClick = async (e: DataTableRowClickEvent) => {
+        setLoadingFiles(true);
+        setLoadinglPaymentsExec(true);
+        configCrpToView(e.data);
+        setDialogMode('edit');
         setDialogVisible(true);
+        const oCompany = e.data.oCompany;
+        const oProvider = e.data.oProvider;
+        await getlUrlFilesDps({
+            setLFiles,
+            showToast,
+            document_id: e.data.id
+        });
+        
+        await getPaymentsPlusDoc({
+            setLPaymentsExec,
+            setLPaymentsCrp,
+            partner_id: oProvider.id,
+            company_id: oCompany.id,
+            document_id: e.data.id
+        })
+        setLoadingFiles(false);
+        setLoadinglPaymentsExec(false);
     };
+
+    useEffect(() => {
+        setOCrp((prev: any) => ({
+            ...prev,
+            oPay: lPaymentsCrp
+        }))
+    }, [lPaymentsCrp])
 
 //*******INIT*******
     useEffect(() => {
@@ -184,7 +326,9 @@ const ConsultPaymentProgramded = () => {
 
     useEffect(() => {
         const init = async () => {
+            setLoading(true);
             await getLCrp();
+            setLoading(false);
         }
         if (userFunctionalAreas && startDate && endDate) {
             init();
@@ -197,10 +341,46 @@ const ConsultPaymentProgramded = () => {
                 {loading && loaderScreen()}
                 <Toast ref={toast} />
                 <Card header={headerCard} pt={{ content: { className: 'p-0' } }}>
+                    <DialogCrp
+                        visible={visible}
+                        onHide={() =>  setDialogVisible(false)}
+                        isMobile={isMobile}
+                        footerContent={dialogFooterContent}
+                        headerTitle={dialogHeaderTitle()}
+                        oCrp={oCrp}
+                        setOCrp={setOCrp}
+                        dialogMode={dialogMode}
+                        showToast={showToast}
+                        setLoading={setLoading}
+                        loading={loading}
+                        oUser={oUser}
+                        withHeader={true}
+                        withBody={true}
+                        withFooter={true}
+                        lAreas={lAreas}
+                        lPaymentsExec={lPaymentsExec}
+                        loadinglPaymentsExec={loadinglPaymentsExec}
+                        clean={clean}
+                        fileUploadRef={fileUploadRef}
+                        isXmlValid={isXmlValid}
+                        setIsXmlValid={setIsXmlValid}
+                        showing={showing}
+                        successTitle={successTitle}
+                        successMessage={successMessage}
+                        errorTitle={errorTitle}
+                        errorMessage={errorMessage}
+                        formErrors={formErrors}
+                        setFormErrors={setFormErrors}
+                        loadingFiles={loadingFiles}
+                        lFiles={lFiles}
+                        lPaymentsExecDetails={lPaymentsExecDetails}
+                    />
                     <TableCrp 
                         lCrp={lCrp}
                         setLCrp={setLCrp}
                         getLCrp={getLCrp}
+                        selectedRow={oCrp}
+                        setSelectedRow={setOCrp}
                         columnsProps={columnsProps}
                         withSearch={true}
                         handleRowClick={handleRowClick}
@@ -209,6 +389,8 @@ const ConsultPaymentProgramded = () => {
                         dateFilter={dateFilter}
                         setDateFilter={setDateFilter}
                         showToast={showToast}
+                        setDialogVisible={setDialogVisible}
+                        setDialogMode={setDialogMode}
                     />
                 </Card>
             </div>

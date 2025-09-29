@@ -269,17 +269,6 @@ const ConsultPaymentProgramded = () => {
         </div>
     );
 
-    // const dialogFooterContent = (
-    //     showing == 'body' ? (
-    //         <div className="flex flex-column md:flex-row justify-content-between gap-2">
-    //             <Button label={tCommon('btnClose')} icon="bx bx-x" onClick={() => setDialogVisible(false)} severity="secondary" disabled={loading} />
-    //             <Button label={tCommon('btnUpload')} icon="pi pi-upload" onClick={() => handleSubmit()} disabled={!isXmlValid} />
-    //         </div>
-    //     ) : (
-    //         ''
-    //     )
-    // )
-
     const dialogFooterContent = () => {
         return (
             <>
