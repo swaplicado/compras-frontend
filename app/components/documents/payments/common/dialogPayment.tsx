@@ -6,7 +6,7 @@ import { InputTextarea } from 'primereact/inputtextarea';
 import { InputText } from 'primereact/inputtext';
 import { InputNumber } from 'primereact/inputnumber';
 import { ProgressSpinner } from 'primereact/progressspinner';
-import { RenderFile } from '@/app/components/commons/renderField';
+import { RenderField } from '@/app/components/commons/renderField';
 import { useTranslation } from 'react-i18next';
 import { getEntries } from '@/app/(main)/utilities/documents/payments/paymentsUtils';
 import { formatCurrency } from '@/app/(main)/utilities/documents/common/currencyUtils';
@@ -112,7 +112,7 @@ export const DialogPayment = ({
             >
                 <br />
                 <div className="p-fluid formgrid grid">
-                    {RenderFile({
+                    {RenderField({
                         label: t('dialog.payment_status'),
                         tooltip: t('dialog.payment_statusTooltip'),
                         value: oPayment?.payment_status,
@@ -126,7 +126,7 @@ export const DialogPayment = ({
                         errors: formErrors,
                         errorMessage: ''
                     })}
-                    {RenderFile({
+                    {RenderField({
                         label: t('dialog.company_trade_name'),
                         tooltip: t('dialog.company_trade_nameTooltip'),
                         value: oPayment?.company_trade_name,
@@ -140,7 +140,7 @@ export const DialogPayment = ({
                         errors: formErrors,
                         errorMessage: ''
                     })}
-                    {RenderFile({
+                    {RenderField({
                         label: t('dialog.benef_trade_name'),
                         tooltip: t('dialog.benef_trade_nameTooltip'),
                         value: oPayment?.benef_trade_name,
@@ -154,7 +154,7 @@ export const DialogPayment = ({
                         errors: formErrors,
                         errorMessage: ''
                     })}
-                    {RenderFile({
+                    {RenderField({
                         label: t('dialog.folio'),
                         tooltip: t('dialog.folioTooltip'),
                         value: oPayment?.folio,
@@ -170,7 +170,7 @@ export const DialogPayment = ({
                     })}
                     
                     { dialogType == 'programed' && (
-                        RenderFile({
+                        RenderField({
                             label: t('dialog.sched_date_n_format'),
                             tooltip: t('dialog.sched_date_n_formatTooltip'),
                             value: oPayment?.sched_date_n_format,
@@ -186,7 +186,7 @@ export const DialogPayment = ({
                         })
                     )}
                     { dialogType == 'executed' && (
-                        RenderFile({
+                        RenderField({
                             label: t('dialog.exec_date_n_format'),
                             tooltip: t('dialog.exec_date_n_formatTooltip'),
                             value: oPayment?.exec_date_n_format,
@@ -201,7 +201,7 @@ export const DialogPayment = ({
                             errorMessage: ''
                         })
                     )}
-                    {/* {RenderFile({
+                    {/* {RenderField({
                         label: t('dialog.req_date_format'),
                         tooltip: t('dialog.req_date_formatTooltip'),
                         value: oPayment?.req_date_format,
@@ -215,7 +215,7 @@ export const DialogPayment = ({
                         errors: formErrors,
                         errorMessage: ''
                     })} */}
-                    {RenderFile({
+                    {RenderField({
                         label: t('dialog.amount'),
                         tooltip: t('dialog.amount'),
                         value: oPayment?.amount,
@@ -229,7 +229,7 @@ export const DialogPayment = ({
                         errors: formErrors,
                         errorMessage: ''
                     })}
-                    {RenderFile({
+                    {RenderField({
                         label: t('dialog.currency_code'),
                         tooltip: t('dialog.currency_codeTooltip'),
                         value: oPayment?.currency_code,
@@ -243,7 +243,7 @@ export const DialogPayment = ({
                         errors: formErrors,
                         errorMessage: ''
                     })}
-                    {RenderFile({
+                    {RenderField({
                         label: t('dialog.exchange_rate_app'),
                         tooltip: t('dialog.exchange_rate_appTooltip'),
                         value: oPayment?.exchange_rate_app,
@@ -258,7 +258,7 @@ export const DialogPayment = ({
                         errorMessage: ''
                     })}
                     { dialogType == 'executed' && (
-                        RenderFile({
+                        RenderField({
                             label: t('dialog.exchange_rate_exec'),
                             tooltip: t('dialog.exchange_rate_execTooltip'),
                             value: oPayment?.exchange_rate_exec,
@@ -274,7 +274,7 @@ export const DialogPayment = ({
                         })
                     )}
                     { dialogType == 'executed' && (
-                        RenderFile({
+                        RenderField({
                             label: t('dialog.exchange_rate_exec'),
                             tooltip: t('dialog.exchange_rate_execTooltip'),
                             value: oPayment?.amount_loc_exec,
@@ -289,7 +289,7 @@ export const DialogPayment = ({
                             errorMessage: ''
                         })
                     )}
-                    {RenderFile({
+                    {RenderField({
                         label: t('dialog.payment_way'),
                         tooltip: t('dialog.payment_wayTooltip'),
                         value: oPayment?.payment_way,
@@ -303,7 +303,7 @@ export const DialogPayment = ({
                         errors: formErrors,
                         errorMessage: ''
                     })}
-                    {RenderFile({
+                    {RenderField({
                         label: t('dialog.paying_bank'),
                         tooltip: t('dialog.paying_bankTooltip'),
                         value: oPayment?.paying_bank,
@@ -317,7 +317,7 @@ export const DialogPayment = ({
                         errors: formErrors,
                         errorMessage: ''
                     })}
-                    {RenderFile({
+                    {RenderField({
                         label: t('dialog.paying_account'),
                         tooltip: t('dialog.paying_accountTooltip'),
                         value: oPayment?.paying_account,
@@ -331,7 +331,7 @@ export const DialogPayment = ({
                         errors: formErrors,
                         errorMessage: ''
                     })}
-                    {RenderFile({
+                    {RenderField({
                         label: t('dialog.benef_bank'),
                         tooltip: t('dialog.benef_bankTooltip'),
                         value: oPayment?.benef_bank,
@@ -345,7 +345,7 @@ export const DialogPayment = ({
                         errors: formErrors,
                         errorMessage: ''
                     })}
-                    {RenderFile({
+                    {RenderField({
                         label: t('dialog.benef_account'),
                         tooltip: t('dialog.benef_accountTooltip'),
                         value: oPayment?.benef_account,
@@ -396,7 +396,7 @@ export const DialogPayment = ({
                     </DataTable>
                 </div>
                 <div className="p-fluid formgrid grid">
-                    {RenderFile({
+                    {RenderField({
                         label: t('dialog.notes'),
                         tooltip: t('dialog.notesTooltip'),
                         value: oPayment?.notes,

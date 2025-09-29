@@ -22,6 +22,7 @@ const constants = {
     ROUTE_GET_DPS_BY_AREA_ID: '/transactions/documents/list-doc-by-functional-area/',
     ROUTE_DOWNLOAD_FILES_DPS: '/transactions/documents/download-zip/',
     ROUTE_GET_DPS_LIMIT_DATES: '/transactions/upload-deadline/check-deadline/',
+    ROUTE_GET_PARTNERS: '/transactions/partners/',
     ROUTE_GET_COMPANIES: '/transactions/partners/list-companies/',
     ROUTE_GET_REFERENCES: '/transactions/references/by-partner/',
     ROUTE_GET_CURRENCIES: '/transactions/currencies/',
@@ -39,13 +40,17 @@ const constants = {
     ROUTE_GET_LIST_PARTNERS: '/transactions/partner-users/',
     ROUTE_GET_LIST_FILES_PAYMENTS: '/transactions/payments/signed-urls-payment/',
     ROUTE_GET_HISTORY_AUTH: '/transactions/get-history-authorization',
+    ROUTE_GET_PAYMENTS_EXEC: '/transactions/payments/select-payments-exec/',
+    ROUTE_GET_PAYMENTS_EXEC_DETAILS: '/transactions/documents/payments/',
 
     ROUTE_POST_VALIDATE_XML: '/transactions/documents/validate-xml/',
     ROUTE_POST_DOCUMENT_TRANSACTION: '/transactions/document-transaction/',
     ROUTE_POST_START_AUTHORIZATION: '/transactions/start-authorization/',
-
     ROUTE_POST_AUTHORIZE_RESOURCE: '/transactions/authorize-resource/',
     ROUTE_POST_REJECT_RESOURCE: '/transactions/reject-resource/',
+    ROUTE_POST_VALIDATE_XML_CRP: '/transactions/documents/validate-xml-rp/',
+    ROUTE_POST_CREATE_CRP: '/transactions/document-transaction-rp/',
+
 
     //Constantes de estados de las facturas
     REVIEW_ACCEPT: 'O',
@@ -55,7 +60,6 @@ const constants = {
     REVIEW_REJECT_ID: 8,
     REVIEW_PROCESS_ID: 2,
     REVIEW_PENDING_ID: 1,
-    
 
     //Constantes de datatables
     TABLE_ROWS: [10, 25, 50],
@@ -77,6 +81,7 @@ const constants = {
     allowedExtensions: ['application/pdf', 'text/xml', 'image/png', 'image/jpeg', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
     allowedExtensionsNames: 'application/pdf, text/xml, image/png, image/jpeg, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     maxUnitFile: 5 * 1024 * 1024,
+    maxUnitFileForHuman: '5 MB',
 
     //catalogo de regimen fiscal
     CAT_FISCAL_REGIME: [
@@ -105,6 +110,7 @@ const constants = {
     //Tipo de documento
     DOC_TYPE_INVOICE: 41,
     DOC_TYPE_OC: 2,
+    DOC_TYPE_CRP: 51,
 
     //Clase de transacciòn
     TRANSACTION_CLASS_COMPRAS: 1,

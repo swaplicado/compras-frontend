@@ -16,6 +16,7 @@ import esFileViewer from './locales/es/documents/fileViewer';
 import esAuthorizations from './locales/es/documents/authorizations';
 import esPayments from './locales/es/documents/payments';
 import esCatalogPartners from './locales/es/partners/catalog';
+import esCrp from './locales/es/documents/crp';
 
 i18n
   .use(initReactI18next)
@@ -37,7 +38,8 @@ i18n
         fileViewer: esFileViewer,
         authorizations: esAuthorizations,
         payments: esPayments,
-        catalogPartners: esCatalogPartners
+        catalogPartners: esCatalogPartners,
+        crp: esCrp
       }
     },
     lng: "es",

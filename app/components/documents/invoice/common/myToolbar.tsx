@@ -23,6 +23,7 @@ interface myToolbarPropps {
     withBtnCleanFilter?: boolean;
     withSearch?: boolean;
     withMounthFilter?: boolean;
+    textBtnCreate?: string;
 }
 
 export const MyToolbar = ({
@@ -40,7 +41,8 @@ export const MyToolbar = ({
     withBtnSendAuth = false,
     withBtnCleanFilter = true,
     withSearch = true,
-    withMounthFilter = true
+    withMounthFilter = true,
+    textBtnCreate
 }: myToolbarPropps) => {
     const { t } = useTranslation('invoices');
     const { t: tCommon } = useTranslation('common');
@@ -55,7 +57,7 @@ export const MyToolbar = ({
                         {withBtnCreate && (
                             <Button
                                 icon="pi pi-plus"
-                                label={!isMobile ? t('btnOpenDialogUpload') : ''}
+                                label={!isMobile ? ( textBtnCreate ? textBtnCreate : t('btnOpenDialogUpload')) : ''}
                                 rounded
                                 disabled={disabledUpload}
                                 onClick={() => {

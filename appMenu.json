@@ -23,7 +23,7 @@
                             "to": "/pages/documents/invoices/uploading/upload"
                         },
                         {
-                            "label": "Facturas recibidas",
+                            "label": "Facturas aceptadas",
                             "icon": "pi pi-check-square",
                             "to": "/pages/documents/invoices/uploading/accepted"
                         },
@@ -84,6 +84,27 @@
                             "label": "Pagos ejecutados",
                             "icon": "pi pi-money-bill",
                             "to": "/pages/documents/payments/executed"
+                        }
+                    ]
+                },
+                {
+                    "label": "CRP",
+                    "icon": "pi pi-ticket",
+                    "items": [
+                        {
+                            "label": "Cargar CRP",
+                            "icon": "pi pi-upload",
+                            "to": "/pages/documents/crp/upload"
+                        },
+                        {
+                            "label": "CRP aceptados",
+                            "icon": "pi pi-check-square",
+                            "to": "/pages/documents/crp/accepted"
+                        },
+                        {
+                            "label": "CRP rechazados",
+                            "icon": "pi pi-times-circle",
+                            "to": "/pages/documents/crp/rejected"
                         }
                     ]
                 },
