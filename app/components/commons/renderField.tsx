@@ -129,7 +129,21 @@ export const RenderField = (props: renderFieldProps) => {
                             <Tooltip target=".custom-target-icon" />
                             <i className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge" data-pr-tooltip={props.tooltip} data-pr-position="right" data-pr-my="left center-2" style={{ fontSize: '1rem', cursor: 'pointer' }}></i>
                             <div>
-                                <InputTextarea id="comments" rows={3} cols={30} maxLength={500} autoResize className={`w-full`} value={props.value || ''} readOnly={props.readonly} disabled={props.disabled} />
+                                <InputTextarea 
+                                    id="comments"
+                                    rows={3}
+                                    cols={30}
+                                    maxLength={500}
+                                    autoResize
+                                    className={`w-full ${props.errors[props.errorKey] ? 'p-invalid' : ''}`}
+                                    value={props.value || ''}
+                                    readOnly={props.readonly}
+                                    disabled={props.disabled}
+                                    onChange={(e) => {
+                                        props.onChange?.(e.target.value);
+                                    }}
+                                />
+                                {props.errors[props.errorKey] && <small className="p-error">{props.errorMessage}</small>}
                             </div>
                         </div>
                     </div>

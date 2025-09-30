@@ -227,6 +227,7 @@ export const TableCrp = ({
                 <Column field="dateFormatted" header="dateFormatted" hidden />
                 <Column field="oCompany" header="oCompany" hidden />
                 <Column field="oPartner" header="oPartner" hidden />
+                <Column field="authz_acceptance_notes" header="authz_acceptance_notes" hidden />
                 <Column field="company" header={t('datatable.columns.company')} hidden={ columnsProps?.company.hidden } />
                 <Column field="date" header={t('datatable.columns.date')} body={appDateBodyTemplate} hidden={ columnsProps?.date.hidden } />
                 <Column field="folio" header={t('datatable.columns.folio')} hidden={ columnsProps?.folio.hidden } />

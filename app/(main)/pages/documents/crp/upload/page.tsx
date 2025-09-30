@@ -1,4 +1,4 @@
-//PAGOS PROGRAMADOS
+//CARGA DE CRP
 'use client';
 import React, {useEffect, useState, useRef} from "react";
 import constants from '@/app/constants/constants';
@@ -54,11 +54,13 @@ const ConsultPaymentProgramded = () => {
     const [errorTitle, setErrorTitle] = useState('Error al cargar el CRP');
     const [errorMessage, setErrorMessage] = useState('');
     const [formErrors, setFormErrors] = useState({
-        area: false
+        area: false,
+        authz_acceptance_notes: false
     });
     const [loadingFiles, setLoadingFiles] = useState(false);
     const [lFiles, setLFiles] = useState<any[]>([]);
     const [lPaymentsExecDetails, setLPaymentsExecDetails] = useState<any[]>([]);
+    const [isInReview, setIsReview] = useState<boolean>(false);
 
     const isMobile = useIsMobile();
 
@@ -159,7 +161,8 @@ const ConsultPaymentProgramded = () => {
 
     const validate = () => {
         const newFormErrors = {
-            area: !oCrp.functional_area
+            area: !oCrp.functional_area,
+            authz_acceptance_notes: !oCrp.authz_acceptance_notes
         }
         setFormErrors(newFormErrors);
         
@@ -230,6 +233,8 @@ const ConsultPaymentProgramded = () => {
     const configCrpToView = (data: any) =>  {
         setOCrp((prev: any) => ({
             ...prev,
+            id: data.id,
+            authz_acceptance_notes: data.authz_acceptance_notes,
             oCompany: data.oCompany.name,
             oProvider: data.oProvider.name,
             functional_area: data.functional_area.name,
@@ -241,6 +246,44 @@ const ConsultPaymentProgramded = () => {
             uuid: data.uuid
         }));
     }
+
+    const handleReview = async (reviewOption: string) => {
+        try {
+            setLoading(true);
+
+            if (reviewOption == constants.REVIEW_REJECT) {
+                if (!oCrp.authz_acceptance_notes.trim()) {
+                    setFormErrors((prev: any) => ({ ...prev, authz_acceptance_notes: true }));
+                    showToast?.('info', 'Ingresa un comentario de rechazo del CRP');
+                    return;
+                }
+            }
+            const route = '/transactions/documents/' + oCrp.id + '/set-authz/';
+
+            const response = await axios.post(constants.API_AXIOS_PATCH, {
+                route,
+                jsonData: {
+                    authz_acceptance_notes: oCrp.authz_acceptance_notes,
+                    authz_code: reviewOption,
+                    user_id: oUser.id,
+                }
+            });
+
+            if (response.status === 200 || response.status === 201) {
+                setSuccessMessage('Se aceptó el CRP con exito');
+                setShowing('animationSuccess');
+                await getLCrp();
+            } else {
+                throw new Error(t('uploadDialog.errors.updateStatusError'));
+            }
+        } catch (error: any) {
+            console.error('Error al actualizar estado:', error);
+            setShowing('animationError');
+            setErrorMessage('Error al aceptar el CRP');
+        } finally {
+            setLoading?.(false);
+        }
+    };
 
 //*******OTROS*******
     const headerCard = (
@@ -280,9 +323,15 @@ const ConsultPaymentProgramded = () => {
                     </div>
                 )}
 
-                {dialogMode == 'view' && (
+                {showing == 'body' && dialogMode == 'view' && (
                     <div className="flex flex-column md:flex-row justify-content-between gap-2">
                         <Button label={tCommon('btnClose')} icon="bx bx-x" onClick={() => setDialogVisible(false)} severity="secondary" disabled={loading} />
+                            { isInReview && (
+                                <>
+                                    <Button label={tCommon('btnReject')} icon="bx bx-like" onClick={() => handleReview?.(constants.REVIEW_REJECT)} autoFocus disabled={loading} severity="danger" />
+                                    <Button label={tCommon('btnAccept')} icon="bx bx-like" onClick={() => handleReview?.(constants.REVIEW_ACCEPT)} autoFocus disabled={loading} severity="success" />
+                                </>
+                            )}
                     </div>
                 )}
             </>
@@ -327,6 +376,12 @@ const ConsultPaymentProgramded = () => {
         setLoadinglPaymentsExec(true);
         configCrpToView(e.data);
         setIsXmlValid(true);
+        if (oUser.isInternalUser) {
+            setIsReview(true);
+        } else {
+            setIsReview(false);
+        }
+
         setDialogMode('view');
         setDialogVisible(true);
         await getlUrlFilesDps({
@@ -366,7 +421,7 @@ const ConsultPaymentProgramded = () => {
                     icon="bx bx-cloud-download bx-sm"
                     className="p-button-rounded p-button-text text-blue-500"
                     onClick={() => download(rowData)}
-                    tooltip={t('btnDownloadFiles')}
+                    tooltip={tCommon('btnDownload')}
                     tooltipOptions={{ position: 'top' }}
                     size="small"
                     disabled={loading}
@@ -455,6 +510,7 @@ const ConsultPaymentProgramded = () => {
                         loadingFiles={loadingFiles}
                         lFiles={lFiles}
                         lPaymentsExecDetails={lPaymentsExecDetails}
+                        isInReview={isInReview}
                     />
                     <TableCrp 
                         lCrp={lCrp}

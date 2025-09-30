@@ -57,6 +57,7 @@ interface DialogCrpProps {
     loadingFiles?: boolean;
     lFiles?: any[];
     lPaymentsExecDetails?: any[];
+    isInReview?: boolean;
 }
 
 export const DialogCrp = ({
@@ -93,7 +94,8 @@ export const DialogCrp = ({
     setFormErrors,
     loadingFiles,
     lFiles = [],
-    lPaymentsExecDetails = []
+    lPaymentsExecDetails = [],
+    isInReview = false
 }: DialogCrpProps) => {
     const { t } = useTranslation('crp');
     const { t: tCommon } = useTranslation('common');
@@ -410,6 +412,25 @@ export const DialogCrp = ({
                                     errorMessage: ''
                                 })}
                             </div>
+                        )}
+
+                        { (dialogMode == 'view' || dialogMode == 'edit') && (
+                            RenderField({
+                                label: 'Comentarios de aceptación/rechazo:',
+                                tooltip: 'Comentarios de aceptación/rechazo:',
+                                value: oCrp?.authz_acceptance_notes,
+                                disabled: !isInReview,
+                                mdCol: 12,
+                                type: 'textArea',
+                                onChange: (value) => {
+                                    setOCrp?.((prev: any) => ({ ...prev, authz_acceptance_notes: value }));
+                                },
+                                options: [],
+                                placeholder: '',
+                                errorKey: 'authz_acceptance_notes',
+                                errors: formErrors,
+                                errorMessage: 'Ingrese comentario para rechazar'
+                            })
                         )}
 
                         { withFooter && (dialogMode == 'view' || dialogMode == 'edit') && (

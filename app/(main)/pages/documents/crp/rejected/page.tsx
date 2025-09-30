@@ -195,6 +195,7 @@ const ConsultPaymentProgramded = () => {
         setOCrp((prev: any) => ({
             ...prev,
             id: data.id,
+            authz_acceptance_notes: data.authz_acceptance_notes,
             oCompany: data.oCompany.name,
             oProvider: data.oProvider.name,
             functional_area: data.functional_area.name,
@@ -330,7 +331,7 @@ const ConsultPaymentProgramded = () => {
                     icon="bx bx-cloud-download bx-sm"
                     className="p-button-rounded p-button-text text-blue-500"
                     onClick={() => download(rowData)}
-                    tooltip={t('btnDownloadFiles')}
+                    tooltip={tCommon('btnDownload')}
                     tooltipOptions={{ position: 'top' }}
                     size="small"
                     disabled={loading}
