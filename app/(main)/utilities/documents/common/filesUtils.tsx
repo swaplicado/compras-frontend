@@ -41,3 +41,40 @@ export const getlUrlFilesDps = async ({
         showToast?.('error', error.response?.data?.error || 'Error al obtener los archivos', 'Error al obtener los archivos');
     }
 };
+
+interface downloadFilesProps {
+    id_doc: any;
+    zip_name: string;
+    showToast?: (type: 'success' | 'info' | 'warn' | 'error', message: string, summaryText?: string) => void;
+}
+
+export const downloadFiles = async ({
+    id_doc,
+    zip_name,
+    showToast
+}: downloadFilesProps) => {
+    try {
+        const response = await axios.get(constants.API_AXIOS_GET, {
+            params: {
+                route: constants.ROUTE_DOWNLOAD_FILES_DPS,
+                id: id_doc
+            },
+            responseType: 'blob'
+        });
+
+        if (response.status === 200) {
+            const blob = new Blob([response.data], { type: 'application/zip' });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `${zip_name}.zip`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } else {
+            throw new Error(`Error al descargar los archivos: ${response.statusText}`);
+        }
+    } catch (error: any) {
+        showToast?.('error', error.response?.data?.error || 'Error al descargar los archivos', 'Error al descargar los archivos');
+    }
+};

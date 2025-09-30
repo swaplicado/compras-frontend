@@ -122,8 +122,19 @@ export const DialogCrp = ({
             clean?.();
         };
 
-        if (dialogMode == 'create') {
+        if (!visible) {
             fetch();
+        }
+
+        if (visible) {
+            if (oUser.isProvider) {
+                const oProvider = {
+                    id: oUser.oProvider.id,
+                    name: oUser.oProvider.name,
+                    country: oUser.oProvider.country
+                }
+                setOCrp?.((prev: any) => ({ ...prev, oProvider: oProvider }));
+            }
         }
     }, [visible]);
 
@@ -166,22 +177,24 @@ export const DialogCrp = ({
                                     errors: formErrors,
                                     errorMessage: ''
                                 })}
-                                {RenderField({
-                                    label: 'Proveedor',
-                                    tooltip: 'Proveedor',
-                                    value: oCrp?.oProvider,
-                                    disabled: dialogMode == 'view' || dialogMode == 'edit',
-                                    mdCol: 6,
-                                    type: dialogMode == 'create' ? 'dropdown' : 'text',
-                                    onChange: (value) => {
-                                        setOCrp?.((prev: any) => ({ ...prev, oProvider: value }));
-                                    },
-                                    options: lProviders,
-                                    placeholder: 'Selecciona proveedor',
-                                    errorKey: '',
-                                    errors: formErrors,
-                                    errorMessage: ''
-                                })}
+                                { !oUser?.isProvider && (
+                                    RenderField({
+                                        label: 'Proveedor',
+                                        tooltip: 'Proveedor',
+                                        value: oCrp?.oProvider,
+                                        disabled: dialogMode == 'view' || dialogMode == 'edit',
+                                        mdCol: 6,
+                                        type: dialogMode == 'create' ? 'dropdown' : 'text',
+                                        onChange: (value) => {
+                                            setOCrp?.((prev: any) => ({ ...prev, oProvider: value }));
+                                        },
+                                        options: lProviders,
+                                        placeholder: 'Selecciona proveedor',
+                                        errorKey: '',
+                                        errors: formErrors,
+                                        errorMessage: ''
+                                    })
+                                )}
 
                                 {(!loadinglPaymentsExec || (dialogMode == 'view' || dialogMode == 'edit')) && (
                                     <>
@@ -297,7 +310,7 @@ export const DialogCrp = ({
                                 )}
                             </div>
                         )}
-                        {withBody && (isXmlValid || dialogMode == 'create' || dialogMode == 'edit' || dialogMode == 'view') && (
+                        {withBody && isXmlValid && (dialogMode == 'create' || dialogMode == 'edit' || dialogMode == 'view') && (
                             <div className="p-fluid formgrid grid">
                                 {RenderField({
                                     label: 'RFC emisor:',

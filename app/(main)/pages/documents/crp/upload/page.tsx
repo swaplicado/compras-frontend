@@ -22,6 +22,7 @@ import { getlProviders } from '@/app/(main)/utilities/documents/common/providerU
 import { getlAreas } from '@/app/(main)/utilities/documents/common/areaUtils';
 import { FileUpload } from "primereact/fileupload";
 import { getlUrlFilesDps } from "@/app/(main)/utilities/documents/common/filesUtils";
+import { downloadFiles } from '@/app/(main)/utilities/documents/common/filesUtils';
 
 const ConsultPaymentProgramded = () => {
     const [startDate, setStartDate] = useState<string>('');
@@ -101,7 +102,7 @@ const ConsultPaymentProgramded = () => {
                 route: route,
                 partner_id: oUser.oProvider.id,
                 transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
-                document_type: constants.DOC_TYPE_INVOICE,
+                document_type: constants.DOC_TYPE_CRP,
                 authz_acceptance: constants.REVIEW_PENDING_ID,
                 start_date: startDate,
                 end_date: endDate,
@@ -325,6 +326,7 @@ const ConsultPaymentProgramded = () => {
         setLoadingFiles(true);
         setLoadinglPaymentsExec(true);
         configCrpToView(e.data);
+        setIsXmlValid(true);
         setDialogMode('view');
         setDialogVisible(true);
         await getlUrlFilesDps({
@@ -339,6 +341,38 @@ const ConsultPaymentProgramded = () => {
         });
         setLoadingFiles(false);
         setLoadinglPaymentsExec(false);
+    };
+
+    const download = async (rowData: any) => {
+        try {
+            setLoading(true);
+            await downloadFiles({
+                id_doc: rowData.id,
+                zip_name: rowData.oProvider.name + '_' + rowData.serie + '_' + rowData.folio,
+                showToast: showToast
+            })
+        } catch (error) {
+            
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const fileBodyTemplate = (rowData: any) => {
+        return (
+            <div className="flex align-items-center justify-content-center">
+                <Button
+                    label={tCommon('btnDownload')}
+                    icon="bx bx-cloud-download bx-sm"
+                    className="p-button-rounded p-button-text text-blue-500"
+                    onClick={() => download(rowData)}
+                    tooltip={t('btnDownloadFiles')}
+                    tooltipOptions={{ position: 'top' }}
+                    size="small"
+                    disabled={loading}
+                />
+            </div>
+        );
     };
 
 //*******INIT*******
@@ -439,6 +473,7 @@ const ConsultPaymentProgramded = () => {
                         withBtnCreate={true}
                         setDialogVisible={setDialogVisible}
                         setDialogMode={setDialogMode}
+                        fileBodyTemplate={fileBodyTemplate}
                     />
                 </Card>
             </div>

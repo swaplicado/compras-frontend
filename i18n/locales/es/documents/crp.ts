@@ -9,7 +9,8 @@ const crp = {
             date: "Fecha",
             folio: "Folio",
             uuid: "UUID",
-            authz_acceptance_name: "Estatus"
+            authz_acceptance_name: "Estatus",
+            files: "Archivos",
         }
     },
     dialog: {

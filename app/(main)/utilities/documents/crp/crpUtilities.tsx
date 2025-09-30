@@ -91,7 +91,7 @@ export const getCRP = async (props: getCRPProps) => {
                     payment_date: DateFormatter(data[i].payment_date),
                     reference: reference,
                     references: lReferences,
-                    serie: data[i].serie,
+                    serie: data[i].series,
                     status: data[i].status,
                     uuid: data[i].uuid, //tabla
                     receiver_tax_regime: data[i].receiver_tax_regime

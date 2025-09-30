@@ -1,18 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import constants from '@/app/constants/constants';
 import DateFormatter from '@/app/components/commons/formatDate';
-import axios from 'axios';
 import { FilterMatchMode, FilterOperator } from 'primereact/api';
 import { DataTable, DataTableFilterMeta, DataTableRowClickEvent } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Dropdown } from 'primereact/dropdown';
-import { Button } from 'primereact/button';
 import { useTranslation } from 'react-i18next';
 import { MyToolbar } from '@/app/components/documents/invoice/common/myToolbar';
 import { useIsMobile } from '@/app/components/commons/screenMobile';
-import moment from 'moment';
-import { OverlayPanel } from 'primereact/overlaypanel';
-import { getlCompanies } from '@/app/(main)/utilities/documents/common/companyUtils'
+import { type } from 'node:os';
 
 interface columnsProps {
     company: { hidden: boolean },
@@ -39,6 +35,7 @@ interface TableCrpProps {
     setSelectedRow?: React.Dispatch<React.SetStateAction<any>>;
     setDialogVisible?: React.Dispatch<React.SetStateAction<boolean>>;
     setDialogMode?: React.Dispatch<React.SetStateAction<any>>;
+    fileBodyTemplate?: (rowData: any) => any;
 }
 
 export const TableCrp = ({
@@ -57,7 +54,8 @@ export const TableCrp = ({
     selectedRow,
     setSelectedRow,
     setDialogVisible,
-    setDialogMode
+    setDialogMode,
+    fileBodyTemplate
 }: TableCrpProps) => {
     const [filters, setFilters] = useState<DataTableFilterMeta>({});
     const [tableLoading, setTableLoading] = useState(true);
@@ -223,6 +221,7 @@ export const TableCrp = ({
                 resizableColumns
             >
                 <Column field="id" header="id" hidden />
+                <Column field="serie" header="serie" hidden />
                 <Column field="receiver_tax_regime" header="receiver_tax_regime" hidden />
                 <Column field="issuer_tax_regime" header="issuer_tax_regime" hidden />
                 <Column field="dateFormatted" header="dateFormatted" hidden />
@@ -233,6 +232,7 @@ export const TableCrp = ({
                 <Column field="folio" header={t('datatable.columns.folio')} hidden={ columnsProps?.folio.hidden } />
                 <Column field="uuid" header={t('datatable.columns.uuid')} hidden={ columnsProps?.uuid.hidden } />
                 <Column field="authz_acceptance_name" header={t('datatable.columns.authz_acceptance_name')} body={statusAcceptanceDpsBodyTemplate} hidden={ columnsProps?.authz_acceptance_name.hidden } />
+                <Column field="id" header={t('datatable.columns.files')} footer={t('datatable.columns.files')} body={fileBodyTemplate} />
             </DataTable>
         </>
     );
