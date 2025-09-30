@@ -162,7 +162,7 @@ const ConsultPaymentProgramded = () => {
     const validate = () => {
         const newFormErrors = {
             area: !oCrp.functional_area,
-            authz_acceptance_notes: !oCrp.authz_acceptance_notes
+            authz_acceptance_notes: !oCrp.authz_acceptance_notes && isInReview
         }
         setFormErrors(newFormErrors);
         

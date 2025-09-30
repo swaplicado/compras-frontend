@@ -1,4 +1,4 @@
-//CARGA DE CRP
+//CRP ACEPTADAS
 'use client';
 import React, {useEffect, useState, useRef} from "react";
 import constants from '@/app/constants/constants';

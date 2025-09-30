@@ -1,4 +1,4 @@
-//PAGOS PROGRAMADOS
+//CRP RECHAZADAS
 'use client';
 import React, {useEffect, useState, useRef} from "react";
 import constants from '@/app/constants/constants';
