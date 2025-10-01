@@ -96,8 +96,16 @@ export const RenderField = (props: renderFieldProps) => {
                             <Tooltip target=".custom-target-icon" />
                             <i className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge" data-pr-tooltip={props.tooltip} data-pr-position="right" data-pr-my="left center-2" style={{ fontSize: '1rem', cursor: 'pointer' }}></i>
                             <div>
-                                <InputText value={props.value || ''} readOnly={props.readonly} className={`w-full`} disabled={props.disabled} />
-                                {props.errors[props.errorKey] && <small className="p-error">a</small>}
+                                <InputText 
+                                    value={props.value || ''} 
+                                    readOnly={props.readonly} 
+                                    className={`w-full ${props.errors[props.errorKey] ? 'p-invalid' : ''}`} 
+                                    disabled={props.disabled}
+                                    onChange={(e) => {
+                                        props.onChange?.(e.target.value);
+                                    }}
+                                />
+                                {props.errors[props.errorKey] && <small className="p-error">{props.errorMessage}</small>}
                             </div>
                         </div>
                     </div>

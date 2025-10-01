@@ -43,6 +43,7 @@ const constants = {
     ROUTE_GET_PAYMENTS_EXEC: '/transactions/payments/select-payments-exec/',
     ROUTE_GET_PAYMENTS_EXEC_DETAILS: '/transactions/documents/payments/',
     ROUTE_GET_PAYMENTS_PLUS_DOC: '/transactions/payments/select-payments-exc-plus-document/',
+    ROUTE_GET_COUNTRIES: '/transactions/countries/',
 
     ROUTE_POST_VALIDATE_XML: '/transactions/documents/validate-xml/',
     ROUTE_POST_DOCUMENT_TRANSACTION: '/transactions/document-transaction/',
@@ -52,6 +53,7 @@ const constants = {
     ROUTE_POST_VALIDATE_XML_CRP: '/transactions/documents/validate-xml-rp/',
     ROUTE_POST_CREATE_CRP: '/transactions/document-transaction-rp/',
     ROUTE_POST_UPDATE_CRP: '/transactions/documents/update-payments/',
+    ROUTE_POST_CREATE_PARTNER: '/transactions/partner-applying/create/',
 
 
     //Constantes de estados de las facturas
