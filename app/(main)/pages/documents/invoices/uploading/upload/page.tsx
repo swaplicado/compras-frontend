@@ -174,7 +174,8 @@ const Upload = () => {
                         id: 0,
                         name: t('uploadDialog.reference.withOutReferenceOption'),
                         is_covered: 0,
-                        functional_area_id: null
+                        functional_area_id: null,
+                        amount: 0
                     });
                 }
 
@@ -183,7 +184,8 @@ const Upload = () => {
                         id: item.id,
                         name: item.reference,
                         is_covered: item.is_covered,
-                        functional_area_id: item.functional_area_id
+                        functional_area_id: item.functional_area_id,
+                        amount: item.amount
                     });
                 }
 
