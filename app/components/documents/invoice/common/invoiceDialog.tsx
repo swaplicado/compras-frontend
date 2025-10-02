@@ -472,7 +472,7 @@ export const InvoiceDialog = ({
             for (let i = 0; i < oReference.length; i++) {
                 lref.push({
                     id: oReference[i].id,
-                    amount: 0,
+                    amount: oReference[i].amount,
                     reference: oReference[i].name,
                     functional_area_id: oReference[i].functional_area_id,
                 });

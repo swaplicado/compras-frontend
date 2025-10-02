@@ -109,7 +109,7 @@ const RegisterProvider = () => {
                 let companies: any[] = [];
                 for (const item of data) {
                     companies.push({
-                        id: item.external_id,
+                        id: item.id,
                         name: item.trade_name
                     });
                 }
@@ -368,7 +368,7 @@ const RegisterProvider = () => {
                 {animationSuccess({
                     show: resultUpload === 'success',
                     title: 'Realizado',
-                    text: 'Su solicitud ha sido procesada con éxito, espera a que se te notifique cuando tu cuente quede aceptada',
+                    text: 'Su solicitud ha sido procesada con éxito, espera a que se te notifique cuando tu cuenta quede aceptada',
                     buttonLabel: 'Ir a login',
                     action: redirectToLogin,
                 })}

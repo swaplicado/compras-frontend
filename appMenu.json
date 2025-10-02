@@ -109,9 +109,30 @@
                     ]
                 },
                 {
-                    "label": "Catálogo de proveedores",
-                    "icon": "pi pi-users",
-                    "to": "/pages/partners/catalog"
+                    "label": "Proveedores",
+                    "icon": "pi pi-truck",
+                    "items": [
+                        {
+                            "label": "Recepción",
+                            "icon": "pi pi-download",
+                            "to": "/pages/partners/reception"
+                        },
+                        {
+                            "label": "Rechazados",
+                            "icon": "pi pi-times-circle",
+                            "to": "/pages/partners/rejected"
+                        },
+                        {
+                            "label": "Aceptados",
+                            "icon": "pi pi-check-square",
+                            "to": "/pages/partners/accepted"
+                        },
+                        {
+                            "label": "Catálogo",
+                            "icon": "pi pi-list",
+                            "to": "/pages/partners/catalog"
+                        }
+                    ]
                 }
             ]
         }

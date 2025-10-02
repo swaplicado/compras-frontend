@@ -44,6 +44,9 @@ const constants = {
     ROUTE_GET_PAYMENTS_EXEC_DETAILS: '/transactions/documents/payments/',
     ROUTE_GET_PAYMENTS_PLUS_DOC: '/transactions/payments/select-payments-exc-plus-document/',
     ROUTE_GET_COUNTRIES: '/transactions/countries/',
+    ROUTE_GET_PARTNERS_TO_ACCEPT: '/transactions/partner-applying/filtered/',
+    ROUTE_GET_FILES_PARTNERS: '/transactions/partner-applying/signed-urls/',
+    ROUTE_GET_DOWNLOAD_FILES_PARTNERS: '/transactions/partner-applying/download-zip/',
 
     ROUTE_POST_VALIDATE_XML: '/transactions/documents/validate-xml/',
     ROUTE_POST_DOCUMENT_TRANSACTION: '/transactions/document-transaction/',
