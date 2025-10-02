@@ -10,6 +10,7 @@ export function middleware(req: NextRequest) {
     const isConfirmPasswordPage = req.nextUrl.pathname.startsWith('/auth/confirmPassword/');
     const isApiRequest = req.nextUrl.pathname.startsWith('/api/'); // Excluir APIs
     const isRegisterProvider = req.nextUrl.pathname === '/auth/registerProvider';
+    const isEditPartner = req.nextUrl.pathname.startsWith('/auth/editPartner/');
 
     // Archivos estáticos no protegidos
     const isStaticAsset =
@@ -23,7 +24,7 @@ export function middleware(req: NextRequest) {
         req.nextUrl.pathname.endsWith('.woff2');
 
     // Redirigir si no hay token y no estás en login, recursos estáticos o API
-    if (!token?.value && !isLoginPage && !isStaticAsset && !isApiRequest && !isResetPasswordPage && !isConfirmPasswordPage && !isRegisterProvider) {
+    if (!token?.value && !isLoginPage && !isStaticAsset && !isApiRequest && !isResetPasswordPage && !isConfirmPasswordPage && !isRegisterProvider && !isEditPartner) {
         return NextResponse.redirect(new URL('/auth/login', req.url));
     }
 

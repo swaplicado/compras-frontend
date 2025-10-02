@@ -180,6 +180,7 @@ export const TableReception = ({
                 <Column field="functional_area_obj" header="functional_area_obj" hidden />
                 <Column field="company" header="company" hidden />
                 <Column field="authz_acceptance_notes" header="authz_acceptance_notes" hidden />
+                <Column field="authz_authorization_notes" header="authz_authorization_notes" hidden />
                 <Column field="trade_name" header="Proveedor" />
                 <Column field="full_name" header="Nombre" />
                 <Column field="email" header="Email" />

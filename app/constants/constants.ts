@@ -47,6 +47,7 @@ const constants = {
     ROUTE_GET_PARTNERS_TO_ACCEPT: '/transactions/partner-applying/filtered/',
     ROUTE_GET_FILES_PARTNERS: '/transactions/partner-applying/signed-urls/',
     ROUTE_GET_DOWNLOAD_FILES_PARTNERS: '/transactions/partner-applying/download-zip/',
+    ROUTE_GET_PARTNER_APPLYING_BY_UUID: '/transactions/partner-applying/by-uuid/',
 
     ROUTE_POST_VALIDATE_XML: '/transactions/documents/validate-xml/',
     ROUTE_POST_DOCUMENT_TRANSACTION: '/transactions/document-transaction/',
@@ -57,6 +58,7 @@ const constants = {
     ROUTE_POST_CREATE_CRP: '/transactions/document-transaction-rp/',
     ROUTE_POST_UPDATE_CRP: '/transactions/documents/update-payments/',
     ROUTE_POST_CREATE_PARTNER: '/transactions/partner-applying/create/',
+    ROUTE_POST_UPDATE_PARTNER: '/transactions/partner-applying/edit/',
 
 
     //Constantes de estados de las facturas
@@ -146,6 +148,10 @@ const constants = {
     PAYMENT_STATUS_NOTIFIED_ID: 6,
     PAYMENT_STATUS_COMP_ID: 7,
     PAYMENT_STATUS_CANCELED_ID: 9,
+
+    //estatus auth de proveedores
+    PARTNER_AUTH_NEW_ID: 1,
+    PARTNER_AUTH_REJECTED_ID: 3
 }
 
 export default constants;

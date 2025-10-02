@@ -4,6 +4,7 @@ import constants from '@/app/constants/constants';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { CustomFileUpload } from '@/app/components/documents/invoice/customFileUpload';
 import { Tooltip } from 'primereact/tooltip';
+import { FieldsEditAcceptance } from '@/app/components/documents/invoice/fieldsEditAcceptance'
 
 interface FormReceptionPartnerProps {
     oProvider: any;
@@ -25,6 +26,9 @@ interface FormReceptionPartnerProps {
     formMode: 'view' | 'create';
     withNotesAcceptation?: boolean;
     disabledNotesAcceptation?: boolean;
+    withFiles?: boolean;
+    withNotesAuth?: boolean;
+    disabledNotesAuth?: boolean;
 }
 
 export const FormReceptionPartner = ({
@@ -46,7 +50,11 @@ export const FormReceptionPartner = ({
     message,
     formMode = 'create',
     withNotesAcceptation = false,
-    disabledNotesAcceptation = false
+    disabledNotesAcceptation = false,
+    withFiles = true,
+    withNotesAuth = false,
+    disabledNotesAuth = false
+
 }: FormReceptionPartnerProps) => {
 
     return (
@@ -334,7 +342,47 @@ export const FormReceptionPartner = ({
                 errors={formErrors}
                 errorMessage={'Ingresa codigo postal'}
             />
-            { formMode == 'create' && (
+
+            { withNotesAcceptation && (
+                <RenderField
+                    label={'Notas aceptación/rechazo'}
+                    tooltip={'Notas aceptación/rechazo'}
+                    value={oProvider?.authz_acceptance_notes}
+                    disabled={disabledNotesAcceptation}
+                    mdCol={12}
+                    type={'textArea'}
+                    onChange={(value) => {
+                        setOProvider((prev: any) => ({ ...prev, authz_acceptance_notes: value }));
+                        setFormErrors((prev: any) => ({ ...prev, authz_acceptance_notes: false }));
+                    }}
+                    options={[]}
+                    placeholder={''}
+                    errorKey={'authz_acceptance_notes'}
+                    errors={formErrors}
+                    errorMessage={'Ingresa notas'}
+                />
+            )}
+            { withNotesAuth && (
+                <RenderField
+                    label={'Notas autorización/rechazo'}
+                    tooltip={'Notas autorización/rechazo'}
+                    value={oProvider?.authz_authorization_notes}
+                    disabled={disabledNotesAuth}
+                    mdCol={12}
+                    type={'textArea'}
+                    onChange={(value) => {
+                        setOProvider((prev: any) => ({ ...prev, authz_authorization_notes: value }));
+                        setFormErrors((prev: any) => ({ ...prev, authz_authorization_notes: false }));
+                    }}
+                    options={[]}
+                    placeholder={''}
+                    errorKey={'authz_authorization_notes'}
+                    errors={formErrors}
+                    errorMessage={'Ingresa notas'}
+                />
+            )}
+
+            { formMode == 'create' && withFiles && (
                 <div className="field col-12">
                     <label>Archivos</label>
                     &nbsp;
@@ -370,26 +418,6 @@ export const FormReceptionPartner = ({
                         }}
                     />
                 </div>
-            )}
-
-            { withNotesAcceptation && (
-                <RenderField
-                    label={'Notas aceptación/rechazo'}
-                    tooltip={'Notas aceptación/rechazo'}
-                    value={oProvider?.authz_acceptance_notes}
-                    disabled={disabledNotesAcceptation}
-                    mdCol={12}
-                    type={'textArea'}
-                    onChange={(value) => {
-                        setOProvider((prev: any) => ({ ...prev, authz_acceptance_notes: value }));
-                        setFormErrors((prev: any) => ({ ...prev, authz_acceptance_notes: false }));
-                    }}
-                    options={[]}
-                    placeholder={''}
-                    errorKey={'authz_acceptance_notes'}
-                    errors={formErrors}
-                    errorMessage={'Ingresa notas'}
-                />
             )}
         </div>
     )

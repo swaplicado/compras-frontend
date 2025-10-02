@@ -67,8 +67,8 @@ const RegisterProvider = () => {
     });
     const toast = useRef<Toast>(null);
     const lEntityType = [
-        { id: 1, name: 'Organizacion' },
-        { id: 2, name: 'Persona' }
+        { id: 2, name: 'Organizacion' },
+        { id: 1, name: 'Persona' }
     ]
     const [lFiscalRegimes, setLFiscalRegimes] = useState<any[]>([]);
     const [lCountries, setLCountries] = useState<any[]>([]);
@@ -129,7 +129,8 @@ const RegisterProvider = () => {
             const route = constants.ROUTE_GET_AREAS;
             const response = await axios.get(constants.API_AXIOS_GET, {
                 params: {
-                    route: route
+                    route: route,
+                    company_id: [oProvider.company.id]
                 }
             });
 

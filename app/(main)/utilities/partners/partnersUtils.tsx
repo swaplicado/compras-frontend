@@ -7,6 +7,7 @@ import { getExtensionFileByName } from '@/app/(main)/utilities/files/fileValidat
 interface getlPartnersProps {
     userFunctionalAreas: any;
     authz_acceptance_id: any;
+    authz_authorization_id?: any;
     setPartners: React.Dispatch<React.SetStateAction<any[]>>;
     showToast?: (type: 'success' | 'info' | 'warn' | 'error', message: string, summaryText?: string) => void;
 }
@@ -14,6 +15,7 @@ interface getlPartnersProps {
 export const getlPartners = async ({
     userFunctionalAreas,
     authz_acceptance_id,
+    authz_authorization_id,
     setPartners,
     showToast
 }: getlPartnersProps) => {
@@ -24,6 +26,7 @@ export const getlPartners = async ({
                 route: route,
                 authz_acceptance_id: authz_acceptance_id,
                 functional_area: userFunctionalAreas,
+                authz_authorization_id: authz_authorization_id
             }
         });
 
@@ -96,7 +99,9 @@ export const getlFilesPartners = async ({
             }
         });
 
+        console.log('response: ', response);
         if (response.status === 200) {
+            
             const data = response.data.data || [];
             let lUrls: any[] = [];
             Object.keys(data.files).forEach((key) => {
