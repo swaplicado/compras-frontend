@@ -530,7 +530,7 @@ const InvoicesAuthorizations = () => {
                 groups = userGroups;
             }
 
-            if (groups.includes(constants.ROLES.COMPRADOR_ID)) {
+            if (groups.includes(constants.ROLES.COMPRADOR_ID) || groups.includes(constants.ROLES.CONTADOR_ID)) {
                 setOValidUser({ isInternalUser: true, isProvider: false, isProviderMexico: false });
                 await getlProviders();
                 await getDps(true);

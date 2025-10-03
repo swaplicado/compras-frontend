@@ -60,7 +60,7 @@ const Dashboard = () => {
                 const start_date = moment(new Date).startOf('month').format('YYYY-MM-DD');
                 const end_date = moment(new Date).endOf('month').format('YYYY-MM-DD');
 
-                if (groups.includes(constants.ROLES.COMPRADOR_ID)) {
+                if (groups.includes(constants.ROLES.COMPRADOR_ID) || groups.includes(constants.ROLES.CONTADOR_ID)) {
                     const route = constants.ROUTE_GET_DPS_BY_AREA_ID;
                     const params = {
                         route: route,

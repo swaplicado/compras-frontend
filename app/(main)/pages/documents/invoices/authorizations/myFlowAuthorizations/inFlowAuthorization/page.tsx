@@ -518,7 +518,7 @@ const Upload = () => {
                 groups = userGroups;
             }
 
-            if (groups.includes(constants.ROLES.COMPRADOR_ID)) {
+            if (groups.includes(constants.ROLES.COMPRADOR_ID) || groups.includes(constants.ROLES.CONTADOR_ID)) {
                 const route = constants.ROUTE_GET_DPS_AUTHORIZATION;
                 const params = {
                     route: route,
