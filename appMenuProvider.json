@@ -91,6 +91,11 @@
                             "to": "/pages/documents/crp/rejected"
                         }
                     ]
+                },
+                {
+                    "label": "Estado de cuenta",
+                    "icon": "pi pi-file",
+                    "to": "/pages/partners/accountState"
                 }
             ]
         }

@@ -60,6 +60,7 @@ const constants = {
     ROUTE_POST_UPDATE_CRP: '/transactions/documents/update-payments/',
     ROUTE_POST_CREATE_PARTNER: '/transactions/partner-applying/create/',
     ROUTE_POST_UPDATE_PARTNER: '/transactions/partner-applying/edit/',
+    ROUTE_POST_ACCOUNT_STATES: '/transactions/partners/account-state/',
 
 
     //Constantes de estados de las facturas
