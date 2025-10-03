@@ -80,6 +80,57 @@ export const getlPartners = async ({
     }
 }
 
+interface paramsProps {
+    partner_id: any,
+    dateIni: string,
+    dateEnd: string,
+    company_id: number
+}
+interface AccountStateItem {
+    idYear: number;
+    date: string;
+    concept: string;
+    debit: number;
+    credit: number;
+    importForeignCurrency: number;
+    currencyCode: string;
+}
+interface getlAccountStateProps{
+    params: paramsProps;
+    setLAccountState: React.Dispatch<React.SetStateAction<any[]>>;
+    showToast?: (type: 'success' | 'info' | 'warn' | 'error', message: string, summaryText?: string) => void;
+}
+
+export const getlAccountState = async (props: getlAccountStateProps) => {
+    try {
+        if (!props) {
+            return;
+        }
+        const route = constants.ROUTE_POST_ACCOUNT_STATES
+        const response = await axios.get(constants.API_AXIOS_GET, {
+            params: {
+                ...props.params,
+                route: route
+            }
+        });
+
+        if (response.status === 200) {
+            const data = response.data.data.message.lASData || [];
+            const accountState = data.map((item: any) => ({
+                idYear: item.idYear,
+                date: item.date,
+                concept: item.concept,
+                debit: item.debit,
+                credit: item.credit,
+                importForeignCurrency: item.importForeignCurrency,
+                currencyCode: item.currencyCode,
+            }));
+            props.setLAccountState(accountState);
+        }
+    } catch (error: any) {
+        props.showToast?.('error', error.message)
+    }
+}
 interface getlFilesPartnersProps {
     applying_id: any;
     setLFiles: React.Dispatch<React.SetStateAction<any[]>>;
