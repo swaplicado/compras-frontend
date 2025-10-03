@@ -26,6 +26,8 @@ interface DialogReceptionProps {
     successMessage?: string;
     errorTitle?: string;
     errorMessage?: string;
+    withNotesAuth?: boolean;
+    disabledNotesAuth?: boolean;
 }
 
 export const DialogReception = ({
@@ -47,7 +49,9 @@ export const DialogReception = ({
     errorMessage,
     withShowFiles = false,
     loadingFiles,
-    lFiles = []
+    lFiles = [],
+    withNotesAuth = false,
+    disabledNotesAuth = false
 }: DialogReceptionProps) => {
     const { t } = useTranslation('crp');
     const { t: tCommon } = useTranslation('common');
@@ -96,6 +100,8 @@ export const DialogReception = ({
                             formErrors={formErrors}
                             withNotesAcceptation={withNotesAcceptation}
                             disabledNotesAcceptation={disabledNotesAcceptation}
+                            withNotesAuth={withNotesAuth}
+                            disabledNotesAuth={disabledNotesAuth}
                         />
 
                         { withShowFiles && (

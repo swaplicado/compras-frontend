@@ -26,7 +26,8 @@ const AppMenu = () => {
             groups = userGroups;
         }
 
-        const config = groups.includes(constants.ROLES.COMPRADOR_ID) ? appConfig : appConfigProvider;
+        // const config = groups.includes(constants.ROLES.COMPRADOR_ID) ? appConfig : appConfigProvider;
+        const config = groups.includes(constants.ROLES.PROVEEDOR_ID) ? appConfigProvider : appConfig;
         setModelProvider(config?.menu || []);
         setLoading(false);
     }, []);

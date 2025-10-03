@@ -68,7 +68,7 @@ export const AuthorizationDialog = ({
                 jsonData: {
                     id_external_system: 1,
                     id_company: oDps.company_id,
-                    id_resource_type: 1,
+                    id_resource_type: constants.RESOURCE_TYPE_PUR_INVOICE,
                     external_resource_id: oDps.id_dps,
                     external_user_id: userExternalId,
                     id_actor_type: 2,

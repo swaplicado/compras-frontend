@@ -198,6 +198,14 @@ const RejectedPartners = () => {
                         setSelectedRow={setOPartner}
                         loading={loading}
                         downloadFiles={downloadFilesPartner}
+                        columnProps={{
+                            authz_acceptance: {
+                                hidden: false
+                            },
+                            authz_authorization: {
+                                hidden: true
+                            }
+                        }}
                     />
                 </Card>
             </div>

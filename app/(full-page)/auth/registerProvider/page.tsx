@@ -237,7 +237,8 @@ const RegisterProvider = () => {
         setFormErrors(newFormErrors);
 
         const newFileErrors = {
-            files: (fileUploadRef.current?.getFiles().length || 0) < 5
+            // files: (fileUploadRef.current?.getFiles().length || 0) < 5
+            files: fileUploadRef.current?.getFiles().length == 0
         }
 
         setFileErrors(newFileErrors);
@@ -248,11 +249,11 @@ const RegisterProvider = () => {
     // useEffect(() =>{
     //     if(oProvider){
     //         setOProvider({
-    //             provider_name: 'adrian',
-    //             rfc: 'abcd123456',
+    //             provider_name: 'proveedor_7',
+    //             rfc: 'abcd1234510',
     //             entity_type: null,
     //             fiscal_regime: null,
-    //             name: 'adrian',
+    //             name: 'proveedor_7',
     //             lastname: 'aviles',
     //             phone: '4525223239',
     //             email: 'adrian@gmail.com',

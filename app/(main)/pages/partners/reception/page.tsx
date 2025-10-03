@@ -72,7 +72,10 @@ const ReceptionPartners = () => {
             postal_code: data.partner_address_partner_applying[0].postal_code,
             company: data.company,
             area: data.functional_area,
-            authz_acceptance_notes: data.authz_acceptance_notes
+            authz_acceptance_notes: data.authz_acceptance_notes,
+            company_external_id: data.company_external_id,
+            fiscal_id: data.fiscal_id,
+            authz_authorization_notes: data.authz_authorization_notes
         })
     }
 
@@ -114,6 +117,94 @@ const ReceptionPartners = () => {
         setLoadingFiles(false);
     };
 
+    const handleFlowAuthorization = async () => {
+        try {
+            setLoading(true);
+            const acceptResult = await handleAccept(constants.REVIEW_ACCEPT);
+            if (!acceptResult) {
+                return;
+            }
+            
+            const route = constants.ROUTE_POST_START_AUTHORIZATION;
+            const response = await axios.post(constants.API_AXIOS_POST, {
+                route,
+                jsonData: {
+                    id_external_system: 1,
+                    id_company: oPartner.company_external_id, //company id del dps id_company
+                    id_flow_model: 5,
+                    resource: {
+                        code: oPartner.fiscal_id,
+                        name: oPartner.provider_name, //proveedor
+                        content: {},
+                        external_id: oPartner.id,
+                        resource_type: constants.RESOURCE_TYPE_PROVIDER
+                    },
+                    deadline: null,
+                    sent_by: oUser.oUser.external_id, //external user id
+                    id_actor_type: 2,
+                    stakeholders: [{
+                        external_user_id: oUser.oUser.external_id,
+                        id_actor_type: 2
+                    }],
+                    notes: oPartner.authz_authorization_notes
+                }
+            });
+
+            if (response.status == 200) {
+                
+                setSuccessMessage('Registro de proveedor enviado a autorizar');
+                setShowing('animationSuccess');
+
+                await getlPartners({
+                    userFunctionalAreas: userFunctionalAreas,
+                    authz_acceptance_id: constants.REVIEW_PENDING_ID,
+                    setPartners,
+                    showToast
+                });
+            } else {
+                throw new Error('');
+            }
+        } catch (error: any) {
+            setErrorMessage(error.response?.data?.error || 'Error al enviar enviar el registro a autorizar, consulta la pantalla de aceptados');
+            setShowing('animationError');
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const handleAccept = async (reviewOption: string) =>{
+        try {
+            if (reviewOption == constants.REVIEW_REJECT && !oPartner.authz_acceptance_notes.trim()) {
+                setFormErrors({
+                    authz_acceptance_notes: true
+                })
+                showToast('info', 'Ingresa nota de rechazo')
+                return;
+            }
+
+            const route = '/transactions/partner-applying/' + oPartner.id + '/set-authz/';
+            const response = await axios.post(constants.API_AXIOS_PATCH, {
+                route,
+                jsonData: {
+                    authz_acceptance_notes: oPartner.authz_acceptance_notes,
+                    authz_code: reviewOption,
+                    user_id: oUser.id,
+                }
+            });
+
+            if (response.status === 200 || response.status === 201) {
+                return true;
+            } else {
+                throw new Error('Error al aceptar el registro de proveedor');
+            }
+        } catch (error: any) {
+            console.log(error);
+            setShowing('animationError');
+            setErrorMessage(error.message);
+            return false;
+        }
+    }
+
     const handleReview = async (reviewOption: string) =>{
         try {
             if (reviewOption == constants.REVIEW_REJECT && !oPartner.authz_acceptance_notes.trim()) {
@@ -137,7 +228,7 @@ const ReceptionPartners = () => {
 
             if (response.status === 200 || response.status === 201) {
                 if (reviewOption == constants.REVIEW_ACCEPT) {
-                    setSuccessMessage('Se aceptó el registro de proveedor, en espera de autorización');
+                    setSuccessMessage('Se aceptó el registro de proveedor');
                 } else {
                     setSuccessMessage('Se rechazó el registro de proveedor');
                 }
@@ -148,6 +239,7 @@ const ReceptionPartners = () => {
                     setPartners,
                     showToast
                 });
+                return true;
             } else {
                 throw new Error('Error al aceptar el registro de proveedor');
             }
@@ -155,6 +247,7 @@ const ReceptionPartners = () => {
             console.log(error);
             setShowing('animationError');
             setErrorMessage(error.message);
+            return false;
         } finally {
             setLoading(false);
         }
@@ -178,6 +271,7 @@ const ReceptionPartners = () => {
                     <Button label={tCommon('btnClose')} icon="bx bx-x" onClick={() => setDialogVisible(false)} severity="secondary" disabled={loading} />
                     <Button label={tCommon('btnReject')} icon="bx bx-like" onClick={() => handleReview(constants.REVIEW_REJECT)} autoFocus disabled={loading} severity="danger" />
                     <Button label={tCommon('btnAccept')} icon="bx bx-like" onClick={() => handleReview(constants.REVIEW_ACCEPT)} autoFocus disabled={loading} severity="success" />
+                    <Button label={'Aceptar y enviar'} icon="bx bx-like" onClick={() => handleFlowAuthorization()} autoFocus disabled={loading} severity="success" />
                 </div>
             )
         )
@@ -245,6 +339,14 @@ const ReceptionPartners = () => {
                         setSelectedRow={setOPartner}
                         downloadFiles={downloadFilesPartner}
                         loading={loading}
+                        columnProps={{
+                            authz_acceptance: {
+                                hidden: false
+                            },
+                            authz_authorization: {
+                                hidden: true
+                            }
+                        }}
                     />
                 </Card>
             </div>

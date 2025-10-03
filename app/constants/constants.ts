@@ -48,6 +48,7 @@ const constants = {
     ROUTE_GET_FILES_PARTNERS: '/transactions/partner-applying/signed-urls/',
     ROUTE_GET_DOWNLOAD_FILES_PARTNERS: '/transactions/partner-applying/download-zip/',
     ROUTE_GET_PARTNER_APPLYING_BY_UUID: '/transactions/partner-applying/by-uuid/',
+    ROUTE_GET_PARTNER_IN_AUTHORIZATION: '/transactions/applying-auth/',
 
     ROUTE_POST_VALIDATE_XML: '/transactions/documents/validate-xml/',
     ROUTE_POST_DOCUMENT_TRANSACTION: '/transactions/document-transaction/',
@@ -138,6 +139,7 @@ const constants = {
     //tipo de recurso en autorizaciones
     RESOURCE_TYPE_PUR_INVOICE: 4,
     RESOURCE_TYPE_PAYMENTS: 11,
+    RESOURCE_TYPE_PROVIDER: 21,
 
     //estatus de pagos
     PAYMENT_STATUS_NEW_ID: 1,

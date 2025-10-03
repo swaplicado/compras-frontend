@@ -123,7 +123,10 @@ export const FlowAuthorizationDialog = ({
                     deadline: null,
                     sent_by: userExternalId, //external user id
                     id_actor_type: 2,
-                    stakeholders: [],
+                    stakeholders: [{
+                        external_user_id: userExternalId,
+                        id_actor_type: 2
+                    }],
                     notes: comments
                 }
             });

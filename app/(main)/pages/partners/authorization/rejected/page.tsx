@@ -15,7 +15,7 @@ import { TableReception } from '@/app/components/partners/reception/tableRecepti
 import { DataTable, DataTableFilterMeta, DataTableRowClickEvent } from 'primereact/datatable';
 import DateFormatter from '@/app/components/commons/formatDate';
 import { DialogReception } from '@/app/components/partners/reception/dialogReception';
-import { getlPartners, getlFilesPartners, downloadFiles } from '@/app/(main)/utilities/partners/partnersUtils';
+import { getlPartnersAuth, getlFilesPartners, downloadFiles } from '@/app/(main)/utilities/partners/partnersUtils';
 
 const RejectedPartners = () => {
     const [lPartners, setPartners] = useState<any[]>([]);
@@ -73,7 +73,8 @@ const RejectedPartners = () => {
             company: data.company,
             area: data.functional_area,
             authz_acceptance_notes: data.authz_acceptance_notes,
-            authz_authorization_notes: data.authz_authorization_notes
+            authz_authorization_notes: data.authz_authorization_notes,
+            company_external_id: data.company_external_id
         })
     }
 
@@ -125,64 +126,12 @@ const RejectedPartners = () => {
         setLoading(false);
     }
 
-    const handleAuth = async (reviewOption: any) => {
-        try {
-            if (reviewOption == constants.REVIEW_REJECT && !oPartner.authz_acceptance_notes.trim()) {
-                setFormErrors({
-                    authz_acceptance_notes: true
-                })
-                showToast('info', 'Ingresa nota de rechazo')
-                return;
-            }
-
-            setLoading(true);
-            const route = '/transactions/partner-applying/' + oPartner.id + '/set-authz/';
-            const response = await axios.post(constants.API_AXIOS_PATCH, {
-                route,
-                jsonData: {
-                    authz_authorization_notes: oPartner.authz_authorization_notes,
-                    authz_code: reviewOption,
-                    user_id: oUser.id,
-                }
-            });
-
-            if (response.status === 200 || response.status === 201) {
-                if (reviewOption == constants.REVIEW_ACCEPT) {
-                    setSuccessMessage('Se autorizó el registro de proveedor, en espera de autorización');
-                } else {
-                    setSuccessMessage('Se rechazó el registro de proveedor');
-                }
-                setShowing('animationSuccess');
-                await getlPartners({
-                    userFunctionalAreas: userFunctionalAreas,
-                    authz_acceptance_id: constants.REVIEW_PENDING_ID,
-                    setPartners,
-                    showToast
-                });
-            } else {
-                throw new Error('Error al autorizar el registro de proveedor');
-            }
-        } catch (error: any) {
-            console.log(error);
-            setShowing('animationError');
-            setErrorMessage(error.message);
-        } finally {
-            setLoading(false);
-        }
-    }
-
 //*******OTROS*******
     const dialogFooterContent = () => {
         return (
             showing == 'body' && (
                 <div className="flex flex-column md:flex-row justify-content-between gap-2">
                     <Button label={tCommon('btnClose')} icon="bx bx-x" onClick={() => setDialogVisible(false)} severity="secondary" disabled={loading} />
-                    { oUser.oUser.groups.includes(constants.ROLES.CONTADOR_ID) && (
-                        <>
-                            <Button label={tCommon('btnReject')} icon="bx bx-like" onClick={() => handleAuth(constants.REVIEW_REJECT)} autoFocus disabled={loading} severity="danger" />
-                            <Button label={'Autorizar'} icon="bx bx-like" onClick={() => handleAuth(constants.REVIEW_ACCEPT)} autoFocus disabled={loading} severity="success" />
-                        </>
-                    )}
                 </div>
             )
         )
@@ -202,10 +151,11 @@ const RejectedPartners = () => {
     useEffect(() => {
         const fetch = async () => {
             setLoading(true);
-            await getlPartners({
-                userFunctionalAreas: userFunctionalAreas,
-                authz_acceptance_id: constants.REVIEW_ACCEPT_ID,
-                authz_authorization_id: 1,
+            await getlPartnersAuth({
+                type: 2,
+                user_id: oUser.oUser.external_id,
+                resource_type: constants.RESOURCE_TYPE_PROVIDER,
+                authz_authorization: 8,
                 setPartners,
                 showToast
             });
@@ -242,6 +192,8 @@ const RejectedPartners = () => {
                         withShowFiles={withShowFiles}
                         loadingFiles={loadingFiles}
                         lFiles={lFiles}
+                        withNotesAuth={oUser?.oUser.groups.includes(constants.ROLES.CONTADOR_ID)}
+                        disabledNotesAuth={!(oUser?.oUser.groups.includes(constants.ROLES.CONTADOR_ID))}
                     />
                     <TableReception
                         lPartners={lPartners}
@@ -252,6 +204,14 @@ const RejectedPartners = () => {
                         setSelectedRow={setOPartner}
                         loading={loading}
                         downloadFiles={downloadFilesPartner}
+                        columnProps={{
+                            authz_acceptance: {
+                                hidden: true
+                            },
+                            authz_authorization: {
+                                hidden: false
+                            }
+                        }}
                     />
                 </Card>
             </div>

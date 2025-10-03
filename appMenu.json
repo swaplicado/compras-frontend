@@ -109,7 +109,7 @@
                     ]
                 },
                 {
-                    "label": "Proveedores",
+                    "label": "Recepción de proveedores",
                     "icon": "pi pi-truck",
                     "items": [
                         {
@@ -126,13 +126,34 @@
                             "label": "Aceptados",
                             "icon": "pi pi-check-square",
                             "to": "/pages/partners/accepted"
-                        },
-                        {
-                            "label": "Catálogo",
-                            "icon": "pi pi-list",
-                            "to": "/pages/partners/catalog"
                         }
                     ]
+                },
+                {
+                    "label": "Autorización de proveedores",
+                    "icon": "pi pi-pencil",
+                    "items": [
+                        {
+                            "label": "Pendientes de autorizar",
+                            "icon": "pi pi-exclamation-circle",
+                            "to": "/pages/partners/authorization/inAuthorization"
+                        },
+                        {
+                            "label": "Autorizados",
+                            "icon": "pi pi-check-square",
+                            "to": "/pages/partners/authorization/authorized"
+                        },
+                        {
+                            "label": "Rechazados",
+                            "icon": "pi pi-times-circle",
+                            "to": "/pages/partners/authorization/rejected"
+                        }
+                    ]
+                },
+                {
+                    "label": "Catálogo de proveedores",
+                    "icon": "pi pi-list",
+                    "to": "/pages/partners/catalog"
                 }
             ]
         }

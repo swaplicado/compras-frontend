@@ -6,7 +6,7 @@ import { getExtensionFileByName } from '@/app/(main)/utilities/files/fileValidat
 
 interface getlPartnersProps {
     userFunctionalAreas: any;
-    authz_acceptance_id: any;
+    authz_acceptance_id?: any;
     authz_authorization_id?: any;
     setPartners: React.Dispatch<React.SetStateAction<any[]>>;
     showToast?: (type: 'success' | 'info' | 'warn' | 'error', message: string, summaryText?: string) => void;
@@ -64,11 +64,12 @@ export const getlPartners = async ({
                     entity_type: data[i].entity_type_obj.name,
                     country: data[i].country_obj.name,
                     company: data[i].company_obj.trade_name,
+                    company_external_id: data[i].company_obj.external_id,
                     fiscal_regime: data[i].fiscal_regime_obj.name,
-                    authz_acceptance: data[i].authz_acceptance,
+                    authz_acceptance: data[i].authz_acceptance_name.toLowerCase(),
                     authz_authorization: data[i].authz_authorization,
                     functional_area: data[i].functional_area_obj.name,
-                    functional_area_obj: data[i].functional_area_obj,
+                    functional_area_obj: data[i].functional_area_obj
                 })
             }
             
@@ -155,5 +156,84 @@ export const downloadFiles = async ({
         }
     } catch (error: any) {
         showToast?.('error', error.response?.data?.error || 'Error al descargar los archivos', 'Error al descargar los archivos');
+    }
+}
+
+interface getlPartnersAuthProps {
+    type: any;
+    user_id: any;
+    resource_type: any;
+    authz_authorization: any;
+    setPartners: React.Dispatch<React.SetStateAction<any[]>>;
+    showToast?: (type: 'success' | 'info' | 'warn' | 'error', message: string, summaryText?: string) => void;
+}
+
+export const getlPartnersAuth = async ({
+    type,
+    user_id,
+    resource_type,
+    authz_authorization,
+    setPartners,
+    showToast
+}: getlPartnersAuthProps) => {
+    try {
+        const route = constants.ROUTE_GET_PARTNER_IN_AUTHORIZATION;
+        const response = await axios.get(constants.API_AXIOS_GET, {
+            params: {
+                route: route,
+                type: type,
+                user_id: user_id,
+                resource_type: resource_type,
+                authz_authorization: authz_authorization
+            }
+        });
+
+        if (response.status === 200) {
+            const data = response.data.data || [];
+            
+            let partners: any[] = [];
+            for (let i = 0; i < data.length; i++) {
+                partners.push({
+                    id: data[i].id,
+                    partner_address_partner_applying: [
+                        {
+                            street: data[i].addresses[0].street,
+                            number: data[i].addresses[0].number,
+                            county: data[i].addresses[0].county,
+                            city: data[i].addresses[0].city,
+                            state: data[i].addresses[0].state,
+                            postal_code: data[i].addresses[0].postal_code,
+                            country: data[i].addresses[0].country
+                        }
+                    ],
+                    created_at: data[i].created_at,
+                    updated_at: data[i].updated_at,
+                    dateFormatted: DateFormatter(data[i].updated_at),
+                    fiscal_id: data[i].fiscal_id,
+                    partner_fiscal_id: data[i].partner_fiscal_id,
+                    first_name: data[i].first_name,
+                    last_name: data[i].last_name,
+                    full_name: data[i].full_name,
+                    trade_name: data[i].trade_name,
+                    phone: data[i].phone,
+                    email: data[i].email,
+                    authz_acceptance_notes: data[i].authz_acceptance_notes,
+                    authz_authorization_notes: data[i].authz_authorization_notes,
+                    entity_type: data[i].entity_type.name,
+                    country: data[i].country.name,
+                    company: data[i].company.trade_name,
+                    company_external_id: data[i].company.external_id,
+                    fiscal_regime: data[i].fiscal_regime.name,
+                    authz_acceptance: data[i].authz_acceptance_name?.toLowerCase(),
+                    authz_authorization: data[i].authz_authorization_name.toLowerCase(),
+                    functional_area: data[i].functional_area.name,
+                    functional_area_obj: data[i].functional_area,
+                })
+            }
+            
+            setPartners(partners);
+        }
+    } catch (error: any) {
+        showToast?.('error', error.message)
     }
 }

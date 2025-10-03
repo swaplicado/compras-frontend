@@ -10,6 +10,15 @@ import { MyToolbar } from '@/app/components/documents/invoice/common/myToolbar';
 import { useIsMobile } from '@/app/components/commons/screenMobile';
 import { Button } from 'primereact/button';
 
+interface columnProps {
+    authz_acceptance: {
+        hidden: boolean
+    },
+    authz_authorization: {
+        hidden: boolean
+    }
+}
+
 interface TableReceptionProps {
     lPartners: any[];
     withSearch: boolean;
@@ -19,6 +28,7 @@ interface TableReceptionProps {
     setSelectedRow?: React.Dispatch<React.SetStateAction<any>>;
     loading: boolean;
     downloadFiles: (data: any) => void;
+    columnProps: columnProps
 }
 
 export const TableReception = ({
@@ -29,7 +39,8 @@ export const TableReception = ({
     handleDoubleClick,
     setSelectedRow,
     loading,
-    downloadFiles
+    downloadFiles,
+    columnProps
 }: TableReceptionProps) => {
     const [filters, setFilters] = useState<DataTableFilterMeta>({});
     const [tableLoading, setTableLoading] = useState(true);
@@ -121,6 +132,14 @@ export const TableReception = ({
         );
     };
 
+    const statusAcceptanceDpsBodyTemplate = (rowData: any) => {
+        return <span className={`status-dps-badge status-${rowData.authz_acceptance}`}>{rowData.authz_acceptance}</span>;
+    };
+
+    const statusAuthDpsBodyTemplate = (rowData: any) => {
+        return <span className={`status-dps-badge status-${rowData.authz_authorization}`}>{rowData.authz_authorization}</span>;
+    };
+
 //*********** INIT ***********
     useEffect(() => {
         const Init = async () => {
@@ -179,6 +198,7 @@ export const TableReception = ({
                 <Column field="dateFormatted" header="dateFormatted" hidden />
                 <Column field="functional_area_obj" header="functional_area_obj" hidden />
                 <Column field="company" header="company" hidden />
+                <Column field="company_external_id" header="company_external_id" hidden />
                 <Column field="authz_acceptance_notes" header="authz_acceptance_notes" hidden />
                 <Column field="authz_authorization_notes" header="authz_authorization_notes" hidden />
                 <Column field="trade_name" header="Proveedor" />
@@ -187,6 +207,8 @@ export const TableReception = ({
                 <Column field="phone" header="Teléfono" />
                 <Column field="functional_area" header="Area" />
                 <Column field="updated_at" header="Fecha" body={dateBodyTemplate}/>
+                <Column field="authz_acceptance" header="Aceptación" body={statusAcceptanceDpsBodyTemplate} hidden={columnProps.authz_acceptance.hidden}/>
+                <Column field="authz_authorization" header="Autorización" body={statusAuthDpsBodyTemplate} hidden={columnProps.authz_authorization.hidden}/>
                 <Column field="id" header='Archivos' footer='Archivos' body={fileBodyTemplate} />
             </DataTable>
         </>
