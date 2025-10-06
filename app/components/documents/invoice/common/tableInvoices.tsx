@@ -426,10 +426,10 @@ export const TableInvoices = ({
             setLoading?.(true);
             if (params) {
                 await getDps(params);
+                setTimeout(() => {
+                    setLoading?.(false);
+                }, 5000);
             }
-            setTimeout(() => {
-                setLoading?.(false);
-            }, 5000);
             // setLoading?.(false);
         }
         if (withMounthFilter) {
