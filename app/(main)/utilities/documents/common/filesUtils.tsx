@@ -38,6 +38,7 @@ export const getlUrlFilesDps = async ({
             throw new Error(`Error al obtener los archivos: ${response.statusText}`);
         }
     } catch (error: any) {
+        setLFiles([]);
         showToast?.('error', error.response?.data?.error || 'Error al obtener los archivos', 'Error al obtener los archivos');
     }
 };
