@@ -202,6 +202,7 @@ export const InvoiceDialog = ({
     const [lFilesToEdit, setLFilesToEdit] = useState<any[]>([]);
     const [filterReferences, setFilterReferences] = useState<boolean>(false);
     const [lRefToValidateXml, setLRefToValidateXml] = useState<any[]>([]);
+    const [lRefErrors, setLRefErrors] = useState<any[]>([]);
 
     const renderField = (props: renderFieldProps) => (
         <>
@@ -464,6 +465,7 @@ export const InvoiceDialog = ({
             ref.id == 0
         );
         let lref = [];
+        let lrefErrors = [];
         if (noReference) {
             setOReference([lReferences[0]]);
             setLRefToValidateXml([lReferences[0]]);
@@ -472,12 +474,17 @@ export const InvoiceDialog = ({
             for (let i = 0; i < oReference.length; i++) {
                 lref.push({
                     id: oReference[i].id,
-                    amount: oReference[i].amount,
+                    amount: 0,
                     reference: oReference[i].name,
                     functional_area_id: oReference[i].functional_area_id,
                 });
+                lrefErrors.push({
+                    id: oReference[i].id,
+                    error: false
+                });
             }
             setLRefToValidateXml(lref);
+            setLRefErrors(lrefErrors)
         }
 
         setOArea(null);
@@ -545,8 +552,29 @@ export const InvoiceDialog = ({
         }
     };
 
+    const validateLRefErros = () => {
+        if (lRefToValidateXml.length == 1) {
+            return true;
+        }
+        for (let i = 0; i < lRefToValidateXml.length; i++) {
+            const ref = lRefToValidateXml[i];
+            if (ref.amount == 0) {
+                setLRefErrors(prev =>
+                    prev.map((item, index) =>
+                        index == i ? { ...item, error: true } : item
+                    )
+                );
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     const handleSubmit = async () => {
         if (!validate()) return;
+        
+        if (!validateLRefErros) return;
 
         try {
             setLoading?.(true);
@@ -1239,7 +1267,7 @@ export const InvoiceDialog = ({
                                                     <div className='col-12 md:col-9'>
                                                         <InputNumber
                                                             type="text"
-                                                            className={`w-full`}
+                                                            className={`w-full ${lRefErrors[index].error ? 'p-invalid' : ''}`}
                                                             value={lRefToValidateXml[index]?.amount}
                                                             disabled={dialogMode === 'view' || dialogMode === 'review'}
                                                             maxLength={50}
@@ -1250,6 +1278,7 @@ export const InvoiceDialog = ({
                                                             inputClassName="text-right"
                                                             onChange={(e: any) => handleInputAmountReference(index, e.value)}
                                                         />
+                                                        {lRefErrors[index].error && <small className="p-error">La cantidad no puede ser 0</small>}
                                                     </div>
                                                 </div>
                                             ))}
