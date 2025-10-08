@@ -594,15 +594,30 @@ export const FieldsDps = ({
                         <div className={`field col-12 md:col-4`}>
                             <div className="formgrid grid">
                                 <div className="col">
-                                        <Checkbox 
-                                            inputId="is_payment_loc" 
-                                            name="is_payment_loc" 
-                                            value="is_payment_loc" 
-                                            onChange={(e: any) => { setODps( (prev: any) => ({ ...prev, is_payment_loc: e.checked }) ) }} 
-                                            checked={ oDps?.is_payment_loc }
-                                            disabled={ disabledIsPaymentLoc() }
-                                        />
-                                        <label htmlFor="is_payment_loc" className="ml-2">Pago en moneda local</label>
+                                    <Checkbox 
+                                        inputId="is_payment_loc" 
+                                        name="is_payment_loc" 
+                                        value="is_payment_loc" 
+                                        onChange={(e: any) => { setODps( (prev: any) => ({ ...prev, is_payment_loc: e.checked }) ) }} 
+                                        checked={ oDps?.is_payment_loc }
+                                        disabled={ disabledIsPaymentLoc() }
+                                    />
+                                    <label htmlFor="is_payment_loc" className="ml-2">Pago en moneda local</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div className={`field col-12 md:col-4`}>
+                            <div className="formgrid grid">
+                                <div className="col">
+                                    <Checkbox 
+                                        inputId="priority" 
+                                        name="priority" 
+                                        value="priority" 
+                                        onChange={(e: any) => { setODps( (prev: any) => ({ ...prev, priority: e.checked }) ) }} 
+                                        checked={ oDps?.priority == 1 }
+                                        disabled={ footerMode == 'view' }
+                                    />
+                                    <label htmlFor="priority" className="ml-2">¿Factura urgente?</label>
                                 </div>
                             </div>
                         </div>

@@ -532,7 +532,8 @@ export const InvoiceDialog = ({
                     user_id: userId,
                     payment_definition: oDps.payment_definition,
                     is_payment_loc: oDps.is_payment_loc,
-                    payment_notes: oDps.payment_notes
+                    payment_notes: oDps.payment_notes,
+                    priority: oDps.priority ? oDps.priority : false
                 }
             });
 
@@ -1036,6 +1037,7 @@ export const InvoiceDialog = ({
                     user_id: userId,
                     is_payment_loc: oDps.is_payment_loc,
                     payment_notes: oDps.payment_notes,
+                    priority: oDps.priority
                 }
             });
 
@@ -1267,7 +1269,7 @@ export const InvoiceDialog = ({
                                                     <div className='col-12 md:col-9'>
                                                         <InputNumber
                                                             type="text"
-                                                            className={`w-full ${lRefErrors[index].error ? 'p-invalid' : ''}`}
+                                                            className={`w-full ${lRefErrors[index]?.error ? 'p-invalid' : ''}`}
                                                             value={lRefToValidateXml[index]?.amount}
                                                             disabled={dialogMode === 'view' || dialogMode === 'review'}
                                                             maxLength={50}
@@ -1278,7 +1280,7 @@ export const InvoiceDialog = ({
                                                             inputClassName="text-right"
                                                             onChange={(e: any) => handleInputAmountReference(index, e.value)}
                                                         />
-                                                        {lRefErrors[index].error && <small className="p-error">La cantidad no puede ser 0</small>}
+                                                        {lRefErrors[index]?.error && <small className="p-error">La cantidad no puede ser 0</small>}
                                                     </div>
                                                 </div>
                                             ))}
