@@ -479,7 +479,8 @@ const Upload = () => {
                 user_id: userId,
                 payment_definition: selectedRow.payment_definition,
                 is_payment_loc: selectedRow.is_payment_loc,
-                payment_notes: selectedRow.payment_notes
+                payment_notes: selectedRow.payment_notes,
+                priority: selectedRow.priority
             }
         });
 
