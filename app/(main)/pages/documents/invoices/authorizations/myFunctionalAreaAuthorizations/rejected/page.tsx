@@ -65,7 +65,7 @@ const Upload = () => {
             hidden: false
         },
         delete: {
-            hidden: true
+            hidden: false
         },
         authorization: {
             hidden: false

@@ -207,7 +207,7 @@ export const TableInvoices = ({
             });
 
             if (response.status == 200) {
-                getDps(getDpsParams);
+                await getDps(getDpsParams);
             } else {
                 throw new Error(`Error al eliminar la factura: ${response.statusText}`);
             }
