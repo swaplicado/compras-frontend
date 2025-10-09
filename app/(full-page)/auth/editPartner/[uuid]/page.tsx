@@ -120,7 +120,7 @@ const RegisterProvider = () => {
                 for (const item of data) {
                     companies.push({
                         id: item.id,
-                        name: item.trade_name
+                        name: item.full_name
                     });
                 }
 
@@ -340,7 +340,7 @@ const RegisterProvider = () => {
 
                 setOProvider({
                     id: data.id,
-                    provider_name: data.trade_name,
+                    provider_name: data.full_name,
                     rfc: data.fiscal_id,
                     entity_type: data.entity_type_obj,
                     fiscal_regime: lFiscalRegimes.find((item) => item.id ==  data.fiscal_regime_obj.id),

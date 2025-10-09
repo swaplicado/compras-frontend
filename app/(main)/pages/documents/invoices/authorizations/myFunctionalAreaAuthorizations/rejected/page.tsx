@@ -213,7 +213,7 @@ const Upload = () => {
                 for (const item of data) {
                     lProviders.push({
                         id: item.id,
-                        name: item.trade_name,
+                        name: item.full_name,
                         country: item.country
                     });
                 }
@@ -259,7 +259,7 @@ const Upload = () => {
                     lCompaniesFilter.push({
                         id: item.id,
                         external_id: item.external_id,
-                        name: item.trade_name
+                        name: item.full_name
                     });
                 }
                 setLCompanies(lCompanies);

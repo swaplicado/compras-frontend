@@ -180,7 +180,7 @@ const InvoicesAuthorizations = () => {
                         dateFormated: DateFormatter(data[i].date),
                         useCfdi: data[i].fiscal_use,
                         company: data[i].company.trade_name,
-                        provider_name: data[i].partner.trade_name,
+                        provider_name: data[i].partner.full_name,
                         serie: data[i].series,
                         number: data[i].number,
                         folio: data[i].series ? data[i].series + '-' + data[i].number : data[i].number,
@@ -274,7 +274,7 @@ const InvoicesAuthorizations = () => {
                 for (const item of data) {
                     lProviders.push({
                         id: item.id,
-                        name: item.trade_name,
+                        name: item.full_name,
                         country: item.country
                     });
                 }
@@ -320,7 +320,7 @@ const InvoicesAuthorizations = () => {
                     lCompaniesFilter.push({
                         id: item.id,
                         external_id: item.external_id,
-                        name: item.trade_name
+                        name: item.full_name
                     });
                 }
                 setLCompanies(lCompanies);

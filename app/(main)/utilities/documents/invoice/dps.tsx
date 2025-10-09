@@ -42,7 +42,7 @@ export const getDps = async ( props: getDpsProps  ) => {
                 const actors_of_action = data[i].flow_details?.last_turn_action?.actors_of_action;
                 const oPartner = {
                     id: data[i]?.partner.id,
-                    name: data[i]?.partner.trade_name,
+                    name: data[i]?.partner.full_name,
                     country: data[i]?.partner.country
                 }
 
@@ -59,7 +59,7 @@ export const getDps = async ( props: getDpsProps  ) => {
                     dateFormated: DateFormatter(data[i].date),
                     useCfdi: data[i].fiscal_use,
                     company: data[i].company.trade_name,
-                    provider_name: data[i].partner.trade_name,
+                    provider_name: data[i].partner.full_name,
                     oPartner: oPartner,
                     serie: data[i].series,
                     number: data[i].number,

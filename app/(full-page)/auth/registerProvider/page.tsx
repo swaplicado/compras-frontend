@@ -110,7 +110,7 @@ const RegisterProvider = () => {
                 for (const item of data) {
                     companies.push({
                         id: item.id,
-                        name: item.trade_name
+                        name: item.full_name
                     });
                 }
 

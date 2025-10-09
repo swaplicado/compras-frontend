@@ -42,7 +42,7 @@ export const getlCompanies = async ({
                 lCompaniesFilter.push({
                     id: item.id,
                     external_id: item.external_id,
-                    name: item.trade_name
+                    name: item.full_name
                 });
             }
             setLCompanies?.(lCompanies);

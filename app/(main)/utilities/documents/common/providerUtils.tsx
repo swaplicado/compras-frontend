@@ -26,7 +26,7 @@ export const getlProviders = async ({
             for (const item of data) {
                 lProviders.push({
                     id: item.id,
-                    name: item.trade_name,
+                    name: item.full_name,
                     country: item.country
                 });
             }

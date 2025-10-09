@@ -43,7 +43,7 @@ export const getCRP = async (props: getCRPProps) => {
 
                 const oProvider = {
                     id: data[i]?.partner.id,
-                    name: data[i]?.partner.trade_name,
+                    name: data[i]?.partner.full_name,
                     country: data[i]?.partner.country,
                     fiscal_id: data[i]?.partner.fiscal_id,
                 }
@@ -53,7 +53,7 @@ export const getCRP = async (props: getCRPProps) => {
                     fiscal_id: data[i].company.fiscal_id,
                     fiscal_regime_id: data[i].company.fiscal_regime_id,
                     id: data[i].company.id,
-                    name: data[i].company.trade_name,
+                    name: data[i].company.full_name,
                 }
 
                 crp.push({
