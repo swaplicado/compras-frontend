@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Dialog } from 'primereact/dialog';
 import { Tooltip } from 'primereact/tooltip';
 import { Dropdown } from 'primereact/dropdown';
@@ -15,6 +15,8 @@ import { DataTable, DataTableFilterMeta, DataTableRowClickEvent } from 'primerea
 import { Column } from 'primereact/column';
 import { CustomFileViewer } from '@/app/components/documents/invoice/fileViewer';
 import { HistoryAuth } from '@/app/components/documents/invoice/historyAuth';
+import { btnScroll } from '@/app/(main)/utilities/commons/useScrollDetection';
+import { useIntersectionObserver } from 'primereact/hooks';
 
 interface FileInfo {
     url: string;
@@ -72,6 +74,19 @@ export const DialogPayment = ({
     const { t: tCommon } = useTranslation('common');
     const formErrors = {};
     const [lEntries, setLEntries] = useState<any[]>([]);
+
+    //const para el boton de scroll al final
+    const [elementRef, setElementRef] = useState<HTMLDivElement | null>(null);
+    const visibleElement = useIntersectionObserver({ current: elementRef });
+    const dialogContentRef = useRef<HTMLDivElement>(null);
+    const btnToScroll = btnScroll(dialogContentRef, visibleElement);
+
+    const footer = (
+        <>
+            {btnToScroll}
+            {footerContent}
+        </>
+    )
     
 //****INIT****/
     useEffect(() => {
@@ -106,8 +121,18 @@ export const DialogPayment = ({
                 header={headerTitle}
                 visible={visible}
                 onHide={onHide}
-                footer={footerContent}
-                pt={{ header: { className: 'pb-2 pt-2 border-bottom-1 surface-border' } }}
+                footer={footer}
+                pt={{ 
+                    header: { className: 'pb-2 pt-2 border-bottom-1 surface-border' },
+                    content: {
+                        style: {
+                            position: 'relative',
+                            maxHeight: '70vh',
+                            overflow: 'auto'
+                        },
+                          ref: dialogContentRef
+                    },
+                }}
                 style={{ width: isMobile ? '100%' : '70rem' }}
             >
                 <br />
@@ -432,6 +457,7 @@ export const DialogPayment = ({
                         />
                     )
                 )}
+                <div ref={setElementRef} data-observer-element className={''}></div>
             </Dialog>
         </div>
     );

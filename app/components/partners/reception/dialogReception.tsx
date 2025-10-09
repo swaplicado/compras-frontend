@@ -1,10 +1,12 @@
-import React, {use, useEffect, useState} from "react";
+import React, {use, useEffect, useState, useRef} from "react";
 import { FormReceptionPartner }  from '@/app/components/partners/common/formReception';
 import { Dialog } from 'primereact/dialog';
 import { animationSuccess, animationError } from '@/app/components/commons/animationResponse';
 import { useTranslation } from 'react-i18next';
 import { CustomFileViewer } from '@/app/components/documents/invoice/fileViewer';
 import { ProgressSpinner } from 'primereact/progressspinner';
+import { btnScroll } from '@/app/(main)/utilities/commons/useScrollDetection';
+import { useIntersectionObserver } from 'primereact/hooks';
 
 interface DialogReceptionProps {
     headerTitle: string;
@@ -56,6 +58,19 @@ export const DialogReception = ({
     const { t } = useTranslation('crp');
     const { t: tCommon } = useTranslation('common');
 
+    //const para el boton de scroll al final
+    const [elementRef, setElementRef] = useState<HTMLDivElement | null>(null);
+    const visibleElement = useIntersectionObserver({ current: elementRef });
+    const dialogContentRef = useRef<HTMLDivElement>(null);
+    const btnToScroll = btnScroll(dialogContentRef, visibleElement);
+
+    const footer = (
+        <>
+            {btnToScroll}
+            {footerContent}
+        </>
+    )
+
     useEffect(() => {
         console.log('oPartner: ', oPartner);
     }, [visible]);
@@ -71,8 +86,18 @@ export const DialogReception = ({
                 header={headerTitle}
                 visible={visible}
                 onHide={onHide}
-                footer={footerContent}
-                pt={{ header: { className: 'pb-2 pt-2 border-bottom-1 surface-border' } }}
+                footer={footer}
+                pt={{ 
+                    header: { className: 'pb-2 pt-2 border-bottom-1 surface-border' },
+                    content: {
+                        style: {
+                            position: 'relative',
+                            maxHeight: '70vh',
+                            overflow: 'auto'
+                        },
+                          ref: dialogContentRef
+                    },
+                }}
                 style={{ width: isMobile ? '100%' : '70rem' }}
             >
                 {animationSuccess({
@@ -125,7 +150,7 @@ export const DialogReception = ({
                         )}
                     </>
                 )}
-
+                <div ref={setElementRef} data-observer-element className={''}></div>
             </Dialog>
         </div>
     )

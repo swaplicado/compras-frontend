@@ -21,6 +21,8 @@ import axios from 'axios';
 import { ValidateXmlCrp } from './validXmlXrp';
 import DateFormatter from '@/app/components/commons/formatDate';
 import { animationSuccess, animationError } from '@/app/components/commons/animationResponse';
+import { btnScroll } from '@/app/(main)/utilities/commons/useScrollDetection';
+import { useIntersectionObserver } from 'primereact/hooks';
 
 interface DialogCrpProps {
     visible: boolean;
@@ -107,6 +109,19 @@ export const DialogCrp = ({
     const message = useRef<Messages>(null);
     const [loadingValidateXml, setLoadingValidateXml] = useState(false);
 
+    //const para el boton de scroll al final
+    const [elementRef, setElementRef] = useState<HTMLDivElement | null>(null);
+    const visibleElement = useIntersectionObserver({ current: elementRef });
+    const dialogContentRef = useRef<HTMLDivElement>(null);
+    const btnToScroll = btnScroll(dialogContentRef, visibleElement);
+
+    const footer = (
+        <>
+            {btnToScroll}
+            { typeof footerContent == 'function' ? footerContent() : footerContent }
+        </>
+    )
+
     //****Funciones****/
     //Para formatear el input del componente Calendar
     const inputCalendarRef = useRef<HTMLInputElement>(null);
@@ -142,7 +157,24 @@ export const DialogCrp = ({
 
     return (
         <div className="flex justify-content-center">
-            <Dialog header={headerTitle} visible={visible} onHide={onHide} footer={footerContent} pt={{ header: { className: 'pb-2 pt-2 border-bottom-1 surface-border' } }} style={{ width: isMobile ? '100%' : '70rem' }}>
+            <Dialog 
+                header={headerTitle} 
+                visible={visible} 
+                onHide={onHide} 
+                footer={footer} 
+                pt={{ 
+                    header: { className: 'pb-2 pt-2 border-bottom-1 surface-border' },
+                    content: {
+                        style: {
+                            position: 'relative',
+                            maxHeight: '70vh',
+                            overflow: 'auto'
+                        },
+                          ref: dialogContentRef
+                    },
+                }} 
+                style={{ width: isMobile ? '100%' : '70rem' }}
+            >
                 {animationSuccess({
                     show: showing == 'animationSuccess',
                     title: successTitle || '',
@@ -454,6 +486,7 @@ export const DialogCrp = ({
                         )}
                     </>
                 )}
+                <div ref={setElementRef} data-observer-element className={''}></div>
             </Dialog>
         </div>
     );
