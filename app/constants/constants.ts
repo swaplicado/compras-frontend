@@ -122,6 +122,7 @@ const constants = {
     DOC_TYPE_INVOICE: 41,
     DOC_TYPE_OC: 2,
     DOC_TYPE_CRP: 51,
+    DOC_TYPE_NC: 46,
 
     //Clase de transacciòn
     TRANSACTION_CLASS_COMPRAS: 1,
@@ -154,7 +155,10 @@ const constants = {
 
     //estatus auth de proveedores
     PARTNER_AUTH_NEW_ID: 1,
-    PARTNER_AUTH_REJECTED_ID: 3
+    PARTNER_AUTH_REJECTED_ID: 3,
+
+    //flows ids
+    FLOW_AUTH_PARTNER: 17
 }
 
 export default constants;
