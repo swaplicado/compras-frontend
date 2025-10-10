@@ -31,7 +31,7 @@ export const RenderField = (props: renderFieldProps) => {
         <>
             {props.type == 'dropdown' && (
                 <div className={`field col-12 md:col-${props.mdCol}`}>
-                    <div className="formgrid grid">
+                    <div className="">
                         <div className="col">
                             <label data-pr-tooltip="">{props.label}</label>
                             &nbsp;
@@ -89,7 +89,7 @@ export const RenderField = (props: renderFieldProps) => {
             
             {props.type == 'text' && (
                 <div className={`field col-12 md:col-${props.mdCol}`}>
-                    <div className="formgrid grid">
+                    <div className="">
                         <div className="col">
                             <label data-pr-tooltip="">{props.label}</label>
                             &nbsp;
@@ -114,7 +114,7 @@ export const RenderField = (props: renderFieldProps) => {
 
             {props.type == 'number' && (
                 <div className={`field col-12 md:col-${props.mdCol}`}>
-                    <div className="formgrid grid">
+                    <div className="">
                         <div className="col">
                             <label data-pr-tooltip="">{props.label}</label>
                             &nbsp;
@@ -130,7 +130,7 @@ export const RenderField = (props: renderFieldProps) => {
 
             {props.type == 'textArea' && (
                 <div className={`field col-12 md:col-${props.mdCol}`}>
-                    <div className="formgrid grid">
+                    <div className="">
                         <div className="col">
                             <label data-pr-tooltip="">{props.label}</label>
                             &nbsp;
@@ -160,7 +160,7 @@ export const RenderField = (props: renderFieldProps) => {
 
             {props.type == 'calendar' && (
                 <div className={`field col-12 md:col-${props.mdCol}`}>
-                    <div className="formgrid grid">
+                    <div className="">
                         <div className="col">
                             <label data-pr-tooltip="">{props.label}</label>
                             &nbsp;

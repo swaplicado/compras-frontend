@@ -218,14 +218,14 @@ export const InvoiceDialog = ({
                 <>
                     {props.renderLeftItem && (
                         <div className={`field col-12 md:col-${props.renderLeftItem.mdCol}`}>
-                            <div className="formgrid grid">
+                            <div className="">
                                 <div className="col">{props.renderLeftItem.item}</div>
                             </div>
                         </div>
                     )}
 
                     <div className={`field col-12 md:col-${props.mdCol}`}>
-                        <div className="formgrid grid">
+                        <div className="">
                             <div className="col">
                                 <label data-pr-tooltip="">{props.label}</label>
                                 &nbsp;
@@ -257,7 +257,7 @@ export const InvoiceDialog = ({
 
                     {props.renderRightItem && (
                         <div className={`field col-12 md:col-${props.renderRightItem.mdCol}`}>
-                            <div className="formgrid grid">
+                            <div className="">
                                 <div className="col">{props.renderRightItem.item}</div>
                             </div>
                         </div>
@@ -268,14 +268,14 @@ export const InvoiceDialog = ({
                 <>
                     {props.renderLeftItem && (
                         <div className={`field col-12 md:col-${props.renderLeftItem.mdCol}`}>
-                            <div className="formgrid grid">
+                            <div className="">
                                 <div className="col">{props.renderLeftItem.item}</div>
                             </div>
                         </div>
                     )}
 
                     <div className={`field col-12 md:col-${props.mdCol}`}>
-                        <div className="formgrid grid">
+                        <div className="">
                             <div className="col">
                                 <div style={{ display: 'flex', alignItems: 'center' }}>
                                     <label style={{ margin: 0, marginRight: '0.5rem' }}>{props.label}</label>
@@ -311,7 +311,7 @@ export const InvoiceDialog = ({
 
                     {props.renderRightItem && (
                         <div className={`field col-12 md:col-${props.renderRightItem.mdCol}`}>
-                            <div className="formgrid grid">
+                            <div className="">
                                 <div className="col">{props.renderRightItem.item}</div>
                             </div>
                         </div>
@@ -320,7 +320,7 @@ export const InvoiceDialog = ({
             )}
             {props.type == 'text' && (
                 <div className={`field col-12 md:col-${props.mdCol}`}>
-                    <div className="formgrid grid">
+                    <div className="">
                         <div className="col">
                             <label data-pr-tooltip="">{props.label}</label>
                             &nbsp;
@@ -337,7 +337,7 @@ export const InvoiceDialog = ({
 
             {props.type == 'number' && (
                 <div className={`field col-12 md:col-${props.mdCol}`}>
-                    <div className="formgrid grid">
+                    <div className="">
                         <div className="col">
                             <label data-pr-tooltip="">{props.label}</label>
                             &nbsp;
@@ -353,7 +353,7 @@ export const InvoiceDialog = ({
 
             {props.type == 'textArea' && (
                 <div className={`field col-12 md:col-${props.mdCol}`}>
-                    <div className="formgrid grid">
+                    <div className="">
                         <div className="col">
                             <label data-pr-tooltip="">{props.label}</label>
                             &nbsp;
