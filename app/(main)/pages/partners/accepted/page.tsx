@@ -149,7 +149,7 @@ const RejectedPartners = () => {
                 jsonData: {
                     id_external_system: 1,
                     id_company: oPartner.company_external_id, //company id del dps id_company
-                    id_flow_model: 5,
+                    id_flow_model: constants.FLOW_AUTH_PARTNER,
                     resource: {
                         code: oPartner.fiscal_id,
                         name: oPartner.provider_name, //proveedor

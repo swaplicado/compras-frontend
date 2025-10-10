@@ -131,7 +131,7 @@ const ReceptionPartners = () => {
                 jsonData: {
                     id_external_system: 1,
                     id_company: oPartner.company_external_id, //company id del dps id_company
-                    id_flow_model: 5,
+                    id_flow_model: constants.FLOW_AUTH_PARTNER,
                     resource: {
                         code: oPartner.fiscal_id,
                         name: oPartner.provider_name, //proveedor
@@ -188,7 +188,7 @@ const ReceptionPartners = () => {
                 jsonData: {
                     authz_acceptance_notes: oPartner.authz_acceptance_notes,
                     authz_code: reviewOption,
-                    user_id: oUser.id,
+                    user_id: oUser.oUser.id,
                 }
             });
 
@@ -269,9 +269,9 @@ const ReceptionPartners = () => {
             showing == 'body' && (
                 <div className="flex flex-column md:flex-row justify-content-between gap-2">
                     <Button label={tCommon('btnClose')} icon="bx bx-x" onClick={() => setDialogVisible(false)} severity="secondary" disabled={loading} />
-                    <Button label={tCommon('btnReject')} icon="bx bx-like" onClick={() => handleReview(constants.REVIEW_REJECT)} autoFocus disabled={loading} severity="danger" />
+                    <Button label={tCommon('btnReject')} icon="bx bx-dislike" onClick={() => handleReview(constants.REVIEW_REJECT)} autoFocus disabled={loading} severity="danger" />
                     <Button label={tCommon('btnAccept')} icon="bx bx-like" onClick={() => handleReview(constants.REVIEW_ACCEPT)} autoFocus disabled={loading} severity="success" />
-                    <Button label={'Aceptar y enviar'} icon="bx bx-like" onClick={() => handleFlowAuthorization()} autoFocus disabled={loading} severity="success" />
+                    <Button label={'Aceptar y enviar'} icon="bx bx-paper-plane" onClick={() => handleFlowAuthorization()} autoFocus disabled={loading} severity="success" />
                 </div>
             )
         )

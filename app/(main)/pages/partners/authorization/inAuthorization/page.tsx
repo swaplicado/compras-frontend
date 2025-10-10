@@ -214,7 +214,7 @@ const RejectedPartners = () => {
                     <Button label={tCommon('btnClose')} icon="bx bx-x" onClick={() => setDialogVisible(false)} severity="secondary" disabled={loading} />
                     { oUser?.oUser.groups.includes(constants.ROLES.CONTADOR_ID) && (
                         <>
-                            <Button label={tCommon('btnReject')} icon="bx bx-like" onClick={() => handleReject()} autoFocus disabled={loading} severity="danger" />
+                            <Button label={tCommon('btnReject')} icon="bx bx-dislike" onClick={() => handleReject()} autoFocus disabled={loading} severity="danger" />
                             <Button label={'Autorizar'} icon="bx bx-like" onClick={() => handleAuth()} autoFocus disabled={loading} severity="success" />
                         </>
                     )}
