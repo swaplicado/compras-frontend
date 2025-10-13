@@ -59,8 +59,8 @@ export const RenderField = (props: renderFieldProps) => {
 
             {props.type == 'multiselect' && (
                 <div className={`field col-12 md:col-${props.mdCol}`}>
-                    <div>
-                        <div>
+                    <div className="">
+                        <div className="col">
                             <label data-pr-tooltip="">{props.label}</label>
                             &nbsp;
                             <Tooltip target=".custom-target-icon" />

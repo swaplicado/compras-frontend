@@ -580,28 +580,34 @@ export const InvoiceDialog = ({
 
             const formData = new FormData();
             const files = fileUploadRef.current?.getFiles() || [];
-            const xmlFiles = xmlUploadRef.current?.getFiles() || [];
+            
+            let xmlFiles: any[] = [];
+            let xmlBaseName: any;
+            let xmlName: any;
 
-            const xmlBaseName = xmlFiles[0].name.replace(/\.[^/.]+$/, '');
-            const xmlName = xmlFiles[0].name;
-
-            const hasSameFile = files.some((file) => file.name === xmlName);
-
-            if (hasSameFile) {
-                showToast?.('error', t('uploadDialog.files.hasSameFile', { xmlName }));
-                return;
+            if (oProvider.country == constants.COUNTRIES.MEXICO_ID) {
+                xmlFiles = xmlUploadRef.current?.getFiles() || [];
+                xmlBaseName = xmlFiles[0].name.replace(/\.[^/.]+$/, '');
+                xmlName = xmlFiles[0].name;
+                const hasSameFile = files.some((file) => file.name === xmlName);
+    
+                if (hasSameFile) {
+                    showToast?.('error', t('uploadDialog.files.hasSameFile', { xmlName }));
+                    return;
+                }
+    
+                const hasMatchingPDF = files.some((file) => {
+                    const isPDF = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+                    const fileBaseName = file.name.replace(/\.[^/.]+$/, '');
+                    return isPDF && fileBaseName === xmlBaseName;
+                });
+    
+                if (!hasMatchingPDF) {
+                    showToast?.('error', t('uploadDialog.files.hasMatchingPDF', { xmlBaseName }));
+                    return;
+                }
             }
 
-            const hasMatchingPDF = files.some((file) => {
-                const isPDF = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
-                const fileBaseName = file.name.replace(/\.[^/.]+$/, '');
-                return isPDF && fileBaseName === xmlBaseName;
-            });
-
-            if (!hasMatchingPDF) {
-                showToast?.('error', t('uploadDialog.files.hasMatchingPDF', { xmlBaseName }));
-                return;
-            }
 
             files.forEach((file: string | Blob) => {
                 formData.append('files', file);
@@ -631,6 +637,7 @@ export const InvoiceDialog = ({
             formData.append('is_internal_user', oValidUser.isInternalUser ? 'True' : 'False');
 
             const splitFolio = oDps.folio.split('-');
+            const serie = splitFolio.length > 1 ? splitFolio[0] : '';
             const number = splitFolio.length > 1 ? splitFolio[1] : splitFolio[0];
 
             const area_id = lRefToValidateXml[0].id == 0 ? oArea?.id : lRefToValidateXml[0].functional_area_id;
@@ -639,7 +646,7 @@ export const InvoiceDialog = ({
                 transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
                 document_type: constants.DOC_TYPE_INVOICE,
                 partner: oProvider?.id || '',
-                series: oDps.serie,
+                series: serie,
                 number: number,
                 date: moment(oDps.date).format('YYYY-MM-DD'),
                 currency: oDps.oCurrency?.id || '',
@@ -647,8 +654,8 @@ export const InvoiceDialog = ({
                 exchange_rate: oDps.exchange_rate ? oDps.exchange_rate : 0,
                 payment_method: oDps.oPaymentMethod?.id || '',
                 fiscal_use: oDps.oUseCfdi?.id || '',
-                issuer_tax_regime: oDps.oIssuer_tax_regime?.id || '',
-                receiver_tax_regime: oDps.oReceiver_tax_regime?.id || '',
+                issuer_tax_regime: oDps.oIssuer_tax_regime ? oDps.oIssuer_tax_regime.id : '',
+                receiver_tax_regime: oDps.oReceiver_tax_regime ? oDps.oReceiver_tax_regime.id : '',
                 uuid: oDps.uuid || '',
                 functional_area: area_id
             };
@@ -874,7 +881,7 @@ export const InvoiceDialog = ({
     );
 
     const footerAccept =
-        resultUpload === 'waiting' && oDps?.authz_authorization_code == 'P' && oDps?.acceptance == 'pendiente' ? (
+        resultUpload === 'waiting' && oDps?.acceptance == 'pendiente' ? (
             <>
                 {btnToScroll}
                 <div className="flex flex-column md:flex-row justify-content-between gap-2">
