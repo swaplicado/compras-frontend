@@ -246,6 +246,7 @@ export const FieldsDps = ({
                                     minFractionDigits={2}
                                     maxFractionDigits={2}
                                     inputClassName="text-right"
+                                    onChange={(e) => props.onChange?.(e.value)}
                                 />
                             </div>
                         </div>
@@ -440,7 +441,8 @@ export const FieldsDps = ({
                         mdCol: 3,
                         type: 'number',
                         placeholder: '',
-                        errorKey: ''
+                        errorKey: '',
+                        onChange: (value) => setODps((prev: any) => ({ ...prev, amount: value }))
                     })}
                     {renderField({
                         label: t('uploadDialog.currency.label'),
@@ -452,7 +454,7 @@ export const FieldsDps = ({
                         placeholder: '',
                         errorKey: '',
                         lOptions: lCurrency,
-                        onChange: (value) => setODps((prev: any) => ({ ...prev, currency: value.name, oCurrency: value }))
+                        onChange: (value) => setODps((prev: any) => ({ ...prev, currency: value?.name, oCurrency: value }))
                     })}
                     {renderField({
                         label: t('uploadDialog.exchange_rate.label'),
@@ -462,7 +464,8 @@ export const FieldsDps = ({
                         mdCol: 2,
                         type: 'number',
                         placeholder: '',
-                        errorKey: ''
+                        errorKey: '',
+                        onChange: (value) => setODps((prev: any) => ({ ...prev, exchange_rate: value }))
                     })}
                 </div>
             )}
