@@ -89,7 +89,9 @@ const UploadNC = () => {
     const isMobile = useIsMobile();
 
     const columnsProps = {
-        
+        delete: {
+            hidden: true
+        },
     }
 
 //*******FUNCIONES*******

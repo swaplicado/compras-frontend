@@ -89,7 +89,9 @@ const AcceptedNC = () => {
     const isMobile = useIsMobile();
 
     const columnsProps = {
-        
+        delete: {
+            hidden: true
+        },
     }
 
 //*******FUNCIONES*******

@@ -11,7 +11,9 @@ import { useIsMobile } from '@/app/components/commons/screenMobile';
 import { type } from 'node:os';
 
 interface columnsProps {
-    
+    delete: {
+        hidden: boolean
+    },
 }
 
 interface TableNcProps {
@@ -32,6 +34,7 @@ interface TableNcProps {
     setDialogVisible?: React.Dispatch<React.SetStateAction<boolean>>;
     setDialogMode?: React.Dispatch<React.SetStateAction<any>>;
     fileBodyTemplate?: (rowData: any) => any;
+    deleteBodyTemplate?: (rowData: any) => any;
 }
 
 export const TableNc = ({
@@ -51,7 +54,8 @@ export const TableNc = ({
     setSelectedRow,
     setDialogVisible,
     setDialogMode,
-    fileBodyTemplate
+    fileBodyTemplate,
+    deleteBodyTemplate
 }: TableNcProps) => {
     const [filters, setFilters] = useState<DataTableFilterMeta>({});
     const [tableLoading, setTableLoading] = useState(true);
@@ -261,6 +265,7 @@ export const TableNc = ({
                 <Column field="authz_acceptance_name" header={t('datatable.columns.authz_acceptance_name')} footer={t('datatable.columns.authz_acceptance_name')} body={statusAcceptanceBodyTemplate} sortable/>
                 <Column field="authz_authorization_name" header={t('datatable.columns.authz_authorization_name')} footer={t('datatable.columns.authz_authorization_name')} body={statusAuthBodyTemplate} sortable/>
                 <Column field="id" header={t('datatable.columns.files')} footer={t('datatable.columns.files')} body={fileBodyTemplate} />
+                <Column field="id_dps" header={'Eliminar'} footer={'Eliminar'} body={deleteBodyTemplate} hidden={ columnsProps?.delete.hidden } />
             </DataTable>
         </>
     );

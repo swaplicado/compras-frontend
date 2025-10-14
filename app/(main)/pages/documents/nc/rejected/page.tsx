@@ -26,6 +26,7 @@ import { getlFiscalRegime } from '@/app/(main)/utilities/documents/common/fiscal
 import DateFormatter from '@/app/components/commons/formatDate';
 import { getlUrlFilesDps } from '@/app/(main)/utilities/documents/common/filesUtils';
 import invoices from "@/i18n/locales/es/documents/invoices";
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 
 const RejectedNC = () => {
     const [startDate, setStartDate] = useState<string>('');
@@ -89,7 +90,9 @@ const RejectedNC = () => {
     const isMobile = useIsMobile();
 
     const columnsProps = {
-        
+        delete: {
+            hidden: false
+        },
     }
 
 //*******FUNCIONES*******
@@ -360,6 +363,69 @@ const RejectedNC = () => {
         );
     };
 
+    const accept = async (id_dps: any) => {
+        try {
+            setLoading(true);
+            const route = '/transactions/documents/'+id_dps+'/delete-document/'
+            const response = await axios.post(constants.API_AXIOS_DELETE, {
+                params: {
+                    route: route
+                }
+            });
+
+            if (response.status == 200) {
+                await getLNc();
+            } else {
+                throw new Error(`Error al eliminar la nota de crédito: ${response.statusText}`);
+            }
+        } catch (error: any) {
+            showToast?.('error', error.response?.data?.error || 'Error al eliminar la nota de crédito', 'Error al eliminar la nota de crédito');
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const reject = (id_dps: any) => {
+        
+    }
+
+    const deleteDps = async (rowData: any) => {
+        try {
+            const id_dps = rowData.id;
+            const folio = rowData.folio;
+            confirmDialog({
+                message: '¿Quieres eliminar esta nota de crédito: ' + folio + '?',
+                header: 'Confirma eliminación',
+                icon: 'pi pi-info-circle',
+                acceptClassName: 'p-button-danger',
+                acceptLabel: 'Si',
+                rejectLabel: 'No',
+                accept: () => accept(id_dps),
+                reject: () => reject(id_dps)
+            });
+        } catch (error: any) {
+            
+        }
+    }
+
+    const deleteBodyTemplate = (rowData: any) => {
+        return (
+            <div className="flex align-items-center justify-content-center">
+                <Button
+                    label={tCommon('btnDelete')}
+                    icon="bx bx-trash bx-sm"
+                    severity='danger'
+                    className="p-button-rounded"
+                    onClick={() => deleteDps(rowData)}
+                    tooltip={''}
+                    tooltipOptions={{ position: 'top' }}
+                    size="small"
+                    disabled={loading}
+                />
+            </div>
+        );
+    };
+
 //*******INIT*******
     useEffect(() => {
         const fetch = async () => {
@@ -412,6 +478,7 @@ const RejectedNC = () => {
             <div className="col-12">
                 {loading && loaderScreen()}
                 <Toast ref={toast} />
+                <ConfirmDialog />
                 <Card header={headerCard} pt={{ content: { className: 'p-0' } }}>
                     <DialogNc 
                         visible={visible}
@@ -470,6 +537,7 @@ const RejectedNC = () => {
                         setDialogVisible={setDialogVisible}
                         setDialogMode={setDialogMode}
                         fileBodyTemplate={fileBodyTemplate}
+                        deleteBodyTemplate={deleteBodyTemplate}
                     />
                 </Card>
             </div>
