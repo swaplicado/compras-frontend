@@ -49,6 +49,7 @@ const constants = {
     ROUTE_GET_DOWNLOAD_FILES_PARTNERS: '/transactions/partner-applying/download-zip/',
     ROUTE_GET_PARTNER_APPLYING_BY_UUID: '/transactions/partner-applying/by-uuid/',
     ROUTE_GET_PARTNER_IN_AUTHORIZATION: '/transactions/applying-auth/',
+    ROUTE_GET_INVOICES_NC: '/transactions/documents/select-doc-uncovered/',
 
     ROUTE_POST_VALIDATE_XML: '/transactions/documents/validate-xml/',
     ROUTE_POST_DOCUMENT_TRANSACTION: '/transactions/document-transaction/',
@@ -61,7 +62,8 @@ const constants = {
     ROUTE_POST_CREATE_PARTNER: '/transactions/partner-applying/create/',
     ROUTE_POST_UPDATE_PARTNER: '/transactions/partner-applying/edit/',
     ROUTE_POST_ACCOUNT_STATES: '/transactions/partners/account-state/',
-
+    ROUTE_POST_VALIDATE_XML_NC: '/transactions/documents/validate-xml-nc/',
+    ROUTE_POST_NC: '/transactions/document-transaction-nc/',
 
     //Constantes de estados de las facturas
     REVIEW_ACCEPT: 'O',

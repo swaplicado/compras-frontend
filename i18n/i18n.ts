@@ -17,6 +17,7 @@ import esAuthorizations from './locales/es/documents/authorizations';
 import esPayments from './locales/es/documents/payments';
 import esCatalogPartners from './locales/es/partners/catalog';
 import esCrp from './locales/es/documents/crp';
+import esNc from './locales/es/documents/nc';
 
 i18n
   .use(initReactI18next)
@@ -39,7 +40,8 @@ i18n
         authorizations: esAuthorizations,
         payments: esPayments,
         catalogPartners: esCatalogPartners,
-        crp: esCrp
+        crp: esCrp,
+        nc: esNc
       }
     },
     lng: "es",

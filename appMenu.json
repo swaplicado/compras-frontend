@@ -109,6 +109,17 @@
                     ]
                 },
                 {
+                    "label": "NC",
+                    "icon": "pi pi-ticket",
+                    "items": [
+                        {
+                            "label": "Cargar NC",
+                            "icon": "pi pi-upload",
+                            "to": "/pages/documents/nc/upload"
+                        }
+                    ]
+                },
+                {
                     "label": "Recepción de proveedores",
                     "icon": "pi pi-truck",
                     "items": [
