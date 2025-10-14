@@ -159,3 +159,48 @@ export const getlInvoices = async (props: getlInvoices) => {
         return false;
     }
 }
+
+interface getInvoicesToReview {
+    doc_id: string | number,
+    setlInvoicesToReview: React.Dispatch<React.SetStateAction<any[]>>,
+    errorMessage: string;
+    showToast?: (type: 'success' | 'info' | 'warn' | 'error', message: string, summaryText?: string) => void
+}
+
+export const getInvoicesToReview = async (props: getInvoicesToReview) => {
+    try {
+        if (!props) {
+            return;
+        }
+
+        const route = constants.ROUTE_GET_INVOICES_TO_REVIEW_NC;
+        const response = await axios.get(constants.API_AXIOS_GET, {
+            params: {
+                route: route,
+                doc_id: props.doc_id,
+            }
+        });
+
+        if (response.status == 200) {
+            const data = response.data.data || [];
+            let invoices = [];
+            for (let i = 0; i < data.length; i++) {
+                invoices.push({
+                    id: data[i].id,
+                    folio: data[i].folio,
+                    date: data[i].date,
+                    amount: data[i].amount,
+                    amountNc: data[i].amount,
+                    currency: data[i].currency
+                });               
+            }
+            props.setlInvoicesToReview(invoices);
+            return true;
+        } else {
+            throw new Error(`${props.errorMessage}: ${response.statusText}`);
+        }
+    } catch (error: any) {
+        props.showToast?.('error', error.response?.data?.error || props.errorMessage, props.errorMessage);
+        return false;
+    }
+}

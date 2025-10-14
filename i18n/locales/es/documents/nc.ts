@@ -14,6 +14,7 @@ const nc = {
             date: "Fecha",
             authz_acceptance_name: "Aceptación",
             authz_authorization_name: "Autorización",
+            files: "Archivos"
         }
     },
     dialog: {
@@ -97,6 +98,11 @@ const nc = {
                 label: "Tipo de cambio",
                 placeholder: "Tipo de cambio",
                 tooltip: "Tipo de cambio"
+            },
+            authz_acceptance_notes: {
+                label: "Comentarios de aceptación/rechazo:",
+                placeholder: "Comentarios de aceptación/rechazo:",
+                tooltip: "Comentarios de aceptación/rechazo:",
             }
         },
         files: {
@@ -119,17 +125,24 @@ const nc = {
             getReferencesError: "Error al obtener las referencias. Por favor, intenta nuevamente más tarde.",
             updateStatusError: "Error al actualizar el estado de la factura. Por favor, intenta nuevamente más tarde.",
             uploadValidXmlError: "Error al enviar el xml para su validación.",
-            getCurrenciesError: "Error al obtener tipos de cambio."
+            getCurrenciesError: "Error al obtener tipos de cambio.",
+            getLInvoicesToReview: "Error al obtener la lista de facturas.",
         },
         animationSuccess: {
-            title: "Nota de crédito cargada.",
-            text: "La nota de crédito se ha cargado correctamente.",
-            titleReview: "Nota de crédito revisada.",
+            uploadTitle: "Nota de crédito cargada.",
+            uploadText: "La nota de crédito se ha cargado correctamente.",
+            reviewAcceptedTitle: "Nota de crédito aceptada.",
+            reviewAcceptedText: "La nota de crédito se ha aceptado correctamente.",
+            reviewRejectedTitle: "Nota de crédito rechazado.",
+            reviewRejectedText: "La nota de crédito se ha rechazado correctamente.",
         },
         animationError: {
-            title: "Error al cargar la nota de crédito.",
-            text: "Ocurrió un error al cargar la nota de crédito, vuelve a intentarlo más tarde.",
-            titleReview: "Error al revisar la nota de crédito.",
+            uploadTitle: "Error al cargar la nota de crédito.",
+            uploadText: "Ocurrió un error al cargar la nota de crédito, vuelve a intentarlo más tarde.",
+            reviewAcceptedTitle: "Error al aceptar la nota de crédito.",
+            reviewAcceptedText: "Ocurrió un error al aceptar la nota de crédito, vuelve a intentarlo más tarde.",
+            reviewRejectedTitle: "Error al rechazar la nota de crédito.",
+            reviewRejectedText: "Ocurrió un error al rechazar la nota de crédito, vuelve a intentarlo más tarde.",
         }
     }
 }

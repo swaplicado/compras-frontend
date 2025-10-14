@@ -50,6 +50,7 @@ const constants = {
     ROUTE_GET_PARTNER_APPLYING_BY_UUID: '/transactions/partner-applying/by-uuid/',
     ROUTE_GET_PARTNER_IN_AUTHORIZATION: '/transactions/applying-auth/',
     ROUTE_GET_INVOICES_NC: '/transactions/documents/select-doc-uncovered/',
+    ROUTE_GET_INVOICES_TO_REVIEW_NC: '/transactions/documents/get-documents/',
 
     ROUTE_POST_VALIDATE_XML: '/transactions/documents/validate-xml/',
     ROUTE_POST_DOCUMENT_TRANSACTION: '/transactions/document-transaction/',

@@ -14,7 +14,7 @@ import { Tooltip } from 'primereact/tooltip';
 import { useIsMobile } from '@/app/components/commons/screenMobile';
 import { Button } from "primereact/button";
 import { FileUpload } from "primereact/fileupload";
-import { getNc, getlInvoices } from "@/app/(main)/utilities/documents/nc/ncUtilities";
+import { getNc, getlInvoices, getInvoicesToReview } from "@/app/(main)/utilities/documents/nc/ncUtilities";
 import { TableNc } from "@/app/components/documents/nc/common/tableNc";
 import { downloadFiles } from '@/app/(main)/utilities/documents/common/filesUtils';
 import { DialogNc } from "@/app/components/documents/nc/common/dialogNc";
@@ -24,6 +24,8 @@ import { getlAreas } from '@/app/(main)/utilities/documents/common/areaUtils';
 import { getlCurrencies } from '@/app/(main)/utilities/documents/common/currencyUtils';
 import { getlFiscalRegime } from '@/app/(main)/utilities/documents/common/fiscalRegimeUtils';
 import DateFormatter from '@/app/components/commons/formatDate';
+import { getlUrlFilesDps } from '@/app/(main)/utilities/documents/common/filesUtils';
+import invoices from "@/i18n/locales/es/documents/invoices";
 
 const UploadNC = () => {
     const [startDate, setStartDate] = useState<string>('');
@@ -70,7 +72,8 @@ const UploadNC = () => {
         receiver_tax_regime: false,
         amount: false,
         currency: false,
-        exchange_rate: false
+        exchange_rate: false,
+        authz_acceptance_notes: false,
     });
     const [loadingFiles, setLoadingFiles] = useState<boolean>(false);
     const [lFiles, setLFiles] = useState<any[]>([]);
@@ -78,6 +81,10 @@ const UploadNC = () => {
     const [isInReview, setIsReview] = useState<boolean>(false);
     const [lCurrencies, setLCurrencies] = useState<any[]>([]);
     const [lFiscalRegimes, setLFiscalRegimes] = useState<any[]>([]);
+    const [withHeader, setWithHeader] = useState<boolean>(true);
+    const [withBody, setWithBody] = useState<boolean>(true);
+    const [withFooter, setWithFooter] = useState<boolean>(false);
+    const [lInvoicesToReview, setlInvoicesToReview] = useState<any[]>([]);
 
     const isMobile = useIsMobile();
 
@@ -223,9 +230,10 @@ const UploadNC = () => {
                 currency: oNc.oCurrency ? oNc.oCurrency.id : '',
                 issuer_tax_regime: oNc.oIssuer_tax_regime ? oNc.oIssuer_tax_regime.id : '',
                 receiver_tax_regime: oNc.oReceiver_tax_regime ? oNc.oReceiver_tax_regime.id : '',
-                functional_area_id: oNc.area ? oNc.area.id : '',
+                functional_area: oNc.area ? oNc.area.id : '',
                 exchange_rate: oNc.exchange_rate,
-                amount: oNc.amount
+                amount: oNc.amount,
+                uuid: oNc.uuid
             }
 
             formData.append('documents', JSON.stringify(documents));
@@ -239,7 +247,8 @@ const UploadNC = () => {
             });
 
             if (response.status === 200 || response.status === 201) {
-                setSuccessMessage(response.data.data.success || t('animationSuccess.text'));
+                setSuccessTitle(t('dialog.animationSuccess.uploadTitle'));
+                setSuccessMessage(response.data.data.success || t('dialog.animationSuccess.uploadText'));
                 setShowing('animationSuccess');
                 await getLNc();
             } else {
@@ -247,11 +256,63 @@ const UploadNC = () => {
             }
         } catch (error: any) {
             setShowing('animationError');
-            setErrorMessage('Error al cargar la NC');
+            setErrorTitle(t('dialog.animationError.uploadTitle'));
+            setErrorMessage(t('dialog.animationError.uploadText'));
         } finally {
             setLoading(false);
         }
     }
+
+    const handleReview = async (reviewOption: string) => {
+        try {
+            setLoading(true);
+
+            if (reviewOption == constants.REVIEW_REJECT) {
+                if (!oNc.authz_acceptance_notes.trim()) {
+                    setFormErrors((prev: any) => ({ ...prev, authz_acceptance_notes: true }));
+                    showToast('info', 'Ingresa un comentario de rechazo del CRP');
+                    return;
+                }
+            }
+            const route = '/transactions/documents/' + oNc.id + '/set-authz/';
+
+            const response = await axios.post(constants.API_AXIOS_PATCH, {
+                route,
+                jsonData: {
+                    authz_acceptance_notes: oNc.authz_acceptance_notes,
+                    authz_code: reviewOption,
+                    user_id: oUser.oUser.id,
+                    notes: '',
+                }
+            });
+
+            if (response.status === 200 || response.status === 201) {
+                if (reviewOption == constants.REVIEW_ACCEPT) {
+                    setSuccessTitle(t('dialog.animationSuccess.reviewAcceptedTitle'));
+                    setSuccessMessage(t('dialog.animationSuccess.reviewAcceptedText'));
+                } else {
+                    setSuccessTitle(t('dialog.animationSuccess.reviewRejectedTitle'));
+                    setSuccessMessage(t('dialog.animationSuccess.reviewRejectedText'));
+                }
+                setShowing('animationSuccess');
+                await getLNc();
+            } else {
+                throw new Error(t('uploadDialog.errors.updateStatusError'));
+            }
+        } catch (error: any) {
+            console.error('Error al actualizar estado:', error);
+            if (reviewOption == constants.REVIEW_ACCEPT) {
+                setErrorTitle(t('dialog.animationError.reviewAcceptedTitle'));
+                setErrorMessage(t('dialog.animationError.reviewAcceptedText'));
+            } else {
+                setErrorTitle(t('dialog.animationError.reviewRejectedTitle'));
+                setErrorMessage(t('dialog.animationError.reviewRejectedText'));
+            }
+            setShowing('animationError');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
         const fetch = async () => {
@@ -323,6 +384,12 @@ const UploadNC = () => {
                 {showing == 'body' && dialogMode == 'view' && (
                     <div className="flex flex-column md:flex-row justify-content-between gap-2">
                         <Button label={tCommon('btnClose')} icon="bx bx-x" onClick={() => setDialogVisible(false)} severity="secondary" disabled={loading} />
+                        { isInReview && (
+                            <>
+                                <Button label={tCommon('btnReject')} icon="bx bx-like" onClick={() => handleReview(constants.REVIEW_REJECT)} autoFocus disabled={loading} severity="danger" />
+                                <Button label={tCommon('btnAccept')} icon="bx bx-like" onClick={() => handleReview(constants.REVIEW_ACCEPT)} autoFocus disabled={loading} severity="success" />
+                            </>
+                        )}
                     </div>
                 )}
             </>
@@ -361,9 +428,46 @@ const UploadNC = () => {
         }
     };
 
+    const configNcData = (data: any) => {
+        setONc({
+            ...data,
+            company: data.company_full_name,
+            partner: data.partner_full_name,
+            area: data.functional_area_name
+        });
+    }
+
+    useEffect(() => {
+        if (lInvoicesToReview.length > 0) {
+            setONc?.((prev: any) => ({ ...prev, invoices: lInvoicesToReview }));
+        }
+    }, [lInvoicesToReview])
+
     const handleDoubleClick = async (e: DataTableRowClickEvent) => {
+        if (oUser.isInternalUser) {
+            setIsReview(true);
+        } else {
+            setIsReview(false);
+        }
+
+        setLoadingFiles(true);
         setDialogMode('view');
+        setIsXmlValid(true);
+        setWithFooter(true);
+        configNcData(e.data);
         setDialogVisible(true);
+        await getInvoicesToReview({
+            doc_id: e.data.id,
+            setlInvoicesToReview: setlInvoicesToReview,
+            errorMessage: t('dialog.errors.getLInvoicesToReview'),
+            showToast: showToast
+        });
+        await getlUrlFilesDps({
+            setLFiles,
+            showToast,
+            document_id: e.data.id
+        });
+        setLoadingFiles(false);
     };
 
     const download = async (rowData: any) => {
@@ -371,7 +475,7 @@ const UploadNC = () => {
             setLoading(true);
             await downloadFiles({
                 id_doc: rowData.id,
-                zip_name: rowData.oProvider.name + '_' + rowData.serie + '_' + rowData.folio,
+                zip_name: rowData.partner_full_name + '_' + rowData.serie + '_' + rowData.folio,
                 showToast: showToast
             })
         } catch (error) {
@@ -464,9 +568,9 @@ const UploadNC = () => {
                         setLoading={setLoading}
                         loading={loading}
                         oUser={oUser}
-                        withHeader={true}
-                        withBody={true}
-                        withFooter={true}
+                        withHeader={withHeader}
+                        withBody={withBody}
+                        withFooter={withFooter}
                         clean={clean}
                         showing={showing}
                         lCompanies={lCompanies}
@@ -481,10 +585,14 @@ const UploadNC = () => {
                         setIsXmlValid={setIsXmlValid}
                         lCurrencies={lCurrencies}
                         lFiscalRegimes={lFiscalRegimes}
-                        successTitle={t('dialog.animationSuccess.title')}
-                        successMessage={t('dialog.animationSuccess.text')}
-                        errorTitle={t('dialog.animationError.title')}
-                        errorMessage={t('dialog.animationError.text')}
+                        successTitle={successTitle}
+                        successMessage={successMessage}
+                        errorTitle={errorTitle}
+                        errorMessage={errorMessage}
+                        lFiles={lFiles}
+                        loadingFiles={loadingFiles}
+                        isInReview={isInReview}
+                        setFormErrors={setFormErrors}
                     />
                     <TableNc
                         lNc={lNc}

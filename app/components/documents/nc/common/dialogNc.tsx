@@ -53,6 +53,10 @@ interface DialogNc {
     successMessage?: string;
     errorTitle?: string;
     errorMessage?: string;
+    loadingFiles?: boolean;
+    lFiles?: any[];
+    isInReview?: boolean;
+    setFormErrors?: React.Dispatch<React.SetStateAction<any>>;
 }
 
 export const DialogNc = ({
@@ -90,6 +94,10 @@ export const DialogNc = ({
     successMessage,
     errorTitle,
     errorMessage,
+    loadingFiles = false,
+    lFiles = [],
+    isInReview = false,
+    setFormErrors
 }: DialogNc) => {
     const { t } = useTranslation('nc');
     const { t: tCommon } = useTranslation('common');
@@ -135,7 +143,7 @@ export const DialogNc = ({
             return {
                 ...prevState,
                 invoices: prevState.invoices.map((invoice: any, i: any) => 
-                    i === index ? { ...invoice, amountNc: value } : invoice
+                    i === index ? { ...invoice, amountNc: value, amount: value } : invoice
                 )
             };
         });
@@ -259,7 +267,7 @@ export const DialogNc = ({
                                     <RenderField
                                         label={t('dialog.fields.lInvoices.label')}
                                         tooltip={t('dialog.fields.lInvoices.tooltip')}
-                                        value={oNc?.invoices}
+                                        value={ dialogMode == 'create' ? oNc?.invoices : oNc?.invoices?.map((item: any, index: number) => ( item.folio + ', ')) }
                                         disabled={dialogMode == 'view' || dialogMode == 'edit' || (lInvoices?.length || 0) < 1}
                                         mdCol={6}
                                         type={dialogMode == 'create' ? 'multiselect' : 'text'}
@@ -274,7 +282,7 @@ export const DialogNc = ({
                                     />
                                 )}
 
-                                {oNc?.invoices && oNc?.invoices?.length > 1 && (
+                                {oNc?.invoices && (oNc?.invoices?.length > 1 || dialogMode == 'view') && (
                                     <RenderField
                                         label={t('dialog.fields.lAreas.label')}
                                         tooltip={t('dialog.fields.lAreas.tooltip')}
@@ -293,7 +301,7 @@ export const DialogNc = ({
                                     />
                                 )}
 
-                                {oNc?.invoices && oNc?.invoices?.length > 1 && (
+                                {oNc?.invoices && (oNc?.invoices?.length > 1 || dialogMode == 'view') && (
                                     <div className={`field col-12 md:col-12`}>
                                         <div className="">
                                             <div className="col">
@@ -322,7 +330,7 @@ export const DialogNc = ({
                                         </div>
                                     </div>
                                 )}
-                                { oNc?.invoices?.length > 0 && (
+                                { dialogMode == 'create' && oNc?.invoices?.length > 0 && (
                                     <div className={`field col-12 md:col-12`}>
                                         <div className="">
                                             <div className="col">
@@ -505,50 +513,91 @@ export const DialogNc = ({
                                     errors={formErrors}
                                     errorMessage={''}
                                 />
-                                <div className="field col-12 md:col-12">
-                                    <div className="formgrid grid">
-                                        <div className="col">
-                                            <label>Archivos</label>
-                                            &nbsp;
-                                            <Tooltip target=".custom-target-icon" />
-                                            <i
-                                                className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                                                data-pr-tooltip={t('uploadDialog.files.tooltip')}
-                                                data-pr-position="right"
-                                                data-pr-my="left center-2"
-                                                style={{ fontSize: '1rem', cursor: 'pointer' }}
-                                            ></i>
-                                            <CustomFileUpload
-                                                fileUploadRef={fileUploadRef}
-                                                totalSize={totalSize}
-                                                setTotalSize={setTotalSize}
-                                                errors={fileErrors}
-                                                setErrors={setFilesErrros}
-                                                message={message}
-                                                multiple={true}
-                                                allowedExtensions={constants.allowedExtensions}
-                                                allowedExtensionsNames={constants.allowedExtensionsNames}
-                                                maxFilesSize={constants.maxFilesSize}
-                                                maxFileSizeForHuman={constants.maxFileSizeForHuman}
-                                                maxUnitFileSize={constants.maxUnitFile}
-                                                errorMessages={{
-                                                    invalidFileType: t('files.invalidFileType'),
-                                                    invalidAllFilesSize: t('files.invalidAllFilesSize'),
-                                                    invalidFileSize: t('files.invalidFileSize'),
-                                                    invalidFileSizeMessageSummary: t('files.invalidFileSizeMessageSummary'),
-                                                    helperTextFiles: t('files.helperTextFiles'),
-                                                    helperTextPdf: '',
-                                                    helperTextXml: ''
-                                                }}
-                                            />
+
+                                { (dialogMode == 'create' || dialogMode == 'edit') && (
+                                    <div className="field col-12 md:col-12">
+                                        <div className="formgrid grid">
+                                            <div className="col">
+                                                <label>Archivos</label>
+                                                &nbsp;
+                                                <Tooltip target=".custom-target-icon" />
+                                                <i
+                                                    className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
+                                                    data-pr-tooltip={t('uploadDialog.files.tooltip')}
+                                                    data-pr-position="right"
+                                                    data-pr-my="left center-2"
+                                                    style={{ fontSize: '1rem', cursor: 'pointer' }}
+                                                ></i>
+                                                <CustomFileUpload
+                                                    fileUploadRef={fileUploadRef}
+                                                    totalSize={totalSize}
+                                                    setTotalSize={setTotalSize}
+                                                    errors={fileErrors}
+                                                    setErrors={setFilesErrros}
+                                                    message={message}
+                                                    multiple={true}
+                                                    allowedExtensions={constants.allowedExtensions}
+                                                    allowedExtensionsNames={constants.allowedExtensionsNames}
+                                                    maxFilesSize={constants.maxFilesSize}
+                                                    maxFileSizeForHuman={constants.maxFileSizeForHuman}
+                                                    maxUnitFileSize={constants.maxUnitFile}
+                                                    errorMessages={{
+                                                        invalidFileType: t('files.invalidFileType'),
+                                                        invalidAllFilesSize: t('files.invalidAllFilesSize'),
+                                                        invalidFileSize: t('files.invalidFileSize'),
+                                                        invalidFileSizeMessageSummary: t('files.invalidFileSizeMessageSummary'),
+                                                        helperTextFiles: t('files.helperTextFiles'),
+                                                        helperTextPdf: '',
+                                                        helperTextXml: ''
+                                                    }}
+                                                />
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                )}
+
+                                { (dialogMode == 'view' || dialogMode == 'edit') && (
+                                    <RenderField
+                                        label={t('dialog.fields.authz_acceptance_notes.label')}
+                                        tooltip={t('dialog.fields.authz_acceptance_notes.tooltip')}
+                                        value={ oNc?.authz_acceptance_notes }
+                                        disabled={!isInReview}
+                                        mdCol={12}
+                                        type={'textArea'}
+                                        onChange={(value) => {
+                                            setONc?.((prev: any) => ({ ...prev, authz_acceptance_notes: value }));
+                                            setFormErrors?.((prev: any) => ({ ...prev, authz_acceptance_notes: false }));
+                                        }}
+                                        options={[]}
+                                        placeholder={t('dialog.fields.authz_acceptance_notes.placeholder')}
+                                        errorKey={'authz_acceptance_notes'}
+                                        errors={formErrors}
+                                        errorMessage={'Ingrese comentario para rechazar'}
+                                    />
+                                )}
                             </div>
+                        )}
+                        { withFooter && (dialogMode == 'view' || dialogMode == 'edit') && (
+                            <>
+                                {!loadingFiles && (
+                                    <CustomFileViewer lFiles={lFiles} />
+                                )}
+
+                                {loadingFiles && (
+                                    <div className={`field col-12 md:col-12`}>
+                                        <div className="formgrid grid">
+                                            <div className="col">
+                                                <div className="flex justify-content-center">
+                                                    <ProgressSpinner style={{ width: '50px', height: '50px' }} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </>
                         )}
                     </>
                 )}
-
                 <div ref={setElementRef} data-observer-element className={''}></div>
             </Dialog>
         </div>
