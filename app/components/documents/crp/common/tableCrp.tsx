@@ -16,6 +16,7 @@ interface columnsProps {
     folio: { hidden: boolean },
     uuid: { hidden: boolean },
     authz_acceptance_name: { hidden: boolean },
+    delete: { hidden: boolean }
 }
 
 interface TableCrpProps {
@@ -36,6 +37,7 @@ interface TableCrpProps {
     setDialogVisible?: React.Dispatch<React.SetStateAction<boolean>>;
     setDialogMode?: React.Dispatch<React.SetStateAction<any>>;
     fileBodyTemplate?: (rowData: any) => any;
+    deleteBodyTemplate?: (rowData: any) => any;
 }
 
 export const TableCrp = ({
@@ -55,7 +57,8 @@ export const TableCrp = ({
     setSelectedRow,
     setDialogVisible,
     setDialogMode,
-    fileBodyTemplate
+    fileBodyTemplate,
+    deleteBodyTemplate
 }: TableCrpProps) => {
     const [filters, setFilters] = useState<DataTableFilterMeta>({});
     const [tableLoading, setTableLoading] = useState(true);
@@ -234,6 +237,7 @@ export const TableCrp = ({
                 <Column field="uuid" header={t('datatable.columns.uuid')} hidden={ columnsProps?.uuid.hidden } />
                 <Column field="authz_acceptance_name" header={t('datatable.columns.authz_acceptance_name')} body={statusAcceptanceDpsBodyTemplate} hidden={ columnsProps?.authz_acceptance_name.hidden } />
                 <Column field="id" header={t('datatable.columns.files')} footer={t('datatable.columns.files')} body={fileBodyTemplate} />
+                <Column field="id_dps" header={'Eliminar'} footer={'Eliminar'} body={deleteBodyTemplate} hidden={ columnsProps?.delete.hidden } />
             </DataTable>
         </>
     );

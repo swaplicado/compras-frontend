@@ -47,6 +47,7 @@ const ConsultPaymentProgramded = () => {
     const [lPaymentsExec, setLPaymentsExec] = useState<any[]>([]);
     const [loadinglPaymentsExec, setLoadinglPaymentsExec] = useState<boolean>(false);
     const fileUploadRef = useRef<FileUpload>(null);
+    const xmlUploadRef = useRef<FileUpload>(null);
     const [isXmlValid, setIsXmlValid] = useState(false);
     const [showing, setShowing] = useState<'body' | 'animationSuccess' | 'animationError'>('body');
     const [successTitle, setSuccessTitle] = useState('CRP cargado');
@@ -62,6 +63,11 @@ const ConsultPaymentProgramded = () => {
     const [lPaymentsExecDetails, setLPaymentsExecDetails] = useState<any[]>([]);
     const [isInReview, setIsReview] = useState<boolean>(false);
 
+    const fileEditAcceptRef = useRef<FileUpload>(null);
+    const [loadingFileNames, setLoadingFileNames] = useState<boolean>(false);
+    const [lFilesNames, setLFilesNames] = useState<any[]>([]);
+    const [lFilesToEdit, setLFilesToEdit] = useState<any[]>([]);
+
     const isMobile = useIsMobile();
 
     const columnsProps = {
@@ -70,6 +76,7 @@ const ConsultPaymentProgramded = () => {
         uuid: { hidden: false },
         date: { hidden: false },
         authz_acceptance_name: { hidden: false },
+        delete: { hidden: true }
     }
 
 //*******FUNCIONES*******
@@ -154,6 +161,8 @@ const ConsultPaymentProgramded = () => {
             uuid: null,
             authz_acceptance_name: null,
         })
+        fileUploadRef.current?.clear();
+        xmlUploadRef.current?.clear();
         setIsXmlValid(false);
         setLPaymentsExec([]);
         setShowing('body');
@@ -180,7 +189,30 @@ const ConsultPaymentProgramded = () => {
             const files = fileUploadRef.current?.getFiles() || [];
             const route = constants.ROUTE_POST_CREATE_CRP;
             const formData = new FormData();
+            const xmlFiles = xmlUploadRef.current?.getFiles() || [];
+            const xmlBaseName = xmlFiles[0].name.replace(/\.[^/.]+$/, '');
+            const xmlName = xmlFiles[0].name;
+            const hasSameFile = files.some((file) => file.name === xmlName);
+
+            if (hasSameFile) {
+                showToast?.('error', t('dialog.files.hasSameFile', { xmlName }));
+                return;
+            }
+
+            const hasMatchingPDF = files.some((file) => {
+                const isPDF = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+                const fileBaseName = file.name.replace(/\.[^/.]+$/, '');
+                return isPDF && fileBaseName === xmlBaseName;
+            });
+
+            if (!hasMatchingPDF) {
+                showToast?.('error', t('dialog.files.hasMatchingPDF', { xmlBaseName }));
+                return;
+            }
             
+            xmlFiles.forEach((file: string | Blob) => {
+                formData.append('files', file);
+            });
             files.forEach((file: string | Blob) => {
                 formData.append('files', file);
             });
@@ -270,7 +302,7 @@ const ConsultPaymentProgramded = () => {
             });
 
             if (response.status === 200 || response.status === 201) {
-                setSuccessMessage('Se aceptó el CRP con exito');
+                setSuccessMessage('Se actualizó el CRP con exito');
                 setShowing('animationSuccess');
                 await getLCrp();
             } else {
@@ -279,7 +311,7 @@ const ConsultPaymentProgramded = () => {
         } catch (error: any) {
             console.error('Error al actualizar estado:', error);
             setShowing('animationError');
-            setErrorMessage('Error al aceptar el CRP');
+            setErrorMessage('Error al actualizar el CRP');
         } finally {
             setLoading?.(false);
         }
@@ -498,6 +530,7 @@ const ConsultPaymentProgramded = () => {
                         loadinglPaymentsExec={loadinglPaymentsExec}
                         clean={clean}
                         fileUploadRef={fileUploadRef}
+                        xmlUploadRef={xmlUploadRef}
                         isXmlValid={isXmlValid}
                         setIsXmlValid={setIsXmlValid}
                         showing={showing}
@@ -511,6 +544,10 @@ const ConsultPaymentProgramded = () => {
                         lFiles={lFiles}
                         lPaymentsExecDetails={lPaymentsExecDetails}
                         isInReview={isInReview}
+                        loadingFileNames={loadingFileNames}
+                        fileEditAcceptRef={fileEditAcceptRef}
+                        lFilesNames={lFilesNames}
+                        setLFilesToEdit={setLFilesToEdit}
                     />
                     <TableCrp 
                         lCrp={lCrp}

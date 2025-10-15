@@ -23,6 +23,8 @@ import DateFormatter from '@/app/components/commons/formatDate';
 import { animationSuccess, animationError } from '@/app/components/commons/animationResponse';
 import { btnScroll } from '@/app/(main)/utilities/commons/useScrollDetection';
 import { useIntersectionObserver } from 'primereact/hooks';
+import { Divider } from 'primereact/divider';
+import { FieldsEditAcceptance } from '@/app/components/documents/invoice/fieldsEditAcceptance';
 
 interface DialogCrpProps {
     visible: boolean;
@@ -47,6 +49,7 @@ interface DialogCrpProps {
     loadinglPaymentsExec?: boolean;
     clean?: () => void;
     fileUploadRef: React.RefObject<FileUpload>;
+    xmlUploadRef: React.RefObject<FileUpload>;
     isXmlValid: boolean;
     setIsXmlValid: React.Dispatch<React.SetStateAction<boolean>>;
     showing: 'body' | 'animationSuccess' | 'animationError';
@@ -60,6 +63,10 @@ interface DialogCrpProps {
     lFiles?: any[];
     lPaymentsExecDetails?: any[];
     isInReview?: boolean;
+    loadingFileNames: boolean;
+    fileEditAcceptRef: React.RefObject<FileUpload>;
+    lFilesNames: any[];
+    setLFilesToEdit: React.Dispatch<React.SetStateAction<any>>;
 }
 
 export const DialogCrp = ({
@@ -85,6 +92,7 @@ export const DialogCrp = ({
     loadinglPaymentsExec,
     clean,
     fileUploadRef,
+    xmlUploadRef,
     isXmlValid,
     setIsXmlValid,
     showing,
@@ -97,7 +105,11 @@ export const DialogCrp = ({
     loadingFiles,
     lFiles = [],
     lPaymentsExecDetails = [],
-    isInReview = false
+    isInReview = false,
+    loadingFileNames,
+    fileEditAcceptRef,
+    lFilesNames,
+    setLFilesToEdit,
 }: DialogCrpProps) => {
     const { t } = useTranslation('crp');
     const { t: tCommon } = useTranslation('common');
@@ -319,7 +331,7 @@ export const DialogCrp = ({
                                         <div className="formgrid grid">
                                             <div className="col">
                                                 <ValidateXmlCrp
-                                                    xmlUploadRef={fileUploadRef}
+                                                    xmlUploadRef={xmlUploadRef}
                                                     oCompany={oCrp?.oCompany}
                                                     oPartner={oCrp?.oProvider}
                                                     oUser={oUser.oUser}
@@ -332,7 +344,6 @@ export const DialogCrp = ({
                                                     setLoadingValidateXml={setLoadingValidateXml}
                                                     showToast={showToast}
                                                 />
-
                                                 {loadingValidateXml && (
                                                     <div className="flex justify-content-center">
                                                         <ProgressSpinner style={{ width: '50px', height: '50px' }} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />
@@ -443,6 +454,47 @@ export const DialogCrp = ({
                                     errors: formErrors,
                                     errorMessage: ''
                                 })}
+                                { (dialogMode == 'create') && (
+                                    <div className="field col-12 md:col-12">
+                                        <div className="formgrid grid">
+                                            <div className="col">
+                                                <label>Archivos</label>
+                                                &nbsp;
+                                                <Tooltip target=".custom-target-icon" />
+                                                <i
+                                                    className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
+                                                    data-pr-tooltip={t('uploadDialog.files.tooltip')}
+                                                    data-pr-position="right"
+                                                    data-pr-my="left center-2"
+                                                    style={{ fontSize: '1rem', cursor: 'pointer' }}
+                                                ></i>
+                                                <CustomFileUpload
+                                                    fileUploadRef={fileUploadRef}
+                                                    totalSize={totalSize}
+                                                    setTotalSize={setTotalSize}
+                                                    errors={formErrors}
+                                                    setErrors={setFormErrors}
+                                                    message={message}
+                                                    multiple={true}
+                                                    allowedExtensions={constants.allowedExtensions}
+                                                    allowedExtensionsNames={constants.allowedExtensionsNames}
+                                                    maxFilesSize={constants.maxFilesSize}
+                                                    maxFileSizeForHuman={constants.maxFileSizeForHuman}
+                                                    maxUnitFileSize={constants.maxUnitFile}
+                                                    errorMessages={{
+                                                        invalidFileType: t('dialog.files.invalidFileType'),
+                                                        invalidAllFilesSize: t('dialog.files.invalidAllFilesSize'),
+                                                        invalidFileSize: t('dialog.files.invalidFileSize'),
+                                                        invalidFileSizeMessageSummary: t('dialog.files.invalidFileSizeMessageSummary'),
+                                                        helperTextFiles: t('dialog.files.helperTextFiles'),
+                                                        helperTextPdf: t('dialog.files.helperTextPdf'),
+                                                        helperTextXml: ''
+                                                    }}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         )}
 
@@ -481,6 +533,28 @@ export const DialogCrp = ({
                                             </div>
                                         </div>
                                     </div>
+                                )}
+
+                                {dialogMode == 'edit' && (
+                                    <>
+                                        <Divider />
+                                        {!loadingFileNames ? (
+                                            <FieldsEditAcceptance
+                                                fileUploadRef={fileEditAcceptRef}
+                                                totalSize={totalSize}
+                                                setTotalSize={setTotalSize}
+                                                fileErrors={fileErrors}
+                                                setFilesErrros={setFilesErrros}
+                                                message={message}
+                                                lFiles={lFilesNames}
+                                                setLFilesToEdit={setLFilesToEdit}
+                                            />
+                                        ) : (
+                                            <div className="flex justify-content-center">
+                                                <ProgressSpinner style={{ width: '50px', height: '50px' }} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />
+                                            </div>
+                                        )}
+                                    </>
                                 )}
                             </>
                         )}

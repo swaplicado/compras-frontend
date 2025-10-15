@@ -47,6 +47,7 @@ const ConsultPaymentProgramded = () => {
     const [lPaymentsExec, setLPaymentsExec] = useState<any[]>([]);
     const [loadinglPaymentsExec, setLoadinglPaymentsExec] = useState<boolean>(false);
     const fileUploadRef = useRef<FileUpload>(null);
+    const xmlUploadRef = useRef<FileUpload>(null);
     const [isXmlValid, setIsXmlValid] = useState(false);
     const [showing, setShowing] = useState<'body' | 'animationSuccess' | 'animationError'>('body');
     const [successTitle, setSuccessTitle] = useState('CRP cargado');
@@ -62,6 +63,11 @@ const ConsultPaymentProgramded = () => {
     const [lPaymentsExecDetails, setLPaymentsExecDetails] = useState<any[]>([]);
     const [isInReview, setIsReview] = useState<boolean>(false);
 
+    const fileEditAcceptRef = useRef<FileUpload>(null);
+    const [loadingFileNames, setLoadingFileNames] = useState<boolean>(false);
+    const [lFilesNames, setLFilesNames] = useState<any[]>([]);
+    const [lFilesToEdit, setLFilesToEdit] = useState<any[]>([]);
+
     const isMobile = useIsMobile();
 
     const columnsProps = {
@@ -70,6 +76,7 @@ const ConsultPaymentProgramded = () => {
         uuid: { hidden: false },
         date: { hidden: false },
         authz_acceptance_name: { hidden: false },
+        delete: { hidden: true }
     }
 
 //*******FUNCIONES*******
@@ -365,6 +372,7 @@ const ConsultPaymentProgramded = () => {
                         loadinglPaymentsExec={loadinglPaymentsExec}
                         clean={clean}
                         fileUploadRef={fileUploadRef}
+                        xmlUploadRef={xmlUploadRef}
                         isXmlValid={isXmlValid}
                         setIsXmlValid={setIsXmlValid}
                         showing={showing}
@@ -378,6 +386,10 @@ const ConsultPaymentProgramded = () => {
                         lFiles={lFiles}
                         lPaymentsExecDetails={lPaymentsExecDetails}
                         isInReview={false}
+                        loadingFileNames={loadingFileNames}
+                        fileEditAcceptRef={fileEditAcceptRef}
+                        lFilesNames={lFilesNames}
+                        setLFilesToEdit={setLFilesToEdit}
                     />
                     <TableCrp 
                         lCrp={lCrp}
