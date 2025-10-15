@@ -110,7 +110,7 @@
                 },
                 {
                     "label": "NC",
-                    "icon": "pi pi-ticket",
+                    "icon": "pi pi-credit-card",
                     "items": [
                         {
                             "label": "Cargar NC",

@@ -17,6 +17,8 @@ import { btnScroll } from '@/app/(main)/utilities/commons/useScrollDetection';
 import { useIntersectionObserver } from 'primereact/hooks';
 import { InputNumber } from 'primereact/inputnumber';
 import { ValidateNcXml } from '@/app/components/documents/nc/common/ValidNcXml';
+import { Divider } from 'primereact/divider';
+import { FieldsEditAcceptance } from '@/app/components/documents/invoice/fieldsEditAcceptance';
 
 interface DialogNc {
     visible: boolean;
@@ -49,6 +51,7 @@ interface DialogNc {
     isXmlValid: boolean;
     setIsXmlValid: React.Dispatch<React.SetStateAction<boolean>>;
     editableBodyFields?: boolean;
+    setEditableBodyFields?: React.Dispatch<React.SetStateAction<boolean>>;
     successTitle?: string;
     successMessage?: string;
     errorTitle?: string;
@@ -56,7 +59,11 @@ interface DialogNc {
     loadingFiles?: boolean;
     lFiles?: any[];
     isInReview?: boolean;
-    setFormErrors?: React.Dispatch<React.SetStateAction<any>>;
+    setFormErrors: React.Dispatch<React.SetStateAction<any>>;
+    loadingFileNames: boolean;
+    fileEditAcceptRef: React.RefObject<FileUpload>;
+    lFilesNames: any[];
+    setLFilesToEdit: React.Dispatch<React.SetStateAction<any>>;
 }
 
 export const DialogNc = ({
@@ -88,6 +95,7 @@ export const DialogNc = ({
     isXmlValid,
     setIsXmlValid,
     editableBodyFields = false,
+    setEditableBodyFields,
     lCurrencies,
     lFiscalRegimes,
     successTitle,
@@ -97,7 +105,11 @@ export const DialogNc = ({
     loadingFiles = false,
     lFiles = [],
     isInReview = false,
-    setFormErrors
+    setFormErrors,
+    loadingFileNames,
+    fileEditAcceptRef,
+    lFilesNames,
+    setLFilesToEdit,
 }: DialogNc) => {
     const { t } = useTranslation('nc');
     const { t: tCommon } = useTranslation('common');
@@ -174,10 +186,21 @@ export const DialogNc = ({
                     name: oUser.oProvider.name,
                     country: oUser.oProvider.country
                 }
-                setONc?.((prev: any) => ({ ...prev, oProvider: oProvider }));
+                setONc?.((prev: any) => ({ ...prev, partner: oProvider }));
             }
         }
     }, [visible]);
+
+    useEffect(() => {
+        if (dialogMode == 'create') {
+            if (oNc?.partner) {
+                if (oNc?.partner.country != constants.COUNTRIES.MEXICO_ID) {
+                    setIsXmlValid(true);
+                    setEditableBodyFields?.(true);
+                }
+            }
+        }
+    }, [oNc?.partner])
 
     return (
         <div className="flex justify-content-center">
@@ -227,12 +250,13 @@ export const DialogNc = ({
                                     type={dialogMode == 'create' ? 'dropdown' : 'text'}
                                     onChange={(value) => {
                                         setONc?.((prev: any) => ({ ...prev, company: value }));
+                                        setFormErrors?.((prev: any) => ({ ...prev, company: false }));
                                     }}
                                     options={lCompanies}
                                     placeholder={t('dialog.fields.company.placeholder')}
-                                    errorKey={''}
+                                    errorKey={'company'}
                                     errors={formErrors}
-                                    errorMessage={''}
+                                    errorMessage={'Selecciona empresa'}
                                 />
                                 { !oUser?.isProvider && (
                                     <RenderField
@@ -244,12 +268,13 @@ export const DialogNc = ({
                                         type={dialogMode == 'create' ? 'dropdown' : 'text'}
                                         onChange={(value) => {
                                             setONc?.((prev: any) => ({ ...prev, partner: value }));
+                                            setFormErrors?.((prev: any) => ({ ...prev, partner: false }));
                                         }}
                                         options={lProviders}
                                         placeholder={t('dialog.fields.partner.placeholder')}
-                                        errorKey={''}
+                                        errorKey={'partner'}
                                         errors={formErrors}
-                                        errorMessage={''}
+                                        errorMessage={'Selecciona proveedor'}
                                     />
                                 )}
                                 {loadingInvoices && (
@@ -264,73 +289,82 @@ export const DialogNc = ({
                                     </div>
                                 )}
                                 {!loadingInvoices && (
-                                    <RenderField
-                                        label={t('dialog.fields.lInvoices.label')}
-                                        tooltip={t('dialog.fields.lInvoices.tooltip')}
-                                        value={ dialogMode == 'create' ? oNc?.invoices : oNc?.invoices?.map((item: any, index: number) => ( item.folio + ', ')) }
-                                        disabled={dialogMode == 'view' || dialogMode == 'edit' || (lInvoices?.length || 0) < 1}
-                                        mdCol={6}
-                                        type={dialogMode == 'create' ? 'multiselect' : 'text'}
-                                        onChange={(value) => {
-                                            handleSelectInvoices(value);
-                                        }}
-                                        options={lInvoices}
-                                        placeholder={t('dialog.fields.lInvoices.placeholder')}
-                                        errorKey={''}
-                                        errors={formErrors}
-                                        errorMessage={''}
-                                    />
-                                )}
-
-                                {oNc?.invoices && (oNc?.invoices?.length > 1 || dialogMode == 'view') && (
-                                    <RenderField
-                                        label={t('dialog.fields.lAreas.label')}
-                                        tooltip={t('dialog.fields.lAreas.tooltip')}
-                                        value={oNc?.area}
-                                        disabled={dialogMode == 'view' || dialogMode == 'edit'}
-                                        mdCol={6}
-                                        type={dialogMode == 'create' ? 'dropdown' : 'text'}
-                                        onChange={(value) => {
-                                            setONc?.((prev: any) => ({ ...prev, area: value }));
-                                        }}
-                                        options={lAreas}
-                                        placeholder={t('dialog.fields.lAreas.placeholder')}
-                                        errorKey={''}
-                                        errors={formErrors}
-                                        errorMessage={''}
-                                    />
-                                )}
-
-                                {oNc?.invoices && (oNc?.invoices?.length > 1 || dialogMode == 'view') && (
-                                    <div className={`field col-12 md:col-12`}>
-                                        <div className="">
-                                            <div className="col">
-                                                {oNc?.invoices.map((item: any, index: number) => (
-                                                    <div className="field grid" key={index}>
-                                                        <label className="col-12 mb-2 md:col-7 md:mb-0 justify-content-end">{item.folio}:</label>
-                                                        <div className="col-12 md:col-5">
-                                                            <InputNumber
-                                                                type="text"
-                                                                className={`w-full ${oNc?.invoices[index]?.error ? 'p-invalid' : ''}`}
-                                                                value={oNc?.invoices[index]?.amountNc}
-                                                                disabled={dialogMode == 'view' || dialogMode == 'edit'}
-                                                                maxLength={50}
-                                                                minFractionDigits={2}
-                                                                maxFractionDigits={2}
-                                                                min={0}
-                                                                max={999999999}
-                                                                inputClassName="text-right"
-                                                                onChange={(e: any) => handleInputAmountInvoice(index, e.value)}
-                                                            />
-                                                            {oNc?.invoices[index]?.error && <small className="p-error">La cantidad no puede ser 0</small>}
+                                    <>
+                                        <RenderField
+                                            label={t('dialog.fields.lInvoices.label')}
+                                            tooltip={t('dialog.fields.lInvoices.tooltip')}
+                                            value={ dialogMode == 'create' ? oNc?.invoices : oNc?.invoices?.map((item: any, index: number) => ( item.folio + ' ')) }
+                                            disabled={dialogMode == 'view' || dialogMode == 'edit' || (lInvoices?.length || 0) < 1}
+                                            mdCol={6}
+                                            type={dialogMode == 'create' ? 'multiselect' : 'text'}
+                                            onChange={(value) => {
+                                                handleSelectInvoices(value);
+                                            }}
+                                            options={lInvoices}
+                                            placeholder={t('dialog.fields.lInvoices.placeholder')}
+                                            errorKey={'invoices'}
+                                            errors={formErrors}
+                                            errorMessage={'Selecciona facturas'}
+                                        />
+                                        {oNc?.invoices && (oNc?.invoices?.length > 1 || dialogMode == 'view') && (
+                                            <RenderField
+                                                label={t('dialog.fields.lAreas.label')}
+                                                tooltip={t('dialog.fields.lAreas.tooltip')}
+                                                value={oNc?.area}
+                                                disabled={dialogMode == 'view' || dialogMode == 'edit'}
+                                                mdCol={6}
+                                                type={dialogMode == 'create' ? 'dropdown' : 'text'}
+                                                onChange={(value) => {
+                                                    setONc?.((prev: any) => ({ ...prev, area: value }));
+                                                    setFormErrors?.((prev: any) => ({ ...prev, area: false }));
+                                                }}
+                                                options={lAreas}
+                                                placeholder={t('dialog.fields.lAreas.placeholder')}
+                                                errorKey={'area'}
+                                                errors={formErrors}
+                                                errorMessage={'Selecciona un área'}
+                                            />
+                                        )}
+                                        {oNc?.invoices && (oNc?.invoices?.length > 1 || dialogMode == 'view') && (
+                                            <>
+                                                {/* <Divider className='m-2'/> */}
+                                                <div className={`field col-12 md:col-12 text-center`}>
+                                                    <Divider className='m-0'/>
+                                                    <h6>Facturas de la nota de crédito:</h6>
+                                                    <div className="">
+                                                        <div className="col">
+                                                            {oNc?.invoices.map((item: any, index: number) => (
+                                                                <div className="field grid" key={index}>
+                                                                    <label className="col-12 mb-2 md:col-7 md:mb-0 justify-content-end">{item.folio}:</label>
+                                                                    <div className="col-12 md:col-5">
+                                                                        <InputNumber
+                                                                            type="text"
+                                                                            className={`w-full ${oNc?.invoices[index]?.error ? 'p-invalid' : ''}`}
+                                                                            value={oNc?.invoices[index]?.amountNc}
+                                                                            disabled={dialogMode == 'view' || dialogMode == 'edit'}
+                                                                            maxLength={50}
+                                                                            minFractionDigits={2}
+                                                                            maxFractionDigits={2}
+                                                                            min={0}
+                                                                            max={999999999}
+                                                                            inputClassName="text-right"
+                                                                            onChange={(e: any) => handleInputAmountInvoice(index, e.value)}
+                                                                        />
+                                                                        {oNc?.invoices[index]?.error && <small className="p-error">La cantidad no puede ser 0</small>}
+                                                                    </div>
+                                                                </div>
+                                                            ))}
                                                         </div>
                                                     </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    </div>
+                                                    <Divider className='m-0'/>
+                                                </div>
+                                            </>
+                                        )}
+                                    </>
                                 )}
-                                { dialogMode == 'create' && oNc?.invoices?.length > 0 && (
+
+
+                                { dialogMode == 'create' && oNc?.invoices?.length > 0 && oNc?.partner?.country == constants.COUNTRIES.MEXICO_ID && (
                                     <div className={`field col-12 md:col-12`}>
                                         <div className="">
                                             <div className="col">
@@ -377,12 +411,13 @@ export const DialogNc = ({
                                     type={'text'}
                                     onChange={(value) => {
                                         setONc?.((prev: any) => ({ ...prev, folio: value }));
+                                        setFormErrors?.((prev: any) => ({ ...prev, folio: false }));
                                     }}
                                     options={[]}
                                     placeholder={t('dialog.fields.folio.placeholder')}
-                                    errorKey={''}
+                                    errorKey={'folio'}
                                     errors={formErrors}
-                                    errorMessage={''}
+                                    errorMessage={'Ingresa folio'}
                                 />
                                 <RenderField
                                     label={t('dialog.fields.date.label')}
@@ -394,12 +429,13 @@ export const DialogNc = ({
                                     inputRef={inputCalendarRef}
                                     onChange={(value) => {
                                         setONc?.((prev: any) => ({ ...prev, date: value }));
+                                        setFormErrors?.((prev: any) => ({ ...prev, date: false }));
                                     }}
                                     options={[]}
                                     placeholder={t('dialog.fields.date.placeholder')}
-                                    errorKey={''}
+                                    errorKey={'date'}
                                     errors={formErrors}
-                                    errorMessage={''}
+                                    errorMessage={'Selecciona fecha'}
                                 />
                                 <RenderField
                                     label={t('dialog.fields.partner_fiscal_id.label')}
@@ -410,12 +446,13 @@ export const DialogNc = ({
                                     type={'text'}
                                     onChange={(value) => {
                                         setONc?.((prev: any) => ({ ...prev, partner_fiscal_id: value }));
+                                        setFormErrors?.((prev: any) => ({ ...prev, partner_fiscal_id: false }));
                                     }}
                                     options={[]}
                                     placeholder={t('dialog.fields.partner_fiscal_id.placeholder')}
-                                    errorKey={''}
+                                    errorKey={'partner_fiscal_id'}
                                     errors={formErrors}
-                                    errorMessage={''}
+                                    errorMessage={'Ingresa RFC emisor'}
                                 />
                                 <RenderField
                                     label={t('dialog.fields.issuer_tax_regime.label')}
@@ -426,12 +463,13 @@ export const DialogNc = ({
                                     type={ editableBodyFields ? 'dropdown' : 'text'}
                                     onChange={(value) => {
                                         setONc?.((prev: any) => ({ ...prev, oIssuer_tax_regime: value }));
+                                        setFormErrors?.((prev: any) => ({ ...prev, issuer_tax_regime: false }));
                                     }}
                                     options={lFiscalRegimes}
                                     placeholder={t('dialog.fields.issuer_tax_regime.placeholder')}
-                                    errorKey={''}
+                                    errorKey={'issuer_tax_regime'}
                                     errors={formErrors}
-                                    errorMessage={''}
+                                    errorMessage={'Ingresa régimen fiscal del emisor'}
                                 />
                                 <RenderField
                                     label={t('dialog.fields.company_fiscal_id.label')}
@@ -442,12 +480,13 @@ export const DialogNc = ({
                                     type={'text'}
                                     onChange={(value) => {
                                         setONc?.((prev: any) => ({ ...prev, company_fiscal_id: value }));
+                                        setFormErrors?.((prev: any) => ({ ...prev, company_fiscal_id: false }));
                                     }}
                                     options={[]}
                                     placeholder={t('dialog.fields.company_fiscal_id.placeholder')}
-                                    errorKey={''}
+                                    errorKey={'company_fiscal_id'}
                                     errors={formErrors}
-                                    errorMessage={''}
+                                    errorMessage={'Ingresa RFC receptor'}
                                 />
                                 <RenderField
                                     label={t('dialog.fields.receiver_tax_regime.label')}
@@ -458,10 +497,11 @@ export const DialogNc = ({
                                     type={ editableBodyFields ? 'dropdown' : 'text'}
                                     onChange={(value) => {
                                         setONc?.((prev: any) => ({ ...prev, oReceiver_tax_regime: value }));
+                                        setFormErrors?.((prev: any) => ({ ...prev, receiver_tax_regime: false }));
                                     }}
                                     options={lFiscalRegimes}
                                     placeholder={t('dialog.fields.receiver_tax_regime.placeholder')}
-                                    errorKey={''}
+                                    errorKey={'receiver_tax_regime'}
                                     errors={formErrors}
                                     errorMessage={''}
                                 />
@@ -474,12 +514,13 @@ export const DialogNc = ({
                                     type={'number'}
                                     onChange={(value) => {
                                         setONc?.((prev: any) => ({ ...prev, amount: value }));
+                                        setFormErrors?.((prev: any) => ({ ...prev, amount: false }));
                                     }}
                                     options={[]}
                                     placeholder={t('dialog.fields.amount.placeholder')}
-                                    errorKey={''}
+                                    errorKey={'amount'}
                                     errors={formErrors}
-                                    errorMessage={''}
+                                    errorMessage={'Ingresa monto'}
                                 />
                                 <RenderField
                                     label={t('dialog.fields.currency.label')}
@@ -490,12 +531,13 @@ export const DialogNc = ({
                                     type={ editableBodyFields ? 'dropdown' : 'text'}
                                     onChange={(value) => {
                                         setONc?.((prev: any) => ({ ...prev, oCurrency: value }));
+                                        setFormErrors?.((prev: any) => ({ ...prev, currency: false }));
                                     }}
                                     options={lCurrencies}
                                     placeholder={t('dialog.fields.currency.placeholder')}
-                                    errorKey={''}
+                                    errorKey={'currency'}
                                     errors={formErrors}
-                                    errorMessage={''}
+                                    errorMessage={'Selecciona moneda'}
                                 />
                                 <RenderField
                                     label={t('dialog.fields.exchange_rate.label')}
@@ -506,15 +548,16 @@ export const DialogNc = ({
                                     type={'number'}
                                     onChange={(value) => {
                                         setONc?.((prev: any) => ({ ...prev, exchange_rate: value }));
+                                        setFormErrors?.((prev: any) => ({ ...prev, exchange_rate: false }));
                                     }}
                                     options={[]}
                                     placeholder={t('dialog.fields.exchange_rate.placeholder')}
-                                    errorKey={''}
+                                    errorKey={'exchange_rate'}
                                     errors={formErrors}
-                                    errorMessage={''}
+                                    errorMessage={'Ingresa tipo de cambio'}
                                 />
 
-                                { (dialogMode == 'create' || dialogMode == 'edit') && (
+                                { (dialogMode == 'create') && (
                                     <div className="field col-12 md:col-12">
                                         <div className="formgrid grid">
                                             <div className="col">
@@ -532,8 +575,8 @@ export const DialogNc = ({
                                                     fileUploadRef={fileUploadRef}
                                                     totalSize={totalSize}
                                                     setTotalSize={setTotalSize}
-                                                    errors={fileErrors}
-                                                    setErrors={setFilesErrros}
+                                                    errors={formErrors}
+                                                    setErrors={setFormErrors}
                                                     message={message}
                                                     multiple={true}
                                                     allowedExtensions={constants.allowedExtensions}
@@ -542,12 +585,12 @@ export const DialogNc = ({
                                                     maxFileSizeForHuman={constants.maxFileSizeForHuman}
                                                     maxUnitFileSize={constants.maxUnitFile}
                                                     errorMessages={{
-                                                        invalidFileType: t('files.invalidFileType'),
-                                                        invalidAllFilesSize: t('files.invalidAllFilesSize'),
-                                                        invalidFileSize: t('files.invalidFileSize'),
-                                                        invalidFileSizeMessageSummary: t('files.invalidFileSizeMessageSummary'),
-                                                        helperTextFiles: t('files.helperTextFiles'),
-                                                        helperTextPdf: '',
+                                                        invalidFileType: t('dialog.files.invalidFileType'),
+                                                        invalidAllFilesSize: t('dialog.files.invalidAllFilesSize'),
+                                                        invalidFileSize: t('dialog.files.invalidFileSize'),
+                                                        invalidFileSizeMessageSummary: t('dialog.files.invalidFileSizeMessageSummary'),
+                                                        helperTextFiles: t('dialog.files.helperTextFiles'),
+                                                        helperTextPdf: t('dialog.files.helperTextPdf'),
                                                         helperTextXml: ''
                                                     }}
                                                 />
@@ -557,23 +600,27 @@ export const DialogNc = ({
                                 )}
 
                                 { (dialogMode == 'view' || dialogMode == 'edit') && (
-                                    <RenderField
-                                        label={t('dialog.fields.authz_acceptance_notes.label')}
-                                        tooltip={t('dialog.fields.authz_acceptance_notes.tooltip')}
-                                        value={ oNc?.authz_acceptance_notes }
-                                        disabled={!isInReview}
-                                        mdCol={12}
-                                        type={'textArea'}
-                                        onChange={(value) => {
-                                            setONc?.((prev: any) => ({ ...prev, authz_acceptance_notes: value }));
-                                            setFormErrors?.((prev: any) => ({ ...prev, authz_acceptance_notes: false }));
-                                        }}
-                                        options={[]}
-                                        placeholder={t('dialog.fields.authz_acceptance_notes.placeholder')}
-                                        errorKey={'authz_acceptance_notes'}
-                                        errors={formErrors}
-                                        errorMessage={'Ingrese comentario para rechazar'}
-                                    />
+                                    <>
+                                        <Divider/>
+                                        <RenderField
+                                            label={t('dialog.fields.authz_acceptance_notes.label')}
+                                            tooltip={t('dialog.fields.authz_acceptance_notes.tooltip')}
+                                            value={ oNc?.authz_acceptance_notes }
+                                            disabled={!isInReview}
+                                            mdCol={12}
+                                            type={'textArea'}
+                                            onChange={(value) => {
+                                                setONc?.((prev: any) => ({ ...prev, authz_acceptance_notes: value }));
+                                                setFormErrors?.((prev: any) => ({ ...prev, authz_acceptance_notes: false }));
+                                            }}
+                                            options={[]}
+                                            placeholder={t('dialog.fields.authz_acceptance_notes.placeholder')}
+                                            errorKey={'authz_acceptance_notes'}
+                                            errors={formErrors}
+                                            errorMessage={'Ingrese comentario para rechazar'}
+                                            labelClass={'font-bold opacity-100 text-blue-600'}
+                                        />
+                                    </>
                                 )}
                             </div>
                         )}
@@ -593,6 +640,28 @@ export const DialogNc = ({
                                             </div>
                                         </div>
                                     </div>
+                                )}
+
+                                {dialogMode == 'edit' && (
+                                    <>
+                                        <Divider />
+                                        {!loadingFileNames ? (
+                                            <FieldsEditAcceptance
+                                                fileUploadRef={fileEditAcceptRef}
+                                                totalSize={totalSize}
+                                                setTotalSize={setTotalSize}
+                                                fileErrors={fileErrors}
+                                                setFilesErrros={setFilesErrros}
+                                                message={message}
+                                                lFiles={lFilesNames}
+                                                setLFilesToEdit={setLFilesToEdit}
+                                            />
+                                        ) : (
+                                            <div className="flex justify-content-center">
+                                                <ProgressSpinner style={{ width: '50px', height: '50px' }} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />
+                                            </div>
+                                        )}
+                                    </>
                                 )}
                             </>
                         )}

@@ -93,6 +93,27 @@
                     ]
                 },
                 {
+                    "label": "NC",
+                    "icon": "pi pi-credit-card",
+                    "items": [
+                        {
+                            "label": "Cargar NC",
+                            "icon": "pi pi-upload",
+                            "to": "/pages/documents/nc/upload"
+                        },
+                        {
+                            "label": "NC aceptadas",
+                            "icon": "pi pi-check-square",
+                            "to": "/pages/documents/nc/accepted"
+                        },
+                        {
+                            "label": "NC rechazadas",
+                            "icon": "pi pi-times-circle",
+                            "to": "/pages/documents/nc/rejected"
+                        }
+                    ]
+                },
+                {
                     "label": "Estado de cuenta",
                     "icon": "pi pi-file",
                     "to": "/pages/partners/accountState"

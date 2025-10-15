@@ -79,3 +79,42 @@ export const downloadFiles = async ({
         showToast?.('error', error.response?.data?.error || 'Error al descargar los archivos', 'Error al descargar los archivos');
     }
 };
+
+interface getlFilesNames {
+    document_id: string | number,
+    setLFilesNames: React.Dispatch<React.SetStateAction<any[]>>;
+    showToast?: (type: 'success' | 'info' | 'warn' | 'error', message: string, summaryText?: string) => void;
+}
+
+export const getlFilesNames = async (props: getlFilesNames) => {
+    try {
+        if (!props) {
+            return;
+        }
+
+        const route = constants.ROUTE_GET_LIST_DOC_FILES;
+        const response = await axios.get(constants.API_AXIOS_GET, {
+            params: {
+                route: route,
+                document_id: props.document_id
+            }
+        });
+
+        if (response.status === 200) {
+            const data = response.data.data || [];
+            let files = [];
+            for (let i = 0; i < data.files.length; i++) {
+                files.push({
+                    id: data.files[i].id,
+                    name: data.files[i].filename,
+                    extension: getExtensionFileByName(data.files[i].filename)
+                });
+            }
+            props.setLFilesNames(files);
+        } else {
+            throw new Error(`Error al obtener los archivos: ${response.statusText}`);
+        }
+    } catch (error: any) {
+        props.showToast?.('error', error.response?.data?.error || 'Error al obtener los archivos');
+    }
+};

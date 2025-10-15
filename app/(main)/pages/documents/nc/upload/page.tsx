@@ -74,6 +74,7 @@ const UploadNC = () => {
         currency: false,
         exchange_rate: false,
         authz_acceptance_notes: false,
+        area: false,
     });
     const [loadingFiles, setLoadingFiles] = useState<boolean>(false);
     const [lFiles, setLFiles] = useState<any[]>([]);
@@ -85,6 +86,11 @@ const UploadNC = () => {
     const [withBody, setWithBody] = useState<boolean>(true);
     const [withFooter, setWithFooter] = useState<boolean>(false);
     const [lInvoicesToReview, setlInvoicesToReview] = useState<any[]>([]);
+    const fileEditAcceptRef = useRef<FileUpload>(null);
+    const [loadingFileNames, setLoadingFileNames] = useState<boolean>(false);
+    const [lFilesNames, setLFilesNames] = useState<any[]>([]);
+    const [lFilesToEdit, setLFilesToEdit] = useState<any[]>([]);
+    const [editableBodyFields, setEditableBodyFields] = useState<boolean>(false);
 
     const isMobile = useIsMobile();
 
@@ -157,49 +163,112 @@ const UploadNC = () => {
             receiver_tax_regime: false,
             amount: false,
             currency: false,
-            exchange_rate: false
+            exchange_rate: false,
+            area: false,
+            files: false,
+            includePdf: false,
         });
         fileUploadRef.current?.clear();
         xmlUploadRef.current?.clear();
         setIsXmlValid(false);
+        setEditableBodyFields(false);
     }
 
     const validate = () => {
-        const newErrors = {
-            company: !oNc.company,
-            partner: !oNc.partner,
-            invoices: !oNc.invoices,
-            xmlFile: (fileUploadRef.current?.getFiles().length || 0) == 0,
-            folio: !oNc.folio,
-            date: !oNc.date,
-            partner_fiscal_id: !oNc.partner_fiscal_id,
-            issuer_tax_regime: !oNc.oIssuer_tax_regime,
-            company_fiscal_id: !oNc.company_fiscal_id,
-            receiver_tax_regime: !oNc.oReceiver_tax_regime,
-            amount: !oNc.amount,
-            currency: !oNc.oCurrency,
-            exchange_rate: !oNc.exchange_rate
+        let newErrors;
+        if (oNc?.partner.country != constants.COUNTRIES.MEXICO_ID) {
+            newErrors = {
+                company: !oNc.company,
+                partner: !oNc.partner,
+                invoices: !oNc.invoices,
+                xmlFile: false,
+                folio: !oNc.folio,
+                date: !oNc.date,
+                partner_fiscal_id: !oNc.partner_fiscal_id,
+                issuer_tax_regime: !oNc.oIssuer_tax_regime,
+                company_fiscal_id: !oNc.company_fiscal_id,
+                receiver_tax_regime: !oNc.oReceiver_tax_regime,
+                amount: !oNc.amount,
+                currency: !oNc.oCurrency,
+                exchange_rate: !oNc.exchange_rate,
+                area: oNc?.invoices.length > 1 ? !oNc.area : false,
+                files: (fileUploadRef.current?.getFiles().length || 0) === 0,
+                includePdf: fileUploadRef.current?.getFiles().length || 0 > 0 ? !fileUploadRef.current?.getFiles().some((file: { type: string }) => file.type === 'application/pdf') : false,
+            }
+        } else {
+            newErrors = {
+                company: !oNc.company,
+                partner: !oNc.partner,
+                invoices: !oNc.invoices,
+                xmlFile: (fileUploadRef.current?.getFiles().length || 0) == 0,
+                folio: false,
+                date: false,
+                partner_fiscal_id: false,
+                issuer_tax_regime: false,
+                company_fiscal_id: false,
+                receiver_tax_regime: false,
+                amount: false,
+                currency: false,
+                exchange_rate: false,
+                area: oNc?.invoices.length > 1 ? !oNc.area : false,
+                files: (fileUploadRef.current?.getFiles().length || 0) === 0,
+                includePdf: fileUploadRef.current?.getFiles().length || 0 > 0 ? !fileUploadRef.current?.getFiles().some((file: { type: string }) => file.type === 'application/pdf') : false,
+            }
         }
+
+        console.log('newErrors: ', newErrors);
 
         setFormErrors(newErrors);
 
         return !Object.values(newErrors).some(Boolean)
     }
 
-    const handleSubmit = async () => {
-        if (!validate()) {
-            return;
-        }
+    useEffect(() => {
+        console.log('oNc: ', oNc);
+    }, [oNc])
 
+    const handleSubmit = async () => {
         try {
-            setLoading(true);
+            if (!validate()) {
+                return;
+            }
+
             const formData = new FormData();
             const files = fileUploadRef.current?.getFiles() || [];
+    
+            let xmlFiles: any[] = [];
+            let xmlBaseName: any;
+            let xmlName: any;
+    
+            if (oNc.partner.country == constants.COUNTRIES.MEXICO_ID) {
+                xmlFiles = xmlUploadRef.current?.getFiles() || [];
+                xmlBaseName = xmlFiles[0].name.replace(/\.[^/.]+$/, '');
+                xmlName = xmlFiles[0].name;
+                const hasSameFile = files.some((file) => file.name === xmlName);
+    
+                if (hasSameFile) {
+                    showToast?.('error', t('dialog.files.hasSameFile', { xmlName }));
+                    return;
+                }
+    
+                const hasMatchingPDF = files.some((file) => {
+                    const isPDF = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+                    const fileBaseName = file.name.replace(/\.[^/.]+$/, '');
+                    return isPDF && fileBaseName === xmlBaseName;
+                });
+    
+                if (!hasMatchingPDF) {
+                    showToast?.('error', t('dialog.files.hasMatchingPDF', { xmlBaseName }));
+                    return;
+                }
+            }
+            setLoading(true);
+            
             files.forEach((file: string | Blob) => {
                 formData.append('files', file);
             });
 
-            let xmlFiles: any = [];
+            
             if (oNc.partner.country == constants.COUNTRIES.MEXICO_ID) {
                 xmlFiles = xmlUploadRef.current?.getFiles() || [];
                 xmlFiles.forEach((file: string | Blob) => {
@@ -222,12 +291,24 @@ const UploadNC = () => {
                 }
             }
             const route = constants.ROUTE_POST_NC;
+
+            let series: string = '';
+            let number: string = '';
+            if (oNc.folio && !oNc.series && !oNc.number) {
+                const splitFolio = oNc.folio.split('-');
+                series = splitFolio.length > 1 ? splitFolio[0] : '';
+                number = splitFolio.length > 1 ? splitFolio[1] : splitFolio[0];
+            } else {
+                series = oNc.serie;
+                number = oNc.number;
+            }
+            
             const document = {
                 transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
                 document_type: constants.DOC_TYPE_NC,
                 partner: oNc.partner ? oNc.partner.id : '',
-                series: oNc.series,
-                number: oNc.number,
+                series: series,
+                number: number,
                 date: moment(oNc.date).format('YYYY-MM-DD'),
                 currency: oNc.oCurrency ? oNc.oCurrency.id : '',
                 issuer_tax_regime: oNc.oIssuer_tax_regime ? oNc.oIssuer_tax_regime.id : '',
@@ -259,7 +340,7 @@ const UploadNC = () => {
         } catch (error: any) {
             setShowing('animationError');
             setErrorTitle(t('dialog.animationError.uploadTitle'));
-            setErrorMessage(t('dialog.animationError.uploadText'));
+            setErrorMessage(error.response?.data?.error || t('dialog.animationError.uploadText'));
         } finally {
             setLoading(false);
         }
@@ -305,10 +386,10 @@ const UploadNC = () => {
             console.error('Error al actualizar estado:', error);
             if (reviewOption == constants.REVIEW_ACCEPT) {
                 setErrorTitle(t('dialog.animationError.reviewAcceptedTitle'));
-                setErrorMessage(t('dialog.animationError.reviewAcceptedText'));
+                setErrorMessage(error.response?.data?.error || t('dialog.animationError.reviewAcceptedText'));
             } else {
                 setErrorTitle(t('dialog.animationError.reviewRejectedTitle'));
-                setErrorMessage(t('dialog.animationError.reviewRejectedText'));
+                setErrorMessage(error.response?.data?.error || t('dialog.animationError.reviewRejectedText'));
             }
             setShowing('animationError');
         } finally {
@@ -365,7 +446,7 @@ const UploadNC = () => {
                 <Tooltip target=".custom-target-icon" />
                 <i
                     className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                    data-pr-tooltip={t('programed.titleTooltip')}
+                    data-pr-tooltip={t('titleUploadTooltip')}
                     data-pr-position="right"
                     data-pr-my="left center-2"
                     style={{ fontSize: '1rem', cursor: 'pointer' }}
@@ -595,6 +676,12 @@ const UploadNC = () => {
                         loadingFiles={loadingFiles}
                         isInReview={isInReview}
                         setFormErrors={setFormErrors}
+                        loadingFileNames={loadingFileNames}
+                        fileEditAcceptRef={fileEditAcceptRef}
+                        lFilesNames={lFilesNames}
+                        setLFilesToEdit={setLFilesToEdit}
+                        editableBodyFields={editableBodyFields}
+                        setEditableBodyFields={setEditableBodyFields}
                     />
                     <TableNc
                         lNc={lNc}

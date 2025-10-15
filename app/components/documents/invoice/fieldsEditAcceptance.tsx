@@ -84,7 +84,7 @@ export const FieldsEditAcceptance = ({
             <div className="field col-12 md:col-12">
                 <div className="formgrid grid">
                     <div className="col">
-                        <label>archivos</label>
+                        <label>Archivos</label>
                         &nbsp;
                         <Tooltip target=".custom-target-icon" />
                         <i

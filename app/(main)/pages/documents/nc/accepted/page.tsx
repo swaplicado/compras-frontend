@@ -86,6 +86,11 @@ const AcceptedNC = () => {
     const [withFooter, setWithFooter] = useState<boolean>(false);
     const [lInvoicesToReview, setlInvoicesToReview] = useState<any[]>([]);
 
+    const fileEditAcceptRef = useRef<FileUpload>(null);
+    const [loadingFileNames, setLoadingFileNames] = useState<boolean>(false);
+    const [lFilesNames, setLFilesNames] = useState<any[]>([]);
+    const [lFilesToEdit, setLFilesToEdit] = useState<any[]>([]);
+
     const isMobile = useIsMobile();
 
     const columnsProps = {
@@ -453,6 +458,10 @@ const AcceptedNC = () => {
                         loadingFiles={loadingFiles}
                         isInReview={isInReview}
                         setFormErrors={setFormErrors}
+                        loadingFileNames={loadingFileNames}
+                        fileEditAcceptRef={fileEditAcceptRef}
+                        lFilesNames={lFilesNames}
+                        setLFilesToEdit={setLFilesToEdit}
                     />
                     <TableNc
                         lNc={lNc}

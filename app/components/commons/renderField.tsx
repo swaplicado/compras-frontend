@@ -24,6 +24,7 @@ interface renderFieldProps {
     errors: any;
     errorMessage?: string;
     inputRef?: any;
+    labelClass?: string
 }
 
 export const RenderField = (props: renderFieldProps) => {
@@ -33,7 +34,7 @@ export const RenderField = (props: renderFieldProps) => {
                 <div className={`field col-12 md:col-${props.mdCol}`}>
                     <div className="">
                         <div className="col">
-                            <label data-pr-tooltip="">{props.label}</label>
+                            <label className={`${props.labelClass}`} data-pr-tooltip="">{props.label}</label>
                             &nbsp;
                             <Tooltip target=".custom-target-icon" />
                             <i className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge" data-pr-tooltip={props.tooltip} data-pr-position="right" data-pr-my="left center-2" style={{ fontSize: '1rem', cursor: 'pointer' }}></i>
@@ -61,7 +62,7 @@ export const RenderField = (props: renderFieldProps) => {
                 <div className={`field col-12 md:col-${props.mdCol}`}>
                     <div className="">
                         <div className="col">
-                            <label data-pr-tooltip="">{props.label}</label>
+                            <label className={`${props.labelClass}`} data-pr-tooltip="">{props.label}</label>
                             &nbsp;
                             <Tooltip target=".custom-target-icon" />
                             <i className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge" data-pr-tooltip={props.tooltip} data-pr-position="right" data-pr-my="left center-2" style={{ fontSize: '1rem', cursor: 'pointer' }}></i>
@@ -91,7 +92,7 @@ export const RenderField = (props: renderFieldProps) => {
                 <div className={`field col-12 md:col-${props.mdCol}`}>
                     <div className="">
                         <div className="col">
-                            <label data-pr-tooltip="">{props.label}</label>
+                            <label className={`${props.labelClass}`} data-pr-tooltip="">{props.label}</label>
                             &nbsp;
                             <Tooltip target=".custom-target-icon" />
                             <i className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge" data-pr-tooltip={props.tooltip} data-pr-position="right" data-pr-my="left center-2" style={{ fontSize: '1rem', cursor: 'pointer' }}></i>
@@ -116,12 +117,26 @@ export const RenderField = (props: renderFieldProps) => {
                 <div className={`field col-12 md:col-${props.mdCol}`}>
                     <div className="">
                         <div className="col">
-                            <label data-pr-tooltip="">{props.label}</label>
+                            <label className={`${props.labelClass}`} data-pr-tooltip="">{props.label}</label>
                             &nbsp;
                             <Tooltip target=".custom-target-icon" />
                             <i className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge" data-pr-tooltip={props.tooltip} data-pr-position="right" data-pr-my="left center-2" style={{ fontSize: '1rem', cursor: 'pointer' }}></i>
                             <div>
-                                <InputNumber type="text" className={`w-full`} value={props.value || ''} readOnly={props.readonly} disabled={props.disabled} maxLength={50} minFractionDigits={2} maxFractionDigits={2} inputClassName="text-right" />
+                                <InputNumber 
+                                    type="text" 
+                                    className={`w-full ${props.errors[props.errorKey] ? 'p-invalid' : ''}`} 
+                                    value={props.value || ''} 
+                                    readOnly={props.readonly} 
+                                    disabled={props.disabled} 
+                                    maxLength={50} 
+                                    minFractionDigits={2} 
+                                    maxFractionDigits={2} 
+                                    inputClassName="text-right" 
+                                    onChange={(e: any) => {
+                                        props.onChange?.(e.value);
+                                    }}
+                                />
+                                {props.errors[props.errorKey] && <small className="p-error">{props.errorMessage}</small>}
                             </div>
                         </div>
                     </div>
@@ -132,7 +147,7 @@ export const RenderField = (props: renderFieldProps) => {
                 <div className={`field col-12 md:col-${props.mdCol}`}>
                     <div className="">
                         <div className="col">
-                            <label data-pr-tooltip="">{props.label}</label>
+                            <label className={`${props.labelClass}`} data-pr-tooltip="">{props.label}</label>
                             &nbsp;
                             <Tooltip target=".custom-target-icon" />
                             <i className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge" data-pr-tooltip={props.tooltip} data-pr-position="right" data-pr-my="left center-2" style={{ fontSize: '1rem', cursor: 'pointer' }}></i>
@@ -162,7 +177,7 @@ export const RenderField = (props: renderFieldProps) => {
                 <div className={`field col-12 md:col-${props.mdCol}`}>
                     <div className="">
                         <div className="col">
-                            <label data-pr-tooltip="">{props.label}</label>
+                            <label className={`${props.labelClass}`} data-pr-tooltip="">{props.label}</label>
                             &nbsp;
                             <Tooltip target=".custom-target-icon" />
                             <i className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge" data-pr-tooltip={props.tooltip} data-pr-position="right" data-pr-my="left center-2" style={{ fontSize: '1rem', cursor: 'pointer' }}></i>

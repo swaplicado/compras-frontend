@@ -24,7 +24,7 @@ import { getlAreas } from '@/app/(main)/utilities/documents/common/areaUtils';
 import { getlCurrencies } from '@/app/(main)/utilities/documents/common/currencyUtils';
 import { getlFiscalRegime } from '@/app/(main)/utilities/documents/common/fiscalRegimeUtils';
 import DateFormatter from '@/app/components/commons/formatDate';
-import { getlUrlFilesDps } from '@/app/(main)/utilities/documents/common/filesUtils';
+import { getlUrlFilesDps, getlFilesNames } from '@/app/(main)/utilities/documents/common/filesUtils';
 import invoices from "@/i18n/locales/es/documents/invoices";
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 
@@ -50,10 +50,14 @@ const RejectedNC = () => {
     const [lAreas, setLAreas] = useState<any[]>([]);
     const [lInvoices, setLInvoices] = useState<any[]>([]);
     const [loadingInvoices, setLoadingInvoices] = useState<boolean>(false);
-    const [lPaymentsExec, setLPaymentsExec] = useState<any[]>([]);
-    const [loadinglPaymentsExec, setLoadinglPaymentsExec] = useState<boolean>(false);
     const fileUploadRef = useRef<FileUpload>(null);
     const xmlUploadRef = useRef<FileUpload>(null);
+    
+    const fileEditAcceptRef = useRef<FileUpload>(null);
+    const [loadingFileNames, setLoadingFileNames] = useState<boolean>(false);
+    const [lFilesNames, setLFilesNames] = useState<any[]>([]);
+    const [lFilesToEdit, setLFilesToEdit] = useState<any[]>([]);
+
     const [isXmlValid, setIsXmlValid] = useState<boolean>(false);
     const [showing, setShowing] = useState<'body' | 'animationSuccess' | 'animationError'>('body');
     const [successTitle, setSuccessTitle] = useState<string>('');
@@ -78,7 +82,6 @@ const RejectedNC = () => {
     });
     const [loadingFiles, setLoadingFiles] = useState<boolean>(false);
     const [lFiles, setLFiles] = useState<any[]>([]);
-    const [lPaymentsExecDetails, setLPaymentsExecDetails] = useState<any[]>([]);
     const [isInReview, setIsReview] = useState<boolean>(false);
     const [lCurrencies, setLCurrencies] = useState<any[]>([]);
     const [lFiscalRegimes, setLFiscalRegimes] = useState<any[]>([]);
@@ -187,6 +190,41 @@ const RejectedNC = () => {
         return !Object.values(newErrors).some(Boolean)
     }
 
+    const handleEdit = async () => {
+        try {
+            setLoading(true);
+            const formData = new FormData();
+            const files = fileEditAcceptRef.current?.getFiles() || [];
+
+            files.forEach((file: string | Blob) => {
+                formData.append('files', file);
+            });
+
+            formData.append('file_ids', JSON.stringify(lFilesToEdit));
+            const route = '/transactions/documents/' + oNc.id + '/update-files/';
+            formData.append('route', route);
+            formData.append('user_id', oUser.oUser.id);
+
+            const response = await axios.post(constants.API_AXIOS_PATCH, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+
+            if (response.status === 200 || response.status === 201) {
+                await getLNc();
+                setSuccessTitle(t('dialog.animationSuccess.editTitle'));
+                setSuccessMessage(t('dialog.animationSuccess.editText'));
+                setShowing('animationSuccess');
+            } else {
+                new Error(`Error al editar la nota de crédito: ${response.statusText}`);
+            }
+        } catch (error: any) {
+            setErrorTitle(t('dialog.animationError.editTitle'));
+            setErrorMessage(error.response?.data?.error || t('dialog.animationError.editText'));
+        } finally {
+            setLoading(false);
+        }
+    }
+
     useEffect(() => {
         const fetch = async () => {
             setLoadingInvoices(true);
@@ -248,9 +286,10 @@ const RejectedNC = () => {
     const dialogFooterContent = () => {
         return (
             <>
-                {showing == 'body' && dialogMode == 'view' && (
+                {showing == 'body' && dialogMode == 'edit' && (
                     <div className="flex flex-column md:flex-row justify-content-between gap-2">
                         <Button label={tCommon('btnClose')} icon="bx bx-x" onClick={() => setDialogVisible(false)} severity="secondary" disabled={loading} />
+                        <Button label={tCommon('btnEdit')} icon="bx bx-like" onClick={() => handleEdit()} autoFocus disabled={loading} severity="success" />
                     </div>
                 )}
             </>
@@ -305,14 +344,9 @@ const RejectedNC = () => {
     }, [lInvoicesToReview])
 
     const handleDoubleClick = async (e: DataTableRowClickEvent) => {
-        if (oUser.isInternalUser) {
-            setIsReview(false);
-        } else {
-            setIsReview(false);
-        }
-
         setLoadingFiles(true);
-        setDialogMode('view');
+        setLoadingFileNames(true);
+        setDialogMode('edit');
         setIsXmlValid(true);
         setWithFooter(true);
         configNcData(e.data);
@@ -328,6 +362,12 @@ const RejectedNC = () => {
             showToast,
             document_id: e.data.id
         });
+        await getlFilesNames({
+            document_id: e.data.id,
+            setLFilesNames: setLFilesNames,
+            showToast: showToast,
+        });
+        setLoadingFileNames(false);
         setLoadingFiles(false);
     };
 
@@ -518,6 +558,10 @@ const RejectedNC = () => {
                         loadingFiles={loadingFiles}
                         isInReview={isInReview}
                         setFormErrors={setFormErrors}
+                        loadingFileNames={loadingFileNames}
+                        fileEditAcceptRef={fileEditAcceptRef}
+                        lFilesNames={lFilesNames}
+                        setLFilesToEdit={setLFilesToEdit}
                     />
                     <TableNc
                         lNc={lNc}
