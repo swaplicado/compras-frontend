@@ -51,6 +51,8 @@ interface TableInvoicesProps {
     withSearch?: boolean;
     withMounthFilter?: boolean;
     columnsProps?: columnsProps;
+    withBtnSendToUpoload?: boolean;
+    SendToUpoload?: () => void;
 }
 
 export const TableInvoices = ({
@@ -87,7 +89,9 @@ export const TableInvoices = ({
         authorization: {
             hidden: false
         }
-    }
+    },
+    withBtnSendToUpoload,
+    SendToUpoload
 }: TableInvoicesProps) => {
     // const [lDps, setLDps] = useState<any[]>([]);
     const [filters, setFilters] = useState<DataTableFilterMeta>({});
@@ -493,6 +497,8 @@ export const TableInvoices = ({
                 withBtnCleanFilter={withBtnCleanFilter}
                 withSearch={withSearch}
                 withMounthFilter={withMounthFilter}
+                withBtnSendToUpoload={withBtnSendToUpoload}
+                SendToUpoload={SendToUpoload}
             />
             <br />
             <DataTable

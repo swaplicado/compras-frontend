@@ -24,6 +24,8 @@ interface myToolbarPropps {
     withSearch?: boolean;
     withMounthFilter?: boolean;
     textBtnCreate?: string;
+    withBtnSendToUpoload?: boolean;
+    SendToUpoload?: () => void;
 }
 
 export const MyToolbar = ({
@@ -42,7 +44,9 @@ export const MyToolbar = ({
     withBtnCleanFilter = true,
     withSearch = true,
     withMounthFilter = true,
-    textBtnCreate
+    textBtnCreate,
+    withBtnSendToUpoload = false,
+    SendToUpoload
 }: myToolbarPropps) => {
     const { t } = useTranslation('invoices');
     const { t: tCommon } = useTranslation('common');
@@ -77,6 +81,18 @@ export const MyToolbar = ({
                                 }}
                             />
                         )}
+
+                        {withBtnSendToUpoload && (
+                            <Button
+                                icon="pi pi-reply"
+                                label={!isMobile ? 'Enviar a cargar' : ''}
+                                rounded
+                                onClick={() => {
+                                    SendToUpoload?.();
+                                }}
+                            />
+                        )}
+
                     </div>
 
                     {withMounthFilter && (
@@ -121,6 +137,9 @@ export const MyToolbar = ({
                     {withBtnSendAuth && 
                         <Button icon="pi pi-send" label={''} className="mr-2" rounded onClick={() => {setFlowAuthDialogVisible?.(true);}}/>
                     }
+                    {withBtnSendToUpoload && (
+                            <Button icon="pi pi-reply" label={''} rounded onClick={() => { SendToUpoload?.(); }}/>
+                    )}
                     <Button type="button" icon="pi pi-filter-slash" label={''} onClick={clearFilter1} tooltip={tCommon('tooltipCleanFilter')} tooltipOptions={{ position: 'left' }} />
                     <ReloadButton />
                 </div>
