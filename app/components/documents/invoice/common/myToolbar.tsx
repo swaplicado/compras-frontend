@@ -6,6 +6,7 @@ import { ReloadButton } from '@/app/components/commons/reloadButton';
 import { useTranslation } from 'react-i18next';
 import { Calendar } from 'primereact/calendar';
 import { addLocale } from 'primereact/api';
+import { Checkbox } from 'primereact/checkbox';
 
 interface myToolbarPropps {
     isMobile: boolean;
@@ -26,6 +27,9 @@ interface myToolbarPropps {
     textBtnCreate?: string;
     withBtnSendToUpoload?: boolean;
     SendToUpoload?: () => void;
+    withFilterProvider?: boolean;
+    handleFilterProvider?: () => void;
+    filterProvider?: boolean;
 }
 
 export const MyToolbar = ({
@@ -46,7 +50,10 @@ export const MyToolbar = ({
     withMounthFilter = true,
     textBtnCreate,
     withBtnSendToUpoload = false,
-    SendToUpoload
+    SendToUpoload,
+    withFilterProvider,
+    handleFilterProvider,
+    filterProvider = false
 }: myToolbarPropps) => {
     const { t } = useTranslation('invoices');
     const { t: tCommon } = useTranslation('common');
@@ -91,6 +98,21 @@ export const MyToolbar = ({
                                     SendToUpoload?.();
                                 }}
                             />
+                        )}
+
+                        { withFilterProvider && (
+                            <div className="">
+                                <Checkbox
+                                    inputId="filterProvider"
+                                    name="filterProvider"
+                                    value="filterProvider"
+                                    onChange={(e: any) => {
+                                        handleFilterProvider?.()
+                                    }}
+                                    checked={filterProvider}
+                                />
+                                <label htmlFor="filterProvider" className="ml-2">Ver mis proveedores</label>
+                            </div>
                         )}
 
                     </div>
