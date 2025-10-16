@@ -360,7 +360,7 @@ export const InvoiceDialog = ({
                             <Tooltip target=".custom-target-icon" />
                             <i className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge" data-pr-tooltip={props.tooltip} data-pr-position="right" data-pr-my="left center-2" style={{ fontSize: '1rem', cursor: 'pointer' }}></i>
                             <div>
-                                <InputTextarea id="comments" rows={3} cols={30} maxLength={500} autoResize className={`w-full`} value={props.value || ''} disabled />
+                                <InputTextarea id="comments" rows={2} cols={30} maxLength={500} className={`w-full opacity-60`} value={props.value || ''} readOnly />
                             </div>
                         </div>
                     </div>
@@ -1304,7 +1304,7 @@ export const InvoiceDialog = ({
                                     errorMessage: t('uploadDialog.areas.helperText')
                                 })}
 
-                            {lRefToValidateXml && lRefToValidateXml[0]?.id != 0 && lRefToValidateXml?.length > 1 && (
+                            {lRefToValidateXml && lRefToValidateXml[0]?.id != 0 && lRefToValidateXml?.length > 1 && dialogMode == 'create' && (
                                 <div className={`field col-12 md:col-6`}>
                                     <div className="formgrid grid">
                                         <div className="col">
@@ -1316,7 +1316,7 @@ export const InvoiceDialog = ({
                                                             type="text"
                                                             className={`w-full ${lRefErrors[index]?.error ? 'p-invalid' : ''}`}
                                                             value={lRefToValidateXml[index]?.amount}
-                                                            disabled={dialogMode === 'view' || dialogMode === 'review'}
+                                                            disabled={false}
                                                             maxLength={50}
                                                             minFractionDigits={2}
                                                             maxFractionDigits={2}
@@ -1328,6 +1328,68 @@ export const InvoiceDialog = ({
                                                         {lRefErrors[index]?.error && <small className="p-error">La cantidad no puede ser 0</small>}
                                                     </div>
                                                 </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            { lRefToValidateXml && lRefToValidateXml[0]?.id != 0 && dialogMode != 'create' && (
+                                <div className={`field col-12 md:col-12 mb-0 mt-2`}>
+                                    <div className="formgrid grid">
+                                        <div className="col">
+                                            {lRefToValidateXml.map((item: any, index: number) => (
+                                                <>
+                                                    { lRefToValidateXml.length > 1 && (
+                                                        <div className={`field col-12 md:col-12 mb-0`}>
+                                                            <h6>{t('uploadDialog.CeCo.title')} {item.reference}</h6>
+                                                        </div>
+                                                    )}
+                                                    <div className="grid" key={index}>
+                                                            {renderField({
+                                                                label: t('uploadDialog.CeCo.concept.label'),
+                                                                tooltip: t('uploadDialog.CeCo.concept.tooltip'),
+                                                                value: item.concepts,
+                                                                disabled: true,
+                                                                mdCol: 3,
+                                                                type: 'textArea',
+                                                                onChange: () => null,
+                                                                options: [],
+                                                                placeholder: t('uploadDialog.CeCo.concept.placeholder'),
+                                                                errorKey: '',
+                                                                errors: formErrors,
+                                                                errorMessage: ''
+                                                            })}
+                                                            {renderField({
+                                                                label: t('uploadDialog.CeCo.cost_profit_center.label'),
+                                                                tooltip: t('uploadDialog.CeCo.cost_profit_center.tooltip'),
+                                                                value: item.cost_profit_center,
+                                                                disabled: true,
+                                                                mdCol: 6,
+                                                                type: 'textArea',
+                                                                onChange: () => null,
+                                                                options: [],
+                                                                placeholder: t('uploadDialog.CeCo.cost_profit_center.placeholder'),
+                                                                errorKey: '',
+                                                                errors: formErrors,
+                                                                errorMessage: ''
+                                                            })}
+                                                            {renderField({
+                                                                label: t('uploadDialog.CeCo.amount.label'),
+                                                                tooltip: t('uploadDialog.CeCo.amount.tooltip'),
+                                                                value: item.amount,
+                                                                disabled: true,
+                                                                mdCol: 3,
+                                                                type: 'number',
+                                                                onChange: () => null,
+                                                                options: [],
+                                                                placeholder: t('uploadDialog.CeCo.amount.placeholder'),
+                                                                errorKey: '',
+                                                                errors: formErrors,
+                                                                errorMessage: ''
+                                                            })}
+                                                    </div>
+                                                </>
                                             ))}
                                         </div>
                                     </div>
@@ -1455,7 +1517,6 @@ export const InvoiceDialog = ({
                                                     rows={3}
                                                     cols={30}
                                                     maxLength={500}
-                                                    autoResize
                                                     disabled={true}
                                                     className={`w-full`}
                                                     value={oDps?.authz_authorization_notes}
@@ -1487,7 +1548,6 @@ export const InvoiceDialog = ({
                                                         rows={3}
                                                         cols={30}
                                                         maxLength={500}
-                                                        autoResize
                                                         disabled={oDps?.authz_authorization_code != 'PR' || !isReviewAuth}
                                                         className={`w-full ${authErrors.auth_notes ? 'p-invalid' : ''} `}
                                                         value={oDps?.auth_notes}

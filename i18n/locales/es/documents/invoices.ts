@@ -1,3 +1,5 @@
+import { Tooltip } from "chart.js";
+
 const invoices = {
     titleUpload: "Carga de facturas",
     titleAccepted: "Facturas aceptadas",
@@ -86,6 +88,24 @@ const invoices = {
             tooltip: "Selecciona una área para la factura.",
             tooltipReview: "Esta es el área a la que va dirigida la factura.",
         },
+        CeCo: {
+            title: "Referencia:",
+            concept: {
+                label: "Concepto/gasto:",
+                placeholder: "Concepto/gasto",
+                tooltip: "Concepto de gasto de la referencia."
+            },
+            cost_profit_center: {
+                label: "Centros costo:",
+                placeholder: "Centros costo",
+                tooltip: "Centros de costo de la referencia."
+            },
+            amount: {
+                label: "Monto:",
+                placeholder: "Monto",
+                tooltip: "Monto de la referencia."
+            },
+        },
         xml_file: {
             label: "XML: *",
             tooltip: "Archivo XML de la factura."
@@ -113,14 +133,14 @@ const invoices = {
             tooltipReview: "Este es el folio asociado a la factura.",
         },
         xml_date: {
-            label: "Fecha de emisión: *",
+            label: "Fecha emisión: *",
             placeholder: "Selecciona una fecha",
             helperText: "Por favor selecciona una fecha.",
             tooltip: "Selecciona la fecha de emisión de la factura.",
             tooltipReview: "Esta es la fecha de emisión asociada a la factura.",
         },
         payment_method: {
-            label: "Método de pago:",
+            label: "Método pago:",
             placeholder: "ingresa método de pago",
             helperText: "Por favor selecciona un método de pago.",
             tooltip: "Selecciona el método de pago de la factura.",
@@ -169,7 +189,7 @@ const invoices = {
             tooltipReview: "Esta es la moneda de la factura.",
         },
         exchange_rate: {
-            label: "Tipo de cambio:",
+            label: "Tipo cambio:",
             placeholder: "ingresa tipo de cambio",
             helperText: "Por favor ingresa el tipo de cambio.",
             tooltip: "Ingresa el tipo de cambio de la factura.",
@@ -204,7 +224,7 @@ const invoices = {
             tooltipReview: "Este es el monto de pago de la factura.",
         },
         aceptNotes: {
-            label: "Descripción de factura:",
+            label: "Descripción factura:",
             placeholder: "Ingresa la descripción de la factura",
             helperText: "Por favor ingresa la descripción.",
             tooltip: "Descripción de la factura.",
@@ -243,7 +263,7 @@ const invoices = {
             getCurrenciesError: "Error al obtener tipos de cambio."
         },
         rejectComments: {
-            label: "Comentarios de aprobación/rechazo:",
+            label: "Comentarios aprobación/rechazo:",
             placeholder: "Ingresa los comentarios.",
             helperText: "Por favor ingresa los comentarios de rechazo. Luego vuelve a presionar el botón de rechazar.",
             tooltip: "Ingresa los comentarios de rechazo si la factura es rechazada. Luego vuelve a presionar el botón de rechazar.",

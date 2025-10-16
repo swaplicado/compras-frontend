@@ -268,10 +268,9 @@ export const FieldsDps = ({
                                     rows={3}
                                     cols={30}
                                     maxLength={500}
-                                    autoResize
                                     className={`w-full ${props.errors?.[props.errorKey] ? 'p-invalid' : ''} `}
                                     value={props.value || ''}
-                                    disabled={props.disabled}
+                                    readOnly={props.disabled}
                                     onChange={(e) => props.onChange?.(e.target.value)}
                                 />
                                 {props.errors?.[props.errorKey] && <small className="p-error">{props.errorMessage}</small>}
@@ -650,7 +649,7 @@ export const FieldsDps = ({
                             errors: errors,
                             errorKey: 'rejectComments',
                             errorMessage: t('uploadDialog.rejectComments.helperText'),
-                            labelClass: 'font-bold opacity-100 text-blue-600'
+                            labelClass: 'font-bold text-blue-600'
                         })}
                     </div>
                 </>

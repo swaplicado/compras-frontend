@@ -34,7 +34,9 @@ export const getDps = async ( props: getDpsProps  ) => {
                         }
                         lReferences.push({
                             reference: data[i].references[j].reference,
-                            amount: data[i].references[j].amount
+                            amount: data[i].references[j].amount,
+                            concepts: data[i].references[j].concepts ? data[i].references[j].concepts.split(';').map((concept: any) => concept.trim() + ';\n').join('') : "N/D",
+                            cost_profit_center: data[i].references[j].cost_profit_center ? data[i].references[j].cost_profit_center .split(';').map((value: any) => value.trim() + ';\n').join('') : "N/D",
                         });
                     }   
                 }
