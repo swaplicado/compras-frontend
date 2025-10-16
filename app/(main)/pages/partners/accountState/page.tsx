@@ -55,6 +55,12 @@ const ConsultAccountState = () => {
     const appDateBodyTemplate = (rowData: any) => {
         return DateFormatter(rowData.app_date);
     };
+
+    const today = new Date();
+
+    const minDate = new Date();
+    minDate.setMonth(today.getMonth() - constants.MONTHS_BACK_LIMIT);
+    minDate.setDate(1)
 //*******FUNCIONES*******
     const showToast = (type: 'success' | 'info' | 'warn' | 'error' = 'error', message: string, summaryText = 'Error:') => {
         toast.current?.show({
@@ -185,7 +191,15 @@ const ConsultAccountState = () => {
                             />        
                         </div>
                         <div className="col-4">
-                            <Calendar value={dateFilter|| ''} onChange={(e: any) => setDateFilter(e.value)} view="month" dateFormat="MM/yy" locale="es"/>
+                            <Calendar 
+                                value={dateFilter|| ''} 
+                                onChange={(e: any) => setDateFilter(e.value)} 
+                                view="month" 
+                                dateFormat="MM/yy" 
+                                locale="es"
+                                minDate={minDate}
+                                maxDate={today}
+                                />
                         </div>
                     </div>
                     <DataTable
