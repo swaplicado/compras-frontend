@@ -161,7 +161,10 @@ const constants = {
     PARTNER_AUTH_REJECTED_ID: 3,
 
     //flows ids
-    FLOW_AUTH_PARTNER: 17
+    FLOW_AUTH_PARTNER: 17,
+
+    //Calendar
+    MONTHS_BACK_LIMIT: 6
 }
 
 export default constants;
