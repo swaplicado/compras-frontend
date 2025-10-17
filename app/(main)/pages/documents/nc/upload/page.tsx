@@ -272,7 +272,7 @@ const UploadNC = () => {
             if (oNc.partner.country == constants.COUNTRIES.MEXICO_ID) {
                 xmlFiles = xmlUploadRef.current?.getFiles() || [];
                 xmlFiles.forEach((file: string | Blob) => {
-                    formData.append('xmlFiles', file);
+                    formData.append('files', file);
                 });
             }
 
