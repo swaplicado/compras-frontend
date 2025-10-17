@@ -156,7 +156,7 @@ export const RenderField = (props: renderFieldProps) => {
                                     id="comments"
                                     rows={3}
                                     cols={30}
-                                    maxLength={500}
+                                    maxLength={100}
                                     autoResize
                                     className={`w-full ${props.errors[props.errorKey] ? 'p-invalid' : ''}`}
                                     value={props.value || ''}

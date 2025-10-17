@@ -238,7 +238,7 @@ export const FlowAuthorizationDialog = ({
                                         id="comments"
                                         rows={3}
                                         cols={30}
-                                        maxLength={500}
+                                        maxLength={100}
                                         autoResize
                                         className={`w-full`}
                                         value={comments}
