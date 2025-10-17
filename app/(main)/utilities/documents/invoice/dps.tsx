@@ -34,7 +34,9 @@ export const getDps = async ( props: getDpsProps  ) => {
                         }
                         lReferences.push({
                             reference: data[i].references[j].reference,
-                            amount: data[i].references[j].amount
+                            amount: data[i].references[j].amount,
+                            concepts: data[i].references[j].concepts ? data[i].references[j].concepts.split(';').map((concept: any) => concept.trim() + ';\n').join('') : "N/D",
+                            cost_profit_center: data[i].references[j].cost_profit_center ? data[i].references[j].cost_profit_center .split(';').map((value: any) => value.trim() + ';\n').join('') : "N/D",
                         });
                     }   
                 }
@@ -42,7 +44,7 @@ export const getDps = async ( props: getDpsProps  ) => {
                 const actors_of_action = data[i].flow_details?.last_turn_action?.actors_of_action;
                 const oPartner = {
                     id: data[i]?.partner.id,
-                    name: data[i]?.partner.trade_name,
+                    name: data[i]?.partner.full_name,
                     country: data[i]?.partner.country
                 }
 
@@ -59,7 +61,7 @@ export const getDps = async ( props: getDpsProps  ) => {
                     dateFormated: DateFormatter(data[i].date),
                     useCfdi: data[i].fiscal_use,
                     company: data[i].company.trade_name,
-                    provider_name: data[i].partner.trade_name,
+                    provider_name: data[i].partner.full_name,
                     oPartner: oPartner,
                     serie: data[i].series,
                     number: data[i].number,
@@ -85,7 +87,8 @@ export const getDps = async ( props: getDpsProps  ) => {
                     authz_authorization_code: data[i].authz_authorization_code ? data[i].authz_authorization_code : '',
                     authz_authorization_notes: data[i].authz_authorization_notes ? data[i].authz_authorization_notes : '',
                     is_payment_loc: data[i].is_payment_loc,
-                    payment_notes: data[i].payment_notes
+                    payment_notes: data[i].payment_notes,
+                    priority: data[i].priority,
                 });
             }
             props.setLDps(dps);

@@ -22,6 +22,7 @@ const constants = {
     ROUTE_GET_DPS_BY_AREA_ID: '/transactions/documents/list-doc-by-functional-area/',
     ROUTE_DOWNLOAD_FILES_DPS: '/transactions/documents/download-zip/',
     ROUTE_GET_DPS_LIMIT_DATES: '/transactions/upload-deadline/check-deadline/',
+    ROUTE_GET_PARTNERS: '/transactions/partners/',
     ROUTE_GET_COMPANIES: '/transactions/partners/list-companies/',
     ROUTE_GET_REFERENCES: '/transactions/references/by-partner/',
     ROUTE_GET_CURRENCIES: '/transactions/currencies/',
@@ -39,13 +40,31 @@ const constants = {
     ROUTE_GET_LIST_PARTNERS: '/transactions/partner-users/',
     ROUTE_GET_LIST_FILES_PAYMENTS: '/transactions/payments/signed-urls-payment/',
     ROUTE_GET_HISTORY_AUTH: '/transactions/get-history-authorization',
+    ROUTE_GET_PAYMENTS_EXEC: '/transactions/payments/select-payments-exec/',
+    ROUTE_GET_PAYMENTS_EXEC_DETAILS: '/transactions/documents/payments/',
+    ROUTE_GET_PAYMENTS_PLUS_DOC: '/transactions/payments/select-payments-exc-plus-document/',
+    ROUTE_GET_COUNTRIES: '/transactions/countries/',
+    ROUTE_GET_PARTNERS_TO_ACCEPT: '/transactions/partner-applying/filtered/',
+    ROUTE_GET_FILES_PARTNERS: '/transactions/partner-applying/signed-urls/',
+    ROUTE_GET_DOWNLOAD_FILES_PARTNERS: '/transactions/partner-applying/download-zip/',
+    ROUTE_GET_PARTNER_APPLYING_BY_UUID: '/transactions/partner-applying/by-uuid/',
+    ROUTE_GET_PARTNER_IN_AUTHORIZATION: '/transactions/applying-auth/',
+    ROUTE_GET_INVOICES_NC: '/transactions/documents/select-doc-uncovered/',
+    ROUTE_GET_INVOICES_TO_REVIEW_NC: '/transactions/documents/get-documents/',
 
     ROUTE_POST_VALIDATE_XML: '/transactions/documents/validate-xml/',
     ROUTE_POST_DOCUMENT_TRANSACTION: '/transactions/document-transaction/',
     ROUTE_POST_START_AUTHORIZATION: '/transactions/start-authorization/',
-
     ROUTE_POST_AUTHORIZE_RESOURCE: '/transactions/authorize-resource/',
     ROUTE_POST_REJECT_RESOURCE: '/transactions/reject-resource/',
+    ROUTE_POST_VALIDATE_XML_CRP: '/transactions/documents/validate-xml-rp/',
+    ROUTE_POST_CREATE_CRP: '/transactions/document-transaction-rp/',
+    ROUTE_POST_UPDATE_CRP: '/transactions/documents/update-payments/',
+    ROUTE_POST_CREATE_PARTNER: '/transactions/partner-applying/create/',
+    ROUTE_POST_UPDATE_PARTNER: '/transactions/partner-applying/edit/',
+    ROUTE_POST_ACCOUNT_STATES: '/transactions/partners/account-state/',
+    ROUTE_POST_VALIDATE_XML_NC: '/transactions/documents/validate-xml-nc/',
+    ROUTE_POST_NC: '/transactions/document-transaction-nc/',
 
     //Constantes de estados de las facturas
     REVIEW_ACCEPT: 'O',
@@ -55,7 +74,6 @@ const constants = {
     REVIEW_REJECT_ID: 8,
     REVIEW_PROCESS_ID: 2,
     REVIEW_PENDING_ID: 1,
-    
 
     //Constantes de datatables
     TABLE_ROWS: [10, 25, 50],
@@ -77,6 +95,7 @@ const constants = {
     allowedExtensions: ['application/pdf', 'text/xml', 'image/png', 'image/jpeg', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
     allowedExtensionsNames: 'application/pdf, text/xml, image/png, image/jpeg, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     maxUnitFile: 5 * 1024 * 1024,
+    maxUnitFileForHuman: '5 MB',
 
     //catalogo de regimen fiscal
     CAT_FISCAL_REGIME: [
@@ -105,6 +124,8 @@ const constants = {
     //Tipo de documento
     DOC_TYPE_INVOICE: 41,
     DOC_TYPE_OC: 2,
+    DOC_TYPE_CRP: 51,
+    DOC_TYPE_NC: 46,
 
     //Clase de transacciòn
     TRANSACTION_CLASS_COMPRAS: 1,
@@ -123,6 +144,7 @@ const constants = {
     //tipo de recurso en autorizaciones
     RESOURCE_TYPE_PUR_INVOICE: 4,
     RESOURCE_TYPE_PAYMENTS: 11,
+    RESOURCE_TYPE_PROVIDER: 21,
 
     //estatus de pagos
     PAYMENT_STATUS_NEW_ID: 1,
@@ -133,6 +155,16 @@ const constants = {
     PAYMENT_STATUS_NOTIFIED_ID: 6,
     PAYMENT_STATUS_COMP_ID: 7,
     PAYMENT_STATUS_CANCELED_ID: 9,
+
+    //estatus auth de proveedores
+    PARTNER_AUTH_NEW_ID: 1,
+    PARTNER_AUTH_REJECTED_ID: 3,
+
+    //flows ids
+    FLOW_AUTH_PARTNER: 17,
+
+    //Calendar
+    MONTHS_BACK_LIMIT: 6
 }
 
 export default constants;

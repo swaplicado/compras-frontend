@@ -17,13 +17,16 @@ import { Button } from "primereact/button";
 import { MyToolbar } from '@/app/components/documents/invoice/common/myToolbar';
 import { Card } from 'primereact/card';
 import DateFormatter from '@/app/components/commons/formatDate';
+import {getFunctionalArea, getOUser} from '@/app/(main)/utilities/user/common/userUtilities'
 
 const CatalogPartners = () => {
     const [loading, setLoading] = useState(true);
     const [lPartners, setLPartners] = useState<any[]>([]);
+    const [filterProvider, setFilterProvider] = useState<boolean>(false);
     const toast = useRef<Toast>(null);
     const [filters, setFilters] = useState<DataTableFilterMeta>({});
     const [globalFilterValue, setGlobalFilterValue] = useState('');
+    const [oUser, setOUser] = useState<any>(null);
     const { t } = useTranslation('catalogPartners');
     const { t: tCommon } = useTranslation('common');
     const isMobile = useIsMobile();
@@ -105,6 +108,47 @@ const CatalogPartners = () => {
         setGlobalFilterValue(value);
     };
 
+    const handleFilterProvider = async () => {
+        try {
+            setLoading(true);
+            const filter = !filterProvider;
+            setFilterProvider(!filterProvider);
+
+            const route = constants.ROUTE_GET_LIST_PARTNERS;
+
+            const response = await axios.get(constants.API_AXIOS_GET, {
+                params: {
+                    route: route,
+                    my_partner: filter ? true : false,
+                    user_id: oUser.oUser.id
+                }
+            });
+
+            if (response.status === 200) {
+                const data = response.data.data;
+                let partners: any[] = [];
+                for (let i = 0; i < data.length; i++) {
+                    partners.push({
+                        id: data[i].user,
+                        last_login_local: data[i].last_login_local,
+                        last_login_localFormatted: data[i].last_login_local ? DateFormatter(data[i].last_login_local) : '',
+                        email: data[i].email,
+                        full_name: data[i].full_name,
+                        is_enabled: data[i].is_enabled,
+                        is_enabledFormatted: data[i].is_enabled ? tCommon('active') : tCommon('inactive')
+                    })
+                }
+                setLPartners(partners);
+            } else {
+                throw new Error(`Error al obtener los proveedores: ${response.statusText}`);
+            }
+        } catch (error: any) {
+            
+        } finally {
+            setLoading(false);
+        }
+    }
+
 //*******OTROS*******
     const headerCard = (
         <div
@@ -135,6 +179,8 @@ const CatalogPartners = () => {
 
 //*******INIT*******
     useEffect(() => {
+        const oUser = getOUser();
+        setOUser(oUser);
         initFilters();
         getlPartners();
     }, []);
@@ -156,6 +202,9 @@ const CatalogPartners = () => {
                         withBtnCleanFilter={false}
                         withSearch={true}
                         withMounthFilter={false}
+                        withFilterProvider={true}
+                        filterProvider={filterProvider}
+                        handleFilterProvider={handleFilterProvider}
                     />
                     <br />
                     <DataTable
@@ -172,13 +221,7 @@ const CatalogPartners = () => {
                         scrollable
                         scrollHeight="40rem"
                         selectionMode="single"
-                        // selection={selectedRow}
-                        // onSelectionChange={(e) => setSelectedRow?.(e.value)}
-                        // onRowClick={(e) => (handleRowClick?.(e))}
-                        // onRowDoubleClick={(e) => (handleDoubleClick?.(e))}
                         metaKeySelection={false}
-                        // sortField="full_name"
-                        // sortOrder={1}
                         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                         currentPageReportTemplate={tCommon('datatable.currentPageReportTemplate')}
                         resizableColumns

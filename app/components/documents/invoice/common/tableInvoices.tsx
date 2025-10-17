@@ -51,6 +51,8 @@ interface TableInvoicesProps {
     withSearch?: boolean;
     withMounthFilter?: boolean;
     columnsProps?: columnsProps;
+    withBtnSendToUpoload?: boolean;
+    SendToUpoload?: () => void;
 }
 
 export const TableInvoices = ({
@@ -87,7 +89,9 @@ export const TableInvoices = ({
         authorization: {
             hidden: false
         }
-    }
+    },
+    withBtnSendToUpoload,
+    SendToUpoload
 }: TableInvoicesProps) => {
     // const [lDps, setLDps] = useState<any[]>([]);
     const [filters, setFilters] = useState<DataTableFilterMeta>({});
@@ -99,6 +103,10 @@ export const TableInvoices = ({
     const { t: tCommon } = useTranslation('common');
     const isMobile = useIsMobile();
     const [dpsDateFilter, setDpsDateFilter] = useState<any>(null);
+    const [multiSortMeta, setMultiSortMeta] = useState([
+        { field: 'priority', order: -1 as -1 }, // 1 = ascendente, -1 = descendente
+        { field: 'date', order: -1 as -1 }
+    ]);
 
     const getlCompanies = async () => {
         try {
@@ -130,7 +138,7 @@ export const TableInvoices = ({
                     lCompaniesFilter.push({
                         id: item.id,
                         external_id: item.external_id,
-                        name: item.trade_name
+                        name: item.full_name
                     });
                 }
 
@@ -203,7 +211,7 @@ export const TableInvoices = ({
             });
 
             if (response.status == 200) {
-                getDps(getDpsParams);
+                await getDps(getDpsParams);
             } else {
                 throw new Error(`Error al eliminar la factura: ${response.statusText}`);
             }
@@ -365,6 +373,17 @@ export const TableInvoices = ({
         );
     };
 
+    const priorityTemplate = (rowData: any) => {
+        return (
+            <div className="flex justify-content-center align-items-center">
+                { rowData.priority ? 
+                    <i className="pi pi-exclamation-circle text-red-500" ></i>
+                : 
+                    <i className="pi pi-exclamation-circle text-gray-500"></i>}
+            </div>
+        );
+    };
+
     const op = useRef<any>(null);
     const actorsOfActionBody = (rowData: any) => {
         const lActors = rowData?.actors_of_action ? JSON.parse(rowData.actors_of_action) : [{full_name: 'No hay actores'}];
@@ -426,10 +445,10 @@ export const TableInvoices = ({
             setLoading?.(true);
             if (params) {
                 await getDps(params);
+                setTimeout(() => {
+                    setLoading?.(false);
+                }, 5000);
             }
-            setTimeout(() => {
-                setLoading?.(false);
-            }, 5000);
             // setLoading?.(false);
         }
         if (withMounthFilter) {
@@ -478,6 +497,8 @@ export const TableInvoices = ({
                 withBtnCleanFilter={withBtnCleanFilter}
                 withSearch={withSearch}
                 withMounthFilter={withMounthFilter}
+                withBtnSendToUpoload={withBtnSendToUpoload}
+                SendToUpoload={SendToUpoload}
             />
             <br />
             <DataTable
@@ -500,8 +521,10 @@ export const TableInvoices = ({
                 onRowClick={(e) => (handleRowClick?.(e))}
                 onRowDoubleClick={(e) => (handleDoubleClick?.(e))}
                 metaKeySelection={false}
-                sortField="date"
-                sortOrder={-1}
+                sortMode="multiple"
+                multiSortMeta={multiSortMeta}
+                // sortField="priority"
+                // sortOrder={-1}
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                 currentPageReportTemplate={t('invoicesTable.currentPageReportTemplate')}
                 resizableColumns
@@ -529,6 +552,7 @@ export const TableInvoices = ({
                 <Column field="payment_notes" header="payment_notes" hidden />
                 <Column field="lReferences" header="lReferences" hidden />
                 <Column field="oPartner" header="oPartner" hidden />
+                <Column field="priority" header="Prioridad" body={priorityTemplate} footer="Prioridad" sortable />
                 <Column field="company" header={t('invoicesTable.columns.company')} footer={t('invoicesTable.columns.company')} sortable filter showFilterMatchModes={false} filterElement={companyFilterTemplate} filterApply={<></>} filterClear={<></>} />
                 <Column
                     field="provider_name"

@@ -6,6 +6,7 @@ import { ReloadButton } from '@/app/components/commons/reloadButton';
 import { useTranslation } from 'react-i18next';
 import { Calendar } from 'primereact/calendar';
 import { addLocale } from 'primereact/api';
+import { Checkbox } from 'primereact/checkbox';
 
 interface myToolbarPropps {
     isMobile: boolean;
@@ -23,6 +24,12 @@ interface myToolbarPropps {
     withBtnCleanFilter?: boolean;
     withSearch?: boolean;
     withMounthFilter?: boolean;
+    textBtnCreate?: string;
+    withBtnSendToUpoload?: boolean;
+    SendToUpoload?: () => void;
+    withFilterProvider?: boolean;
+    handleFilterProvider?: () => void;
+    filterProvider?: boolean;
 }
 
 export const MyToolbar = ({
@@ -40,7 +47,13 @@ export const MyToolbar = ({
     withBtnSendAuth = false,
     withBtnCleanFilter = true,
     withSearch = true,
-    withMounthFilter = true
+    withMounthFilter = true,
+    textBtnCreate,
+    withBtnSendToUpoload = false,
+    SendToUpoload,
+    withFilterProvider,
+    handleFilterProvider,
+    filterProvider = false
 }: myToolbarPropps) => {
     const { t } = useTranslation('invoices');
     const { t: tCommon } = useTranslation('common');
@@ -55,7 +68,7 @@ export const MyToolbar = ({
                         {withBtnCreate && (
                             <Button
                                 icon="pi pi-plus"
-                                label={!isMobile ? t('btnOpenDialogUpload') : ''}
+                                label={!isMobile ? ( textBtnCreate ? textBtnCreate : t('btnOpenDialogUpload')) : ''}
                                 rounded
                                 disabled={disabledUpload}
                                 onClick={() => {
@@ -75,6 +88,33 @@ export const MyToolbar = ({
                                 }}
                             />
                         )}
+
+                        {withBtnSendToUpoload && (
+                            <Button
+                                icon="pi pi-reply"
+                                label={!isMobile ? 'Enviar a cargar' : ''}
+                                rounded
+                                onClick={() => {
+                                    SendToUpoload?.();
+                                }}
+                            />
+                        )}
+
+                        { withFilterProvider && (
+                            <div className="">
+                                <Checkbox
+                                    inputId="filterProvider"
+                                    name="filterProvider"
+                                    value="filterProvider"
+                                    onChange={(e: any) => {
+                                        handleFilterProvider?.()
+                                    }}
+                                    checked={filterProvider}
+                                />
+                                <label htmlFor="filterProvider" className="ml-2">Ver mis proveedores</label>
+                            </div>
+                        )}
+
                     </div>
 
                     {withMounthFilter && (
@@ -119,6 +159,9 @@ export const MyToolbar = ({
                     {withBtnSendAuth && 
                         <Button icon="pi pi-send" label={''} className="mr-2" rounded onClick={() => {setFlowAuthDialogVisible?.(true);}}/>
                     }
+                    {withBtnSendToUpoload && (
+                            <Button icon="pi pi-reply" label={''} rounded onClick={() => { SendToUpoload?.(); }}/>
+                    )}
                     <Button type="button" icon="pi pi-filter-slash" label={''} onClick={clearFilter1} tooltip={tCommon('tooltipCleanFilter')} tooltipOptions={{ position: 'left' }} />
                     <ReloadButton />
                 </div>

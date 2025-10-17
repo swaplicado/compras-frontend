@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { FileUpload } from 'primereact/fileupload';
 import { Checkbox } from "primereact/checkbox";
 
-interface FieldsEditAcceptance {
+interface FieldsEditAcceptanceProps {
     fileUploadRef: React.RefObject<FileUpload>;
     totalSize: number;
     setTotalSize: React.Dispatch<React.SetStateAction<number>>;
@@ -26,7 +26,7 @@ export const FieldsEditAcceptance = ({
     message,
     lFiles,
     setLFilesToEdit
-}: FieldsEditAcceptance) => {
+}: FieldsEditAcceptanceProps) => {
     const { t } = useTranslation('invoices');
     const { t: tAuth } = useTranslation('authorizations');
     const { t: tCommon } = useTranslation('common');
@@ -84,7 +84,7 @@ export const FieldsEditAcceptance = ({
             <div className="field col-12 md:col-12">
                 <div className="formgrid grid">
                     <div className="col">
-                        <label>archivos</label>
+                        <label>Archivos</label>
                         &nbsp;
                         <Tooltip target=".custom-target-icon" />
                         <i

@@ -176,7 +176,7 @@ const Upload = () => {
                 for (const item of data) {
                     lProviders.push({
                         id: item.id,
-                        name: item.trade_name,
+                        name: item.full_name,
                         country: item.country
                     });
                 }
@@ -222,7 +222,7 @@ const Upload = () => {
                     lCompaniesFilter.push({
                         id: item.id,
                         external_id: item.external_id,
-                        name: item.trade_name
+                        name: item.full_name
                     });
                 }
                 setLCompanies(lCompanies);
@@ -518,7 +518,7 @@ const Upload = () => {
                 groups = userGroups;
             }
 
-            if (groups.includes(constants.ROLES.COMPRADOR_ID)) {
+            if (groups.includes(constants.ROLES.COMPRADOR_ID) || groups.includes(constants.ROLES.CONTADOR_ID)) {
                 const route = constants.ROUTE_GET_DPS_AUTHORIZATION;
                 const params = {
                     route: route,

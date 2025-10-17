@@ -26,8 +26,10 @@ import { XmlWarnings } from '@/app/components/documents/invoice/common/xmlWarnin
 import { FieldsEditAcceptance } from '@/app/components/documents/invoice/fieldsEditAcceptance';
 import { HistoryAuth } from '@/app/components/documents/invoice/historyAuth';
 import { ToggleButton } from 'primereact/togglebutton';
-import { Checkbox } from "primereact/checkbox";
+import { Checkbox } from 'primereact/checkbox';
 import { MultiSelect } from 'primereact/multiselect';
+import { btnScroll } from '@/app/(main)/utilities/commons/useScrollDetection';
+import { useIntersectionObserver } from 'primereact/hooks';
 
 interface InvoiceDialogProps {
     visible: boolean;
@@ -62,7 +64,7 @@ interface InvoiceDialogProps {
     userExternalId?: any;
     isEdit?: boolean;
     typeEdit?: 'acceptance' | 'authorization';
-    isReviewAuth?: boolean,
+    isReviewAuth?: boolean;
     handleReviewAndSendAuth?: () => Promise<any>;
     withHistoryAuth?: boolean;
     getHistoryAuth?: () => Promise<any>;
@@ -85,8 +87,8 @@ interface renderFieldProps {
     errorKey: string;
     errors?: any;
     errorMessage?: string;
-    renderLeftItem?: { item: React.ReactNode, mdCol: number};
-    renderRightItem?: { item: React.ReactNode, mdCol: number};
+    renderLeftItem?: { item: React.ReactNode; mdCol: number };
+    renderRightItem?: { item: React.ReactNode; mdCol: number };
 }
 
 export const InvoiceDialog = ({
@@ -129,7 +131,7 @@ export const InvoiceDialog = ({
     loadingHistoryAuth,
     lHistoryAuth = [],
     reviewErrors,
-    setReviewErrors,
+    setReviewErrors
 }: InvoiceDialogProps) => {
     const [oCompany, setOCompany] = useState<any>(null);
     const [oProvider, setOProvider] = useState<any>(null);
@@ -202,28 +204,39 @@ export const InvoiceDialog = ({
     const [lFilesToEdit, setLFilesToEdit] = useState<any[]>([]);
     const [filterReferences, setFilterReferences] = useState<boolean>(false);
     const [lRefToValidateXml, setLRefToValidateXml] = useState<any[]>([]);
+    const [lRefErrors, setLRefErrors] = useState<any[]>([]);
+
+    //const para el boton de scroll al final
+    const [elementRef, setElementRef] = useState<HTMLDivElement | null>(null);
+    const visibleElement = useIntersectionObserver({ current: elementRef });
+    const dialogContentRef = useRef<HTMLDivElement>(null);
+    const btnToScroll = btnScroll(dialogContentRef, visibleElement);
 
     const renderField = (props: renderFieldProps) => (
         <>
             {props.type == 'dropdown' && (
                 <>
-                    { props.renderLeftItem && (
+                    {props.renderLeftItem && (
                         <div className={`field col-12 md:col-${props.renderLeftItem.mdCol}`}>
-                            <div className="formgrid grid">
-                                <div className="col">
-                                    {props.renderLeftItem.item}
-                                </div>
+                            <div className="">
+                                <div className="col">{props.renderLeftItem.item}</div>
                             </div>
                         </div>
                     )}
 
                     <div className={`field col-12 md:col-${props.mdCol}`}>
-                        <div className="formgrid grid">
+                        <div className="">
                             <div className="col">
                                 <label data-pr-tooltip="">{props.label}</label>
                                 &nbsp;
                                 <Tooltip target=".custom-target-icon" />
-                                <i className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge" data-pr-tooltip={props.tooltip} data-pr-position="right" data-pr-my="left center-2" style={{ fontSize: '1rem', cursor: 'pointer' }}></i>
+                                <i
+                                    className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
+                                    data-pr-tooltip={props.tooltip}
+                                    data-pr-position="right"
+                                    data-pr-my="left center-2"
+                                    style={{ fontSize: '1rem', cursor: 'pointer' }}
+                                ></i>
                                 <div>
                                     <Dropdown
                                         value={props.value}
@@ -242,12 +255,10 @@ export const InvoiceDialog = ({
                         </div>
                     </div>
 
-                    { props.renderRightItem && (
+                    {props.renderRightItem && (
                         <div className={`field col-12 md:col-${props.renderRightItem.mdCol}`}>
-                            <div className="formgrid grid">
-                                <div className="col">
-                                    {props.renderRightItem.item}
-                                </div>
+                            <div className="">
+                                <div className="col">{props.renderRightItem.item}</div>
                             </div>
                         </div>
                     )}
@@ -255,27 +266,27 @@ export const InvoiceDialog = ({
             )}
             {props.type == 'multiselect' && (
                 <>
-                    { props.renderLeftItem && (
+                    {props.renderLeftItem && (
                         <div className={`field col-12 md:col-${props.renderLeftItem.mdCol}`}>
-                            <div className="formgrid grid">
-                                <div className="col">
-                                    {props.renderLeftItem.item}
-                                </div>
+                            <div className="">
+                                <div className="col">{props.renderLeftItem.item}</div>
                             </div>
                         </div>
                     )}
 
                     <div className={`field col-12 md:col-${props.mdCol}`}>
-                        <div className="formgrid grid">
+                        <div className="">
                             <div className="col">
-                                <div style={{ display: 'flex', alignItems: 'center'}}>
+                                <div style={{ display: 'flex', alignItems: 'center' }}>
                                     <label style={{ margin: 0, marginRight: '0.5rem' }}>{props.label}</label>
                                     <Tooltip target=".custom-target-icon" />
-                                    <i className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge" 
-                                    data-pr-tooltip={props.tooltip} 
-                                    data-pr-position="right" 
-                                    data-pr-my="left center-2" 
-                                    style={{ fontSize: '1rem', cursor: 'pointer' }}></i>
+                                    <i
+                                        className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
+                                        data-pr-tooltip={props.tooltip}
+                                        data-pr-position="right"
+                                        data-pr-my="left center-2"
+                                        style={{ fontSize: '1rem', cursor: 'pointer' }}
+                                    ></i>
                                 </div>
                                 <div style={{ width: '100%', position: 'relative' }}>
                                     <MultiSelect
@@ -298,12 +309,10 @@ export const InvoiceDialog = ({
                         </div>
                     </div>
 
-                    { props.renderRightItem && (
+                    {props.renderRightItem && (
                         <div className={`field col-12 md:col-${props.renderRightItem.mdCol}`}>
-                            <div className="formgrid grid">
-                                <div className="col">
-                                    {props.renderRightItem.item}
-                                </div>
+                            <div className="">
+                                <div className="col">{props.renderRightItem.item}</div>
                             </div>
                         </div>
                     )}
@@ -311,7 +320,7 @@ export const InvoiceDialog = ({
             )}
             {props.type == 'text' && (
                 <div className={`field col-12 md:col-${props.mdCol}`}>
-                    <div className="formgrid grid">
+                    <div className="">
                         <div className="col">
                             <label data-pr-tooltip="">{props.label}</label>
                             &nbsp;
@@ -328,7 +337,7 @@ export const InvoiceDialog = ({
 
             {props.type == 'number' && (
                 <div className={`field col-12 md:col-${props.mdCol}`}>
-                    <div className="formgrid grid">
+                    <div className="">
                         <div className="col">
                             <label data-pr-tooltip="">{props.label}</label>
                             &nbsp;
@@ -344,14 +353,14 @@ export const InvoiceDialog = ({
 
             {props.type == 'textArea' && (
                 <div className={`field col-12 md:col-${props.mdCol}`}>
-                    <div className="formgrid grid">
+                    <div className="">
                         <div className="col">
                             <label data-pr-tooltip="">{props.label}</label>
                             &nbsp;
                             <Tooltip target=".custom-target-icon" />
                             <i className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge" data-pr-tooltip={props.tooltip} data-pr-position="right" data-pr-my="left center-2" style={{ fontSize: '1rem', cursor: 'pointer' }}></i>
                             <div>
-                                <InputTextarea id="comments" rows={3} cols={30} maxLength={500} autoResize className={`w-full`} value={props.value || ''} disabled />
+                                <InputTextarea id="comments" rows={2} cols={30} maxLength={100} className={`w-full opacity-60`} value={props.value || ''} readOnly />
                             </div>
                         </div>
                     </div>
@@ -422,7 +431,7 @@ export const InvoiceDialog = ({
         setOArea(null);
         setOCompany(oCompany);
         setFormErrors((prev: any) => ({ ...prev, company: false }));
-        
+
         const result = await getlReferences(oCompany?.id, oProvider?.id);
         if (oCompany) {
             await getlAreas?.(oCompany.external_id);
@@ -451,33 +460,33 @@ export const InvoiceDialog = ({
         if (newValue && newValue > 999999999) {
             newValue = 999999999;
         }
-        
-        setLRefToValidateXml(prev => 
-            prev.map((item, i) => 
-                i == index ? { ...item, amount: newValue } : item
-            )
-        );
+
+        setLRefToValidateXml((prev) => prev.map((item, i) => (i == index ? { ...item, amount: newValue } : item)));
     };
 
     const handleSelectReference = async (oReference: any) => {
-        const noReference = oReference?.some((ref: any) => 
-            ref.id == 0
-        );
+        const noReference = oReference?.some((ref: any) => ref.id == 0);
         let lref = [];
+        let lrefErrors = [];
         if (noReference) {
             setOReference([lReferences[0]]);
             setLRefToValidateXml([lReferences[0]]);
-        }else {
+        } else {
             setOReference(oReference);
             for (let i = 0; i < oReference.length; i++) {
                 lref.push({
                     id: oReference[i].id,
                     amount: 0,
                     reference: oReference[i].name,
-                    functional_area_id: oReference[i].functional_area_id,
+                    functional_area_id: oReference[i].functional_area_id
+                });
+                lrefErrors.push({
+                    id: oReference[i].id,
+                    error: false
                 });
             }
             setLRefToValidateXml(lref);
+            setLRefErrors(lrefErrors);
         }
 
         setOArea(null);
@@ -525,7 +534,8 @@ export const InvoiceDialog = ({
                     user_id: userId,
                     payment_definition: oDps.payment_definition,
                     is_payment_loc: oDps.is_payment_loc,
-                    payment_notes: oDps.payment_notes
+                    payment_notes: oDps.payment_notes,
+                    priority: oDps.priority ? oDps.priority : false
                 }
             });
 
@@ -545,37 +555,57 @@ export const InvoiceDialog = ({
         }
     };
 
+    const validateLRefErros = () => {
+        if (lRefToValidateXml.length == 1) {
+            return true;
+        }
+        for (let i = 0; i < lRefToValidateXml.length; i++) {
+            const ref = lRefToValidateXml[i];
+            if (ref.amount == 0) {
+                setLRefErrors((prev) => prev.map((item, index) => (index == i ? { ...item, error: true } : item)));
+                return false;
+            }
+        }
+
+        return true;
+    };
+
     const handleSubmit = async () => {
         if (!validate()) return;
+
+        if (!validateLRefErros) return;
 
         try {
             setLoading?.(true);
 
             const formData = new FormData();
             const files = fileUploadRef.current?.getFiles() || [];
-            const xmlFiles = xmlUploadRef.current?.getFiles() || [];
+            
+            let xmlFiles: any[] = [];
+            let xmlBaseName: any;
+            let xmlName: any;
 
-            const xmlBaseName = xmlFiles[0].name.replace(/\.[^/.]+$/, "");
-            const xmlName = xmlFiles[0].name;
-
-            const hasSameFile = files.some(file => 
-                file.name === xmlName
-            );
-
-            if (hasSameFile) {
-                showToast?.('error', t('uploadDialog.files.hasSameFile', { xmlName }));
-                return;
-            }
-
-            const hasMatchingPDF = files.some(file => {
-                const isPDF = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
-                const fileBaseName = file.name.replace(/\.[^/.]+$/, "");
-                return isPDF && fileBaseName === xmlBaseName;
-            });
-        
-            if (!hasMatchingPDF) {
-                showToast?.('error', t('uploadDialog.files.hasMatchingPDF', { xmlBaseName }));
-                return;
+            if (oProvider.country == constants.COUNTRIES.MEXICO_ID) {
+                xmlFiles = xmlUploadRef.current?.getFiles() || [];
+                xmlBaseName = xmlFiles[0].name.replace(/\.[^/.]+$/, '');
+                xmlName = xmlFiles[0].name;
+                const hasSameFile = files.some((file) => file.name === xmlName);
+    
+                if (hasSameFile) {
+                    showToast?.('error', t('uploadDialog.files.hasSameFile', { xmlName }));
+                    return;
+                }
+    
+                const hasMatchingPDF = files.some((file) => {
+                    const isPDF = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+                    const fileBaseName = file.name.replace(/\.[^/.]+$/, '');
+                    return isPDF && fileBaseName === xmlBaseName;
+                });
+    
+                if (!hasMatchingPDF) {
+                    showToast?.('error', t('uploadDialog.files.hasMatchingPDF', { xmlBaseName }));
+                    return;
+                }
             }
 
 
@@ -607,6 +637,7 @@ export const InvoiceDialog = ({
             formData.append('is_internal_user', oValidUser.isInternalUser ? 'True' : 'False');
 
             const splitFolio = oDps.folio.split('-');
+            const serie = splitFolio.length > 1 ? splitFolio[0] : '';
             const number = splitFolio.length > 1 ? splitFolio[1] : splitFolio[0];
 
             const area_id = lRefToValidateXml[0].id == 0 ? oArea?.id : lRefToValidateXml[0].functional_area_id;
@@ -615,7 +646,7 @@ export const InvoiceDialog = ({
                 transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
                 document_type: constants.DOC_TYPE_INVOICE,
                 partner: oProvider?.id || '',
-                series: oDps.serie,
+                series: serie,
                 number: number,
                 date: moment(oDps.date).format('YYYY-MM-DD'),
                 currency: oDps.oCurrency?.id || '',
@@ -623,8 +654,8 @@ export const InvoiceDialog = ({
                 exchange_rate: oDps.exchange_rate ? oDps.exchange_rate : 0,
                 payment_method: oDps.oPaymentMethod?.id || '',
                 fiscal_use: oDps.oUseCfdi?.id || '',
-                issuer_tax_regime: oDps.oIssuer_tax_regime?.id || '',
-                receiver_tax_regime: oDps.oReceiver_tax_regime?.id || '',
+                issuer_tax_regime: oDps.oIssuer_tax_regime ? oDps.oIssuer_tax_regime.id : '',
+                receiver_tax_regime: oDps.oReceiver_tax_regime ? oDps.oReceiver_tax_regime.id : '',
                 uuid: oDps.uuid || '',
                 functional_area: area_id
             };
@@ -704,7 +735,7 @@ export const InvoiceDialog = ({
         setLoadingValidateXml(false);
         setIsXmlValid(false);
         setResultUpload('waiting');
-        
+
         if (!oValidUser.isInternalUser) {
             setOProvider(oValidUser.oProvider);
         }
@@ -833,32 +864,42 @@ export const InvoiceDialog = ({
     }, [oProvider, dialogMode]);
 
     const footerCreate = resultUpload === 'waiting' && (
-        <div className="flex flex-column md:flex-row justify-content-between gap-2">
-            <Button label={tCommon('btnClose')} icon="pi pi-times" onClick={onHide} severity="secondary" disabled={loading} className="order-1 md:order-0" />
-            <Button
-                label={tCommon('btnUpload')}
-                icon="pi pi-upload"
-                onClick={handleSubmit}
-                autoFocus
-                disabled={loading || (oProvider ? (oProvider.country == constants.COUNTRIES.MEXICO_ID ? !isXmlValid : false) : true)}
-                className="order-0 md:order-1"
-            />
-        </div>
+        <>
+            {btnToScroll}
+            <div className="flex flex-column md:flex-row justify-content-between gap-2">
+                <Button label={tCommon('btnClose')} icon="pi pi-times" onClick={onHide} severity="secondary" disabled={loading} className="order-1 md:order-0" />
+                <Button
+                    label={tCommon('btnUpload')}
+                    icon="pi pi-upload"
+                    onClick={handleSubmit}
+                    autoFocus
+                    disabled={loading || (oProvider ? (oProvider.country == constants.COUNTRIES.MEXICO_ID ? !isXmlValid : false) : true)}
+                    className="order-0 md:order-1"
+                />
+            </div>
+        </>
     );
 
-    const footerAccept = resultUpload === 'waiting' && oDps?.authz_authorization_code == 'P' && oDps?.acceptance == 'pendiente' ? (
-        <div className="flex flex-column md:flex-row justify-content-between gap-2">
-            <Button label={tCommon('btnReject')} icon="bx bx-dislike" onClick={() => handleReview?.(constants.REVIEW_REJECT)} autoFocus disabled={loading} severity="danger" />
-            <Button label={tCommon('btnAccept')} icon="bx bx-like" onClick={() => handleReview?.(constants.REVIEW_ACCEPT)} autoFocus disabled={loading} severity="success" />
-            <Button label={t('uploadDialog.btnAcceptSendAuth')} icon="bx bx-paper-plane" onClick={() => handleReviewAndSendAuth?.()} autoFocus disabled={loading} severity="success" />
-        </div>
-    ):(
-        resultUpload === 'waiting' && (
-            <div className="flex flex-column md:flex-row justify-content-start gap-2">
-                <Button label={tCommon('btnClose')} icon="bx bx-x" onClick={onHide} severity="secondary" disabled={loading} />
-            </div>
-        )
-    )
+    const footerAccept =
+        resultUpload === 'waiting' && oDps?.acceptance == 'pendiente' ? (
+            <>
+                {btnToScroll}
+                <div className="flex flex-column md:flex-row justify-content-between gap-2">
+                    <Button label={tCommon('btnReject')} icon="bx bx-dislike" onClick={() => handleReview?.(constants.REVIEW_REJECT)} autoFocus disabled={loading} severity="danger" />
+                    <Button label={tCommon('btnAccept')} icon="bx bx-like" onClick={() => handleReview?.(constants.REVIEW_ACCEPT)} autoFocus disabled={loading} severity="success" />
+                    <Button label={t('uploadDialog.btnAcceptSendAuth')} icon="bx bx-paper-plane" onClick={() => handleReviewAndSendAuth?.()} autoFocus disabled={loading} severity="success" />
+                </div>
+            </>
+        ) : (
+            resultUpload === 'waiting' && (
+                <>
+                    {btnToScroll}
+                    <div className="flex flex-column md:flex-row justify-content-between gap-2">
+                        <Button label={tCommon('btnClose')} icon="bx bx-x" onClick={onHide} severity="secondary" disabled={loading} />
+                    </div>
+                </>
+            )
+        );
 
     const handleAuthorization = async () => {
         try {
@@ -939,25 +980,32 @@ export const InvoiceDialog = ({
         }
     };
 
-    const footerAuth = resultUpload === 'waiting' && isUserAuth && oDps?.authz_authorization_code == 'PR' ? (
-        <div className="flex flex-column md:flex-row justify-content-between gap-2">
-            <Button label={tCommon('btnReject')} icon="bx bx-dislike" onClick={handleReject} severity="danger" disabled={loading} />
-            <Button label={'Autorizar'} icon="bx bx-like" onClick={handleAuthorization} severity="success" disabled={loading} />
-        </div>
-    ):(
-        resultUpload === 'waiting' && (
-            <div className="flex flex-column md:flex-row justify-content-start gap-2">
-                <Button label={tCommon('btnClose')} icon="bx bx-x" onClick={onHide} severity="secondary" disabled={loading} />
-            </div>
-        )
-    )
+    const footerAuth =
+        resultUpload === 'waiting' && isUserAuth && oDps?.authz_authorization_code == 'PR' ? (
+            <>
+                {btnToScroll}
+                <div className="flex flex-column md:flex-row justify-content-between gap-2">
+                    <Button label={tCommon('btnReject')} icon="bx bx-dislike" onClick={handleReject} severity="danger" disabled={loading} />
+                    <Button label={'Autorizar'} icon="bx bx-like" onClick={handleAuthorization} severity="success" disabled={loading} />
+                </div>
+            </>
+        ) : (
+            resultUpload === 'waiting' && (
+                <>
+                    {btnToScroll}
+                    <div className="flex flex-column md:flex-row justify-content-between gap-2">
+                        <Button label={tCommon('btnClose')} icon="bx bx-x" onClick={onHide} severity="secondary" disabled={loading} />
+                    </div>
+                </>
+            )
+        );
 
     const getlFilesNames = async () => {
         try {
             setLoadingFileNames(true);
             const route = constants.ROUTE_GET_LIST_DOC_FILES;
             const response = await axios.get(constants.API_AXIOS_GET, {
-                params:{
+                params: {
                     route: route,
                     document_id: oDps.id_dps
                 }
@@ -965,13 +1013,13 @@ export const InvoiceDialog = ({
 
             if (response.status === 200) {
                 const data = response.data.data || [];
-                let files = []
+                let files = [];
                 for (let i = 0; i < data.files.length; i++) {
                     files.push({
                         id: data.files[i].id,
                         name: data.files[i].filename,
-                        extension: getExtensionFileByName(data.files[i].filename),
-                    })
+                        extension: getExtensionFileByName(data.files[i].filename)
+                    });
                 }
                 setLFilesNames(files);
             } else {
@@ -982,7 +1030,7 @@ export const InvoiceDialog = ({
         } finally {
             setLoadingFileNames(false);
         }
-    }
+    };
 
     useEffect(() => {
         if (isEdit) {
@@ -990,7 +1038,7 @@ export const InvoiceDialog = ({
                 getlFilesNames();
             }
         }
-    },[isEdit, typeEdit])
+    }, [isEdit, typeEdit]);
 
     const handleEditAuthorize = async () => {
         try {
@@ -1008,6 +1056,7 @@ export const InvoiceDialog = ({
                     user_id: userId,
                     is_payment_loc: oDps.is_payment_loc,
                     payment_notes: oDps.payment_notes,
+                    priority: oDps.priority
                 }
             });
 
@@ -1023,34 +1072,40 @@ export const InvoiceDialog = ({
         } finally {
             setLoading?.(false);
         }
-    }
+    };
 
-    const footerEditAuth = resultUpload === 'waiting' ? (
-        <div className="flex flex-column md:flex-row justify-content-between gap-2">
-            <Button label={tCommon('btnClose')} icon="bx bx-x" onClick={onHide} severity="secondary" disabled={loading} />
-            <Button label={tCommon('btnEdit')} icon="bx bx-like" onClick={() => handleEditAuthorize?.()} autoFocus disabled={loading} severity="success" />
-        </div>
-    ) : ('')
+    const footerEditAuth =
+        resultUpload === 'waiting' ? (
+            <>
+                {btnToScroll}
+                <div className="flex flex-column md:flex-row justify-content-between gap-2">
+                    <Button label={tCommon('btnClose')} icon="bx bx-x" onClick={onHide} severity="secondary" disabled={loading} />
+                    <Button label={tCommon('btnEdit')} icon="bx bx-like" onClick={() => handleEditAuthorize?.()} autoFocus disabled={loading} severity="success" />
+                </div>
+            </>
+        ) : (
+            ''
+        );
 
     const handleEditAcceptance = async () => {
         try {
             setLoading?.(true);
             const formData = new FormData();
             const files = fileEditAcceptRef.current?.getFiles() || [];
-    
+
             files.forEach((file: string | Blob) => {
                 formData.append('files', file);
             });
-    
+
             formData.append('file_ids', JSON.stringify(lFilesToEdit));
-            const route = '/transactions/documents/' + oDps.id_dps + '/update-files/'
+            const route = '/transactions/documents/' + oDps.id_dps + '/update-files/';
             formData.append('route', route);
             formData.append('user_id', userId.toString());
 
             const response = await axios.post(constants.API_AXIOS_PATCH, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
-    
+
             if (response.status === 200 || response.status === 201) {
                 if (getDps) {
                     await getDps(getDpsParams);
@@ -1065,14 +1120,20 @@ export const InvoiceDialog = ({
         } finally {
             setLoading?.(false);
         }
-    }
+    };
 
-    const footerEditAccepted = resultUpload === 'waiting' ? (
-        <div className="flex flex-column md:flex-row justify-content-between gap-2">
-            <Button label={tCommon('btnClose')} icon="bx bx-x" onClick={onHide} severity="secondary" disabled={loading} />
-            <Button label={tCommon('btnEdit')} icon="bx bx-like" onClick={() => handleEditAcceptance?.()} autoFocus disabled={loading} severity="success" />
-        </div>
-    ) : ('')
+    const footerEditAccepted =
+        resultUpload === 'waiting' ? (
+            <>
+                {btnToScroll}
+                <div className="flex flex-column md:flex-row justify-content-between gap-2">
+                    <Button label={tCommon('btnClose')} icon="bx bx-x" onClick={onHide} severity="secondary" disabled={loading} />
+                    <Button label={tCommon('btnEdit')} icon="bx bx-like" onClick={() => handleEditAcceptance?.()} autoFocus disabled={loading} severity="success" />
+                </div>
+            </>
+        ) : (
+            ''
+        );
 
     // let footerContent = dialogMode == 'create' ? footerCreate : dialogMode == 'review' ? footerAccept : dialogMode == 'authorization' ? footerAuth : '';
     let footerContent;
@@ -1105,9 +1166,9 @@ export const InvoiceDialog = ({
     useEffect(() => {
         const fetchReferences = async () => {
             await getlReferences(oCompany?.id, oProvider?.id, !filterReferences);
-        }
+        };
         fetchReferences();
-    }, [filterReferences])
+    }, [filterReferences]);
 
     return (
         <div className="flex justify-content-center">
@@ -1116,7 +1177,17 @@ export const InvoiceDialog = ({
                 visible={visible}
                 onHide={onHide}
                 footer={footerContent}
-                pt={{ header: { className: 'pb-2 pt-2 border-bottom-1 surface-border' } }}
+                pt={{
+                    header: { className: 'pb-2 pt-2 border-bottom-1 surface-border' },
+                    content: {
+                        style: {
+                            position: 'relative',
+                            maxHeight: '70vh',
+                            overflow: 'auto'
+                        },
+                        ref: dialogContentRef
+                    },
+                }}
                 style={{ width: isMobile ? '100%' : '70rem' }}
             >
                 {animationSuccess({
@@ -1152,7 +1223,7 @@ export const InvoiceDialog = ({
                                 errorMessage: t('uploadDialog.company.helperText')
                             })}
 
-                            { oValidUser.isInternalUser && (
+                            {oValidUser.isInternalUser &&
                                 renderField({
                                     label: t('uploadDialog.provider.label'),
                                     tooltip: t('uploadDialog.provider.tooltip'),
@@ -1166,11 +1237,10 @@ export const InvoiceDialog = ({
                                     errorKey: 'provider',
                                     errors: formErrors,
                                     errorMessage: t('uploadDialog.provider.helperText')
-                                }))
-                            }
+                                })}
 
                             {loadingReferences == true ? (
-                                <ProgressSpinner style={{ width: '50px', height: '50px' }} className='' strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />
+                                <ProgressSpinner style={{ width: '50px', height: '50px' }} className="" strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />
                             ) : (
                                 renderField({
                                     label: t('uploadDialog.reference.label'),
@@ -1187,12 +1257,15 @@ export const InvoiceDialog = ({
                                     errorMessage: t('uploadDialog.reference.helperText'),
                                     renderRightItem: {
                                         item: (
-                                            <div className='pt-4'>
-                                                <Checkbox 
-                                                    inputId="ingredient1" 
-                                                    name="pizza" 
-                                                    value="Cheese" 
-                                                    onChange={(e: any) => { setFilterReferences(e.checked); setOReference([])}} 
+                                            <div className="pt-4">
+                                                <Checkbox
+                                                    inputId="ingredient1"
+                                                    name="pizza"
+                                                    value="Cheese"
+                                                    onChange={(e: any) => {
+                                                        setFilterReferences(e.checked);
+                                                        setOReference([]);
+                                                    }}
                                                     checked={filterReferences}
                                                     disabled={!lReferences || lReferences.length == 0}
                                                 />
@@ -1203,17 +1276,19 @@ export const InvoiceDialog = ({
                                     }
                                 })
                             )}
-                            
-                            {oReference ? (oReference[0]?.is_covered == 1) : false &&
-                                <ul>
-                                    <li className="col-12 md:col-12">
-                                        <i className='bx bxs-error' style={{color: '#FFD700'}}></i>
-                                        {t('uploadDialog.reference.referenceWarning')}
-                                    </li>
-                                </ul>
-                            }
 
-                            {(oReference ? (oReference[0]?.id == '0' || (dialogMode == 'review' && oDps?.reference == '')) : false) &&
+                            {oReference
+                                ? oReference[0]?.is_covered == 1
+                                : false && (
+                                      <ul>
+                                          <li className="col-12 md:col-12">
+                                              <i className="bx bxs-error" style={{ color: '#FFD700' }}></i>
+                                              {t('uploadDialog.reference.referenceWarning')}
+                                          </li>
+                                      </ul>
+                                  )}
+
+                            {(oReference ? oReference[0]?.id == '0' || (dialogMode == 'review' && oDps?.reference == '') : false) &&
                                 renderField({
                                     label: t('uploadDialog.areas.label'),
                                     tooltip: t('uploadDialog.areas.tooltip'),
@@ -1227,21 +1302,21 @@ export const InvoiceDialog = ({
                                     errorKey: 'area',
                                     errors: formErrors,
                                     errorMessage: t('uploadDialog.areas.helperText')
-                            })}
+                                })}
 
-                            {lRefToValidateXml && lRefToValidateXml[0]?.id != 0 && lRefToValidateXml?.length > 1 &&
+                            {lRefToValidateXml && lRefToValidateXml[0]?.id != 0 && lRefToValidateXml?.length > 1 && dialogMode == 'create' && (
                                 <div className={`field col-12 md:col-6`}>
                                     <div className="formgrid grid">
                                         <div className="col">
                                             {lRefToValidateXml.map((item: any, index: number) => (
-                                                <div className='field grid' key={index}>
-                                                    <label className='col-12 mb-2 md:col-3 md:mb-0 justify-content-end'>{item.reference}:</label>
-                                                    <div className='col-12 md:col-9'>
+                                                <div className="field grid" key={index}>
+                                                    <label className="col-12 mb-2 md:col-3 md:mb-0 justify-content-end">{item.reference}:</label>
+                                                    <div className="col-12 md:col-9">
                                                         <InputNumber
                                                             type="text"
-                                                            className={`w-full`}
+                                                            className={`w-full ${lRefErrors[index]?.error ? 'p-invalid' : ''}`}
                                                             value={lRefToValidateXml[index]?.amount}
-                                                            disabled={dialogMode === 'view' || dialogMode === 'review'}
+                                                            disabled={false}
                                                             maxLength={50}
                                                             minFractionDigits={2}
                                                             maxFractionDigits={2}
@@ -1250,13 +1325,76 @@ export const InvoiceDialog = ({
                                                             inputClassName="text-right"
                                                             onChange={(e: any) => handleInputAmountReference(index, e.value)}
                                                         />
+                                                        {lRefErrors[index]?.error && <small className="p-error">La cantidad no puede ser 0</small>}
                                                     </div>
                                                 </div>
                                             ))}
                                         </div>
                                     </div>
                                 </div>
-                            }
+                            )}
+
+                            { lRefToValidateXml && lRefToValidateXml[0]?.id != 0 && dialogMode != 'create' && (
+                                <div className={`field col-12 md:col-12 mb-0 mt-2`}>
+                                    <div className="formgrid grid">
+                                        <div className="col">
+                                            {lRefToValidateXml.map((item: any, index: number) => (
+                                                <>
+                                                    { lRefToValidateXml.length > 1 && (
+                                                        <div className={`field col-12 md:col-12 mb-0`}>
+                                                            <h6>{t('uploadDialog.CeCo.title')} {item.reference}</h6>
+                                                        </div>
+                                                    )}
+                                                    <div className="grid" key={index}>
+                                                            {renderField({
+                                                                label: t('uploadDialog.CeCo.concept.label'),
+                                                                tooltip: t('uploadDialog.CeCo.concept.tooltip'),
+                                                                value: item.concepts,
+                                                                disabled: true,
+                                                                mdCol: 3,
+                                                                type: 'textArea',
+                                                                onChange: () => null,
+                                                                options: [],
+                                                                placeholder: t('uploadDialog.CeCo.concept.placeholder'),
+                                                                errorKey: '',
+                                                                errors: formErrors,
+                                                                errorMessage: ''
+                                                            })}
+                                                            {renderField({
+                                                                label: t('uploadDialog.CeCo.cost_profit_center.label'),
+                                                                tooltip: t('uploadDialog.CeCo.cost_profit_center.tooltip'),
+                                                                value: item.cost_profit_center,
+                                                                disabled: true,
+                                                                mdCol: 6,
+                                                                type: 'textArea',
+                                                                onChange: () => null,
+                                                                options: [],
+                                                                placeholder: t('uploadDialog.CeCo.cost_profit_center.placeholder'),
+                                                                errorKey: '',
+                                                                errors: formErrors,
+                                                                errorMessage: ''
+                                                            })}
+                                                            {renderField({
+                                                                label: t('uploadDialog.CeCo.amount.label'),
+                                                                tooltip: t('uploadDialog.CeCo.amount.tooltip'),
+                                                                value: item.amount,
+                                                                disabled: true,
+                                                                mdCol: 3,
+                                                                type: 'number',
+                                                                onChange: () => null,
+                                                                options: [],
+                                                                placeholder: t('uploadDialog.CeCo.amount.placeholder'),
+                                                                errorKey: '',
+                                                                errors: formErrors,
+                                                                errorMessage: ''
+                                                            })}
+                                                    </div>
+                                                </>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         {dialogMode == 'create' && (oProvider ? oProvider.country == constants.COUNTRIES.MEXICO_ID : false) && (
@@ -1264,7 +1402,9 @@ export const InvoiceDialog = ({
                                 <div className="field col-12 md:col-12">
                                     <div className="formgrid grid">
                                         <div className="col">
-                                            <label>XML:  <span className='font-italic'>Debe seleccionar una referencia para cargar el XML</span> </label>
+                                            <label>
+                                                XML: <span className="font-italic">Debe seleccionar una referencia para cargar el XML</span>{' '}
+                                            </label>
                                             &nbsp;
                                             <Tooltip target=".custom-target-icon" />
                                             <i
@@ -1364,17 +1504,22 @@ export const InvoiceDialog = ({
                                             <label data-pr-tooltip="">Comentarios de la autorización</label>
                                             &nbsp;
                                             <Tooltip target=".custom-target-icon" />
-                                            <i className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge" data-pr-tooltip={t('comments.tooltip')} data-pr-position="right" data-pr-my="left center-2" style={{ fontSize: '1rem', cursor: 'pointer' }}></i>
+                                            <i
+                                                className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
+                                                data-pr-tooltip={t('comments.tooltip')}
+                                                data-pr-position="right"
+                                                data-pr-my="left center-2"
+                                                style={{ fontSize: '1rem', cursor: 'pointer' }}
+                                            ></i>
                                             <div>
                                                 <InputTextarea
                                                     id="comments"
                                                     rows={3}
                                                     cols={30}
-                                                    maxLength={500}
-                                                    autoResize
+                                                    maxLength={100}
                                                     disabled={true}
                                                     className={`w-full`}
-                                                    value={ oDps?.authz_authorization_notes }
+                                                    value={oDps?.authz_authorization_notes}
                                                     onChange={(e) => {
                                                         setODps((prev: any) => ({ ...prev, authz_authorization_notes: e.target.value }));
                                                     }}
@@ -1383,24 +1528,29 @@ export const InvoiceDialog = ({
                                         </div>
                                     </div>
                                 </div>
-                                { isReviewAuth && (
+                                {isReviewAuth && (
                                     <div className={`field col-12 md:col-12`}>
                                         <div className="formgrid grid">
                                             <div className="col">
                                                 <label data-pr-tooltip="">Tus comentarios de la autorización</label>
                                                 &nbsp;
                                                 <Tooltip target=".custom-target-icon" />
-                                                <i className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge" data-pr-tooltip={t('comments.tooltip')} data-pr-position="right" data-pr-my="left center-2" style={{ fontSize: '1rem', cursor: 'pointer' }}></i>
+                                                <i
+                                                    className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
+                                                    data-pr-tooltip={t('comments.tooltip')}
+                                                    data-pr-position="right"
+                                                    data-pr-my="left center-2"
+                                                    style={{ fontSize: '1rem', cursor: 'pointer' }}
+                                                ></i>
                                                 <div>
                                                     <InputTextarea
                                                         id="comments"
                                                         rows={3}
                                                         cols={30}
-                                                        maxLength={500}
-                                                        autoResize
+                                                        maxLength={100}
                                                         disabled={oDps?.authz_authorization_code != 'PR' || !isReviewAuth}
                                                         className={`w-full ${authErrors.auth_notes ? 'p-invalid' : ''} `}
-                                                        value={ oDps?.auth_notes }
+                                                        value={oDps?.auth_notes}
                                                         onChange={(e) => {
                                                             setODps((prev: any) => ({ ...prev, auth_notes: e.target.value }));
                                                         }}
@@ -1419,10 +1569,10 @@ export const InvoiceDialog = ({
                                 // Estos son datos de prueba, falta funcion para cargar datos reales (en proceso)
                                 <CustomFileViewer lFiles={lUrlFiles} />
                             ) : (
-                                <div className='flex justify-content-center'>
+                                <div className="flex justify-content-center">
                                     <ProgressSpinner style={{ width: '50px', height: '50px' }} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />
                                 </div>
-                        ))}
+                            ))}
 
                         {dialogMode == 'review' && isEdit && typeEdit == 'acceptance' && (
                             <>
@@ -1438,28 +1588,26 @@ export const InvoiceDialog = ({
                                         lFiles={lFilesNames}
                                         setLFilesToEdit={setLFilesToEdit}
                                     />
-                                 ) : (
-                                <div className='flex justify-content-center'>
-                                    <ProgressSpinner style={{ width: '50px', height: '50px' }} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />
-                                </div>
-                                )
-                                }
+                                ) : (
+                                    <div className="flex justify-content-center">
+                                        <ProgressSpinner style={{ width: '50px', height: '50px' }} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />
+                                    </div>
+                                )}
                             </>
                         )}
 
-                        { withHistoryAuth && oValidUser.isInternalUser && (
-                            loadingHistoryAuth ? (
-                                <div className='flex justify-content-center'>
+                        {withHistoryAuth &&
+                            oValidUser.isInternalUser &&
+                            (loadingHistoryAuth ? (
+                                <div className="flex justify-content-center">
                                     <ProgressSpinner style={{ width: '50px', height: '50px' }} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />
                                 </div>
                             ) : (
-                                <HistoryAuth
-                                    lHistory={lHistoryAuth}
-                                />
-                            )
-                        )}
+                                <HistoryAuth lHistory={lHistoryAuth} />
+                            ))}
                     </>
                 )}
+                <div ref={setElementRef} data-observer-element className={''}></div>
             </Dialog>
         </div>
     );

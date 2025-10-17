@@ -29,7 +29,7 @@ export const getOUser = () => {
         groups = userGroups;
     }
 
-    if (groups.includes(constants.ROLES.COMPRADOR_ID)) {
+    if (groups.includes(constants.ROLES.COMPRADOR_ID) || groups.includes(constants.ROLES.CONTADOR_ID)) {
         return { 
             isInternalUser: true,
             isProvider: false,

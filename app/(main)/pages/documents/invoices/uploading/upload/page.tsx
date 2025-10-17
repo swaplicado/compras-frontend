@@ -174,7 +174,8 @@ const Upload = () => {
                         id: 0,
                         name: t('uploadDialog.reference.withOutReferenceOption'),
                         is_covered: 0,
-                        functional_area_id: null
+                        functional_area_id: null,
+                        amount: 0
                     });
                 }
 
@@ -183,7 +184,8 @@ const Upload = () => {
                         id: item.id,
                         name: item.reference,
                         is_covered: item.is_covered,
-                        functional_area_id: item.functional_area_id
+                        functional_area_id: item.functional_area_id,
+                        amount: item.amount
                     });
                 }
 
@@ -216,7 +218,7 @@ const Upload = () => {
                 for (const item of data) {
                     lProviders.push({
                         id: item.id,
-                        name: item.trade_name,
+                        name: item.full_name,
                         country: item.country
                     });
                 }
@@ -263,7 +265,7 @@ const Upload = () => {
                     lCompaniesFilter.push({
                         id: item.id,
                         external_id: item.external_id,
-                        name: item.trade_name
+                        name: item.full_name
                     });
                 }
                 setLCompanies(lCompanies);
@@ -477,7 +479,8 @@ const Upload = () => {
                 user_id: userId,
                 payment_definition: selectedRow.payment_definition,
                 is_payment_loc: selectedRow.is_payment_loc,
-                payment_notes: selectedRow.payment_notes
+                payment_notes: selectedRow.payment_notes,
+                priority: selectedRow.priority
             }
         });
 
@@ -596,7 +599,7 @@ const Upload = () => {
             const start_date = moment(new Date).startOf('month').format('YYYY-MM-DD');
             const end_date = moment(new Date).endOf('month').format('YYYY-MM-DD');
 
-            if (groups.includes(constants.ROLES.COMPRADOR_ID)) {
+            if (groups.includes(constants.ROLES.COMPRADOR_ID) || groups.includes(constants.ROLES.CONTADOR_ID)) {
                 const route = constants.ROUTE_GET_DPS_BY_AREA_ID;
                 const params = {
                     route: route,

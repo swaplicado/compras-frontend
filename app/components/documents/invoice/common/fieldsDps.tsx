@@ -246,6 +246,7 @@ export const FieldsDps = ({
                                     minFractionDigits={2}
                                     maxFractionDigits={2}
                                     inputClassName="text-right"
+                                    onChange={(e) => props.onChange?.(e.value)}
                                 />
                             </div>
                         </div>
@@ -266,11 +267,10 @@ export const FieldsDps = ({
                                     id="comments"
                                     rows={3}
                                     cols={30}
-                                    maxLength={500}
-                                    autoResize
+                                    maxLength={100}
                                     className={`w-full ${props.errors?.[props.errorKey] ? 'p-invalid' : ''} `}
                                     value={props.value || ''}
-                                    disabled={props.disabled}
+                                    readOnly={props.disabled}
                                     onChange={(e) => props.onChange?.(e.target.value)}
                                 />
                                 {props.errors?.[props.errorKey] && <small className="p-error">{props.errorMessage}</small>}
@@ -440,7 +440,8 @@ export const FieldsDps = ({
                         mdCol: 3,
                         type: 'number',
                         placeholder: '',
-                        errorKey: ''
+                        errorKey: '',
+                        onChange: (value) => setODps((prev: any) => ({ ...prev, amount: value }))
                     })}
                     {renderField({
                         label: t('uploadDialog.currency.label'),
@@ -452,7 +453,7 @@ export const FieldsDps = ({
                         placeholder: '',
                         errorKey: '',
                         lOptions: lCurrency,
-                        onChange: (value) => setODps((prev: any) => ({ ...prev, currency: value.name, oCurrency: value }))
+                        onChange: (value) => setODps((prev: any) => ({ ...prev, currency: value?.name, oCurrency: value }))
                     })}
                     {renderField({
                         label: t('uploadDialog.exchange_rate.label'),
@@ -462,7 +463,8 @@ export const FieldsDps = ({
                         mdCol: 2,
                         type: 'number',
                         placeholder: '',
-                        errorKey: ''
+                        errorKey: '',
+                        onChange: (value) => setODps((prev: any) => ({ ...prev, exchange_rate: value }))
                     })}
                 </div>
             )}
@@ -594,15 +596,30 @@ export const FieldsDps = ({
                         <div className={`field col-12 md:col-4`}>
                             <div className="formgrid grid">
                                 <div className="col">
-                                        <Checkbox 
-                                            inputId="is_payment_loc" 
-                                            name="is_payment_loc" 
-                                            value="is_payment_loc" 
-                                            onChange={(e: any) => { setODps( (prev: any) => ({ ...prev, is_payment_loc: e.checked }) ) }} 
-                                            checked={ oDps?.is_payment_loc }
-                                            disabled={ disabledIsPaymentLoc() }
-                                        />
-                                        <label htmlFor="is_payment_loc" className="ml-2">Pago en moneda local</label>
+                                    <Checkbox 
+                                        inputId="is_payment_loc" 
+                                        name="is_payment_loc" 
+                                        value="is_payment_loc" 
+                                        onChange={(e: any) => { setODps( (prev: any) => ({ ...prev, is_payment_loc: e.checked }) ) }} 
+                                        checked={ oDps?.is_payment_loc }
+                                        disabled={ disabledIsPaymentLoc() }
+                                    />
+                                    <label htmlFor="is_payment_loc" className="ml-2">Pago en moneda local</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div className={`field col-12 md:col-4`}>
+                            <div className="formgrid grid">
+                                <div className="col">
+                                    <Checkbox 
+                                        inputId="priority" 
+                                        name="priority" 
+                                        value="priority" 
+                                        onChange={(e: any) => { setODps( (prev: any) => ({ ...prev, priority: e.checked }) ) }} 
+                                        checked={ oDps?.priority == 1 }
+                                        disabled={ footerMode == 'view' }
+                                    />
+                                    <label htmlFor="priority" className="ml-2">¿Factura urgente?</label>
                                 </div>
                             </div>
                         </div>
@@ -632,7 +649,7 @@ export const FieldsDps = ({
                             errors: errors,
                             errorKey: 'rejectComments',
                             errorMessage: t('uploadDialog.rejectComments.helperText'),
-                            labelClass: 'font-bold opacity-100 text-blue-600'
+                            labelClass: 'font-bold text-blue-600'
                         })}
                     </div>
                 </>

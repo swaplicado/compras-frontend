@@ -23,7 +23,7 @@
                             "to": "/pages/documents/invoices/uploading/upload"
                         },
                         {
-                            "label": "Facturas recibidas",
+                            "label": "Facturas aceptadas",
                             "icon": "pi pi-check-square",
                             "to": "/pages/documents/invoices/uploading/accepted"
                         },
@@ -88,8 +88,92 @@
                     ]
                 },
                 {
+                    "label": "CRP",
+                    "icon": "pi pi-ticket",
+                    "items": [
+                        {
+                            "label": "Cargar CRP",
+                            "icon": "pi pi-upload",
+                            "to": "/pages/documents/crp/upload"
+                        },
+                        {
+                            "label": "CRP aceptados",
+                            "icon": "pi pi-check-square",
+                            "to": "/pages/documents/crp/accepted"
+                        },
+                        {
+                            "label": "CRP rechazados",
+                            "icon": "pi pi-times-circle",
+                            "to": "/pages/documents/crp/rejected"
+                        }
+                    ]
+                },
+                {
+                    "label": "NC",
+                    "icon": "pi pi-credit-card",
+                    "items": [
+                        {
+                            "label": "Cargar NC",
+                            "icon": "pi pi-upload",
+                            "to": "/pages/documents/nc/upload"
+                        },
+                        {
+                            "label": "NC aceptadas",
+                            "icon": "pi pi-check-square",
+                            "to": "/pages/documents/nc/accepted"
+                        },
+                        {
+                            "label": "NC rechazadas",
+                            "icon": "pi pi-times-circle",
+                            "to": "/pages/documents/nc/rejected"
+                        }
+                    ]
+                },
+                {
+                    "label": "Recepción de proveedores",
+                    "icon": "pi pi-truck",
+                    "items": [
+                        {
+                            "label": "Recepción",
+                            "icon": "pi pi-download",
+                            "to": "/pages/partners/reception"
+                        },
+                        {
+                            "label": "Rechazados",
+                            "icon": "pi pi-times-circle",
+                            "to": "/pages/partners/rejected"
+                        },
+                        {
+                            "label": "Aceptados",
+                            "icon": "pi pi-check-square",
+                            "to": "/pages/partners/accepted"
+                        }
+                    ]
+                },
+                {
+                    "label": "Autorización de proveedores",
+                    "icon": "pi pi-pencil",
+                    "items": [
+                        {
+                            "label": "Pendientes de autorizar",
+                            "icon": "pi pi-exclamation-circle",
+                            "to": "/pages/partners/authorization/inAuthorization"
+                        },
+                        {
+                            "label": "Autorizados",
+                            "icon": "pi pi-check-square",
+                            "to": "/pages/partners/authorization/authorized"
+                        },
+                        {
+                            "label": "Rechazados",
+                            "icon": "pi pi-times-circle",
+                            "to": "/pages/partners/authorization/rejected"
+                        }
+                    ]
+                },
+                {
                     "label": "Catálogo de proveedores",
-                    "icon": "pi pi-users",
+                    "icon": "pi pi-list",
                     "to": "/pages/partners/catalog"
                 }
             ]

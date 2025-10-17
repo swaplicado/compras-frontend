@@ -17,6 +17,7 @@ import { InvoiceDialog } from '@/app/components/documents/invoice/common/invoice
 import { getDps } from "@/app/(main)/utilities/documents/invoice/dps";
 import { FlowAuthorizationDialog } from '@/app/components/documents/invoice/flowAuthorizationDialog';
 import { Tooltip } from 'primereact/tooltip';
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 
 const Upload = () => {
     const [dialogVisible, setDialogVisible] = useState(false);
@@ -55,6 +56,7 @@ const Upload = () => {
     const [filters, setFilters] = useState<DataTableFilterMeta>({});
     const isMobile = useIsMobile();
     const [getDpsParams, setGetDpsParams] = useState<any>(null);
+    const [withBtnSendToUpoload, setWithBtnSendToUpoload] = useState<boolean>(false);
 
     const headerCard = (
         <div
@@ -195,7 +197,7 @@ const Upload = () => {
                 for (const item of data) {
                     lProviders.push({
                         id: item.id,
-                        name: item.trade_name,
+                        name: item.full_name,
                         country: item.country
                     });
                 }
@@ -241,7 +243,7 @@ const Upload = () => {
                     lCompaniesFilter.push({
                         id: item.id,
                         external_id: item.external_id,
-                        name: item.trade_name
+                        name: item.full_name
                     });
                 }
                 setLCompanies(lCompanies);
@@ -439,6 +441,58 @@ const Upload = () => {
         }
     }
 
+    const sendToUpload = async () => {
+        try {
+            setLoading(true);
+            const route = '/transactions/documents/' + selectedRow.id_dps + '/set-authz/';
+            const response = await axios.post(constants.API_AXIOS_PATCH, {
+                route,
+                jsonData: {
+                    authz_acceptance_notes: '',
+                    authz_code: constants.REVIEW_PENDING,
+                    user_id: userId,
+                    notes: '',
+                }
+            });
+
+            if (response.status === 200 || response.status === 201) {
+                await getDps(getDpsParams);
+                showToast('success', 'Registro enviado a la sección "Cargar facturas"');
+            } else {
+                throw new Error(t('uploadDialog.errors.updateStatusError'));
+            }
+        } catch (error: any) {
+            showToast('error', error.response?.data?.error || 'Error al enviar la factura a la sección "Cargar facturas"');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const accept = async () => {
+        sendToUpload();
+    }
+
+    const reject = () => {
+        
+    }
+
+    const handleSendToUpload = async () => {
+        try {
+            confirmDialog({
+                message: '¿Quieres enviar esta factura a la sección "Cargar facturas": ' + selectedRow.folio + '?',
+                header: 'Confirma envio',
+                icon: 'pi pi-info-circle',
+                acceptClassName: 'p-button-primary',
+                acceptLabel: 'Si',
+                rejectLabel: 'No',
+                accept: () => accept(),
+                reject: () => reject()
+            });
+        } catch (error: any) {
+            
+        }
+    }
+
     const handleRowClick = (e: DataTableRowClickEvent) => {
         if (!oValidUser.isInternalUser) {
             e.originalEvent.preventDefault();
@@ -484,8 +538,9 @@ const Upload = () => {
             const start_date = moment(new Date).startOf('month').format('YYYY-MM-DD');
             const end_date = moment(new Date).endOf('month').format('YYYY-MM-DD');
 
-            if (groups.includes(constants.ROLES.COMPRADOR_ID)) {
+            if (groups.includes(constants.ROLES.COMPRADOR_ID) || groups.includes(constants.ROLES.CONTADOR_ID)) {
                 const route = constants.ROUTE_GET_DPS_BY_AREA_ID;
+                setWithBtnSendToUpoload(true);
                 const params = {
                     route: route,
                     functional_area: functionalAreas,
@@ -503,6 +558,7 @@ const Upload = () => {
 
             if (groups.includes(constants.ROLES.PROVEEDOR_ID)) {
                 const route = constants.ROUTE_GET_DPS_BY_PARTNER_ID
+                setWithBtnSendToUpoload(false);
                 const params = {
                     route: route,
                     partner_id: partnerId,
@@ -596,6 +652,8 @@ const Upload = () => {
                         setDialogVisible={setDialogVisible}
                         setFlowAuthDialogVisible={setFlowAuthDialogVisible}
                         withBtnSendAuth={ oValidUser.isInternalUser }
+                        withBtnSendToUpoload={withBtnSendToUpoload}
+                        SendToUpoload={handleSendToUpload}
                     />
                 </Card>
             </div>

@@ -182,8 +182,8 @@ const TableDemo = () => {
                         receiver_tax_regime: data[i].receiver_tax_regime ? data[i].receiver_tax_regime.code : '',
                         dateFormated: DateFormatter(data[i].date),
                         useCfdi: data[i].fiscal_use,
-                        company: data[i].company.trade_name,
-                        provider_name: data[i].partner.trade_name,
+                        company: data[i].company.full_name,
+                        provider_name: data[i].partner.full_name,
                         serie: data[i].series,
                         number: data[i].number,
                         folio: data[i].series ? data[i].series + '-' + data[i].number : data[i].number,
@@ -276,7 +276,7 @@ const TableDemo = () => {
                 for (const item of data) {
                     lProviders.push({
                         id: item.id,
-                        name: item.trade_name,
+                        name: item.full_name,
                         country: item.country
                     });
                 }
@@ -322,7 +322,7 @@ const TableDemo = () => {
                     lCompaniesFilter.push({
                         id: item.id,
                         external_id: item.external_id,
-                        name: item.trade_name
+                        name: item.full_name
                     });
                 }
                 setLCompanies(lCompanies);
@@ -573,7 +573,7 @@ const TableDemo = () => {
                 groups = userGroups;
             }
 
-            if (groups.includes(constants.ROLES.COMPRADOR_ID)) {
+            if (groups.includes(constants.ROLES.COMPRADOR_ID) || groups.includes(constants.ROLES.CONTADOR_ID)) {
                 setOValidUser({ isInternalUser: true, isProvider: false, isProviderMexico: false });
                 await getlProviders();
                 await getDps(true);

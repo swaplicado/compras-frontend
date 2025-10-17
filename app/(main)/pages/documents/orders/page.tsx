@@ -92,7 +92,7 @@ const TableDemo = () => {
                         company_id: data[i].company.id,
                         dateFormated: DateFormatter(data[i].date),
                         company: data[i].company.full_name,
-                        provider_name: data[i].partner.trade_name,
+                        provider_name: data[i].partner.full_name,
                         serie: data[i].series,
                         number: data[i].number,
                         folio: data[i].folio,
@@ -174,7 +174,7 @@ const TableDemo = () => {
                 groups = userGroups;
             }
 
-            if (groups.includes(constants.ROLES.COMPRADOR_ID)) {
+            if (groups.includes(constants.ROLES.COMPRADOR_ID) || groups.includes(constants.ROLES.CONTADOR_ID)) {
                 setOValidUser({ isInternalUser: true, isProvider: false, isProviderMexico: false });
                 await getDps(true);
             }
