@@ -216,16 +216,10 @@ const UploadNC = () => {
             }
         }
 
-        console.log('newErrors: ', newErrors);
-
         setFormErrors(newErrors);
 
         return !Object.values(newErrors).some(Boolean)
     }
-
-    useEffect(() => {
-        console.log('oNc: ', oNc);
-    }, [oNc])
 
     const handleSubmit = async () => {
         try {
@@ -409,11 +403,11 @@ const UploadNC = () => {
                 errorMessage: '',
                 showToast: showToast
             });
-            await getlAreas({
-                setLAreas,
-                showToast,
-                company_id: oNc?.company.external_id
-            });
+            // await getlAreas({
+            //     setLAreas,
+            //     showToast,
+            //     company_id: oNc?.company.external_id
+            // });
             setLoadingInvoices(false);
         }
         if (oNc?.company && oNc?.partner) {
@@ -426,6 +420,21 @@ const UploadNC = () => {
             invoices: []
         }))
     }, [oNc?.company, oNc?.partner])
+
+    useEffect(() => {
+        if (oNc?.invoices) {
+            let areas: any[] = [];
+            for (let i = 0; i < oNc.invoices.length; i++) {
+                if (!areas.find((item: any) => item.id == oNc.invoices[i].functional_area__id)) {
+                    areas.push({
+                        id: oNc.invoices[i].functional_area__id,
+                        name: oNc.invoices[i].functional_area__name
+                    })
+                }
+            }
+            setLAreas(areas);
+        }
+    }, [oNc?.invoices])
 
 //*******OTROS*******
     const headerCard = (

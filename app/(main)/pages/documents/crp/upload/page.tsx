@@ -138,11 +138,11 @@ const ConsultPaymentProgramded = () => {
                     oCompany,
                     oProvider
                 });
-                await getlAreas({
-                    setLAreas,
-                    showToast,
-                    company_id: oCompany.external_id
-                });
+                // await getlAreas({
+                //     setLAreas,
+                //     showToast,
+                //     company_id: oCompany.external_id
+                // });
                 setLoadinglPaymentsExec(false);
             }
             fetch();
@@ -166,6 +166,7 @@ const ConsultPaymentProgramded = () => {
         setIsXmlValid(false);
         setLPaymentsExec([]);
         setShowing('body');
+        setLAreas([]);
     }
 
     const validate = () => {
@@ -316,6 +317,21 @@ const ConsultPaymentProgramded = () => {
             setLoading?.(false);
         }
     };
+
+    useEffect(() =>  {
+        if (oCrp?.oPay) {
+            let areas: any[] = [];
+            for (let i = 0; i < oCrp.oPay.length; i++) {
+                if (!areas.find((item: any) => item.id == oCrp.oPay[i].functional_area__id)) {
+                    areas.push({
+                        id: oCrp.oPay[i].functional_area__id,
+                        name: oCrp.oPay[i].functional_area__name
+                    })
+                }
+            }
+            setLAreas(areas);
+        }
+    }, [oCrp?.oPay])
 
 //*******OTROS*******
     const headerCard = (
