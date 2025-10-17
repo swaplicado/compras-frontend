@@ -575,7 +575,7 @@ const RejectedNC = () => {
                         dateFilter={dateFilter}
                         setDateFilter={setDateFilter}
                         showToast={showToast}
-                        withBtnCreate={true}
+                        withBtnCreate={false}
                         selectedRow={oNc}
                         setSelectedRow={setONc}
                         setDialogVisible={setDialogVisible}
