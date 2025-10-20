@@ -26,6 +26,7 @@ import { getlFiscalRegime } from '@/app/(main)/utilities/documents/common/fiscal
 import DateFormatter from '@/app/components/commons/formatDate';
 import { getlUrlFilesDps } from '@/app/(main)/utilities/documents/common/filesUtils';
 import invoices from "@/i18n/locales/es/documents/invoices";
+import { RenderInfoButton } from "@/app/components/commons/instructionsButton";
 
 const UploadNC = () => {
     const [startDate, setStartDate] = useState<string>('');
@@ -39,6 +40,8 @@ const UploadNC = () => {
     const [oUser, setOUser] = useState<any>(null);
     const [dateFilter, setDateFilter] = useState<any>(null);
     const [lCompaniesFilter, setLCompaniesFilter] = useState<any[]>([]);
+    const [showInfo, setShowInfo] = useState<boolean>(false);
+    const [showManual, setShowManual] = useState<boolean>(false);
 
     //constantes para el dialog
     const [visible, setDialogVisible] = useState<boolean>(false);
@@ -641,12 +644,45 @@ const UploadNC = () => {
         }
     }, [userFunctionalAreas, oUser, startDate, endDate])
 
+    const getObjectIntruction = () => {
+        const uploadInstructions = JSON.parse(JSON.stringify(t(`dialog.uploadInstructions`, { returnObjects: true })));
+        const uploadInstructionsPartner = JSON.parse(JSON.stringify(t(`dialog.uploadInstructionsPartner`, { returnObjects: true })));
+        const reviewInstructions = JSON.parse(JSON.stringify(t(`dialog.reviewInstructions`, { returnObjects: true })));
+
+        let instructions: any[] = [];
+        if (oUser?.isInternalUser) {
+            instructions.push(uploadInstructions);
+            instructions.push(reviewInstructions);
+        } else {
+            instructions.push(uploadInstructionsPartner);
+        }
+
+        if (!instructions || Object.keys(instructions).length === 0) {
+            return null;
+        }
+
+        return instructions;
+    }
+
     return (
         <div className="grid">
             <div className="col-12">
                 {loading && loaderScreen()}
                 <Toast ref={toast} />
                 <Card header={headerCard} pt={{ content: { className: 'p-0' } }}>
+                <RenderInfoButton
+                    instructions={getObjectIntruction()}
+                    showInfo={showInfo}
+                    setShowInfo={setShowInfo}
+                    showManual={showManual}
+                    setShowManual={setShowManual}
+                    btnShowInstructionsText={"Mostrar instrucciones"}
+                    btnHideInstructionsText={"Ocultar instrucciones"}
+                    dialogManualBtnLabelText={"Videos de ayuda"}
+                    dialogManualBtnTooltipText={"Videos de ayuda"}
+                    dialogManualHeaderText={"Videos de ayuda"}
+                    lVideos={[]}
+                />
                     <DialogNc 
                         visible={visible}
                         onHide={() => setDialogVisible(false)}

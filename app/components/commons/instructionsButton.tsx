@@ -44,28 +44,39 @@ export const RenderInfoButton = ({
             />
             {showInfo && (
                 <div className="p-3 border-1 border-round border-gray-200 bg-white mb-3 surface-border surface-card">
-                    <DialogManual 
-                        visible={showManual} 
-                        onHide={() => setShowManual(false)} 
-                        lVideos={lVideos} 
-                        setShowManual={setShowManual}
-                        helpText={ {
-                            buttonLabel: dialogManualBtnLabelText,
-                            buttonTooltip: dialogManualBtnTooltipText,
-                            dialogHeader: dialogManualHeaderText,
-                        } }
-                    />
+                    { lVideos.length > 0 && (
+                        <DialogManual 
+                            visible={showManual} 
+                            onHide={() => setShowManual(false)} 
+                            lVideos={lVideos} 
+                            setShowManual={setShowManual}
+                            helpText={ {
+                                buttonLabel: dialogManualBtnLabelText,
+                                buttonTooltip: dialogManualBtnTooltipText,
+                                dialogHeader: dialogManualHeaderText,
+                            } }
+                        />
+                    )}
                     {Object.keys(instructions).map((key, index) => (
-                        <div key={index}>
-                            <h6>{instructions[key].header}</h6>
-                            <ul>
+                        <>
+                            <div key={index}>
+                                <h6>{instructions[key].header}</h6>
+                                <ul>
+                                    {Object.keys(instructions[key])
+                                        .filter((subKey) => subKey.startsWith('step'))
+                                        .map((subKey, subIndex) => (
+                                            <li key={subIndex}>{instructions[key][subKey]}</li>
+                                        ))}
+                                </ul>
+                            </div>
+                            <div>
                                 {Object.keys(instructions[key])
-                                    .filter((subKey) => subKey.startsWith('step'))
+                                    .filter((subKey) => subKey.startsWith('footer'))
                                     .map((subKey, subIndex) => (
-                                        <li key={subIndex}>{instructions[key][subKey]}</li>
+                                        instructions[key][subKey]
                                     ))}
-                            </ul>
-                        </div>
+                            </div>
+                        </>
                     ))}
                 </div>
             )}
