@@ -14,7 +14,8 @@ export function middleware(req: NextRequest) {
         '/auth/selectCompany',
         '/auth/resetPassword',
         '/auth/registerProvider',
-        '/auth/confirmPassword'
+        '/auth/confirmPassword',
+        '/api/axios/post'
     ];
 
     // Rutas que empiezan con patrones públicos

@@ -146,7 +146,9 @@ export const getlInvoices = async (props: getlInvoices) => {
                     date: data[i].date,
                     amount: data[i].amount,
                     amountNc: 0,
-                    currency__code: data[i].currency__code
+                    currency__code: data[i].currency__code,
+                    functional_area__id: data[i].functional_area__id,
+                    functional_area__name: data[i].functional_area__name
                 });               
             }
             props.setlInvoices(invoices);

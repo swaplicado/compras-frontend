@@ -138,7 +138,9 @@ export const getPaymentsExec = async ({
             for (let i = 0; i < data.length; i++) {
                 payments.push({
                     id: data[i].id,
-                    name: data[i].folio + ' ' + data[i].amount + ' ' +data[i].currency__name + ' ' + DateFormatter(data[i].exec_date_n)
+                    name: data[i].folio + ' ' + data[i].amount + ' ' +data[i].currency__code + ' ' + DateFormatter(data[i].exec_date_n),
+                    functional_area__id: data[i].functional_area__id,
+                    functional_area__name: data[i].functional_area__name
                     // folio: data[i].folio,
                     // amount: data[i].amount,
                     // currency__name: data[i].currency__name,
