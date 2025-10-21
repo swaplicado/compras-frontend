@@ -150,7 +150,54 @@ const nc = {
             reviewRejectedText: "Ocurrió un error al rechazar la nota de crédito, vuelve a intentarlo más tarde.",
             editTitle: "Error al editar la nota de crédito.",
             editText: "Ocurrió un error al editar la nota de crédito, vuelve a intentarlo más tarde."
-        }
+        },
+        uploadInstructions: {
+            header: "Para cargar una nota de crédito, sigue estos pasos:",
+            step1: "Presiona el botón Cargar NC para abrir el diálogo para cargar la NC.",
+            step2: "Selecciona empresa y proveedor para obtener la lista de facturas a seleccionar.",
+            step3: "Selecciona las facturas de la NC.",
+            step4: "Si seleccionas más de una factura, debes seleccionar el área al cual es dirigida la NC y el monto de cada factura asociada a la NC.",
+            step5: "Selecciona el XML de la NC para su validación, en cuanto selecciones el XML de la NC este se validará automáticamente.",
+            step6: "Una vez validado y que no se encuentren errores se deben cargar los demás archivos de la NC como son el PDF, el nombre del PDF de la NC debe ser el mismo que el del XML.",
+            step7: "Ya que se tengan todos los archivos seleccionados, presiona el botón Cargar para cargar la NC.",
+        },
+        uploadInstructionsPartner: {
+            header: "Para cargar una nota de crédito, sigue estos pasos:",
+            step1: "Presiona el botón Cargar NC para abrir el diálogo para cargar la NC.",
+            step2: "Selecciona empresa para obtener la lista de facturas a seleccionar.",
+            step3: "Selecciona las facturas de la NC.",
+            step4: "Si seleccionas más de una factura, debes seleccionar el área al cual es dirigida la NC y el monto de cada factura asociada a la NC.",
+            step5: "Selecciona el XML de la NC para su validación, en cuanto selecciones el XML de la NC este se validará automáticamente.",
+            step6: "Una vez validado y que no se encuentren errores se deben cargar los demás archivos de la NC como son el PDF, el nombre del PDF de la NC debe ser el mismo que el del XML.",
+            step7: "Ya que se tengan todos los archivos seleccionados, presiona el botón Cargar para cargar la NC.",
+        },
+        reviewInstructions: {
+            header: "Para revisar una nota de crédito, sigue estos pasos:",
+            step1: "Haz doble clic sobre el renglón de la NC a revisar, se abrirá el diálogo con la información de la NC para revisar.",
+            step2: "En la parte inferior del diálogo se encuentra un botón Mostrar archivos, presiona este botón para ver los archivos de la NC.",
+            step3: "Para aceptar la NC solo presiona el botón Aceptar.",
+            step4: "Para rechazar la NC debes ingresar un comentario con el motivo del rechazo, luego presiona el botón Rechazar."
+        },
+        editInstructions: {
+            header: "Para editar una nota de crédito, sigue estos pasos:",
+            step1: "Haz doble clic sobre el renglón correspondiente a la NC a editar, se abrirá el diálogo para editar los archivos de la NC.",
+            step2: "En la parte inferior del diálogo se encuentra la lista de archivos cargados en la NC, esta lista se compone por una casilla de verificación seguido del nombre del archivo.",
+            step3: "Para conservar un archivo deja marcado la casilla de verificación, para eliminarlo desmarca la casilla de verificación.",
+            step4: "Para cargar nuevos archivos en la sección Archivos, presiona el botón Seleccionar para cargar nuevos archivos.",
+            step5: "Una vez seleccionados los archivos deseados, presiona el botón Guardar para pasar la NC de rechazada a cargada.",
+        },
+        deleteInstructions: {
+            header: "Para eliminar una nota de crédito, sigue estos pasos:",
+            step1: "Identifica el renglón de la NC que deseas eliminar.",
+            step2: "En la parte derecha final del renglón de la NC se encuentra el botón Eliminar.",
+            step3: "Al presionar el botón Eliminar se abre un diálogo de confirmación.",
+            step4: "Revisamos que el folio corresponda con la NC a eliminar y confirmamos presionando el botón Sí.",
+        },
+        viewInstructions: {
+            header: "Para ver una nota de crédito, sigue estos pasos:",
+            step1: "Identifica el renglón de la NC que deseas ver.",
+            step2: "Haz doble clic sobre el renglón de la NC correspondiente, se abrirá un diálogo con la información de la NC.",
+        },
     }
 }
 

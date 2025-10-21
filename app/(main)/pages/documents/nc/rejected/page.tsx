@@ -27,6 +27,7 @@ import DateFormatter from '@/app/components/commons/formatDate';
 import { getlUrlFilesDps, getlFilesNames } from '@/app/(main)/utilities/documents/common/filesUtils';
 import invoices from "@/i18n/locales/es/documents/invoices";
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
+import { RenderInfoButton } from "@/app/components/commons/instructionsButton";
 
 const RejectedNC = () => {
     const [startDate, setStartDate] = useState<string>('');
@@ -40,6 +41,8 @@ const RejectedNC = () => {
     const [oUser, setOUser] = useState<any>(null);
     const [dateFilter, setDateFilter] = useState<any>(null);
     const [lCompaniesFilter, setLCompaniesFilter] = useState<any[]>([]);
+    const [showInfo, setShowInfo] = useState<boolean>(false);
+    const [showManual, setShowManual] = useState<boolean>(false);
 
     //constantes para el dialog
     const [visible, setDialogVisible] = useState<boolean>(false);
@@ -513,6 +516,21 @@ const RejectedNC = () => {
         }
     }, [userFunctionalAreas, oUser, startDate, endDate])
 
+    const getObjectIntruction = () => {
+        const editInstructions = JSON.parse(JSON.stringify(t(`dialog.editInstructions`, { returnObjects: true })));
+        const deleteInstructions = JSON.parse(JSON.stringify(t(`dialog.deleteInstructions`, { returnObjects: true })));
+
+        let instructions: any[] = [];
+        instructions.push(editInstructions);
+        instructions.push(deleteInstructions);
+
+        if (!instructions || Object.keys(instructions).length === 0) {
+            return null;
+        }
+
+        return instructions;
+    }
+
     return (
         <div className="grid">
             <div className="col-12">
@@ -520,6 +538,19 @@ const RejectedNC = () => {
                 <Toast ref={toast} />
                 <ConfirmDialog />
                 <Card header={headerCard} pt={{ content: { className: 'p-0' } }}>
+                    <RenderInfoButton
+                        instructions={getObjectIntruction()}
+                        showInfo={showInfo}
+                        setShowInfo={setShowInfo}
+                        showManual={showManual}
+                        setShowManual={setShowManual}
+                        btnShowInstructionsText={"Mostrar instrucciones"}
+                        btnHideInstructionsText={"Ocultar instrucciones"}
+                        dialogManualBtnLabelText={"Videos de ayuda"}
+                        dialogManualBtnTooltipText={"Videos de ayuda"}
+                        dialogManualHeaderText={"Videos de ayuda"}
+                        lVideos={[]}
+                    />
                     <DialogNc 
                         visible={visible}
                         onHide={() => setDialogVisible(false)}

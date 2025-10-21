@@ -18,6 +18,7 @@ import esPayments from './locales/es/documents/payments';
 import esCatalogPartners from './locales/es/partners/catalog';
 import esCrp from './locales/es/documents/crp';
 import esNc from './locales/es/documents/nc';
+import esPartners from './locales/es/partners/partners';
 
 i18n
   .use(initReactI18next)
@@ -41,7 +42,8 @@ i18n
         payments: esPayments,
         catalogPartners: esCatalogPartners,
         crp: esCrp,
-        nc: esNc
+        nc: esNc,
+        partners: esPartners
       }
     },
     lng: "es",

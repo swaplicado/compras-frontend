@@ -23,6 +23,7 @@ import { getlAreas } from '@/app/(main)/utilities/documents/common/areaUtils';
 import { FileUpload } from "primereact/fileupload";
 import { getlUrlFilesDps } from "@/app/(main)/utilities/documents/common/filesUtils";
 import { downloadFiles } from '@/app/(main)/utilities/documents/common/filesUtils';
+import { RenderInfoButton } from "@/app/components/commons/instructionsButton";
 
 const ConsultPaymentProgramded = () => {
     const [startDate, setStartDate] = useState<string>('');
@@ -67,7 +68,8 @@ const ConsultPaymentProgramded = () => {
     const [loadingFileNames, setLoadingFileNames] = useState<boolean>(false);
     const [lFilesNames, setLFilesNames] = useState<any[]>([]);
     const [lFilesToEdit, setLFilesToEdit] = useState<any[]>([]);
-
+    const [showInfo, setShowInfo] = useState <boolean>(false);
+    const [showManual, setShowManual] = useState <boolean>(false);
     const isMobile = useIsMobile();
 
     const columnsProps = {
@@ -278,6 +280,26 @@ const ConsultPaymentProgramded = () => {
             xml_date: data.dateFormatted,
             uuid: data.uuid
         }));
+    }
+
+    const getObjectIntruction = () => {
+        const uploadInstructions = JSON.parse(JSON.stringify(t(`dialog.uploadInstructions`, { returnObjects: true })));
+        const uploadInstructionsPartner = JSON.parse(JSON.stringify(t(`dialog.uploadInstructionsPartner`, { returnObjects: true })));
+        const reviewInstructions = JSON.parse(JSON.stringify(t(`dialog.reviewInstructions`, { returnObjects: true })));
+
+        let instructions: any[] = [];
+        if (oUser?.isInternalUser) {
+            instructions.push(uploadInstructions);
+            instructions.push(reviewInstructions);
+        } else {
+            instructions.push(uploadInstructionsPartner);
+        }
+
+        if (!instructions || Object.keys(instructions).length === 0) {
+            return null;
+        }
+
+        return instructions;
     }
 
     const handleReview = async (reviewOption: string) => {
@@ -523,6 +545,19 @@ const ConsultPaymentProgramded = () => {
                 {loading && loaderScreen()}
                 <Toast ref={toast} />
                 <Card header={headerCard} pt={{ content: { className: 'p-0' } }}>
+                    <RenderInfoButton
+                        instructions={getObjectIntruction()}
+                        showInfo={showInfo}
+                        setShowInfo={setShowInfo}
+                        showManual={showManual}
+                        setShowManual={setShowManual}
+                        btnShowInstructionsText={"Mostrar instrucciones"}
+                        btnHideInstructionsText={"Ocultar instrucciones"}
+                        dialogManualBtnLabelText={"Videos de ayuda"}
+                        dialogManualBtnTooltipText={"Videos de ayuda"}
+                        dialogManualHeaderText={"Videos de ayuda"}
+                        lVideos={[]}
+                    />
                     <DialogCrp
                         visible={visible}
                         onHide={() =>  setDialogVisible(false)}

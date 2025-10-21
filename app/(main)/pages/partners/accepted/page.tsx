@@ -16,16 +16,19 @@ import { DataTable, DataTableFilterMeta, DataTableRowClickEvent } from 'primerea
 import DateFormatter from '@/app/components/commons/formatDate';
 import { DialogReception } from '@/app/components/partners/reception/dialogReception';
 import { getlPartners, getlFilesPartners, downloadFiles } from '@/app/(main)/utilities/partners/partnersUtils';
+import { RenderInfoButton } from "@/app/components/commons/instructionsButton";
 
 const RejectedPartners = () => {
     const [lPartners, setPartners] = useState<any[]>([]);
     const [oPartner, setOPartner] = useState<any>();
     const toast = useRef<Toast>(null);
     const [loading, setLoading] = useState(false);
-    const { t } = useTranslation('providers');
+    const { t } = useTranslation('partners');
     const { t: tCommon } = useTranslation('common');
     const [userFunctionalAreas, setUserFunctionalAreas] = useState<any>(null);
     const [oUser, setOUser] = useState<any>(null);
+    const [showInfo, setShowInfo] = useState<boolean>(false);
+    const [showManual, setShowManual] = useState<boolean>(false);
     
     //constantes para el dialog
     const [visible, setDialogVisible] = useState(false);
@@ -219,12 +222,38 @@ const RejectedPartners = () => {
         }
     }, [userFunctionalAreas])
 
+    const getObjectIntruction = () => {
+        const sendAuthInstructions = JSON.parse(JSON.stringify(t(`sendAuthInstructions`, { returnObjects: true })));
+
+        let instructions: any[] = [];
+        instructions.push(sendAuthInstructions);
+
+        if (!instructions || Object.keys(instructions).length === 0) {
+            return null;
+        }
+
+        return instructions;
+    }
+
     return (
         <div className="grid">
             <div className="col-12">
                 {loading && loaderScreen()}
                 <Toast ref={toast} />
                 <Card header={''} pt={{ content: { className: 'p-0' } }}>
+                    <RenderInfoButton
+                        instructions={getObjectIntruction()}
+                        showInfo={showInfo}
+                        setShowInfo={setShowInfo}
+                        showManual={showManual}
+                        setShowManual={setShowManual}
+                        btnShowInstructionsText={"Mostrar instrucciones"}
+                        btnHideInstructionsText={"Ocultar instrucciones"}
+                        dialogManualBtnLabelText={"Videos de ayuda"}
+                        dialogManualBtnTooltipText={"Videos de ayuda"}
+                        dialogManualHeaderText={"Videos de ayuda"}
+                        lVideos={[]}
+                    />
                     <DialogReception 
                         headerTitle={'Revisión registro de proveedor'}
                         visible={visible}
