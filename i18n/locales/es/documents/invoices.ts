@@ -28,9 +28,10 @@ const invoices = {
         headerReview: "Aceptar o rechazar factura",
         uploadInstructions: {
             header: "Para cargar una factura, sigue estos pasos:",
-            step1: "Selecciona una referencia para la factura.",
-            step2: "Selecciona el XML de la factura para su validación, en cuanto selecciones el xml de la factura este se validará automáticamente.",
-            step3: "Una vez validado el XML, se mostrarán las observaciones del archivo que pudiera contener marcados con un signo de advetencia amarillo, si no contiene errores criticos marcados en rojo y con una X, se mostrarán los campos del archivo XML para que pueda continuar.",
+            step1: "Selecciona una o varias referencias para la factura.",
+            step2: "Coloca el monto que se aplicará a cada referencia.",
+            step3: "Selecciona el XML de la factura para su validación, en cuanto selecciones el xml de la factura este se validará automáticamente.",
+            step4: "Una vez validado el XML, se mostrarán las observaciones del archivo que pudiera contener marcados con un signo de advetencia amarillo, si no contiene errores criticos marcados en rojo y con una X, se mostrarán los campos del archivo XML para que pueda continuar.",
             step5: "Selecciona los archivos asociados a la factura en el campo 'Archivos de factura'.",
             step6: "Asegúrate de que los archivos no superen 5 MB cada uno y que en total no superen los 25 MB.",
             footer: `Puedes seleccionar varios archivos a la vez, pero asegúrate de que al menos uno sea un PDF.
@@ -39,20 +40,22 @@ const invoices = {
         uploadInstructionsForForeign: {
             header: "Para cargar una factura, sigue estos pasos:",
             step1: "Todos los campos marcados con un * son obligatorios.",
-            step2: "Selecciona una referencia para la factura (si aplica), si no, selecciona la opción 'Sin referencia'.",
-            step3: "Ingresa la serie (si aplica) y el folio de la factura en formato serie-folio si no aplica la serie solo ingresa folio.",
-            step4: "Ingresa el resto de campos de la factura, recuerda que los campos marcados con un * son obligatorios.",
-            step5: "Selecciona los archivos asociados a la factura en el campo 'Archivos de factura'.",
-            step6: "Asegúrate de que los archivos no superen 5 MB cada uno y que en total no superen los 25 MB.",
+            step2: "Selecciona una o varias referencias para la factura (si aplica), si no, selecciona la opción 'Sin referencia'.",
+            step3: "Coloca el monto que se aplicará a cada referencia.",
+            step4: "Ingresa la serie (si aplica) y el folio de la factura en formato serie-folio si no aplica la serie solo ingresa folio.",
+            step5: "Ingresa el resto de campos de la factura, recuerda que los campos marcados con un * son obligatorios.",
+            step6: "Selecciona los archivos asociados a la factura en el campo 'Archivos de factura'.",
+            step7: "Asegúrate de que los archivos no superen 5 MB cada uno y que en total no superen los 25 MB.",
             footer: `Puedes seleccionar varios archivos a la vez, pero asegúrate de que al menos uno sea un PDF.
              Si seleccionas archivos que no cumplen con estos requisitos, se mostrará un mensaje de error.`
         },
         reviewInstructions: {
             header: "Para revisar una factura, sigue estos pasos:",
             step1: "Revisa los archivos PDF y XML de la factura.",
-            step2: "Si la factura es correcta, presiona el botón Aceptar.",
-            step3: "Si la factura es incorrecta, presiona el botón Rechazar para abrir el campo de comentarios de rechazo.",
-            step4: "Ingresa los comentarios de rechazo y vuelve a presionar el botón Rechazar.",
+            step2: "Si se selecciono una referencia, que este asociada a una OC que este en el sistema se mostraran los archivos al final de los archivos de la propia factura.",
+            step3: "Si la factura es correcta, presiona el botón Aceptar.",
+            step4: "Si la factura es incorrecta, presiona el botón Rechazar para abrir el campo de comentarios de rechazo.",
+            step5: "Ingresa los comentarios de rechazo y vuelve a presionar el botón Rechazar.",
             footer: "Asegúrate de que los comentarios sean claros y específicos para que el proveedor pueda corregir la factura."
         },
         provider: {
