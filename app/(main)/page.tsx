@@ -183,7 +183,7 @@ const Dashboard = () => {
                                 </div>
                             </div>
                         ) : ''}
-                        {oPanelData.n_cn_pending_auth > -1 ? (
+                        {/* {oPanelData.n_cn_pending_auth > -1 ? (
                             <div className="col-12 lg:col-6 xl:col-3">
                                 <div onClick={() => redirectToMenu('/pages/documents/nc/upload')} className="card mb-0" style={{ paddingBottom: '0.5rem' }}>
                                     <div className="flex justify-content-between mb-3">
@@ -197,7 +197,7 @@ const Dashboard = () => {
                                     </div>
                                 </div>
                             </div>
-                        ) : ''}
+                        ) : ''} */}
                     </div>
                 </div>) : ''}
 
