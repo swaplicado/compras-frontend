@@ -566,6 +566,7 @@ const Upload = () => {
                     transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
                     document_type: constants.DOC_TYPE_INVOICE,
                     authz_acceptance: constants.REVIEW_ACCEPT_ID,
+                    authz_authorization: constants.REVIEW_PENDING_ID,
                     start_date: start_date,
                     end_date: end_date
                 };
