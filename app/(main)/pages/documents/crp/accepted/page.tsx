@@ -23,6 +23,7 @@ import { getlAreas } from '@/app/(main)/utilities/documents/common/areaUtils';
 import { FileUpload } from "primereact/fileupload";
 import { getlUrlFilesDps } from "@/app/(main)/utilities/documents/common/filesUtils";
 import { downloadFiles } from '@/app/(main)/utilities/documents/common/filesUtils';
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 
 const ConsultPaymentProgramded = () => {
     const [startDate, setStartDate] = useState<string>('');
@@ -68,6 +69,8 @@ const ConsultPaymentProgramded = () => {
     const [lFilesNames, setLFilesNames] = useState<any[]>([]);
     const [lFilesToEdit, setLFilesToEdit] = useState<any[]>([]);
 
+    const [flowAuthDialogVisible, setFlowAuthDialogVisible] = useState<boolean>(false);
+
     const isMobile = useIsMobile();
 
     const columnsProps = {
@@ -76,6 +79,7 @@ const ConsultPaymentProgramded = () => {
         uuid: { hidden: false },
         date: { hidden: false },
         authz_acceptance_name: { hidden: false },
+        authz_authorization_name: { hidden: true },
         delete: { hidden: true }
     }
 
@@ -99,6 +103,7 @@ const ConsultPaymentProgramded = () => {
                 transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
                 document_type: constants.DOC_TYPE_CRP,
                 authz_acceptance: constants.REVIEW_ACCEPT_ID,
+                authz_authorization: constants.REVIEW_PENDING_ID,
                 start_date: startDate,
                 end_date: endDate,
                 user_id: oUser.id
@@ -113,6 +118,7 @@ const ConsultPaymentProgramded = () => {
                 transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
                 document_type: constants.DOC_TYPE_CRP,
                 authz_acceptance: constants.REVIEW_ACCEPT_ID,
+                authz_authorization: constants.REVIEW_PENDING_ID,
                 start_date: startDate,
                 end_date: endDate,
             };
@@ -304,6 +310,83 @@ const ConsultPaymentProgramded = () => {
         );
     };
 
+    const handleFlowAuthorization = async () => {
+        try {
+            setLoading(true);
+            console.log('oCrp: ', oCrp);
+            
+            const route = constants.ROUTE_POST_START_AUTHORIZATION;
+            const response = await axios.post(constants.API_AXIOS_POST, {
+                route,
+                jsonData: {
+                    id_external_system: 1,
+                    id_company: oCrp.oCompany.external_id, //company id del dps id_company
+                    id_flow_model: constants.FLOW_AUTH_CRP,
+                    resource: {
+                        code: oCrp.folio,
+                        name: oCrp.oProvider.name, //proveedor
+                        content: {},
+                        external_id: oCrp.id,
+                        resource_type: constants.RESOURCE_TYPE_CRP
+                    },
+                    deadline: null,
+                    sent_by: oUser.oUser.external_id, //external user id
+                    id_actor_type: 2,
+                    stakeholders: [{
+                        external_user_id: oUser.oUser.external_id,
+                        id_actor_type: 2
+                    }],
+                    notes: ''
+                }
+            });
+
+            if (response.status == 200) {
+                
+                setSuccessMessage('Registro de proveedor enviado a autorizar');
+                setShowing('animationSuccess');
+                await getLCrp();
+            } else {
+                throw new Error('');
+            }
+        } catch (error: any) {
+            showToast('error', error.response?.data?.error || 'Error al enviar enviar el registro a autorizar');
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const accept = async () => {
+        await handleFlowAuthorization();
+    }
+
+    const reject = () => {
+        
+    }
+
+    const sendToAuth = async () => {
+        try {
+            if (!oCrp) {
+                showToast('info', 'Selecciona un renglón');
+                return;
+            }
+
+            const id_dps = oCrp.id;
+            const folio = oCrp.folio;
+            confirmDialog({
+                message: '¿Quieres enviar a autorizar: ' + folio + '?',
+                header: 'Confirma envío de autorización',
+                icon: 'pi pi-info-circle',
+                acceptClassName: 'p-button-primary',
+                acceptLabel: 'Si',
+                rejectLabel: 'No',
+                accept: () => accept(),
+                reject: () => reject()
+            });
+        } catch (error: any) {
+            
+        }
+    }
+
 //*******INIT*******
     useEffect(() => {
         const fetch = async () => {
@@ -343,12 +426,20 @@ const ConsultPaymentProgramded = () => {
         }
     }, [userFunctionalAreas, oUser, startDate, endDate])
 
+    useEffect(() => {
+        if (flowAuthDialogVisible) {
+            sendToAuth();
+            setFlowAuthDialogVisible(false);
+        }
+    }, [flowAuthDialogVisible])
+
     return (
         <div className="grid">
             <div className="col-12">
                 {loading && loaderScreen()}
                 <Toast ref={toast} />
                 <Card header={headerCard} pt={{ content: { className: 'p-0' } }}>
+                    <ConfirmDialog />
                     <DialogCrp
                         visible={visible}
                         onHide={() =>  setDialogVisible(false)}
@@ -409,6 +500,8 @@ const ConsultPaymentProgramded = () => {
                         setDialogVisible={setDialogVisible}
                         setDialogMode={setDialogMode}
                         fileBodyTemplate={fileBodyTemplate}
+                        withBtnSendAuth={true}
+                        setFlowAuthDialogVisible={setFlowAuthDialogVisible}
                     />
                 </Card>
             </div>

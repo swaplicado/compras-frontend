@@ -67,6 +67,8 @@ interface DialogCrpProps {
     fileEditAcceptRef: React.RefObject<FileUpload>;
     lFilesNames: any[];
     setLFilesToEdit: React.Dispatch<React.SetStateAction<any>>;
+    showAuthComments?: boolean,
+    isInAuth?: boolean
 }
 
 export const DialogCrp = ({
@@ -110,6 +112,8 @@ export const DialogCrp = ({
     fileEditAcceptRef,
     lFilesNames,
     setLFilesToEdit,
+    showAuthComments = false,
+    isInAuth = false,
 }: DialogCrpProps) => {
     const { t } = useTranslation('crp');
     const { t: tCommon } = useTranslation('common');
@@ -512,6 +516,25 @@ export const DialogCrp = ({
                                 options: [],
                                 placeholder: '',
                                 errorKey: 'authz_acceptance_notes',
+                                errors: formErrors,
+                                errorMessage: 'Ingrese comentario para rechazar'
+                            })
+                        )}
+
+                        { showAuthComments && (
+                            RenderField({
+                                label: 'Comentarios de autorización/rechazo:',
+                                tooltip: 'Comentarios de autorización/rechazo:',
+                                value: oCrp?.authz_authorization_notes,
+                                disabled: !isInAuth,
+                                mdCol: 12,
+                                type: 'textArea',
+                                onChange: (value) => {
+                                    setOCrp?.((prev: any) => ({ ...prev, authz_authorization_notes: value }));
+                                },
+                                options: [],
+                                placeholder: '',
+                                errorKey: 'authz_authorization_notes',
                                 errors: formErrors,
                                 errorMessage: 'Ingrese comentario para rechazar'
                             })

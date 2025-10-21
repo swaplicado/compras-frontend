@@ -109,6 +109,38 @@
                     ]
                 },
                 {
+                    "label": "Consulta autorizaciones CRP",
+                    "icon": "pi pi-search",
+                    "items": [
+                        {
+                            "label": "En proceso de autorización",
+                            "icon": "pi pi-clock",
+                            "to": "/pages/documents/crp/authorizations/consultationAuth/inProcess"
+                        },
+                        {
+                            "label": "Autorizadas",
+                            "icon": "pi pi-check-circle",
+                            "to": "/pages/documents/crp/authorizations/consultationAuth/authorized"
+                        },
+                        {
+                            "label": "Rechazadas",
+                            "icon": "pi pi-times-circle",
+                            "to": "/pages/documents/crp/authorizations/consultationAuth/rejected"
+                        }
+                    ]
+                },
+                {
+                    "label": "Autorización de CRP",
+                    "icon": "pi pi-pencil",
+                    "items": [
+                        {
+                            "label": "Pendientes de autorizar",
+                            "icon": "pi pi-exclamation-circle",
+                            "to": "/pages/documents/crp/authorizations/authCrp"
+                        }
+                    ]
+                },
+                {
                     "label": "NC",
                     "icon": "pi pi-credit-card",
                     "items": [

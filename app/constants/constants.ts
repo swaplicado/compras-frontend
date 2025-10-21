@@ -51,6 +51,7 @@ const constants = {
     ROUTE_GET_PARTNER_IN_AUTHORIZATION: '/transactions/applying-auth/',
     ROUTE_GET_INVOICES_NC: '/transactions/documents/select-doc-uncovered/',
     ROUTE_GET_INVOICES_TO_REVIEW_NC: '/transactions/documents/get-documents/',
+    ROUTE_GET_PANEL_DATA: '/transactions/get-panel-data/',
 
     ROUTE_POST_VALIDATE_XML: '/transactions/documents/validate-xml/',
     ROUTE_POST_DOCUMENT_TRANSACTION: '/transactions/document-transaction/',
@@ -145,6 +146,8 @@ const constants = {
     RESOURCE_TYPE_PUR_INVOICE: 4,
     RESOURCE_TYPE_PAYMENTS: 11,
     RESOURCE_TYPE_PROVIDER: 21,
+    RESOURCE_TYPE_CRP: 16,
+    RESOURCE_TYPE_NC: 6,
 
     //estatus de pagos
     PAYMENT_STATUS_NEW_ID: 1,
@@ -162,6 +165,7 @@ const constants = {
 
     //flows ids
     FLOW_AUTH_PARTNER: 17,
+    FLOW_AUTH_CRP: 17,
 
     //Calendar
     MONTHS_BACK_LIMIT: 6

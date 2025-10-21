@@ -1,4 +1,4 @@
-//CARGA DE CRP
+//CRP ACEPTADAS
 'use client';
 import React, {useEffect, useState, useRef} from "react";
 import constants from '@/app/constants/constants';
@@ -23,7 +23,7 @@ import { getlAreas } from '@/app/(main)/utilities/documents/common/areaUtils';
 import { FileUpload } from "primereact/fileupload";
 import { getlUrlFilesDps } from "@/app/(main)/utilities/documents/common/filesUtils";
 import { downloadFiles } from '@/app/(main)/utilities/documents/common/filesUtils';
-import { RenderInfoButton } from "@/app/components/commons/instructionsButton";
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 
 const ConsultPaymentProgramded = () => {
     const [startDate, setStartDate] = useState<string>('');
@@ -57,7 +57,8 @@ const ConsultPaymentProgramded = () => {
     const [errorMessage, setErrorMessage] = useState('');
     const [formErrors, setFormErrors] = useState({
         area: false,
-        authz_acceptance_notes: false
+        authz_acceptance_notes: false,
+        authz_authorization_notes: false
     });
     const [loadingFiles, setLoadingFiles] = useState(false);
     const [lFiles, setLFiles] = useState<any[]>([]);
@@ -68,8 +69,7 @@ const ConsultPaymentProgramded = () => {
     const [loadingFileNames, setLoadingFileNames] = useState<boolean>(false);
     const [lFilesNames, setLFilesNames] = useState<any[]>([]);
     const [lFilesToEdit, setLFilesToEdit] = useState<any[]>([]);
-    const [showInfo, setShowInfo] = useState <boolean>(false);
-    const [showManual, setShowManual] = useState <boolean>(false);
+
     const isMobile = useIsMobile();
 
     const columnsProps = {
@@ -77,8 +77,8 @@ const ConsultPaymentProgramded = () => {
         folio: { hidden: false },
         uuid: { hidden: false },
         date: { hidden: false },
-        authz_acceptance_name: { hidden: false },
-        authz_authorization_name: { hidden: true },
+        authz_acceptance_name: { hidden: true },
+        authz_authorization_name: { hidden: false },
         delete: { hidden: true }
     }
 
@@ -101,7 +101,8 @@ const ConsultPaymentProgramded = () => {
                 functional_area: userFunctionalAreas,
                 transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
                 document_type: constants.DOC_TYPE_CRP,
-                authz_acceptance: constants.REVIEW_PENDING_ID,
+                authz_acceptance: constants.REVIEW_ACCEPT_ID,
+                authz_authorization: constants.REVIEW_ACCEPT_ID,
                 start_date: startDate,
                 end_date: endDate,
                 user_id: oUser.id
@@ -115,7 +116,8 @@ const ConsultPaymentProgramded = () => {
                 partner_id: oUser.oProvider.id,
                 transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
                 document_type: constants.DOC_TYPE_CRP,
-                authz_acceptance: constants.REVIEW_PENDING_ID,
+                authz_acceptance: constants.REVIEW_ACCEPT_ID,
+                authz_authorization: constants.REVIEW_ACCEPT_ID,
                 start_date: startDate,
                 end_date: endDate,
             };
@@ -141,11 +143,11 @@ const ConsultPaymentProgramded = () => {
                     oCompany,
                     oProvider
                 });
-                // await getlAreas({
-                //     setLAreas,
-                //     showToast,
-                //     company_id: oCompany.external_id
-                // });
+                await getlAreas({
+                    setLAreas,
+                    showToast,
+                    company_id: oCompany.external_id
+                });
                 setLoadinglPaymentsExec(false);
             }
             fetch();
@@ -164,106 +166,9 @@ const ConsultPaymentProgramded = () => {
             uuid: null,
             authz_acceptance_name: null,
         })
-        fileUploadRef.current?.clear();
-        xmlUploadRef.current?.clear();
         setIsXmlValid(false);
         setLPaymentsExec([]);
         setShowing('body');
-        setLAreas([]);
-    }
-
-    const validate = () => {
-        const newFormErrors = {
-            area: !oCrp.functional_area,
-            authz_acceptance_notes: !oCrp.authz_acceptance_notes && isInReview
-        }
-        setFormErrors(newFormErrors);
-        
-        return !Object.values(newFormErrors).some(Boolean); 
-    }
-
-    const handleSubmit = async () => {
-        try {
-            setLoading(true);
-            
-            if (!validate()) {
-                return;
-            }
-
-            const files = fileUploadRef.current?.getFiles() || [];
-            const route = constants.ROUTE_POST_CREATE_CRP;
-            const formData = new FormData();
-            const xmlFiles = xmlUploadRef.current?.getFiles() || [];
-            const xmlBaseName = xmlFiles[0].name.replace(/\.[^/.]+$/, '');
-            const xmlName = xmlFiles[0].name;
-            const hasSameFile = files.some((file) => file.name === xmlName);
-
-            if (hasSameFile) {
-                showToast?.('error', t('dialog.files.hasSameFile', { xmlName }));
-                return;
-            }
-
-            const hasMatchingPDF = files.some((file) => {
-                const isPDF = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
-                const fileBaseName = file.name.replace(/\.[^/.]+$/, '');
-                return isPDF && fileBaseName === xmlBaseName;
-            });
-
-            if (!hasMatchingPDF) {
-                showToast?.('error', t('dialog.files.hasMatchingPDF', { xmlBaseName }));
-                return;
-            }
-            
-            xmlFiles.forEach((file: string | Blob) => {
-                formData.append('files', file);
-            });
-            files.forEach((file: string | Blob) => {
-                formData.append('files', file);
-            });
-
-            let payments: any[] = [];
-            oCrp?.oPay.forEach((o: any) => {
-                payments.push(o.id)
-            });
-
-            formData.append('route', route);
-            formData.append('payments', JSON.stringify(payments));
-            formData.append('company', oCrp?.oCompany.id);
-            formData.append('user_id', oUser.oUser.id);
-
-            const document = {
-                transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
-                document_type: constants.DOC_TYPE_CRP,
-                partner: oCrp?.oProvider.id,
-                series: oCrp?.series,
-                number: oCrp?.number,
-                date: moment(oCrp?.xml_date).format('YYYY-MM-DD'),
-                currency: 102,
-                issuer_tax_regime: oCrp?.tax_regime_issuer.id,
-                receiver_tax_regime: oCrp?.tax_regime_receiver.id,
-                functional_area_id: oCrp?.functional_area.id,
-                uuid: oCrp?.uuid
-            }
-
-            formData.append('document', JSON.stringify(document));
-            
-            const response = await axios.post(constants.API_AXIOS_POST, formData, {
-                headers: { 'Content-Type': 'multipart/form-data' }
-            });
-
-            if (response.status === 200 || response.status === 201) {
-                setSuccessMessage('Se cargó el CRP con exito');
-                setShowing('animationSuccess');
-                await getLCrp();
-            } else {
-                throw new Error('');
-            }
-        } catch (error: any) {
-            setShowing('animationError');
-            setErrorMessage('Error al cargar el CRP');
-        } finally {
-            setLoading(false);
-        }
     }
 
     const configCrpToView = (data: any) =>  {
@@ -271,6 +176,7 @@ const ConsultPaymentProgramded = () => {
             ...prev,
             id: data.id,
             authz_acceptance_notes: data.authz_acceptance_notes,
+            authz_authorization_notes: data.authz_authorization_notes,
             oCompany: data.oCompany.name,
             oProvider: data.oProvider.name,
             functional_area: data.functional_area.name,
@@ -282,79 +188,6 @@ const ConsultPaymentProgramded = () => {
             uuid: data.uuid
         }));
     }
-
-    const getObjectIntruction = () => {
-        const uploadInstructions = JSON.parse(JSON.stringify(t(`dialog.uploadInstructions`, { returnObjects: true })));
-        const uploadInstructionsPartner = JSON.parse(JSON.stringify(t(`dialog.uploadInstructionsPartner`, { returnObjects: true })));
-        const reviewInstructions = JSON.parse(JSON.stringify(t(`dialog.reviewInstructions`, { returnObjects: true })));
-
-        let instructions: any[] = [];
-        if (oUser?.isInternalUser) {
-            instructions.push(uploadInstructions);
-            instructions.push(reviewInstructions);
-        } else {
-            instructions.push(uploadInstructionsPartner);
-        }
-
-        if (!instructions || Object.keys(instructions).length === 0) {
-            return null;
-        }
-
-        return instructions;
-    }
-
-    const handleReview = async (reviewOption: string) => {
-        try {
-            setLoading(true);
-
-            if (reviewOption == constants.REVIEW_REJECT) {
-                if (!oCrp.authz_acceptance_notes.trim()) {
-                    setFormErrors((prev: any) => ({ ...prev, authz_acceptance_notes: true }));
-                    showToast?.('info', 'Ingresa un comentario de rechazo del CRP');
-                    return;
-                }
-            }
-            const route = '/transactions/documents/' + oCrp.id + '/set-authz/';
-
-            const response = await axios.post(constants.API_AXIOS_PATCH, {
-                route,
-                jsonData: {
-                    authz_acceptance_notes: oCrp.authz_acceptance_notes,
-                    authz_code: reviewOption,
-                    user_id: oUser.id,
-                }
-            });
-
-            if (response.status === 200 || response.status === 201) {
-                setSuccessMessage('Se actualizó el CRP con exito');
-                setShowing('animationSuccess');
-                await getLCrp();
-            } else {
-                throw new Error(t('uploadDialog.errors.updateStatusError'));
-            }
-        } catch (error: any) {
-            console.error('Error al actualizar estado:', error);
-            setShowing('animationError');
-            setErrorMessage('Error al actualizar el CRP');
-        } finally {
-            setLoading?.(false);
-        }
-    };
-
-    useEffect(() =>  {
-        if (oCrp?.oPay) {
-            let areas: any[] = [];
-            for (let i = 0; i < oCrp.oPay.length; i++) {
-                if (!areas.find((item: any) => item.id == oCrp.oPay[i].functional_area__id)) {
-                    areas.push({
-                        id: oCrp.oPay[i].functional_area__id,
-                        name: oCrp.oPay[i].functional_area__name
-                    })
-                }
-            }
-            setLAreas(areas);
-        }
-    }, [oCrp?.oPay])
 
 //*******OTROS*******
     const headerCard = (
@@ -387,22 +220,9 @@ const ConsultPaymentProgramded = () => {
     const dialogFooterContent = () => {
         return (
             <>
-                {showing == 'body' && dialogMode == 'create' && (
-                    <div className="flex flex-column md:flex-row justify-content-between gap-2">
-                        <Button label={tCommon('btnClose')} icon="bx bx-x" onClick={() => setDialogVisible(false)} severity="secondary" disabled={loading} />
-                        <Button label={tCommon('btnUpload')} icon="pi pi-upload" onClick={() => handleSubmit()} disabled={!isXmlValid} />
-                    </div>
-                )}
-
                 {showing == 'body' && dialogMode == 'view' && (
                     <div className="flex flex-column md:flex-row justify-content-between gap-2">
                         <Button label={tCommon('btnClose')} icon="bx bx-x" onClick={() => setDialogVisible(false)} severity="secondary" disabled={loading} />
-                            { isInReview && (
-                                <>
-                                    <Button label={tCommon('btnReject')} icon="bx bx-like" onClick={() => handleReview?.(constants.REVIEW_REJECT)} autoFocus disabled={loading} severity="danger" />
-                                    <Button label={tCommon('btnAccept')} icon="bx bx-like" onClick={() => handleReview?.(constants.REVIEW_ACCEPT)} autoFocus disabled={loading} severity="success" />
-                                </>
-                            )}
                     </div>
                 )}
             </>
@@ -410,12 +230,7 @@ const ConsultPaymentProgramded = () => {
     }
 
     const dialogHeaderTitle = () => {
-        let title = '';
-        if (dialogMode == 'create') {
-            title = t('dialog.uploadTitle');
-        } else if (dialogMode == 'view') {
-            title = t('dialog.viewTitle');
-        }
+        let title = t('dialog.viewTitle');
 
         return title;
     }
@@ -447,12 +262,6 @@ const ConsultPaymentProgramded = () => {
         setLoadinglPaymentsExec(true);
         configCrpToView(e.data);
         setIsXmlValid(true);
-        if (oUser.isInternalUser) {
-            setIsReview(true);
-        } else {
-            setIsReview(false);
-        }
-
         setDialogMode('view');
         setDialogVisible(true);
         await getlUrlFilesDps({
@@ -546,19 +355,7 @@ const ConsultPaymentProgramded = () => {
                 {loading && loaderScreen()}
                 <Toast ref={toast} />
                 <Card header={headerCard} pt={{ content: { className: 'p-0' } }}>
-                    <RenderInfoButton
-                        instructions={getObjectIntruction()}
-                        showInfo={showInfo}
-                        setShowInfo={setShowInfo}
-                        showManual={showManual}
-                        setShowManual={setShowManual}
-                        btnShowInstructionsText={"Mostrar instrucciones"}
-                        btnHideInstructionsText={"Ocultar instrucciones"}
-                        dialogManualBtnLabelText={"Videos de ayuda"}
-                        dialogManualBtnTooltipText={"Videos de ayuda"}
-                        dialogManualHeaderText={"Videos de ayuda"}
-                        lVideos={[]}
-                    />
+                    <ConfirmDialog />
                     <DialogCrp
                         visible={visible}
                         onHide={() =>  setDialogVisible(false)}
@@ -595,11 +392,13 @@ const ConsultPaymentProgramded = () => {
                         loadingFiles={loadingFiles}
                         lFiles={lFiles}
                         lPaymentsExecDetails={lPaymentsExecDetails}
-                        isInReview={isInReview}
+                        isInReview={false}
                         loadingFileNames={loadingFileNames}
                         fileEditAcceptRef={fileEditAcceptRef}
                         lFilesNames={lFilesNames}
                         setLFilesToEdit={setLFilesToEdit}
+                        showAuthComments={true}
+                        isInAuth={false}
                     />
                     <TableCrp 
                         lCrp={lCrp}
@@ -615,7 +414,7 @@ const ConsultPaymentProgramded = () => {
                         dateFilter={dateFilter}
                         setDateFilter={setDateFilter}
                         showToast={showToast}
-                        withBtnCreate={true}
+                        withBtnCreate={false}
                         setDialogVisible={setDialogVisible}
                         setDialogMode={setDialogMode}
                         fileBodyTemplate={fileBodyTemplate}

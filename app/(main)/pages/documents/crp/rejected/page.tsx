@@ -76,6 +76,7 @@ const ConsultPaymentProgramded = () => {
         uuid: { hidden: false },
         date: { hidden: false },
         authz_acceptance_name: { hidden: false },
+        authz_authorization_name: { hidden: true },
         delete: { hidden: false }
     }
 

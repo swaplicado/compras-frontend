@@ -9,11 +9,25 @@ import moment from 'moment';
 
 const Dashboard = () => {
     const [loading, setLoading] = useState(false);
-    const [totDps, setTotDps] = useState(0);
+    const [oPanelData, setOPanelData] = useState({
+        n_documents: 0,
+        n_invoice_pending_accept: 0,
+        n_invoice_pending_auth: 0,
+        n_cn_pending_accept: 0,
+        n_cn_pending_auth: 0,
+        n_payment_pending_auth: 0,
+        n_payment_pending_check: 0,
+        n_provider_pending_accept: 0,
+        n_provider_pending_auth: 0,
+        n_crp_pending_accept: 0,
+        n_crp_pending_auth: 0
+    });
     const toast = useRef<Toast>(null);
-    let userGroups = Cookies.get('groups') ? JSON.parse(Cookies.get('groups') || '[]') : [];
-    const partnerId = Cookies.get('partnerId') ? JSON.parse(Cookies.get('partnerId') || '') : null;
-    const functionalAreas = Cookies.get('functional_areas') ? JSON.parse(Cookies.get('functional_areas') || '[]') : [];
+    const [panelDocs, setPanelDocs] = useState(false);
+    const [panelCn, setPanelCn] = useState(false);
+    const [panelPayments, setPanelPayments] = useState(false);
+    const [panelCrp, setPanelCrp] = useState(false);
+    const [panelProviders, setPanelProviders] = useState(false);
 
     const showToast = (type: 'success' | 'info' | 'warn' | 'error' = 'error', message: string, summaryText = 'Error:') => {
         toast.current?.show({
@@ -23,19 +37,17 @@ const Dashboard = () => {
             life: 300000
         });
     };
-    
-    const getDps = async (params: any) => {
+
+    const getData = async (params: any) => {
         try {
-            // const route = !isInternalUser ? constants.ROUTE_GET_DPS_BY_PARTNER_ID : constants.ROUTE_GET_DPS_BY_AREA_ID;
-            // const params = !isInternalUser ? { route: route, partner_id: partnerId } : { route: route, functional_area: Array.isArray(functionalAreas) ?  functionalAreas : [functionalAreas] };
-            
             const response = await axios.get(constants.API_AXIOS_GET, {
                 params: params
             });
 
             if (response.status === 200) {
+                console.log(response.data);
                 const data = response.data.data || [];
-                setTotDps(data.length);
+                setOPanelData(data);
                 return true;
             } else {
                 // throw new Error(`${t('errors.getInvoicesError')}: ${response.statusText}`);
@@ -47,77 +59,261 @@ const Dashboard = () => {
     };
 
     useEffect(() => {
-            const fetchReferences = async () => {
-                setLoading(true);
+        const fetchReferences = async () => {
+            setLoading(true);
 
-                let groups = [];
-                if (!Array.isArray(userGroups)) {
-                    groups = [userGroups];
-                } else {
-                    groups = userGroups;
-                }
-
-                const start_date = moment(new Date).startOf('month').format('YYYY-MM-DD');
-                const end_date = moment(new Date).endOf('month').format('YYYY-MM-DD');
-
-                if (groups.includes(constants.ROLES.COMPRADOR_ID) || groups.includes(constants.ROLES.CONTADOR_ID)) {
-                    const route = constants.ROUTE_GET_DPS_BY_AREA_ID;
-                    const params = {
-                        route: route,
-                        functional_area: functionalAreas,
-                        transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
-                        document_type: constants.DOC_TYPE_INVOICE,
-                        authz_acceptance: constants.REVIEW_PENDING_ID,
-                        start_date: start_date,
-                        end_date: end_date
-                    };
-                    await getDps(params);   
-                }
-    
-                if (groups.includes(constants.ROLES.PROVEEDOR_ID)) {
-                    const route = constants.ROUTE_GET_DPS_BY_PARTNER_ID
-                    const params = {
-                        route: route,
-                        partner_id: partnerId,
-                        transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
-                        document_type: constants.DOC_TYPE_INVOICE,
-                        authz_acceptance: constants.REVIEW_PENDING_ID,
-                        start_date: start_date,
-                        end_date: end_date
-                    };
-                    await getDps(params);
-                }
-    
-                // if (groups.includes(constants.ROLES.COMPRADOR_ID)) {
-                //     await getDps(true);
-                // }
-    
-                // if (groups.includes(constants.ROLES.PROVEEDOR_ID)) {
-                //     await getDps(false);
-                // }
-
-                setLoading(false);
+            const userId = Cookies.get('userId');
+            const start_date = moment(new Date).startOf('month').format('YYYY-MM-DD');
+            const end_date = moment(new Date).endOf('month').format('YYYY-MM-DD');
+            const route = constants.ROUTE_GET_PANEL_DATA
+            const params = {
+                route: route,
+                id_user_pc: userId,
+                start_date: start_date,
+                end_date: end_date
             };
-            fetchReferences();
-        }, []);
+            await getData(params);
+
+            setLoading(false);
+        };
+        fetchReferences();
+    }, []);
+
+    useEffect(() => {
+        setPanelDocs(oPanelData.n_documents >= 0 || oPanelData.n_invoice_pending_accept >= 0 || oPanelData.n_invoice_pending_auth >= 0);
+        setPanelCn(oPanelData.n_cn_pending_accept >= 0 || oPanelData.n_cn_pending_auth >= 0);
+        setPanelPayments(oPanelData.n_payment_pending_auth >= 0 || oPanelData.n_payment_pending_check >= 0);
+        setPanelCrp(oPanelData.n_crp_pending_accept >= 0 || oPanelData.n_crp_pending_auth >= 0);
+        setPanelProviders(oPanelData.n_provider_pending_accept >= 0 || oPanelData.n_provider_pending_auth >= 0);
+    }, [oPanelData])
+
+    const redirectToMenu = (sRoute: string) => {
+        window.location.href = sRoute;
+    }
 
     return (
-        <div className="grid">
+        <div>
             {loading && loaderScreen()}
-            <div className="col-12 lg:col-6 xl:col-3">
-                <div className="card mb-0">
-                    <div className="flex justify-content-between mb-3">
-                        <div>
-                            <span className="block text-500 font-medium mb-3">Facturas del mes</span>
-                            <div className="text-900 font-medium text-xl">{totDps}</div>
+            {/* pi pi-info-circle */}
+            
+            <h6 style={{color: '#583aceff'}}>
+                &nbsp;<i className="pi pi-info-circle" style={{ fontSize: '1rem', color: '#583aceff' }}></i>&nbsp;
+            Haz click en cualquier tarjeta para ir al menú</h6>
+            {/* Documentos */}
+            {panelDocs ? (
+                <div className="mb-4">
+                    <div className="flex align-items-center mb-2">
+                        <div className="w-2rem h-2rem flex align-items-center justify-content-center bg-primary-100 border-round mr-3">
+                            <i className="pi pi-folder text-primary-500 text-xl"></i>
                         </div>
-                        <div className="flex align-items-center justify-content-center bg-blue-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
-                            <i className="pi pi-file text-blue-500 text-xl" />
-                        </div>
+                        <h3 className="text-900 font-medium m-0 text-base">Documentos</h3>
                     </div>
-                    <span className="text-500"></span>
-                </div>
-            </div>
+                    <div className="grid">
+                        {oPanelData.n_documents > -1 ? (
+                            <div className="col-12 lg:col-6 xl:col-3">
+                                <div onClick={() => redirectToMenu('/pages/documents/invoices/uploading/accepted')} className="card mb-0" style={{ paddingBottom: '0.5rem' }}>
+                                    <div className="flex justify-content-between mb-3">
+                                        <div>
+                                            <span className="block text-500 font-medium mb-3">Facturas del mes</span>
+                                            <div className="text-900 font-medium text-xl">{oPanelData.n_documents}</div>
+                                        </div>
+                                        <div className="flex align-items-center justify-content-center bg-blue-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
+                                            <i className="pi pi-file text-blue-500 text-xl" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : ''}
+                        {oPanelData.n_invoice_pending_accept > -1 ? (
+                            <div className="col-12 lg:col-6 xl:col-3">
+                                <div onClick={() => redirectToMenu('/pages/documents/invoices/uploading/upload')} className="card mb-0" style={{ paddingBottom: '0.5rem' }}>
+                                    <div className="flex justify-content-between mb-3">
+                                        <div>
+                                            <span className="block text-500 font-medium mb-3">Facturas por aceptar</span>
+                                            <div className="text-900 font-medium text-xl">{oPanelData.n_invoice_pending_accept}</div>
+                                        </div>
+                                        <div className="flex align-items-center justify-content-center bg-blue-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
+                                            <i className="pi pi-file text-blue-500 text-xl" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : ''}
+                        {oPanelData.n_invoice_pending_auth > -1 ? (
+                            <div className="col-12 lg:col-6 xl:col-3">
+                                <div onClick={() => redirectToMenu('/pages/documents/invoices/authorizations/myFlowAuthorizations/inAuthorization')} className="card mb-0" 
+                                style={{ paddingBottom: '0.5rem' }}>
+                                    <div className="flex justify-content-between mb-3">
+                                        <div>
+                                            <span className="block text-500 font-medium mb-3">Facturas por autorizar</span>
+                                            <div className="text-900 font-medium text-xl">{oPanelData.n_invoice_pending_auth}</div>
+                                        </div>
+                                        <div className="flex align-items-center justify-content-center bg-blue-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
+                                            <i className="pi pi-file text-blue-500 text-xl" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : ''}
+                    </div>
+                </div>) : ''}
+
+            {/* Notas de crédito */}
+            {panelCn ? (
+                <div className="mb-4">
+                    <div className="flex align-items-center mb-2">
+                        <div className="w-2rem h-2rem flex align-items-center justify-content-center bg-primary-100 border-round mr-3">
+                            <i className="pi pi-credit-card text-primary-500 text-xl"></i>
+                        </div>
+                        <h3 className="text-900 font-medium m-0 text-base">Notas de crédito</h3>
+                    </div>
+                    <div className="grid">
+                        {oPanelData.n_cn_pending_accept > -1 ? (
+                            <div className="col-12 lg:col-6 xl:col-3">
+                                <div onClick={() => redirectToMenu('/pages/documents/nc/upload')} className="card mb-0" style={{ paddingBottom: '0.5rem' }}>
+                                    <div className="flex justify-content-between mb-3">
+                                        <div>
+                                            <span className="block text-500 font-medium mb-3">NC por aceptar</span>
+                                            <div className="text-900 font-medium text-xl">{oPanelData.n_cn_pending_accept}</div>
+                                        </div>
+                                        <div className="flex align-items-center justify-content-center bg-blue-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
+                                            <i className="pi pi-credit-card text-blue-500 text-xl" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : ''}
+                        {/* {oPanelData.n_cn_pending_auth > -1 ? (
+                            <div className="col-12 lg:col-6 xl:col-3">
+                                <div onClick={() => redirectToMenu('/pages/documents/nc/upload')} className="card mb-0" style={{ paddingBottom: '0.5rem' }}>
+                                    <div className="flex justify-content-between mb-3">
+                                        <div>
+                                            <span className="block text-500 font-medium mb-3">NC por autorizar</span>
+                                            <div className="text-900 font-medium text-xl">{oPanelData.n_cn_pending_auth}</div>
+                                        </div>
+                                        <div className="flex align-items-center justify-content-center bg-blue-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
+                                            <i className="pi pi-credit-card text-blue-500 text-xl" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : ''} */}
+                    </div>
+                </div>) : ''}
+
+            {/* Pagos */}
+            {panelPayments ? (
+                <div className="mb-4">
+                    <div className="flex align-items-center mb-2">
+                        <div className="w-2rem h-2rem flex align-items-center justify-content-center bg-primary-100 border-round mr-3">
+                            <i className="pi pi-money-bill text-primary-500 text-xl"></i>
+                        </div>
+                        <h3 className="text-900 font-medium m-0 text-base">Pagos</h3>
+                    </div>
+                    <div className="grid">
+                        {oPanelData.n_payment_pending_check > -1 ? (
+                            <div className="col-12 lg:col-6 xl:col-3">
+                                <div onClick={() => redirectToMenu('/pages/documents/payments/executed')} className="card mb-0" style={{ paddingBottom: '0.5rem' }}>
+                                    <div className="flex justify-content-between mb-3">
+                                        <div>
+                                            <span className="block text-500 font-medium mb-3">Pagos por comprobar</span>
+                                            <div className="text-900 font-medium text-xl">{oPanelData.n_payment_pending_check}</div>
+                                        </div>
+                                        <div className="flex align-items-center justify-content-center bg-blue-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
+                                            <i className="pi pi-money-bill text-blue-500 text-xl" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : ''}
+                    </div>
+                </div>) : ''}
+
+            {/* CRP */}
+            {panelCrp ? (
+                <div className="mb-4">
+                    <div className="flex align-items-center mb-2">
+                        <div className="w-2rem h-2rem flex align-items-center justify-content-center bg-primary-100 border-round mr-3">
+                            <i className="pi pi-briefcase text-primary-500 text-xl"></i>
+                        </div>
+                        <h3 className="text-900 font-medium m-0 text-base">CRP</h3>
+                    </div>
+                    <div className="grid">
+                        {oPanelData.n_crp_pending_accept > -1 ? (
+                            <div className="col-12 lg:col-6 xl:col-3">
+                                <div onClick={() => redirectToMenu('/pages/documents/crp/upload')} className="card mb-0" style={{ paddingBottom: '0.5rem' }}>
+                                    <div className="flex justify-content-between mb-3">
+                                        <div>
+                                            <span className="block text-500 font-medium mb-3">CRP por aceptar</span>
+                                            <div className="text-900 font-medium text-xl">{oPanelData.n_crp_pending_accept}</div>
+                                        </div>
+                                        <div className="flex align-items-center justify-content-center bg-blue-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
+                                            <i className="pi pi-briefcase text-blue-500 text-xl" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : ''}
+                        {oPanelData.n_crp_pending_auth > -1 ? (
+                            <div className="col-12 lg:col-6 xl:col-3">
+                                <div onClick={() => redirectToMenu('/pages/documents/crp/accepted')} className="card mb-0" style={{ paddingBottom: '0.5rem' }}>
+                                    <div className="flex justify-content-between mb-3">
+                                        <div>
+                                            <span className="block text-500 font-medium mb-3">CRP por autorizar</span>
+                                            <div className="text-900 font-medium text-xl">{oPanelData.n_crp_pending_auth}</div>
+                                        </div>
+                                        <div className="flex align-items-center justify-content-center bg-blue-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
+                                            <i className="pi pi-briefcase text-blue-500 text-xl" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : ''}
+                    </div>
+                </div>) : ''}
+
+            {/* Proveedores */}
+            {panelProviders ? (
+                <div className="mb-4">
+                    <div className="flex align-items-center mb-2">
+                        <div className="w-2rem h-2rem flex align-items-center justify-content-center bg-primary-100 border-round mr-3">
+                            <i className="pi pi-users text-primary-500 text-xl"></i>
+                        </div>
+                        <h3 className="text-900 font-medium m-0 text-base">Proveedores</h3>
+                    </div>
+                    <div className="grid">
+                        {oPanelData.n_provider_pending_accept > -1 ? (
+                            <div className="col-12 lg:col-6 xl:col-3">
+                                <div onClick={() => redirectToMenu('/pages/partners/reception')} className="card mb-0" style={{ paddingBottom: '0.5rem' }}>
+                                    <div className="flex justify-content-between mb-3">
+                                        <div>
+                                            <span className="block text-500 font-medium mb-3">Proveedores por aceptar</span>
+                                            <div className="text-900 font-medium text-xl">{oPanelData.n_provider_pending_accept}</div>
+                                        </div>
+                                        <div className="flex align-items-center justify-content-center bg-blue-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
+                                            <i className="pi pi-users text-blue-500 text-xl" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : ''}
+                        {oPanelData.n_provider_pending_auth > -1 ? (
+                            <div className="col-12 lg:col-6 xl:col-3">
+                                <div onClick={() => redirectToMenu('/pages/partners/authorization/inAuthorization')} className="card mb-0" style={{ paddingBottom: '0.5rem' }}>
+                                    <div className="flex justify-content-between mb-3">
+                                        <div>
+                                            <span className="block text-500 font-medium mb-3">Proveedores por autorizar</span>
+                                            <div className="text-900 font-medium text-xl">{oPanelData.n_provider_pending_auth}</div>
+                                        </div>
+                                        <div className="flex align-items-center justify-content-center bg-blue-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
+                                            <i className="pi pi-users text-blue-500 text-xl" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : ''}
+                    </div>
+                </div>) : ''}
         </div>
     );
 };
