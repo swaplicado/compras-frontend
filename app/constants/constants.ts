@@ -146,6 +146,8 @@ const constants = {
     RESOURCE_TYPE_PUR_INVOICE: 4,
     RESOURCE_TYPE_PAYMENTS: 11,
     RESOURCE_TYPE_PROVIDER: 21,
+    RESOURCE_TYPE_CRP: 16,
+    RESOURCE_TYPE_NC: 6,
 
     //estatus de pagos
     PAYMENT_STATUS_NEW_ID: 1,
@@ -163,6 +165,7 @@ const constants = {
 
     //flows ids
     FLOW_AUTH_PARTNER: 17,
+    FLOW_AUTH_CRP: 5,
 
     //Calendar
     MONTHS_BACK_LIMIT: 6

@@ -16,6 +16,7 @@ interface columnsProps {
     folio: { hidden: boolean },
     uuid: { hidden: boolean },
     authz_acceptance_name: { hidden: boolean },
+    authz_authorization_name: { hidden: boolean },
     delete: { hidden: boolean }
 }
 
@@ -38,6 +39,8 @@ interface TableCrpProps {
     setDialogMode?: React.Dispatch<React.SetStateAction<any>>;
     fileBodyTemplate?: (rowData: any) => any;
     deleteBodyTemplate?: (rowData: any) => any;
+    withBtnSendAuth?: boolean;
+    setFlowAuthDialogVisible?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const TableCrp = ({
@@ -58,7 +61,9 @@ export const TableCrp = ({
     setDialogVisible,
     setDialogMode,
     fileBodyTemplate,
-    deleteBodyTemplate
+    deleteBodyTemplate,
+    withBtnSendAuth = false,
+    setFlowAuthDialogVisible
 }: TableCrpProps) => {
     const [filters, setFilters] = useState<DataTableFilterMeta>({});
     const [tableLoading, setTableLoading] = useState(true);
@@ -169,6 +174,9 @@ export const TableCrp = ({
     const statusAcceptanceDpsBodyTemplate = (rowData: any) => {
         return <span className={`status-dps-badge status-${rowData.authz_acceptance_name}`}>{rowData.authz_acceptance_name}</span>;
     };
+    const statusAuthDpsBodyTemplate = (rowData: any) => {
+        return <span className={`status-dps-badge status-${rowData.authz_authorization_name}`}>{rowData.authz_authorization_name}</span>;
+    };
 
 //*********** INIT ***********
     useEffect(() => {
@@ -189,13 +197,14 @@ export const TableCrp = ({
                 dpsDateFilter={dateFilter}
                 setDpsDateFilter={setDateFilter}
                 withBtnCreate={withBtnCreate}
-                withBtnSendAuth={false}
                 withBtnCleanFilter={false}
                 withSearch={withSearch}
                 withMounthFilter={withMounthFilter}
                 textBtnCreate={t('textBtnCreate')}
                 setDialogVisible={setDialogVisible}
                 setDialogMode={setDialogMode}
+                withBtnSendAuth={withBtnSendAuth}
+                setFlowAuthDialogVisible={setFlowAuthDialogVisible}
             />
             <br />
             <DataTable
@@ -231,11 +240,13 @@ export const TableCrp = ({
                 <Column field="oCompany" header="oCompany" hidden />
                 <Column field="oPartner" header="oPartner" hidden />
                 <Column field="authz_acceptance_notes" header="authz_acceptance_notes" hidden />
+                <Column field="authz_authorization_notes" header="authz_authorization_notes" hidden />
                 <Column field="company" header={t('datatable.columns.company')} hidden={ columnsProps?.company.hidden } />
                 <Column field="date" header={t('datatable.columns.date')} body={appDateBodyTemplate} hidden={ columnsProps?.date.hidden } />
                 <Column field="folio" header={t('datatable.columns.folio')} hidden={ columnsProps?.folio.hidden } />
                 <Column field="uuid" header={t('datatable.columns.uuid')} hidden={ columnsProps?.uuid.hidden } />
-                <Column field="authz_acceptance_name" header={t('datatable.columns.authz_acceptance_name')} body={statusAcceptanceDpsBodyTemplate} hidden={ columnsProps?.authz_acceptance_name.hidden } />
+                <Column field="authz_acceptance_name" header={'Aceptación'} body={statusAcceptanceDpsBodyTemplate} hidden={ columnsProps?.authz_acceptance_name.hidden } />
+                <Column field="authz_authorization_name" header={'Autorización'} body={statusAuthDpsBodyTemplate} hidden={ columnsProps?.authz_authorization_name.hidden } />
                 <Column field="id" header={t('datatable.columns.files')} footer={t('datatable.columns.files')} body={fileBodyTemplate} />
                 <Column field="id_dps" header={'Eliminar'} footer={'Eliminar'} body={deleteBodyTemplate} hidden={ columnsProps?.delete.hidden } />
             </DataTable>
