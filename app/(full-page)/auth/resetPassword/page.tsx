@@ -44,7 +44,7 @@ const ResetPassword = () => {
             }
             setLoading(true);
             const route = 'password-reset';
-            const result = await axios.post('/api/axios/post', { 
+            const result = await axios.post('/api/auth/resetPassword', { 
                 route,
                 jsonData: {
                     username: username

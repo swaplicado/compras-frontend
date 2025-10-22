@@ -108,7 +108,7 @@ const RegisterProvider = () => {
     const getlCompanies = async () => {
         try {
             const route = constants.ROUTE_GET_COMPANIES;
-            const response = await axios.get(constants.API_AXIOS_GET, {
+            const response = await axios.get('/api/auth/editPartner/get', {
                 params: {
                     route: route
                 }
@@ -137,7 +137,7 @@ const RegisterProvider = () => {
     const getlAreas = async () => {
         try {
             const route = constants.ROUTE_GET_AREAS;
-            const response = await axios.get(constants.API_AXIOS_GET, {
+            const response = await axios.get('/api/auth/editPartner/get', {
                 params: {
                     route: route,
                     company_id: [oProvider.company.id]
@@ -167,7 +167,7 @@ const RegisterProvider = () => {
     const getlCountries = async () => {
         try {
             const route = constants.ROUTE_GET_COUNTRIES;
-            const response = await axios.get(constants.API_AXIOS_GET, {
+            const response = await axios.get('/api/auth/editPartner/get', {
                 params: {
                     route: route
                 }
@@ -197,7 +197,7 @@ const RegisterProvider = () => {
     const getlFiscalRegime = async () => {
         try {
             const route = constants.ROUTE_GET_FISCAL_REGIMES;
-            const response = await axios.get(constants.API_AXIOS_GET, {
+            const response = await axios.get('/api/auth/editPartner/get', {
                 params: {
                     route: route
                 }
@@ -296,7 +296,7 @@ const RegisterProvider = () => {
             formData.append('functional_area', oProvider.area.id);
             formData.append('partner_applying_id', oProvider.id);
 
-            const response = await axios.post(constants.API_AXIOS_POST, formData, {
+            const response = await axios.post('/api/auth/editPartner/post', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
 
@@ -318,7 +318,7 @@ const RegisterProvider = () => {
     const getOProvider = async () => {
         try {
             const route = constants.ROUTE_GET_PARTNER_APPLYING_BY_UUID;
-            const response = await axios.get(constants.API_AXIOS_GET, {
+            const response = await axios.get('/api/auth/editPartner/get', {
                 params: {
                     route: route,
                     uuid: uuid
