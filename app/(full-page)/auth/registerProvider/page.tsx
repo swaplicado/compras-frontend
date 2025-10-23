@@ -305,7 +305,7 @@ const RegisterProvider = () => {
             formData.append('email', oProvider.email);
             formData.append('address_data', JSON.stringify(address_data));
             formData.append('company', oProvider.company.id);
-            formData.append('lastname', oProvider.lastname);
+            formData.append('last_name', oProvider.lastname);
             formData.append('functional_area', oProvider.area.id);
 
             const response = await axios.post(constants.API_AXIOS_POST, formData, {

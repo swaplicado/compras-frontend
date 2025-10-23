@@ -231,7 +231,7 @@ const RegisterProvider = () => {
             entity_type: !oProvider.entity_type,
             fiscal_regime: !oProvider.fiscal_regime,
             name: oProvider.name.trim() == '',
-            lastname: oProvider.lastname.trim() == '',
+            lastname: oProvider.last_name.trim() == '',
             phone: oProvider.phone.trim() == '',
             email: oProvider.email.trim() == '',
             street: oProvider.street.trim() == '',
@@ -292,7 +292,7 @@ const RegisterProvider = () => {
             formData.append('email', oProvider.email);
             formData.append('address_data', JSON.stringify(address_data));
             formData.append('company', oProvider.company.id);
-            formData.append('lastname', oProvider.lastname);
+            formData.append('lastname', oProvider.last_name);
             formData.append('functional_area', oProvider.area.id);
             formData.append('partner_applying_id', oProvider.id);
 
