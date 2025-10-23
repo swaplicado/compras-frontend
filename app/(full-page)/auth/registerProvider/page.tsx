@@ -666,7 +666,7 @@ const RegisterProvider = () => {
                             <h6>Archivos a cargar:</h6>
                             <ul>
                                 {Object.keys(instructions).map((key, index) => (
-                                    <li>
+                                    <li key={index}>
                                         <b>{instructions[key].name}: </b>
                                         {instructions[key].description}
                                     </li>
