@@ -35,7 +35,7 @@ import { Checkbox } from "primereact/checkbox";
 axios.defaults.timeout = 45000;
 
 const RegisterProvider = () => {
-    const { t } = useTranslation('registerProvider');
+    const { t } = useTranslation('partners');
     const { t: tCommon } = useTranslation('common');
     const [oProvider, setOProvider] = useState<any>({
         provider_name: '',
@@ -95,6 +95,7 @@ const RegisterProvider = () => {
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const { uuid } = useParams();
+    const instructions = JSON.parse(JSON.stringify(t(`register.listFiles`, { returnObjects: true })));
 
     const showToast = (type: 'success' | 'info' | 'warn' | 'error' = 'error', message: string, summaryText = 'Error:') => {
         toast.current?.show({
@@ -477,6 +478,15 @@ const RegisterProvider = () => {
                         <div className="p-fluid formgrid grid">
                         <div className="field col-12 md:col-12">
                             <div className="formgrid grid">
+                                <h6>Archivos a cargar:</h6>
+                                <ul>
+                                    {Object.keys(instructions).map((key, index) => (
+                                        <li>
+                                            <b>{instructions[key].name}: </b>
+                                            {instructions[key].description}
+                                        </li>
+                                    ))}
+                                </ul>
                                 <div className="col">
                                     <label>Selecciona los archivos que deseas conservar</label>
                                     &nbsp;

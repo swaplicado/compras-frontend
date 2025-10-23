@@ -21,6 +21,30 @@ const partners = {
         step3: "En la parte inferior del diálogo se encuentra un botón Mostrar archivos, presiona este botón para ver los archivos del proveedor.",
         step4: "Para autorizar al proveedor solo presiona el botón Autorizar.",
         step5: "Para rechazar al proveedor debes ingresar un comentario con el motivo del rechazo, luego presiona el botón Rechazar."
+    },
+    register: {
+        listFiles: {
+            file1: {
+                name: 'Opinión del cumplimiento de obligaciones fiscales.',
+                description: 'Documento emitido por el SAT donde se indica si estás al corriente con tus obligaciones fiscales. Puedes obtenerlo desde tu buzón tributario.'
+            },
+            file2: {
+                name: 'Constancia de situación fiscal.',
+                description: 'Es el documento del SAT que muestra tu RFC, domicilio fiscal y régimen. Nos ayuda a validar tu información fiscal.'
+            },
+            file3: {
+                name: 'Comprobante de domicilio.',
+                description: 'Sube un recibo reciente (máximo 3 meses) que muestre tu dirección fiscal. Puede ser de luz, agua, teléfono o un estado de cuenta bancario.'
+            },
+            file4: {
+                name: 'Carátula de estado de cuenta bancario.',
+                description: 'Solo necesitamos la primera hoja donde aparezca tu nombre, número de cuenta y CLABE. No es necesario incluir los movimientos.'
+            },
+            file5: {
+                name: 'Carta de confirmación de datos proporcionados.',
+                description: 'Es un documento firmado donde confirmas que la información que entregaste es correcta y está actualizada.'
+            }
+        }
     }
 }
 
