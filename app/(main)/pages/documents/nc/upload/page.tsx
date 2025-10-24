@@ -102,7 +102,7 @@ const UploadNC = () => {
             hidden: false
         },
         actors_of_action: {
-            hidden: false
+            hidden: true
         },
         authz_authorization_name: {
             hidden: true
