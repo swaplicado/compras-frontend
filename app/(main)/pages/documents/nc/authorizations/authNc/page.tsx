@@ -27,8 +27,9 @@ import DateFormatter from '@/app/components/commons/formatDate';
 import { getlUrlFilesDps } from '@/app/(main)/utilities/documents/common/filesUtils';
 import invoices from "@/i18n/locales/es/documents/invoices";
 import { RenderInfoButton } from "@/app/components/commons/instructionsButton";
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 
-const UploadNC = () => {
+const AuthNC = () => {
     const [startDate, setStartDate] = useState<string>('');
     const [endDate, setEndtDate] = useState<string>('');
     const [lNc, setLNc] = useState<any[]>([]);
@@ -77,7 +78,7 @@ const UploadNC = () => {
         currency: false,
         exchange_rate: false,
         authz_acceptance_notes: false,
-        area: false,
+        authz_authorization_notes: false
     });
     const [loadingFiles, setLoadingFiles] = useState<boolean>(false);
     const [lFiles, setLFiles] = useState<any[]>([]);
@@ -89,17 +90,17 @@ const UploadNC = () => {
     const [withBody, setWithBody] = useState<boolean>(true);
     const [withFooter, setWithFooter] = useState<boolean>(false);
     const [lInvoicesToReview, setlInvoicesToReview] = useState<any[]>([]);
+
     const fileEditAcceptRef = useRef<FileUpload>(null);
     const [loadingFileNames, setLoadingFileNames] = useState<boolean>(false);
     const [lFilesNames, setLFilesNames] = useState<any[]>([]);
     const [lFilesToEdit, setLFilesToEdit] = useState<any[]>([]);
-    const [editableBodyFields, setEditableBodyFields] = useState<boolean>(false);
 
     const isMobile = useIsMobile();
 
     const columnsProps = {
         authz_authorization_name: {
-            hidden: true
+            hidden: false
         },
         delete: {
             hidden: true
@@ -125,7 +126,8 @@ const UploadNC = () => {
                 functional_area: userFunctionalAreas,
                 transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
                 document_type: constants.DOC_TYPE_NC,
-                authz_acceptance: constants.REVIEW_PENDING_ID,
+                authz_acceptance: constants.REVIEW_ACCEPT_ID,
+                authz_authorization: constants.REVIEW_PROCESS_ID,
                 start_date: startDate,
                 end_date: endDate,
                 user_id: oUser.id
@@ -139,7 +141,8 @@ const UploadNC = () => {
                 partner_id: oUser.oProvider.id,
                 transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
                 document_type: constants.DOC_TYPE_NC,
-                authz_acceptance: constants.REVIEW_PENDING_ID,
+                authz_acceptance: constants.REVIEW_ACCEPT_ID,
+                authz_authorization: constants.REVIEW_PROCESS_ID,
                 start_date: startDate,
                 end_date: endDate,
             };
@@ -169,233 +172,34 @@ const UploadNC = () => {
             receiver_tax_regime: false,
             amount: false,
             currency: false,
-            exchange_rate: false,
-            area: false,
-            files: false,
-            includePdf: false,
+            exchange_rate: false
         });
         fileUploadRef.current?.clear();
         xmlUploadRef.current?.clear();
         setIsXmlValid(false);
-        setEditableBodyFields(false);
     }
 
     const validate = () => {
-        let newErrors;
-        if (oNc?.partner.country != constants.COUNTRIES.MEXICO_ID) {
-            newErrors = {
-                company: !oNc.company,
-                partner: !oNc.partner,
-                invoices: !oNc.invoices,
-                xmlFile: false,
-                folio: !oNc.folio,
-                date: !oNc.date,
-                partner_fiscal_id: !oNc.partner_fiscal_id,
-                issuer_tax_regime: !oNc.oIssuer_tax_regime,
-                company_fiscal_id: !oNc.company_fiscal_id,
-                receiver_tax_regime: !oNc.oReceiver_tax_regime,
-                amount: !oNc.amount,
-                currency: !oNc.oCurrency,
-                exchange_rate: !oNc.exchange_rate,
-                area: oNc?.invoices.length > 1 ? !oNc.area : false,
-                files: (fileUploadRef.current?.getFiles().length || 0) === 0,
-                includePdf: fileUploadRef.current?.getFiles().length || 0 > 0 ? !fileUploadRef.current?.getFiles().some((file: { type: string }) => file.type === 'application/pdf') : false,
-            }
-        } else {
-            newErrors = {
-                company: !oNc.company,
-                partner: !oNc.partner,
-                invoices: !oNc.invoices,
-                xmlFile: (fileUploadRef.current?.getFiles().length || 0) == 0,
-                folio: false,
-                date: false,
-                partner_fiscal_id: false,
-                issuer_tax_regime: false,
-                company_fiscal_id: false,
-                receiver_tax_regime: false,
-                amount: false,
-                currency: false,
-                exchange_rate: false,
-                area: oNc?.invoices.length > 1 ? !oNc.area : false,
-                files: (fileUploadRef.current?.getFiles().length || 0) === 0,
-                includePdf: fileUploadRef.current?.getFiles().length || 0 > 0 ? !fileUploadRef.current?.getFiles().some((file: { type: string }) => file.type === 'application/pdf') : false,
-            }
+        const newErrors = {
+            company: !oNc.company,
+            partner: !oNc.partner,
+            invoices: !oNc.invoices,
+            xmlFile: (fileUploadRef.current?.getFiles().length || 0) == 0,
+            folio: !oNc.folio,
+            date: !oNc.date,
+            partner_fiscal_id: !oNc.partner_fiscal_id,
+            issuer_tax_regime: !oNc.oIssuer_tax_regime,
+            company_fiscal_id: !oNc.company_fiscal_id,
+            receiver_tax_regime: !oNc.oReceiver_tax_regime,
+            amount: !oNc.amount,
+            currency: !oNc.oCurrency,
+            exchange_rate: !oNc.exchange_rate
         }
 
         setFormErrors(newErrors);
 
         return !Object.values(newErrors).some(Boolean)
     }
-
-    const handleSubmit = async () => {
-        try {
-            if (!validate()) {
-                return;
-            }
-
-            const formData = new FormData();
-            const files = fileUploadRef.current?.getFiles() || [];
-    
-            let xmlFiles: any[] = [];
-            let xmlBaseName: any;
-            let xmlName: any;
-    
-            if (oNc.partner.country == constants.COUNTRIES.MEXICO_ID) {
-                xmlFiles = xmlUploadRef.current?.getFiles() || [];
-                xmlBaseName = xmlFiles[0].name.replace(/\.[^/.]+$/, '');
-                xmlName = xmlFiles[0].name;
-                const hasSameFile = files.some((file) => file.name === xmlName);
-    
-                if (hasSameFile) {
-                    showToast?.('error', t('dialog.files.hasSameFile', { xmlName }));
-                    return;
-                }
-    
-                const hasMatchingPDF = files.some((file) => {
-                    const isPDF = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
-                    const fileBaseName = file.name.replace(/\.[^/.]+$/, '');
-                    return isPDF && fileBaseName === xmlBaseName;
-                });
-    
-                if (!hasMatchingPDF) {
-                    showToast?.('error', t('dialog.files.hasMatchingPDF', { xmlBaseName }));
-                    return;
-                }
-            }
-            setLoading(true);
-            
-            files.forEach((file: string | Blob) => {
-                formData.append('files', file);
-            });
-
-            
-            if (oNc.partner.country == constants.COUNTRIES.MEXICO_ID) {
-                xmlFiles = xmlUploadRef.current?.getFiles() || [];
-                xmlFiles.forEach((file: string | Blob) => {
-                    formData.append('files', file);
-                });
-            }
-
-            let documents: any = [];
-            if (oNc.invoices.length == 1) {
-                documents.push({
-                    id: oNc.invoices[0].id,
-                    amount: oNc.amount
-                });
-            } else {
-                for (let i = 0; i < oNc.invoices.length; i++) {
-                    documents.push({
-                        id: oNc.invoices[i].id,
-                        amount: oNc.invoices[i].amountNc
-                    });
-                }
-            }
-            const route = constants.ROUTE_POST_NC;
-
-            let series: string = '';
-            let number: string = '';
-            if (oNc.folio && !oNc.series && !oNc.number) {
-                const splitFolio = oNc.folio.split('-');
-                series = splitFolio.length > 1 ? splitFolio[0] : '';
-                number = splitFolio.length > 1 ? splitFolio[1] : splitFolio[0];
-            } else {
-                series = oNc.serie;
-                number = oNc.number;
-            }
-            
-            const document = {
-                transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
-                document_type: constants.DOC_TYPE_NC,
-                partner: oNc.partner ? oNc.partner.id : '',
-                series: series,
-                number: number,
-                date: moment(oNc.date).format('YYYY-MM-DD'),
-                currency: oNc.oCurrency ? oNc.oCurrency.id : '',
-                issuer_tax_regime: oNc.oIssuer_tax_regime ? oNc.oIssuer_tax_regime.id : '',
-                receiver_tax_regime: oNc.oReceiver_tax_regime ? oNc.oReceiver_tax_regime.id : '',
-                functional_area: oNc.area ? oNc.area.id : '',
-                exchange_rate: oNc.exchange_rate,
-                amount: oNc.amount,
-                uuid: oNc.uuid
-            }
-
-            formData.append('documents', JSON.stringify(documents));
-            formData.append('company', oNc.company.id);
-            formData.append('user_id', oUser.oUser.id);
-            formData.append('route', route);
-            formData.append('document', JSON.stringify(document));
-
-            const response = await axios.post(constants.API_AXIOS_POST, formData, {
-                headers: { 'Content-Type': 'multipart/form-data' }
-            });
-
-            if (response.status === 200 || response.status === 201) {
-                setSuccessTitle(t('dialog.animationSuccess.uploadTitle'));
-                setSuccessMessage(response.data.data.success || t('dialog.animationSuccess.uploadText'));
-                setShowing('animationSuccess');
-                await getLNc();
-            } else {
-                throw new Error(t('uploadDialog.errors.uploadError'));
-            }
-        } catch (error: any) {
-            setShowing('animationError');
-            setErrorTitle(t('dialog.animationError.uploadTitle'));
-            setErrorMessage(error.response?.data?.error || t('dialog.animationError.uploadText'));
-        } finally {
-            setLoading(false);
-        }
-    }
-
-    const handleReview = async (reviewOption: string) => {
-        try {
-            setLoading(true);
-
-            if (reviewOption == constants.REVIEW_REJECT) {
-                if (!oNc.authz_acceptance_notes.trim()) {
-                    setFormErrors((prev: any) => ({ ...prev, authz_acceptance_notes: true }));
-                    showToast('info', 'Ingresa un comentario de rechazo del CRP');
-                    return;
-                }
-            }
-            const route = '/transactions/documents/' + oNc.id + '/set-authz/';
-
-            const response = await axios.post(constants.API_AXIOS_PATCH, {
-                route,
-                jsonData: {
-                    authz_acceptance_notes: oNc.authz_acceptance_notes,
-                    authz_code: reviewOption,
-                    user_id: oUser.oUser.id,
-                    notes: '',
-                }
-            });
-
-            if (response.status === 200 || response.status === 201) {
-                if (reviewOption == constants.REVIEW_ACCEPT) {
-                    setSuccessTitle(t('dialog.animationSuccess.reviewAcceptedTitle'));
-                    setSuccessMessage(t('dialog.animationSuccess.reviewAcceptedText'));
-                } else {
-                    setSuccessTitle(t('dialog.animationSuccess.reviewRejectedTitle'));
-                    setSuccessMessage(t('dialog.animationSuccess.reviewRejectedText'));
-                }
-                setShowing('animationSuccess');
-                await getLNc();
-            } else {
-                throw new Error(t('uploadDialog.errors.updateStatusError'));
-            }
-        } catch (error: any) {
-            console.error('Error al actualizar estado:', error);
-            if (reviewOption == constants.REVIEW_ACCEPT) {
-                setErrorTitle(t('dialog.animationError.reviewAcceptedTitle'));
-                setErrorMessage(error.response?.data?.error || t('dialog.animationError.reviewAcceptedText'));
-            } else {
-                setErrorTitle(t('dialog.animationError.reviewRejectedTitle'));
-                setErrorMessage(error.response?.data?.error || t('dialog.animationError.reviewRejectedText'));
-            }
-            setShowing('animationError');
-        } finally {
-            setLoading(false);
-        }
-    };
 
     useEffect(() => {
         const fetch = async () => {
@@ -409,11 +213,11 @@ const UploadNC = () => {
                 errorMessage: '',
                 showToast: showToast
             });
-            // await getlAreas({
-            //     setLAreas,
-            //     showToast,
-            //     company_id: oNc?.company.external_id
-            // });
+            await getlAreas({
+                setLAreas,
+                showToast,
+                company_id: oNc?.company.external_id
+            });
             setLoadingInvoices(false);
         }
         if (oNc?.company && oNc?.partner) {
@@ -427,78 +231,76 @@ const UploadNC = () => {
         }))
     }, [oNc?.company, oNc?.partner])
 
-    useEffect(() => {
-        if (oNc?.invoices) {
-            let areas: any[] = [];
-            for (let i = 0; i < oNc.invoices.length; i++) {
-                if (!areas.find((item: any) => item.id == oNc.invoices[i].functional_area__id)) {
-                    areas.push({
-                        id: oNc.invoices[i].functional_area__id,
-                        name: oNc.invoices[i].functional_area__name
-                    })
-                }
-            }
-            setLAreas(areas);
-        }
-    }, [oNc?.invoices])
-
-    const handleAcceptAndSendToAuth = async () => {
-        let responseAccept: any;
-        let responseAuth: any;
+    const handleAuth = async () => {
         try {
             setLoading(true);
-
-            const routeAccept = '/transactions/documents/' + oNc.id + '/set-authz/';
-            responseAccept = await axios.post(constants.API_AXIOS_PATCH, {
-                route: routeAccept,
+            const route = constants.ROUTE_POST_AUTHORIZE_RESOURCE;
+            const response = await axios.post(constants.API_AXIOS_PATCH, {
+                route,
                 jsonData: {
-                    authz_acceptance_notes: oNc.authz_acceptance_notes,
-                    authz_code: constants.REVIEW_ACCEPT,
-                    user_id: oUser.oUser.id,
-                    notes: '',
+                    id_external_system: 1,
+                    id_company: oNc.company_external_id,
+                    id_resource_type: constants.RESOURCE_TYPE_NC,
+                    external_resource_id: oNc.id,
+                    external_user_id: oUser.oUser.external_id,
+                    id_actor_type: 2,
+                    notes: oNc.authz_authorization_notes || ''
                 }
             });
 
-            if (responseAccept.status === 200 || responseAccept.status === 201) {
-                const route = constants.ROUTE_POST_START_AUTHORIZATION;
-                responseAuth = await axios.post(constants.API_AXIOS_POST, {
-                    route,
-                    jsonData: {
-                        id_external_system: 1,
-                        id_company: oNc.company_external_id,
-                        id_flow_model: constants.FLOW_AUTH_NC,
-                        resource: {
-                            code: oNc.folio,
-                            name: oNc.partner_full_name,
-                            content: {},
-                            external_id: oNc.id,
-                            resource_type: constants.RESOURCE_TYPE_NC
-                        },
-                        deadline: null,
-                        sent_by: oUser.oUser.external_id, //external user id
-                        id_actor_type: 2,
-                        stakeholders: [{
-                            external_user_id: oUser.oUser.external_id,
-                            id_actor_type: 2
-                        }],
-                        notes: ''
-                    }
-                });
-
-                if (responseAuth.status == 200) {
-                    setSuccessTitle(t('dialog.animationSuccess.acceptAndSendToAuthTitle'));
-                    setSuccessMessage(t('dialog.animationSuccess.acceptAndSendToAuthText'));
-                    setShowing('animationSuccess');
-                    await getLNc();
-                } else {
-                    throw new Error('');
-                }
+            if (response.status === 200 || response.status === 201) {
+                setSuccessTitle(t('dialog.animationSuccess.authorizedTitle'));
+                setSuccessMessage(t('dialog.animationSuccess.authorizedText'));
+                setShowing('animationSuccess');
+                await getLNc();
             } else {
-                throw new Error(t('dialog.animationError.reviewAcceptedTitle'));
+                throw new Error('Error al autorizar el registro');
             }
         } catch (error: any) {
-            setErrorTitle(t('dialog.animationError.sendToAuthTitle'));
-            setErrorMessage(error.response?.data?.error || t('dialog.animationError.sendToAuthText'));
+            setErrorTitle(t('dialog.animationError.authorizedTitle'));
+            setErrorMessage(error.response?.data?.error || t('dialog.animationError.authorizedText'));
+            setShowing('animationError');
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const handleReject = async () => {
+        try {
+            if (!oNc.authz_authorization_notes) {
+                setFormErrors((prev: any) => ({
+                    ...prev,
+                    authz_authorization_notes: true
+                }));
+                return;
+            }
+
+            setLoading(true);
+            const route = constants.ROUTE_POST_REJECT_RESOURCE;
+            const response = await axios.post(constants.API_AXIOS_PATCH, {
+                route,
+                jsonData: {
+                    id_company: oNc.company_external_id,
+                    id_external_system: 1,
+                    id_resource_type: constants.RESOURCE_TYPE_NC,
+                    external_resource_id: oNc.id,
+                    external_user_id: oUser.oUser.external_id,
+                    id_actor_type: 2,
+                    notes: oNc.authz_authorization_notes || ''
+                }
+            });
+
+            if (response.status === 200 || response.status === 201) {
+                setSuccessTitle(t('dialog.animationSuccess.rejectedTitle'));
+                setSuccessMessage(t('dialog.animationSuccess.rejectedText'));
+                setShowing('animationSuccess');
+                await getLNc();
+            } else {
+                throw new Error('Error al rechazar el registro');
+            }
+        } catch (error: any) {
+            setErrorTitle(t('dialog.animationError.rejectedTitle'));
+            setErrorMessage(error.response?.data?.error || t('dialog.animationError.rejectedText'));
             setShowing('animationError');
         } finally {
             setLoading(false);
@@ -519,12 +321,12 @@ const UploadNC = () => {
             }}
         >
             <h3 className="m-0 text-900 font-medium">
-                {t('titleUpload')}
+                {t('titleAuthNc')}
                 &nbsp;&nbsp;
                 <Tooltip target=".custom-target-icon" />
                 <i
                     className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                    data-pr-tooltip={t('titleUploadTooltip')}
+                    data-pr-tooltip={t('programed.titleTooltip')}
                     data-pr-position="right"
                     data-pr-my="left center-2"
                     style={{ fontSize: '1rem', cursor: 'pointer' }}
@@ -536,20 +338,13 @@ const UploadNC = () => {
     const dialogFooterContent = () => {
         return (
             <>
-                {showing == 'body' && dialogMode == 'create' && (
-                    <div className="flex flex-column md:flex-row justify-content-between gap-2">
-                        <Button label={tCommon('btnClose')} icon="bx bx-x" onClick={() => setDialogVisible(false)} severity="secondary" disabled={loading} />
-                        <Button label={tCommon('btnUpload')} icon="pi pi-upload" onClick={() => handleSubmit()} disabled={!isXmlValid} />
-                    </div>
-                )}
                 {showing == 'body' && dialogMode == 'view' && (
                     <div className="flex flex-column md:flex-row justify-content-between gap-2">
                         <Button label={tCommon('btnClose')} icon="bx bx-x" onClick={() => setDialogVisible(false)} severity="secondary" disabled={loading} />
-                        { isInReview && (
+                        { oUser?.oUser.groups.includes(constants.ROLES.CONTADOR_ID) && (
                             <>
-                                <Button label={tCommon('btnReject')} icon="bx bx-dislike" onClick={() => handleReview(constants.REVIEW_REJECT)} autoFocus disabled={loading} severity="danger" />
-                                <Button label={tCommon('btnAccept')} icon="bx bx-like" onClick={() => handleReview(constants.REVIEW_ACCEPT)} autoFocus disabled={loading} severity="success" />
-                                <Button label={tCommon('btnAcceptAndSend')} icon="bx bx-paper-plane" onClick={() => handleAcceptAndSendToAuth()} autoFocus disabled={loading} severity="success" />
+                                <Button label={tCommon('btnReject')} icon="bx bx-dislike" onClick={() => handleReject()} autoFocus disabled={loading} severity="danger" />
+                                <Button label={'Autorizar'} icon="bx bx-like" onClick={() => handleAuth()} autoFocus disabled={loading} severity="success" />
                             </>
                         )}
                     </div>
@@ -607,7 +402,7 @@ const UploadNC = () => {
 
     const handleDoubleClick = async (e: DataTableRowClickEvent) => {
         if (oUser.isInternalUser) {
-            setIsReview(true);
+            setIsReview(false);
         } else {
             setIsReview(false);
         }
@@ -712,17 +507,10 @@ const UploadNC = () => {
     }, [userFunctionalAreas, oUser, startDate, endDate])
 
     const getObjectIntruction = () => {
-        const uploadInstructions = JSON.parse(JSON.stringify(t(`dialog.uploadInstructions`, { returnObjects: true })));
-        const uploadInstructionsPartner = JSON.parse(JSON.stringify(t(`dialog.uploadInstructionsPartner`, { returnObjects: true })));
-        const reviewInstructions = JSON.parse(JSON.stringify(t(`dialog.reviewInstructions`, { returnObjects: true })));
+        const viewInstructions = JSON.parse(JSON.stringify(t(`dialog.viewInstructions`, { returnObjects: true })));
 
         let instructions: any[] = [];
-        if (oUser?.isInternalUser) {
-            instructions.push(uploadInstructions);
-            instructions.push(reviewInstructions);
-        } else {
-            instructions.push(uploadInstructionsPartner);
-        }
+        instructions.push(viewInstructions);
 
         if (!instructions || Object.keys(instructions).length === 0) {
             return null;
@@ -737,19 +525,20 @@ const UploadNC = () => {
                 {loading && loaderScreen()}
                 <Toast ref={toast} />
                 <Card header={headerCard} pt={{ content: { className: 'p-0' } }}>
-                <RenderInfoButton
-                    instructions={getObjectIntruction()}
-                    showInfo={showInfo}
-                    setShowInfo={setShowInfo}
-                    showManual={showManual}
-                    setShowManual={setShowManual}
-                    btnShowInstructionsText={"Mostrar instrucciones"}
-                    btnHideInstructionsText={"Ocultar instrucciones"}
-                    dialogManualBtnLabelText={"Videos de ayuda"}
-                    dialogManualBtnTooltipText={"Videos de ayuda"}
-                    dialogManualHeaderText={"Videos de ayuda"}
-                    lVideos={[]}
-                />
+                    <ConfirmDialog />
+                    <RenderInfoButton
+                        instructions={getObjectIntruction()}
+                        showInfo={showInfo}
+                        setShowInfo={setShowInfo}
+                        showManual={showManual}
+                        setShowManual={setShowManual}
+                        btnShowInstructionsText={"Mostrar instrucciones"}
+                        btnHideInstructionsText={"Ocultar instrucciones"}
+                        dialogManualBtnLabelText={"Videos de ayuda"}
+                        dialogManualBtnTooltipText={"Videos de ayuda"}
+                        dialogManualHeaderText={"Videos de ayuda"}
+                        lVideos={[]}
+                    />
                     <DialogNc 
                         visible={visible}
                         onHide={() => setDialogVisible(false)}
@@ -792,8 +581,8 @@ const UploadNC = () => {
                         fileEditAcceptRef={fileEditAcceptRef}
                         lFilesNames={lFilesNames}
                         setLFilesToEdit={setLFilesToEdit}
-                        editableBodyFields={editableBodyFields}
-                        setEditableBodyFields={setEditableBodyFields}
+                        showAuthComments={true}
+                        isInAuth={true}
                     />
                     <TableNc
                         lNc={lNc}
@@ -807,7 +596,7 @@ const UploadNC = () => {
                         dateFilter={dateFilter}
                         setDateFilter={setDateFilter}
                         showToast={showToast}
-                        withBtnCreate={true}
+                        withBtnCreate={false}
                         selectedRow={oNc}
                         setSelectedRow={setONc}
                         setDialogVisible={setDialogVisible}
@@ -820,4 +609,4 @@ const UploadNC = () => {
     )
 }
 
-export default UploadNC;
+export default AuthNC;

@@ -93,8 +93,8 @@ const constants = {
     //Constantes para los archivos
     maxFilesSize: 25 * 1024 * 1024, // 20 MB
     maxFileSizeForHuman: '25 MB',
-    allowedExtensions: ['application/pdf', 'text/xml', 'image/png', 'image/jpeg', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
-    allowedExtensionsNames: 'application/pdf, text/xml, image/png, image/jpeg, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    allowedExtensions: ['application/pdf', 'text/xml', 'image/png', 'image/jpg', 'image/jpeg', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
+    allowedExtensionsNames: 'application/pdf, text/xml, image/png, image/jpg, image/jpeg, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     maxUnitFile: 5 * 1024 * 1024,
     maxUnitFileForHuman: '5 MB',
 
@@ -166,6 +166,7 @@ const constants = {
     //flows ids
     FLOW_AUTH_PARTNER: 17,
     FLOW_AUTH_CRP: 17,
+    FLOW_AUTH_NC: 5,
 
     //Calendar
     MONTHS_BACK_LIMIT: 6

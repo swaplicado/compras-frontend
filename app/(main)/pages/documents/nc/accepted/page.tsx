@@ -27,6 +27,7 @@ import DateFormatter from '@/app/components/commons/formatDate';
 import { getlUrlFilesDps } from '@/app/(main)/utilities/documents/common/filesUtils';
 import invoices from "@/i18n/locales/es/documents/invoices";
 import { RenderInfoButton } from "@/app/components/commons/instructionsButton";
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 
 const AcceptedNC = () => {
     const [startDate, setStartDate] = useState<string>('');
@@ -42,6 +43,7 @@ const AcceptedNC = () => {
     const [lCompaniesFilter, setLCompaniesFilter] = useState<any[]>([]);
     const [showInfo, setShowInfo] = useState<boolean>(false);
     const [showManual, setShowManual] = useState<boolean>(false);
+    const [withBtnSendAuth, setWithBtnSendAuth] = useState<boolean>(false);
 
     //constantes para el dialog
     const [visible, setDialogVisible] = useState<boolean>(false);
@@ -94,9 +96,14 @@ const AcceptedNC = () => {
     const [lFilesNames, setLFilesNames] = useState<any[]>([]);
     const [lFilesToEdit, setLFilesToEdit] = useState<any[]>([]);
 
+    const [flowAuthDialogVisible, setFlowAuthDialogVisible] = useState<boolean>(false);
+
     const isMobile = useIsMobile();
 
     const columnsProps = {
+        authz_authorization_name: {
+            hidden: true
+        },
         delete: {
             hidden: true
         },
@@ -122,6 +129,7 @@ const AcceptedNC = () => {
                 transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
                 document_type: constants.DOC_TYPE_NC,
                 authz_acceptance: constants.REVIEW_ACCEPT_ID,
+                authz_authorization: constants.REVIEW_PENDING_ID,
                 start_date: startDate,
                 end_date: endDate,
                 user_id: oUser.id
@@ -136,6 +144,7 @@ const AcceptedNC = () => {
                 transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
                 document_type: constants.DOC_TYPE_NC,
                 authz_acceptance: constants.REVIEW_ACCEPT_ID,
+                authz_authorization: constants.REVIEW_PENDING_ID,
                 start_date: startDate,
                 end_date: endDate,
             };
@@ -223,6 +232,82 @@ const AcceptedNC = () => {
             invoices: []
         }))
     }, [oNc?.company, oNc?.partner])
+
+    const handleFlowAuthorization = async () => {
+        try {
+            setLoading(true);
+            
+            const route = constants.ROUTE_POST_START_AUTHORIZATION;
+            const response = await axios.post(constants.API_AXIOS_POST, {
+                route,
+                jsonData: {
+                    id_external_system: 1,
+                    id_company: oNc.company_external_id,
+                    id_flow_model: constants.FLOW_AUTH_NC,
+                    resource: {
+                        code: oNc.folio,
+                        name: oNc.partner_full_name,
+                        content: {},
+                        external_id: oNc.id,
+                        resource_type: constants.RESOURCE_TYPE_NC
+                    },
+                    deadline: null,
+                    sent_by: oUser.oUser.external_id, //external user id
+                    id_actor_type: 2,
+                    stakeholders: [{
+                        external_user_id: oUser.oUser.external_id,
+                        id_actor_type: 2
+                    }],
+                    notes: ''
+                }
+            });
+
+            if (response.status == 200) {
+                showToast('success', 'Registro enviado a autorizar', 'Realizado');
+                await getLNc();
+            } else {
+                throw new Error('');
+            }
+        } catch (error: any) {
+            showToast('error', error.response?.data?.error || 'Error al enviar el registro a autorizar');
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const accept = async () => {
+        await handleFlowAuthorization();
+    }
+
+    const reject = () => {
+        
+    }
+
+    const sendToAuth = async () => {
+        try {
+            console.log('oNc: ', oNc);
+            
+            if (!oNc) {
+                showToast('info', 'Selecciona un renglón');
+                return;
+            }
+
+            const id_dps = oNc.id;
+            const folio = oNc.folio;
+            confirmDialog({
+                message: '¿Quieres enviar a autorizar: ' + folio + '?',
+                header: 'Confirma envío de autorización',
+                icon: 'pi pi-info-circle',
+                acceptClassName: 'p-button-primary',
+                acceptLabel: 'Si',
+                rejectLabel: 'No',
+                accept: () => accept(),
+                reject: () => reject()
+            });
+        } catch (error: any) {
+            
+        }
+    }
 
 //*******OTROS*******
     const headerCard = (
@@ -370,6 +455,13 @@ const AcceptedNC = () => {
         );
     };
 
+    useEffect(() => {
+        if (flowAuthDialogVisible) {
+            sendToAuth();
+            setFlowAuthDialogVisible(false);
+        }
+    }, [flowAuthDialogVisible])
+
 //*******INIT*******
     useEffect(() => {
         const fetch = async () => {
@@ -392,6 +484,13 @@ const AcceptedNC = () => {
     useEffect(() => {
         const init = async () => {
             setLoading(true);
+            
+            if (oUser.isInternalUser) {
+                setWithBtnSendAuth(true);
+            } else {
+                setWithBtnSendAuth(false);
+            }
+
             await getlCompanies({
                 setLCompanies,
                 setLCompaniesFilter,
@@ -436,6 +535,7 @@ const AcceptedNC = () => {
                 {loading && loaderScreen()}
                 <Toast ref={toast} />
                 <Card header={headerCard} pt={{ content: { className: 'p-0' } }}>
+                    <ConfirmDialog />
                     <RenderInfoButton
                         instructions={getObjectIntruction()}
                         showInfo={showInfo}
@@ -510,6 +610,8 @@ const AcceptedNC = () => {
                         setDialogVisible={setDialogVisible}
                         setDialogMode={setDialogMode}
                         fileBodyTemplate={fileBodyTemplate}
+                        withBtnSendAuth={withBtnSendAuth}
+                        setFlowAuthDialogVisible={setFlowAuthDialogVisible}
                     />
                 </Card>
             </div>

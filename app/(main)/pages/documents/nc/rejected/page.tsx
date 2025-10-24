@@ -96,6 +96,9 @@ const RejectedNC = () => {
     const isMobile = useIsMobile();
 
     const columnsProps = {
+        authz_authorization_name: {
+            hidden: true
+        },
         delete: {
             hidden: false
         },

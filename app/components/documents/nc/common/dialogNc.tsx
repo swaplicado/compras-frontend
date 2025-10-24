@@ -64,6 +64,8 @@ interface DialogNc {
     fileEditAcceptRef: React.RefObject<FileUpload>;
     lFilesNames: any[];
     setLFilesToEdit: React.Dispatch<React.SetStateAction<any>>;
+    showAuthComments?: boolean;
+    isInAuth?: boolean;
 }
 
 export const DialogNc = ({
@@ -110,6 +112,8 @@ export const DialogNc = ({
     fileEditAcceptRef,
     lFilesNames,
     setLFilesToEdit,
+    showAuthComments,
+    isInAuth,
 }: DialogNc) => {
     const { t } = useTranslation('nc');
     const { t: tCommon } = useTranslation('common');
@@ -616,6 +620,30 @@ export const DialogNc = ({
                                             options={[]}
                                             placeholder={t('dialog.fields.authz_acceptance_notes.placeholder')}
                                             errorKey={'authz_acceptance_notes'}
+                                            errors={formErrors}
+                                            errorMessage={'Ingrese comentario para rechazar'}
+                                            labelClass={'font-bold opacity-100 text-blue-600'}
+                                        />
+                                    </>
+                                )}
+                                
+                                { showAuthComments && (
+                                    <>
+                                        <Divider/>
+                                        <RenderField
+                                            label={t('dialog.fields.authz_authorization_notes.label')}
+                                            tooltip={t('dialog.fields.authz_authorization_notes.tooltip')}
+                                            value={ oNc?.authz_authorization_notes }
+                                            disabled={!isInAuth}
+                                            mdCol={12}
+                                            type={'textArea'}
+                                            onChange={(value) => {
+                                                setONc?.((prev: any) => ({ ...prev, authz_authorization_notes: value }));
+                                                setFormErrors?.((prev: any) => ({ ...prev, authz_authorization_notes: false }));
+                                            }}
+                                            options={[]}
+                                            placeholder={t('dialog.fields.authz_authorization_notes.placeholder')}
+                                            errorKey={'authz_authorization_notes'}
                                             errors={formErrors}
                                             errorMessage={'Ingrese comentario para rechazar'}
                                             labelClass={'font-bold opacity-100 text-blue-600'}

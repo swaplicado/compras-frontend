@@ -14,7 +14,7 @@
             "label": "Documentos",
             "items": [
                 {
-                    "label": "Recepción de facturas",
+                    "label": "Recepción facturas",
                     "icon": "pi pi-inbox",
                     "items": [
                         {
@@ -35,7 +35,7 @@
                     ]
                 },
                 {
-                    "label": "Consulta de autorizaciones",
+                    "label": "Consulta autorizaciones facturas",
                     "icon": "pi pi-search",
                     "items": [
                         {
@@ -56,7 +56,7 @@
                     ]
                 },
                 {
-                    "label": "Autorización de facturas",
+                    "label": "Autorización facturas",
                     "icon": "pi pi-pencil",
                     "items": [
                         {
@@ -88,7 +88,7 @@
                     ]
                 },
                 {
-                    "label": "CRP",
+                    "label": "Recepción CRP",
                     "icon": "pi pi-ticket",
                     "items": [
                         {
@@ -118,19 +118,19 @@
                             "to": "/pages/documents/crp/authorizations/consultationAuth/inProcess"
                         },
                         {
-                            "label": "Autorizadas",
+                            "label": "Autorizados",
                             "icon": "pi pi-check-circle",
                             "to": "/pages/documents/crp/authorizations/consultationAuth/authorized"
                         },
                         {
-                            "label": "Rechazadas",
+                            "label": "Rechazados",
                             "icon": "pi pi-times-circle",
                             "to": "/pages/documents/crp/authorizations/consultationAuth/rejected"
                         }
                     ]
                 },
                 {
-                    "label": "Autorización de CRP",
+                    "label": "Autorización CRP",
                     "icon": "pi pi-pencil",
                     "items": [
                         {
@@ -141,7 +141,7 @@
                     ]
                 },
                 {
-                    "label": "NC",
+                    "label": "Recepción NC",
                     "icon": "pi pi-credit-card",
                     "items": [
                         {
@@ -162,7 +162,39 @@
                     ]
                 },
                 {
-                    "label": "Recepción de proveedores",
+                    "label": "Consulta autorizaciones NC",
+                    "icon": "pi pi-search",
+                    "items": [
+                        {
+                            "label": "En proceso de autorización",
+                            "icon": "pi pi-clock",
+                            "to": "/pages/documents/nc/authorizations/consultationAuth/inProcess"
+                        },
+                        {
+                            "label": "Autorizadas",
+                            "icon": "pi pi-check-circle",
+                            "to": "/pages/documents/nc/authorizations/consultationAuth/authorized"
+                        },
+                        {
+                            "label": "Rechazadas",
+                            "icon": "pi pi-times-circle",
+                            "to": "/pages/documents/nc/authorizations/consultationAuth/rejected"
+                        }
+                    ]
+                },
+                {
+                    "label": "Autorización NC",
+                    "icon": "pi pi-pencil",
+                    "items": [
+                        {
+                            "label": "Pendientes de autorizar",
+                            "icon": "pi pi-exclamation-circle",
+                            "to": "/pages/documents/nc/authorizations/authNc"
+                        }
+                    ]
+                },
+                {
+                    "label": "Recepción proveedores",
                     "icon": "pi pi-truck",
                     "items": [
                         {
@@ -183,7 +215,7 @@
                     ]
                 },
                 {
-                    "label": "Autorización de proveedores",
+                    "label": "Autorización proveedores",
                     "icon": "pi pi-pencil",
                     "items": [
                         {

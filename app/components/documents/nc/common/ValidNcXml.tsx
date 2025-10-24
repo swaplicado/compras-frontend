@@ -96,7 +96,7 @@ export const ValidateNcXml = ({
                         amount: data.data.amount,
                         oCurrency: oCurrency,
                         currency_code: oCurrency.name,
-                        exchange_rate: data.data.exchange_rate ? data.data.exchange_rate : 0,
+                        exchange_rate: data.data.exchange_rate ? data.data.exchange_rate : 1,
                     }))
                 } else {
                     setLErrors(data.errors);

@@ -1,10 +1,17 @@
 const nc = {
-    titleUpload: "Carga de notas de credito",
-    titleUploadTooltip: "Carga de notas de credito",
-    titleAccepted: "Notas de credito aceptadas",
-    titleAcceptedTooltip: "Notas de credito aceptadas",
-    titleRejected: "Notas de credito rechazadas",
-    titleRejectedTooltip: "Notas de credito rechazadas",
+    titleUpload: "Carga de notas de crédito",
+    titleUploadTooltip: "Carga de notas de crédito",
+    titleAccepted: "Notas de crédito aceptadas",
+    titleAcceptedTooltip: "Notas de crédito aceptadas",
+    titleRejected: "Notas de crédito rechazadas",
+    titleRejectedTooltip: "Notas de crédito rechazadas",
+    titleAuthNc: "Autorización de notas de crédito",
+    titleAuthorizedNc: "Notas de crédito autorizadas",
+    titleAuthorizedNcTooltip: "Notas de crédito autorizadas",
+    titleInProcessNc: "Notas de crédito en proceso de autorización",
+    titleInProcessNcTooltip: "Notas de crédito en proceso de autorización",
+    titleRejectedNc: "Notas de crédito rechazadas",
+    titleRejectedNcTooltip: "Notas de crédito rechazadas",
     textBtnCreate: "Cargar NC",
     datatable: {
         columns: {
@@ -78,14 +85,14 @@ const nc = {
                 tooltip: "RFC del receptor"
             },
             receiver_tax_regime: {
-                label: "Regimen fiscal del receptor",
-                placeholder: "Regimen fiscal del receptor",
-                tooltip: "Regimen fiscal del receptor"
+                label: "Régimen fiscal del receptor",
+                placeholder: "Régimen fiscal del receptor",
+                tooltip: "Régimen fiscal del receptor"
             },
             issuer_tax_regime: {
-                label: "Regimen fiscal del emisor",
-                placeholder: "Regimen fiscal del emisor",
-                tooltip: "Regimen fiscal del emisor"
+                label: "Régimen fiscal del emisor",
+                placeholder: "Régimen fiscal del emisor",
+                tooltip: "Régimen fiscal del emisor"
             },
             amount: {
                 label: "Monto",
@@ -106,6 +113,11 @@ const nc = {
                 label: "Comentarios de aceptación/rechazo:",
                 placeholder: "Comentarios de aceptación/rechazo:",
                 tooltip: "Comentarios de aceptación/rechazo:",
+            },
+            authz_authorization_notes: {
+                label: "Comentarios de autorización/rechazo:",
+                placeholder: "Comentarios de autorización/rechazo:",
+                tooltip: "Comentarios de autorización/rechazo:",
             }
         },
         files: {
@@ -127,7 +139,7 @@ const nc = {
             uploadError: "Error al cargar la nota de crédito. Por favor, verifica los archivos y referencia y vuelve a intentarlo.",
             getReferencesError: "Error al obtener las referencias. Por favor, intenta nuevamente más tarde.",
             updateStatusError: "Error al actualizar el estado de la nota de crédito. Por favor, intenta nuevamente más tarde.",
-            uploadValidXmlError: "Error al enviar el xml para su validación.",
+            uploadValidXmlError: "Error al enviar el XML para su validación.",
             getCurrenciesError: "Error al obtener tipos de cambio.",
             getLInvoicesToReview: "Error al obtener la lista de facturas.",
         },
@@ -139,7 +151,13 @@ const nc = {
             reviewRejectedTitle: "Nota de crédito rechazado.",
             reviewRejectedText: "La nota de crédito se ha rechazado correctamente.",
             editTitle: "Nota de crédito editada.",
-            editText: "La nota de crédito se ha editado correctamente."
+            editText: "La nota de crédito se ha editado correctamente.",
+            acceptAndSendToAuthTitle: "Nota de crédito aceptada y enviada a autorizar.",
+            acceptAndSendToAuthText: "La nota de crédito se ha aceptado y enviado a autorizar correctamente.",
+            authorizedTitle: "Nota de crédito autorizada.",
+            authorizedText: "La nota de crédito se ha autorizado correctamente.",
+            rejectedTitle: "Nota de crédito rechazada.",
+            rejectedText: "La nota de crédito se ha rechazado correctamente."
         },
         animationError: {
             uploadTitle: "Error al cargar la nota de crédito.",
@@ -149,7 +167,13 @@ const nc = {
             reviewRejectedTitle: "Error al rechazar la nota de crédito.",
             reviewRejectedText: "Ocurrió un error al rechazar la nota de crédito, vuelve a intentarlo más tarde.",
             editTitle: "Error al editar la nota de crédito.",
-            editText: "Ocurrió un error al editar la nota de crédito, vuelve a intentarlo más tarde."
+            editText: "Ocurrió un error al editar la nota de crédito, vuelve a intentarlo más tarde.",
+            sendToAuthTitle: "Error al enviar a autorización la nota de crédito.",
+            sendToAuthText: "Ocurrió un error al enviar la nota de crédito a autorizar.",
+            authorizedTitle: "Error al autorizar la nota de crédito.",
+            authorizedText: "Ocurrió un error al autorizar la nota de crédito.",
+            rejectedTitle: "Error al rechazar la nota de crédito.",
+            rejectedText: "Ocurrió un error al rechazar la nota de crédito."
         },
         uploadInstructions: {
             header: "Para cargar una nota de crédito, sigue estos pasos:",
