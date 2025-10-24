@@ -98,6 +98,15 @@ const UploadNC = () => {
     const isMobile = useIsMobile();
 
     const columnsProps = {
+        authz_acceptance_name: {
+            hidden: false
+        },
+        actors_of_action: {
+            hidden: false
+        },
+        authz_authorization_name: {
+            hidden: true
+        },
         delete: {
             hidden: true
         },
@@ -439,6 +448,69 @@ const UploadNC = () => {
         }
     }, [oNc?.invoices])
 
+    const handleAcceptAndSendToAuth = async () => {
+        let responseAccept: any;
+        let responseAuth: any;
+        try {
+            setLoading(true);
+
+            const routeAccept = '/transactions/documents/' + oNc.id + '/set-authz/';
+            responseAccept = await axios.post(constants.API_AXIOS_PATCH, {
+                route: routeAccept,
+                jsonData: {
+                    authz_acceptance_notes: oNc.authz_acceptance_notes,
+                    authz_code: constants.REVIEW_ACCEPT,
+                    user_id: oUser.oUser.id,
+                    notes: '',
+                }
+            });
+
+            if (responseAccept.status === 200 || responseAccept.status === 201) {
+                const route = constants.ROUTE_POST_START_AUTHORIZATION;
+                responseAuth = await axios.post(constants.API_AXIOS_POST, {
+                    route,
+                    jsonData: {
+                        id_external_system: 1,
+                        id_company: oNc.company_external_id,
+                        id_flow_model: constants.FLOW_AUTH_NC,
+                        resource: {
+                            code: oNc.folio,
+                            name: oNc.partner_full_name,
+                            content: {},
+                            external_id: oNc.id,
+                            resource_type: constants.RESOURCE_TYPE_NC
+                        },
+                        deadline: null,
+                        sent_by: oUser.oUser.external_id, //external user id
+                        id_actor_type: 2,
+                        stakeholders: [{
+                            external_user_id: oUser.oUser.external_id,
+                            id_actor_type: 2
+                        }],
+                        notes: ''
+                    }
+                });
+
+                if (responseAuth.status == 200) {
+                    setSuccessTitle(t('dialog.animationSuccess.acceptAndSendToAuthTitle'));
+                    setSuccessMessage(t('dialog.animationSuccess.acceptAndSendToAuthText'));
+                    setShowing('animationSuccess');
+                    await getLNc();
+                } else {
+                    throw new Error('');
+                }
+            } else {
+                throw new Error(t('dialog.animationError.reviewAcceptedTitle'));
+            }
+        } catch (error: any) {
+            setErrorTitle(t('dialog.animationError.sendToAuthTitle'));
+            setErrorMessage(error.response?.data?.error || t('dialog.animationError.sendToAuthText'));
+            setShowing('animationError');
+        } finally {
+            setLoading(false);
+        }
+    }
+
 //*******OTROS*******
     const headerCard = (
         <div
@@ -481,8 +553,9 @@ const UploadNC = () => {
                         <Button label={tCommon('btnClose')} icon="bx bx-x" onClick={() => setDialogVisible(false)} severity="secondary" disabled={loading} />
                         { isInReview && (
                             <>
-                                <Button label={tCommon('btnReject')} icon="bx bx-like" onClick={() => handleReview(constants.REVIEW_REJECT)} autoFocus disabled={loading} severity="danger" />
+                                <Button label={tCommon('btnReject')} icon="bx bx-dislike" onClick={() => handleReview(constants.REVIEW_REJECT)} autoFocus disabled={loading} severity="danger" />
                                 <Button label={tCommon('btnAccept')} icon="bx bx-like" onClick={() => handleReview(constants.REVIEW_ACCEPT)} autoFocus disabled={loading} severity="success" />
+                                <Button label={tCommon('btnAcceptAndSend')} icon="bx bx-paper-plane" onClick={() => handleAcceptAndSendToAuth()} autoFocus disabled={loading} severity="success" />
                             </>
                         )}
                     </div>

@@ -1,4 +1,4 @@
-//CARGA DE NC
+//NC AUTORIZADAS
 'use client';
 import React, {useEffect, useState, useRef} from "react";
 import constants from '@/app/constants/constants';
@@ -24,12 +24,12 @@ import { getlAreas } from '@/app/(main)/utilities/documents/common/areaUtils';
 import { getlCurrencies } from '@/app/(main)/utilities/documents/common/currencyUtils';
 import { getlFiscalRegime } from '@/app/(main)/utilities/documents/common/fiscalRegimeUtils';
 import DateFormatter from '@/app/components/commons/formatDate';
-import { getlUrlFilesDps, getlFilesNames } from '@/app/(main)/utilities/documents/common/filesUtils';
+import { getlUrlFilesDps } from '@/app/(main)/utilities/documents/common/filesUtils';
 import invoices from "@/i18n/locales/es/documents/invoices";
-import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { RenderInfoButton } from "@/app/components/commons/instructionsButton";
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 
-const RejectedNC = () => {
+const AuthRejectedNC = () => {
     const [startDate, setStartDate] = useState<string>('');
     const [endDate, setEndtDate] = useState<string>('');
     const [lNc, setLNc] = useState<any[]>([]);
@@ -53,14 +53,10 @@ const RejectedNC = () => {
     const [lAreas, setLAreas] = useState<any[]>([]);
     const [lInvoices, setLInvoices] = useState<any[]>([]);
     const [loadingInvoices, setLoadingInvoices] = useState<boolean>(false);
+    const [lPaymentsExec, setLPaymentsExec] = useState<any[]>([]);
+    const [loadinglPaymentsExec, setLoadinglPaymentsExec] = useState<boolean>(false);
     const fileUploadRef = useRef<FileUpload>(null);
     const xmlUploadRef = useRef<FileUpload>(null);
-    
-    const fileEditAcceptRef = useRef<FileUpload>(null);
-    const [loadingFileNames, setLoadingFileNames] = useState<boolean>(false);
-    const [lFilesNames, setLFilesNames] = useState<any[]>([]);
-    const [lFilesToEdit, setLFilesToEdit] = useState<any[]>([]);
-
     const [isXmlValid, setIsXmlValid] = useState<boolean>(false);
     const [showing, setShowing] = useState<'body' | 'animationSuccess' | 'animationError'>('body');
     const [successTitle, setSuccessTitle] = useState<string>('');
@@ -82,9 +78,11 @@ const RejectedNC = () => {
         currency: false,
         exchange_rate: false,
         authz_acceptance_notes: false,
+        authz_authorization_notes: false
     });
     const [loadingFiles, setLoadingFiles] = useState<boolean>(false);
     const [lFiles, setLFiles] = useState<any[]>([]);
+    const [lPaymentsExecDetails, setLPaymentsExecDetails] = useState<any[]>([]);
     const [isInReview, setIsReview] = useState<boolean>(false);
     const [lCurrencies, setLCurrencies] = useState<any[]>([]);
     const [lFiscalRegimes, setLFiscalRegimes] = useState<any[]>([]);
@@ -93,22 +91,14 @@ const RejectedNC = () => {
     const [withFooter, setWithFooter] = useState<boolean>(false);
     const [lInvoicesToReview, setlInvoicesToReview] = useState<any[]>([]);
 
+    const fileEditAcceptRef = useRef<FileUpload>(null);
+    const [loadingFileNames, setLoadingFileNames] = useState<boolean>(false);
+    const [lFilesNames, setLFilesNames] = useState<any[]>([]);
+    const [lFilesToEdit, setLFilesToEdit] = useState<any[]>([]);
+
     const isMobile = useIsMobile();
 
-    const columnsProps = {
-        authz_acceptance_name: {
-            hidden: false
-        },
-        actors_of_action: {
-            hidden: false
-        },
-        authz_authorization_name: {
-            hidden: true
-        },
-        delete: {
-            hidden: false
-        },
-    }
+    const [columnsProps, setColumnsProps] = useState<any>();
 
 //*******FUNCIONES*******
     const showToast = (type: 'success' | 'info' | 'warn' | 'error' = 'error', message: string, summaryText = 'Error:') => {
@@ -123,16 +113,15 @@ const RejectedNC = () => {
     const getLNc = async () =>  {
         let params: any = {};
         if (oUser.isInternalUser) {
-            const route = constants.ROUTE_GET_DPS_BY_AREA_ID
+            const route = constants.ROUTE_GET_DPS_AUTHORIZATIONS_BY_FUNCTIONAL_AREA;
             params = {
                 route: route,
                 functional_area: userFunctionalAreas,
-                transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
-                document_type: constants.DOC_TYPE_NC,
-                authz_acceptance: constants.REVIEW_REJECT_ID,
+                document_type: constants.RESOURCE_TYPE_NC,
+                user_id: oUser.oUser.id,
+                auth_status: constants.REVIEW_REJECT_ID,
                 start_date: startDate,
-                end_date: endDate,
-                user_id: oUser.id
+                end_date: endDate
             };
         }
 
@@ -143,7 +132,8 @@ const RejectedNC = () => {
                 partner_id: oUser.oProvider.id,
                 transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
                 document_type: constants.DOC_TYPE_NC,
-                authz_acceptance: constants.REVIEW_REJECT_ID,
+                authz_acceptance: constants.REVIEW_ACCEPT_ID,
+                authz_authorization: constants.REVIEW_REJECT_ID,
                 start_date: startDate,
                 end_date: endDate,
             };
@@ -202,41 +192,6 @@ const RejectedNC = () => {
         return !Object.values(newErrors).some(Boolean)
     }
 
-    const handleEdit = async () => {
-        try {
-            setLoading(true);
-            const formData = new FormData();
-            const files = fileEditAcceptRef.current?.getFiles() || [];
-
-            files.forEach((file: string | Blob) => {
-                formData.append('files', file);
-            });
-
-            formData.append('file_ids', JSON.stringify(lFilesToEdit));
-            const route = '/transactions/documents/' + oNc.id + '/update-files/';
-            formData.append('route', route);
-            formData.append('user_id', oUser.oUser.id);
-
-            const response = await axios.post(constants.API_AXIOS_PATCH, formData, {
-                headers: { 'Content-Type': 'multipart/form-data' }
-            });
-
-            if (response.status === 200 || response.status === 201) {
-                await getLNc();
-                setSuccessTitle(t('dialog.animationSuccess.editTitle'));
-                setSuccessMessage(t('dialog.animationSuccess.editText'));
-                setShowing('animationSuccess');
-            } else {
-                new Error(`Error al editar la nota de crédito: ${response.statusText}`);
-            }
-        } catch (error: any) {
-            setErrorTitle(t('dialog.animationError.editTitle'));
-            setErrorMessage(error.response?.data?.error || t('dialog.animationError.editText'));
-        } finally {
-            setLoading(false);
-        }
-    }
-
     useEffect(() => {
         const fetch = async () => {
             setLoadingInvoices(true);
@@ -281,12 +236,12 @@ const RejectedNC = () => {
             }}
         >
             <h3 className="m-0 text-900 font-medium">
-                {t('titleUpload')}
+                {t('titleRejectedNc')}
                 &nbsp;&nbsp;
                 <Tooltip target=".custom-target-icon" />
                 <i
                     className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                    data-pr-tooltip={t('programed.titleTooltip')}
+                    data-pr-tooltip={t('titleRejectedNcTooltip')}
                     data-pr-position="right"
                     data-pr-my="left center-2"
                     style={{ fontSize: '1rem', cursor: 'pointer' }}
@@ -298,10 +253,9 @@ const RejectedNC = () => {
     const dialogFooterContent = () => {
         return (
             <>
-                {showing == 'body' && dialogMode == 'edit' && (
+                {showing == 'body' && dialogMode == 'view' && (
                     <div className="flex flex-column md:flex-row justify-content-between gap-2">
                         <Button label={tCommon('btnClose')} icon="bx bx-x" onClick={() => setDialogVisible(false)} severity="secondary" disabled={loading} />
-                        <Button label={tCommon('btnEdit')} icon="bx bx-like" onClick={() => handleEdit()} autoFocus disabled={loading} severity="success" />
                     </div>
                 )}
             </>
@@ -356,9 +310,14 @@ const RejectedNC = () => {
     }, [lInvoicesToReview])
 
     const handleDoubleClick = async (e: DataTableRowClickEvent) => {
+        if (oUser.isInternalUser) {
+            setIsReview(false);
+        } else {
+            setIsReview(false);
+        }
+
         setLoadingFiles(true);
-        setLoadingFileNames(true);
-        setDialogMode('edit');
+        setDialogMode('view');
         setIsXmlValid(true);
         setWithFooter(true);
         configNcData(e.data);
@@ -374,12 +333,6 @@ const RejectedNC = () => {
             showToast,
             document_id: e.data.id
         });
-        await getlFilesNames({
-            document_id: e.data.id,
-            setLFilesNames: setLFilesNames,
-            showToast: showToast,
-        });
-        setLoadingFileNames(false);
         setLoadingFiles(false);
     };
 
@@ -500,6 +453,20 @@ const RejectedNC = () => {
     useEffect(() => {
         const init = async () => {
             setLoading(true);
+            setColumnsProps({
+                authz_acceptance_name: {
+                    hidden: true
+                },
+                actors_of_action: {
+                    hidden: true
+                },
+                authz_authorization_name: {
+                    hidden: false
+                },
+                delete: {
+                    hidden: true
+                },
+            });
             await getlCompanies({
                 setLCompanies,
                 setLCompaniesFilter,
@@ -526,12 +493,10 @@ const RejectedNC = () => {
     }, [userFunctionalAreas, oUser, startDate, endDate])
 
     const getObjectIntruction = () => {
-        const editInstructions = JSON.parse(JSON.stringify(t(`dialog.editInstructions`, { returnObjects: true })));
-        const deleteInstructions = JSON.parse(JSON.stringify(t(`dialog.deleteInstructions`, { returnObjects: true })));
+        const viewInstructions = JSON.parse(JSON.stringify(t(`dialog.viewInstructions`, { returnObjects: true })));
 
         let instructions: any[] = [];
-        instructions.push(editInstructions);
-        instructions.push(deleteInstructions);
+        instructions.push(viewInstructions);
 
         if (!instructions || Object.keys(instructions).length === 0) {
             return null;
@@ -602,6 +567,8 @@ const RejectedNC = () => {
                         fileEditAcceptRef={fileEditAcceptRef}
                         lFilesNames={lFilesNames}
                         setLFilesToEdit={setLFilesToEdit}
+                        showAuthComments={true}
+                        isInAuth={false}
                     />
                     <TableNc
                         lNc={lNc}
@@ -629,4 +596,4 @@ const RejectedNC = () => {
     )
 }
 
-export default RejectedNC;
+export default AuthRejectedNC;

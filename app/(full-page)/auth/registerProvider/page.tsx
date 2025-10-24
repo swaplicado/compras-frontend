@@ -24,10 +24,11 @@ import { FileUpload } from 'primereact/fileupload';
 import { Messages } from 'primereact/messages';
 import { animationSuccess, animationError } from '@/app/components/commons/animationResponse';
 
+
 axios.defaults.timeout = 45000;
 
 const RegisterProvider = () => {
-    const { t } = useTranslation('registerProvider');
+    const { t } = useTranslation('partners');
     const { t: tCommon } = useTranslation('common');
     const [oProvider, setOProvider] = useState<any>({
         provider_name: '',
@@ -85,6 +86,7 @@ const RegisterProvider = () => {
     const [resultUpload, setResultUpload] = useState<'waiting' | 'success' | 'error'>('waiting');
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    const instructions = JSON.parse(JSON.stringify(t(`register.listFiles`, { returnObjects: true })));
 
     const showToast = (type: 'success' | 'info' | 'warn' | 'error' = 'error', message: string, summaryText = 'Error:') => {
         toast.current?.show({
@@ -98,7 +100,7 @@ const RegisterProvider = () => {
     const getlCompanies = async () => {
         try {
             const route = constants.ROUTE_GET_COMPANIES;
-            const response = await axios.get(constants.API_AXIOS_GET, {
+            const response = await axios.get('/api/auth/editPartner/get', {
                 params: {
                     route: route
                 }
@@ -127,7 +129,7 @@ const RegisterProvider = () => {
     const getlAreas = async () => {
         try {
             const route = constants.ROUTE_GET_AREAS;
-            const response = await axios.get(constants.API_AXIOS_GET, {
+            const response = await axios.get('/api/auth/editPartner/get', {
                 params: {
                     route: route,
                     company_id: [oProvider.company.id]
@@ -157,7 +159,7 @@ const RegisterProvider = () => {
     const getlCountries = async () => {
         try {
             const route = constants.ROUTE_GET_COUNTRIES;
-            const response = await axios.get(constants.API_AXIOS_GET, {
+            const response = await axios.get('/api/auth/editPartner/get', {
                 params: {
                     route: route
                 }
@@ -187,7 +189,7 @@ const RegisterProvider = () => {
     const getlFiscalRegime = async () => {
         try {
             const route = constants.ROUTE_GET_FISCAL_REGIMES;
-            const response = await axios.get(constants.API_AXIOS_GET, {
+            const response = await axios.get('/api/auth/editPartner/get', {
                 params: {
                     route: route
                 }
@@ -305,7 +307,7 @@ const RegisterProvider = () => {
             formData.append('email', oProvider.email);
             formData.append('address_data', JSON.stringify(address_data));
             formData.append('company', oProvider.company.id);
-            formData.append('lastname', oProvider.lastname);
+            formData.append('last_name', oProvider.lastname);
             formData.append('functional_area', oProvider.area.id);
 
             const response = await axios.post(constants.API_AXIOS_POST, formData, {
@@ -661,6 +663,15 @@ const RegisterProvider = () => {
                             errorMessage={'Ingresa codigo postal'}
                         />
                         <div className="field col-12">
+                            <h6>Archivos a cargar:</h6>
+                            <ul>
+                                {Object.keys(instructions).map((key, index) => (
+                                    <li key={index}>
+                                        <b>{instructions[key].name}: </b>
+                                        {instructions[key].description}
+                                    </li>
+                                ))}
+                            </ul>
                             <label>Archivos</label>
                             &nbsp;
                             <Tooltip target=".custom-target-icon" />

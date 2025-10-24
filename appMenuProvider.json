@@ -14,7 +14,7 @@
             "label": "Documentos",
             "items": [
                 {
-                    "label": "Recepción de facturas",
+                    "label": "Recepción facturas",
                     "icon": "pi pi-inbox",
                     "items": [
                         {
@@ -23,7 +23,7 @@
                             "to": "/pages/documents/invoices/uploading/upload"
                         },
                         {
-                            "label": "Facturas recibidas",
+                            "label": "Facturas aceptadas",
                             "icon": "pi pi-check-square",
                             "to": "/pages/documents/invoices/uploading/accepted"
                         },
@@ -35,7 +35,7 @@
                     ]
                 },
                 {
-                    "label": "Consulta de autorizaciones",
+                    "label": "Consulta autorizaciones facturas",
                     "icon": "pi pi-search",
                     "items": [
                         {
@@ -72,7 +72,7 @@
                     ]
                 },
                 {
-                    "label": "CRP",
+                    "label": "Recepción CRP",
                     "icon": "pi pi-ticket",
                     "items": [
                         {
@@ -93,7 +93,28 @@
                     ]
                 },
                 {
-                    "label": "NC",
+                    "label": "Consulta autorizaciones CRP",
+                    "icon": "pi pi-search",
+                    "items": [
+                        {
+                            "label": "En proceso de autorización",
+                            "icon": "pi pi-clock",
+                            "to": "/pages/documents/crp/authorizations/consultationAuth/inProcess"
+                        },
+                        {
+                            "label": "Autorizados",
+                            "icon": "pi pi-check-circle",
+                            "to": "/pages/documents/crp/authorizations/consultationAuth/authorized"
+                        },
+                        {
+                            "label": "Rechazados",
+                            "icon": "pi pi-times-circle",
+                            "to": "/pages/documents/crp/authorizations/consultationAuth/rejected"
+                        }
+                    ]
+                },
+                {
+                    "label": "Recepción NC",
                     "icon": "pi pi-credit-card",
                     "items": [
                         {
@@ -110,6 +131,27 @@
                             "label": "NC rechazadas",
                             "icon": "pi pi-times-circle",
                             "to": "/pages/documents/nc/rejected"
+                        }
+                    ]
+                },
+                {
+                    "label": "Consulta autorizaciones NC",
+                    "icon": "pi pi-search",
+                    "items": [
+                        {
+                            "label": "En proceso de autorización",
+                            "icon": "pi pi-clock",
+                            "to": "/pages/documents/nc/authorizations/consultationAuth/inProcess"
+                        },
+                        {
+                            "label": "Autorizadas",
+                            "icon": "pi pi-check-circle",
+                            "to": "/pages/documents/nc/authorizations/consultationAuth/authorized"
+                        },
+                        {
+                            "label": "Rechazadas",
+                            "icon": "pi pi-times-circle",
+                            "to": "/pages/documents/nc/authorizations/consultationAuth/rejected"
                         }
                     ]
                 },

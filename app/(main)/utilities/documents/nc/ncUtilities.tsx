@@ -25,6 +25,7 @@ export const getNc = async (props: getNcProps) => {
             const data = response.data.data || [];
             let nc = [];
             for (let i = 0; i < data.length; i++) {
+                const actors_of_action = data[i].flow_details?.last_turn_action?.actors_of_action;
                 nc.push({
                     id: data[i].id,
                     is_deleted: data[i].is_deleted,
@@ -76,24 +77,25 @@ export const getNc = async (props: getNcProps) => {
                     payment_definition: data[i].payment_definition,
                     is_payment_loc: data[i].is_payment_loc,
                     oIssuer_tax_regime: {
-                        id: data[i].issuer_tax_regime.id,
-                        code: data[i].issuer_tax_regime.code,
-                        name: data[i].issuer_tax_regime.name,
+                        id: data[i].issuer_tax_regime?.id,
+                        code: data[i].issuer_tax_regime?.code,
+                        name: data[i].issuer_tax_regime?.name,
                     },
-                    issuer_tax_regime_id: data[i].issuer_tax_regime.id,
-                    issuer_tax_regime_code: data[i].issuer_tax_regime.code,
-                    issuer_tax_regime_name: data[i].issuer_tax_regime.name,
+                    issuer_tax_regime_id: data[i].issuer_tax_regime?.id,
+                    issuer_tax_regime_code: data[i].issuer_tax_regime?.code,
+                    issuer_tax_regime_name: data[i].issuer_tax_regime?.name,
                     oReceiver_tax_regime: {
-                        id: data[i].receiver_tax_regime.id,
-                        code: data[i].receiver_tax_regime.code,
-                        name: data[i].receiver_tax_regime.name,
+                        id: data[i].receiver_tax_regime?.id,
+                        code: data[i].receiver_tax_regime?.code,
+                        name: data[i].receiver_tax_regime?.name,
                     },
-                    receiver_tax_regime_id: data[i].receiver_tax_regime.id,
-                    receiver_tax_regime_code: data[i].receiver_tax_regime.code,
-                    receiver_tax_regime_name: data[i].receiver_tax_regime.name,
-                    functional_area_id: data[i].functional_area.id,
-                    functional_area_code: data[i].functional_area.code,
-                    functional_area_name: data[i].functional_area.name,
+                    receiver_tax_regime_id: data[i].receiver_tax_regime?.id,
+                    receiver_tax_regime_code: data[i].receiver_tax_regime?.code,
+                    receiver_tax_regime_name: data[i].receiver_tax_regime?.name,
+                    functional_area_id: data[i].functional_area?.id,
+                    functional_area_code: data[i].functional_area?.code,
+                    functional_area_name: data[i].functional_area?.name,
+                    actors_of_action: actors_of_action ? JSON.stringify(actors_of_action) : '',
                 })
             }
 

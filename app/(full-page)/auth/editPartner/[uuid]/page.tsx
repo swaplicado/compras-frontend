@@ -35,7 +35,7 @@ import { Checkbox } from "primereact/checkbox";
 axios.defaults.timeout = 45000;
 
 const RegisterProvider = () => {
-    const { t } = useTranslation('registerProvider');
+    const { t } = useTranslation('partners');
     const { t: tCommon } = useTranslation('common');
     const [oProvider, setOProvider] = useState<any>({
         provider_name: '',
@@ -95,6 +95,7 @@ const RegisterProvider = () => {
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const { uuid } = useParams();
+    const instructions = JSON.parse(JSON.stringify(t(`register.listFiles`, { returnObjects: true })));
 
     const showToast = (type: 'success' | 'info' | 'warn' | 'error' = 'error', message: string, summaryText = 'Error:') => {
         toast.current?.show({
@@ -108,7 +109,7 @@ const RegisterProvider = () => {
     const getlCompanies = async () => {
         try {
             const route = constants.ROUTE_GET_COMPANIES;
-            const response = await axios.get(constants.API_AXIOS_GET, {
+            const response = await axios.get('/api/auth/editPartner/get', {
                 params: {
                     route: route
                 }
@@ -137,7 +138,7 @@ const RegisterProvider = () => {
     const getlAreas = async () => {
         try {
             const route = constants.ROUTE_GET_AREAS;
-            const response = await axios.get(constants.API_AXIOS_GET, {
+            const response = await axios.get('/api/auth/editPartner/get', {
                 params: {
                     route: route,
                     company_id: [oProvider.company.id]
@@ -167,7 +168,7 @@ const RegisterProvider = () => {
     const getlCountries = async () => {
         try {
             const route = constants.ROUTE_GET_COUNTRIES;
-            const response = await axios.get(constants.API_AXIOS_GET, {
+            const response = await axios.get('/api/auth/editPartner/get', {
                 params: {
                     route: route
                 }
@@ -197,7 +198,7 @@ const RegisterProvider = () => {
     const getlFiscalRegime = async () => {
         try {
             const route = constants.ROUTE_GET_FISCAL_REGIMES;
-            const response = await axios.get(constants.API_AXIOS_GET, {
+            const response = await axios.get('/api/auth/editPartner/get', {
                 params: {
                     route: route
                 }
@@ -231,7 +232,7 @@ const RegisterProvider = () => {
             entity_type: !oProvider.entity_type,
             fiscal_regime: !oProvider.fiscal_regime,
             name: oProvider.name.trim() == '',
-            lastname: oProvider.lastname.trim() == '',
+            lastname: oProvider.last_name.trim() == '',
             phone: oProvider.phone.trim() == '',
             email: oProvider.email.trim() == '',
             street: oProvider.street.trim() == '',
@@ -292,11 +293,11 @@ const RegisterProvider = () => {
             formData.append('email', oProvider.email);
             formData.append('address_data', JSON.stringify(address_data));
             formData.append('company', oProvider.company.id);
-            formData.append('lastname', oProvider.lastname);
+            formData.append('lastname', oProvider.last_name);
             formData.append('functional_area', oProvider.area.id);
             formData.append('partner_applying_id', oProvider.id);
 
-            const response = await axios.post(constants.API_AXIOS_POST, formData, {
+            const response = await axios.post('/api/auth/editPartner/post', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
 
@@ -318,7 +319,7 @@ const RegisterProvider = () => {
     const getOProvider = async () => {
         try {
             const route = constants.ROUTE_GET_PARTNER_APPLYING_BY_UUID;
-            const response = await axios.get(constants.API_AXIOS_GET, {
+            const response = await axios.get('/api/auth/editPartner/get', {
                 params: {
                     route: route,
                     uuid: uuid
@@ -477,6 +478,15 @@ const RegisterProvider = () => {
                         <div className="p-fluid formgrid grid">
                         <div className="field col-12 md:col-12">
                             <div className="formgrid grid">
+                                <h6>Archivos a cargar:</h6>
+                                <ul>
+                                    {Object.keys(instructions).map((key, index) => (
+                                        <li key={index}>
+                                            <b>{instructions[key].name}: </b>
+                                            {instructions[key].description}
+                                        </li>
+                                    ))}
+                                </ul>
                                 <div className="col">
                                     <label>Selecciona los archivos que deseas conservar</label>
                                     &nbsp;
