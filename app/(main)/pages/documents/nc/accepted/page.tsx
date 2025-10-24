@@ -101,6 +101,12 @@ const AcceptedNC = () => {
     const isMobile = useIsMobile();
 
     const columnsProps = {
+        authz_acceptance_name: {
+            hidden: false
+        },
+        actors_of_action: {
+            hidden: false
+        },
         authz_authorization_name: {
             hidden: true
         },

@@ -43,6 +43,7 @@ const AuthNC = () => {
     const [lCompaniesFilter, setLCompaniesFilter] = useState<any[]>([]);
     const [showInfo, setShowInfo] = useState<boolean>(false);
     const [showManual, setShowManual] = useState<boolean>(false);
+    const [isUserAuth, setIsUserAuth] = useState(false);
 
     //constantes para el dialog
     const [visible, setDialogVisible] = useState<boolean>(false);
@@ -99,6 +100,12 @@ const AuthNC = () => {
     const isMobile = useIsMobile();
 
     const columnsProps = {
+        authz_acceptance_name: {
+            hidden: true
+        },
+        actors_of_action: {
+            hidden: false
+        },
         authz_authorization_name: {
             hidden: false
         },
@@ -120,31 +127,26 @@ const AuthNC = () => {
     const getLNc = async () =>  {
         let params: any = {};
         if (oUser.isInternalUser) {
-            const route = constants.ROUTE_GET_DPS_BY_AREA_ID
+            // const route = constants.ROUTE_GET_DPS_BY_AREA_ID
+            // params = {
+            //     route: route,
+            //     functional_area: userFunctionalAreas,
+            //     transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
+            //     document_type: constants.DOC_TYPE_NC,
+            //     authz_acceptance: constants.REVIEW_ACCEPT_ID,
+            //     authz_authorization: constants.REVIEW_PROCESS_ID,
+            //     start_date: startDate,
+            //     end_date: endDate,
+            //     user_id: oUser.id
+            // };
+            const route = constants.ROUTE_GET_DPS_AUTHORIZATION
             params = {
                 route: route,
-                functional_area: userFunctionalAreas,
-                transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
-                document_type: constants.DOC_TYPE_NC,
-                authz_acceptance: constants.REVIEW_ACCEPT_ID,
-                authz_authorization: constants.REVIEW_PROCESS_ID,
-                start_date: startDate,
-                end_date: endDate,
-                user_id: oUser.id
-            };
-        }
-
-        if (oUser.isProvider) {
-            const route = constants.ROUTE_GET_DPS_BY_PARTNER_ID
-            params = {
-                route: route,
-                partner_id: oUser.oProvider.id,
-                transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
-                document_type: constants.DOC_TYPE_NC,
-                authz_acceptance: constants.REVIEW_ACCEPT_ID,
-                authz_authorization: constants.REVIEW_PROCESS_ID,
-                start_date: startDate,
-                end_date: endDate,
+                type: 1,
+                user_id: oUser.oUser.external_id,
+                id_actor_type: 2,
+                document_type: constants.RESOURCE_TYPE_NC,
+                authz_authorization: constants.REVIEW_PROCESS_ID
             };
         }
 
@@ -335,13 +337,28 @@ const AuthNC = () => {
         </div>
     );
 
+    const validateUserAuth = () => {
+        if (!oNc?.actors_of_action) {
+            return;
+        }
+        const actors_of_action = oNc.actors_of_action;
+        const lAuth = JSON.parse(actors_of_action);
+        const userAuth = lAuth.find((auth: any) => auth.external_id == oUser.oUser.external_id);
+
+        if (userAuth) {
+            setIsUserAuth(true);
+        } else {
+            setIsUserAuth(false);
+        }
+    }
+
     const dialogFooterContent = () => {
         return (
             <>
                 {showing == 'body' && dialogMode == 'view' && (
                     <div className="flex flex-column md:flex-row justify-content-between gap-2">
                         <Button label={tCommon('btnClose')} icon="bx bx-x" onClick={() => setDialogVisible(false)} severity="secondary" disabled={loading} />
-                        { oUser?.oUser.groups.includes(constants.ROLES.CONTADOR_ID) && (
+                        { isUserAuth && (
                             <>
                                 <Button label={tCommon('btnReject')} icon="bx bx-dislike" onClick={() => handleReject()} autoFocus disabled={loading} severity="danger" />
                                 <Button label={'Autorizar'} icon="bx bx-like" onClick={() => handleAuth()} autoFocus disabled={loading} severity="success" />
@@ -505,6 +522,10 @@ const AuthNC = () => {
             init();
         }
     }, [userFunctionalAreas, oUser, startDate, endDate])
+
+    useEffect(() => {
+        validateUserAuth();
+    }, [oNc])
 
     const getObjectIntruction = () => {
         const viewInstructions = JSON.parse(JSON.stringify(t(`dialog.viewInstructions`, { returnObjects: true })));

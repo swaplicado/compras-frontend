@@ -9,9 +9,17 @@ import { useTranslation } from 'react-i18next';
 import { MyToolbar } from '@/app/components/documents/invoice/common/myToolbar';
 import { useIsMobile } from '@/app/components/commons/screenMobile';
 import { type } from 'node:os';
+import { OverlayPanel } from 'primereact/overlaypanel';
+import { Button } from 'primereact/button';
 
 interface columnsProps {
+    authz_acceptance_name: {
+        hidden: boolean
+    },
     authz_authorization_name: {
+        hidden: boolean
+    },
+    actors_of_action: {
         hidden: boolean
     },
     delete: {
@@ -165,6 +173,48 @@ export const TableNc = ({
         );
     };
 
+    const op = useRef<any>(null);
+    const actorsOfActionBody = (rowData: any) => {
+        const lActors = rowData?.actors_of_action ? JSON.parse(rowData.actors_of_action) : [{full_name: 'No hay actores'}];
+
+        const renderSimple = () => {
+            return (
+                <div className="flex justify-content-center align-items-center">
+                    {lActors[0].full_name}
+                </div>
+            );
+        }
+
+        const renderList = () => {
+            return (
+                <div className="flex justify-content-center align-items-center">
+                    {lActors[0].full_name}
+                    &nbsp;&nbsp;
+                    <Button type="button" icon="pi pi-list" onClick={(e) => op.current?.toggle(e)} />
+                    <OverlayPanel ref={op}>
+                        {
+                            lActors.map((actor: any, index: number) => (
+                                <div key={index}>
+                                    <p>{actor.full_name}</p>
+                                </div>
+                            ))
+                        }
+                    </OverlayPanel>
+                </div>
+            );
+        }
+
+        const renderActors = () => {
+            return (
+                lActors.length > 1 ? renderList() : renderSimple()
+            );
+        }
+
+        return (
+            renderActors()
+        )
+    }
+
 //*********** INIT ***********
     useEffect(() => {
         const Init = async () => {
@@ -270,7 +320,8 @@ export const TableNc = ({
                 <Column field="amount" header={t('datatable.columns.amount')} footer={t('datatable.columns.amount')} dataType="numeric" body={amountBodyTemplate} sortable/>
                 <Column field="currency_code" header={t('datatable.columns.currency_code')} footer={t('datatable.columns.currency_code')} sortable/>
                 <Column field="date" header={t('datatable.columns.date')} footer={t('datatable.columns.date')} body={dateBodyTemplate} sortable/>
-                <Column field="authz_acceptance_name" header={t('datatable.columns.authz_acceptance_name')} footer={t('datatable.columns.authz_acceptance_name')} body={statusAcceptanceBodyTemplate} sortable/>
+                <Column field="authz_acceptance_name" header={t('datatable.columns.authz_acceptance_name')} footer={t('datatable.columns.authz_acceptance_name')} body={statusAcceptanceBodyTemplate} sortable hidden={ columnsProps?.authz_acceptance_name.hidden }/>
+                <Column field="actors_of_action" header={'Usuario en turno'} footer={'Usuario en turno'} body={actorsOfActionBody} sortable hidden={ columnsProps?.actors_of_action.hidden } />
                 <Column field="authz_authorization_name" header={t('datatable.columns.authz_authorization_name')} footer={t('datatable.columns.authz_authorization_name')} body={statusAuthBodyTemplate} sortable hidden={ columnsProps?.authz_authorization_name.hidden } />
                 <Column field="id" header={t('datatable.columns.files')} footer={t('datatable.columns.files')} body={fileBodyTemplate} />
                 <Column field="id_dps" header={'Eliminar'} footer={'Eliminar'} body={deleteBodyTemplate} hidden={ columnsProps?.delete.hidden } />

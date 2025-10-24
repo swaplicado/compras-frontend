@@ -98,14 +98,7 @@ const AuthRejectedNC = () => {
 
     const isMobile = useIsMobile();
 
-    const columnsProps = {
-        authz_authorization_name: {
-            hidden: false
-        },
-        delete: {
-            hidden: false
-        },
-    }
+    const [columnsProps, setColumnsProps] = useState<any>();
 
 //*******FUNCIONES*******
     const showToast = (type: 'success' | 'info' | 'warn' | 'error' = 'error', message: string, summaryText = 'Error:') => {
@@ -120,17 +113,15 @@ const AuthRejectedNC = () => {
     const getLNc = async () =>  {
         let params: any = {};
         if (oUser.isInternalUser) {
-            const route = constants.ROUTE_GET_DPS_BY_AREA_ID
+            const route = constants.ROUTE_GET_DPS_AUTHORIZATIONS_BY_FUNCTIONAL_AREA;
             params = {
                 route: route,
                 functional_area: userFunctionalAreas,
-                transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
-                document_type: constants.DOC_TYPE_NC,
-                authz_acceptance: constants.REVIEW_ACCEPT_ID,
-                authz_authorization: constants.REVIEW_REJECT_ID,
+                document_type: constants.RESOURCE_TYPE_NC,
+                user_id: oUser.oUser.id,
+                auth_status: constants.REVIEW_REJECT_ID,
                 start_date: startDate,
-                end_date: endDate,
-                user_id: oUser.id
+                end_date: endDate
             };
         }
 
@@ -462,6 +453,20 @@ const AuthRejectedNC = () => {
     useEffect(() => {
         const init = async () => {
             setLoading(true);
+            setColumnsProps({
+                authz_acceptance_name: {
+                    hidden: true
+                },
+                actors_of_action: {
+                    hidden: true
+                },
+                authz_authorization_name: {
+                    hidden: false
+                },
+                delete: {
+                    hidden: true
+                },
+            });
             await getlCompanies({
                 setLCompanies,
                 setLCompaniesFilter,
