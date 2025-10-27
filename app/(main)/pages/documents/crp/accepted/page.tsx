@@ -313,7 +313,6 @@ const ConsultPaymentProgramded = () => {
     const handleFlowAuthorization = async () => {
         try {
             setLoading(true);
-            console.log('oCrp: ', oCrp);
             
             const route = constants.ROUTE_POST_START_AUTHORIZATION;
             const response = await axios.post(constants.API_AXIOS_POST, {
@@ -341,9 +340,7 @@ const ConsultPaymentProgramded = () => {
             });
 
             if (response.status == 200) {
-                
-                setSuccessMessage('Registro de proveedor enviado a autorizar');
-                setShowing('animationSuccess');
+                showToast('success', 'Registro enviado a autorizar', 'Realizado');
                 await getLCrp();
             } else {
                 throw new Error('');

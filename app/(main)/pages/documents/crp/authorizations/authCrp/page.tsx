@@ -211,11 +211,11 @@ const ConsultPaymentProgramded = () => {
                     <div className="flex flex-column md:flex-row justify-content-between gap-2">
                         <Button label={tCommon('btnClose')} icon="bx bx-x" onClick={() => setDialogVisible(false)} severity="secondary" disabled={loading} />
                         { oUser?.oUser.groups.includes(constants.ROLES.CONTADOR_ID) && (
-                        <>
-                            <Button label={tCommon('btnReject')} icon="bx bx-dislike" onClick={() => handleReject()} autoFocus disabled={loading} severity="danger" />
-                            <Button label={'Autorizar'} icon="bx bx-like" onClick={() => handleAuth()} autoFocus disabled={loading} severity="success" />
-                        </>
-                    )}
+                            <>
+                                <Button label={tCommon('btnReject')} icon="bx bx-dislike" onClick={() => handleReject()} autoFocus disabled={loading} severity="danger" />
+                                <Button label={'Autorizar'} icon="bx bx-like" onClick={() => handleAuth()} autoFocus disabled={loading} severity="success" />
+                            </>
+                        )}
                     </div>
                 )}
             </>
@@ -321,14 +321,14 @@ const ConsultPaymentProgramded = () => {
             });
 
             if (response.status === 200 || response.status === 201) {
-                setSuccessMessage('Se autorizó el registro de proveedor, en espera de autorización');
+                setSuccessMessage('Se autorizó el registro');
                 setShowing('animationSuccess');
                 await getLCrp();
             } else {
-                throw new Error('Error al autorizar el registro de proveedor');
+                throw new Error('Error al autorizar el registro');
             }
         } catch (error: any) {
-            showToast('error', error.message);
+            showToast('error', error);
         } finally {
             setLoading(false);
         }
@@ -336,8 +336,6 @@ const ConsultPaymentProgramded = () => {
 
     const handleReject = async () => {
         try {
-            console.log('oCrp: ', oCrp);
-            
             if (!oCrp.authz_authorization_notes) {
                 setFormErrors((prev: any) => ({
                     ...prev,
@@ -362,11 +360,11 @@ const ConsultPaymentProgramded = () => {
             });
 
             if (response.status === 200 || response.status === 201) {
-                setSuccessMessage('Se rechazó el registro de proveedor');
+                setSuccessMessage('Se rechazó el registro');
                 setShowing('animationSuccess');
                 await getLCrp();
             } else {
-                throw new Error('Error al rechazar el registro de proveedor');
+                throw new Error('Error al rechazar el registro');
             }
         } catch (error: any) {
             showToast('error', error)
