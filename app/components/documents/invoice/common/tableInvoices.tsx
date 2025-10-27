@@ -13,6 +13,7 @@ import { useIsMobile } from '@/app/components/commons/screenMobile';
 import moment from 'moment';
 import { OverlayPanel } from 'primereact/overlaypanel';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
+import { Nullable } from 'primereact/ts-helpers';
 
 interface columnsProps {
     acceptance: {
@@ -53,6 +54,7 @@ interface TableInvoicesProps {
     columnsProps?: columnsProps;
     withBtnSendToUpoload?: boolean;
     SendToUpoload?: () => void;
+    withBtnLast3Months?: boolean;
 }
 
 export const TableInvoices = ({
@@ -91,7 +93,8 @@ export const TableInvoices = ({
         }
     },
     withBtnSendToUpoload,
-    SendToUpoload
+    SendToUpoload,
+    withBtnLast3Months = true
 }: TableInvoicesProps) => {
     // const [lDps, setLDps] = useState<any[]>([]);
     const [filters, setFilters] = useState<DataTableFilterMeta>({});
@@ -102,7 +105,8 @@ export const TableInvoices = ({
     const { t } = useTranslation('invoices');
     const { t: tCommon } = useTranslation('common');
     const isMobile = useIsMobile();
-    const [dpsDateFilter, setDpsDateFilter] = useState<any>(null);
+    const [dateFilterMode, setDateFilterMode] = useState<'single' | 'range'>('single');
+    const [dpsDateFilter, setDpsDateFilter] = useState<Nullable<(Date | null)[]> | Date>(null);
     const [multiSortMeta, setMultiSortMeta] = useState([
         { field: 'priority', order: -1 as -1 }, // 1 = ascendente, -1 = descendente
         { field: 'date', order: -1 as -1 }
@@ -432,7 +436,7 @@ export const TableInvoices = ({
             setLoading(true);
 
             initFilters();
-            setDpsDateFilter(new Date);           
+            setDpsDateFilter(new Date);
             await getlCompanies();
 
             // setLoading(false);
@@ -453,12 +457,15 @@ export const TableInvoices = ({
         }
         if (withMounthFilter) {
             if (getDpsParams) {
+                const startDate = Array.isArray(dpsDateFilter) ? dpsDateFilter[0] : dpsDateFilter;
+                const endDate = Array.isArray(dpsDateFilter) ? dpsDateFilter[dpsDateFilter.length - 1] : dpsDateFilter;
+
                 setGetDpsParams((prev: any) => ({
                     ...prev,
                     params: {
                         ...prev?.params,
-                        start_date: moment(dpsDateFilter).startOf('month').format('YYYY-MM-DD'),
-                        end_date: moment(dpsDateFilter).endOf('month').format('YYYY-MM-DD'),
+                        start_date: moment(startDate).startOf('month').format('YYYY-MM-DD'),
+                        end_date: moment(endDate).endOf('month').format('YYYY-MM-DD'),
                     }
                 }))
         
@@ -466,8 +473,8 @@ export const TableInvoices = ({
                     ...getDpsParams,
                     params: {
                         ...getDpsParams?.params,
-                        start_date: moment(dpsDateFilter).startOf('month').format('YYYY-MM-DD'),
-                        end_date: moment(dpsDateFilter).endOf('month').format('YYYY-MM-DD'),
+                        start_date: moment(startDate).startOf('month').format('YYYY-MM-DD'),
+                        end_date: moment(endDate).endOf('month').format('YYYY-MM-DD'),
                     }
                 }
         
@@ -499,6 +506,9 @@ export const TableInvoices = ({
                 withMounthFilter={withMounthFilter}
                 withBtnSendToUpoload={withBtnSendToUpoload}
                 SendToUpoload={SendToUpoload}
+                setDateFilterMode={setDateFilterMode}
+                dateFilterMode={dateFilterMode}
+                withBtnLast3Months={withBtnLast3Months}
             />
             <br />
             <DataTable

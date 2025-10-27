@@ -62,6 +62,7 @@ const Upload = () => {
             payday: false,
             payment_percentage: false
         });
+    const [withMounthFilter, setWithMounthFilter] = useState<boolean>(false);
 
     const headerCard = (
         <div
@@ -607,8 +608,8 @@ const Upload = () => {
                     transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
                     document_type: constants.DOC_TYPE_INVOICE,
                     authz_acceptance: constants.REVIEW_PENDING_ID,
-                    start_date: start_date,
-                    end_date: end_date,
+                    start_date: withMounthFilter ? start_date : null,
+                    end_date: withMounthFilter ? end_date : null,
                     user_id: userId
                 };
                 setGetDpsParams({ params, errorMessage: t('errors.getInvoicesError'), setLDps, showToast });
@@ -626,8 +627,8 @@ const Upload = () => {
                     transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
                     document_type: constants.DOC_TYPE_INVOICE,
                     authz_acceptance: constants.REVIEW_PENDING_ID,
-                    start_date: start_date,
-                    end_date: end_date
+                    start_date: withMounthFilter ? start_date : null,
+                    end_date: withMounthFilter ? end_date : null
                 };
                 setGetDpsParams({ params, errorMessage: t('errors.getInvoicesError'), setLDps, showToast });
 
@@ -719,6 +720,7 @@ const Upload = () => {
                         setDialogVisible={setDialogVisible}
                         setFlowAuthDialogVisible={setFlowAuthDialogVisible}
                         withBtnCreate={showBtnCreate()}
+                        withMounthFilter={withMounthFilter}
                     />
                 </Card>
             </div>
