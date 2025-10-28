@@ -104,24 +104,45 @@ export async function GET(req: NextRequest) {
             
             const api = createApiInstance(baseUrl);
             
-            // Realizar la petición con responseType 'arraybuffer' para manejar binarios
-            const response = await api.get(route, { 
-                headers,
-                params,
-                paramsSerializer: (params) => {
-                    // Serializar los parámetros para que las listas se envíen como parámetros repetidos
-                    const searchParams = new URLSearchParams();
-                    Object.entries(params).forEach(([key, value]) => {
-                        if (Array.isArray(value)) {
-                            value.forEach((item) => searchParams.append(key, item));
-                        } else {
-                            searchParams.append(key, value);
-                        }
-                    });
-                    return searchParams.toString();
-                },
-                responseType: 'arraybuffer' // Importante para manejar ZIP y JSON
-            });
+            let response: any;
+            if (!route.includes('download-zip')) {
+                // Realizar la petición con responseType 'arraybuffer' para manejar binarios
+                response = await api.get(route, { 
+                    headers,
+                    params,
+                    paramsSerializer: (params) => {
+                        // Serializar los parámetros para que las listas se envíen como parámetros repetidos
+                        const searchParams = new URLSearchParams();
+                        Object.entries(params).forEach(([key, value]) => {
+                            if (Array.isArray(value)) {
+                                value.forEach((item) => searchParams.append(key, item));
+                            } else {
+                                searchParams.append(key, value);
+                            }
+                        });
+                        return searchParams.toString();
+                    }
+                });
+            } else {
+                // Realizar la petición con responseType 'arraybuffer' para manejar binarios
+                response = await api.get(route, { 
+                    headers,
+                    params,
+                    paramsSerializer: (params) => {
+                        // Serializar los parámetros para que las listas se envíen como parámetros repetidos
+                        const searchParams = new URLSearchParams();
+                        Object.entries(params).forEach(([key, value]) => {
+                            if (Array.isArray(value)) {
+                                value.forEach((item) => searchParams.append(key, item));
+                            } else {
+                                searchParams.append(key, value);
+                            }
+                        });
+                        return searchParams.toString();
+                    },
+                    responseType: 'arraybuffer' // Importante para manejar ZIP y JSON
+                });
+            }
 
             // Determinar el content type de la respuesta
             const contentType = response.headers['content-type'] || 'application/json';
@@ -141,7 +162,8 @@ export async function GET(req: NextRequest) {
             
             // Manejar JSON (necesitamos convertir el buffer a JSON)
             if (contentType.includes('application/json')) {
-                const jsonData = JSON.parse(Buffer.from(response.data).toString('utf-8'));
+                // const jsonData = JSON.parse(Buffer.from(response.data).toString('utf-8'));
+                const jsonData = response.data;
                 return NextResponse.json(
                     { data: jsonData, message: 'petición exitosa' }, 
                     { status: response.status }
