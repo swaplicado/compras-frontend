@@ -303,7 +303,7 @@ const UploadNC = () => {
             if (oNc.folio && !oNc.series && !oNc.number) {
                 const splitFolio = oNc.folio.split('-');
                 series = splitFolio.length > 1 ? splitFolio[0] : '';
-                number = splitFolio.length > 1 ? splitFolio[1] : splitFolio[0];
+                number = splitFolio.length > 1 ? splitFolio.slice(1).join('-') : splitFolio[0];
             } else {
                 series = oNc.serie;
                 number = oNc.number;

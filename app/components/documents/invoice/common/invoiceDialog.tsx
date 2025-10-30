@@ -638,7 +638,7 @@ export const InvoiceDialog = ({
 
             const splitFolio = oDps.folio.split('-');
             const serie = splitFolio.length > 1 ? splitFolio[0] : '';
-            const number = splitFolio.length > 1 ? splitFolio[1] : splitFolio[0];
+            const number = splitFolio.length > 1 ? splitFolio.slice(1).join('-') : splitFolio[0];
 
             const area_id = lRefToValidateXml[0].id == 0 ? oArea?.id : lRefToValidateXml[0].functional_area_id;
 
