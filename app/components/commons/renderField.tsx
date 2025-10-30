@@ -25,6 +25,7 @@ interface renderFieldProps {
     errorMessage?: string;
     inputRef?: any;
     labelClass?: string
+    suffix?: string
 }
 
 export const RenderField = (props: renderFieldProps) => {
@@ -135,6 +136,7 @@ export const RenderField = (props: renderFieldProps) => {
                                     onChange={(e: any) => {
                                         props.onChange?.(e.value);
                                     }}
+                                    suffix={props.suffix}
                                 />
                                 {props.errors[props.errorKey] && <small className="p-error">{props.errorMessage}</small>}
                             </div>

@@ -18,6 +18,7 @@ import esPayments from './locales/es/documents/payments';
 import esCatalogPartners from './locales/es/partners/catalog';
 import esCrp from './locales/es/documents/crp';
 import esNc from './locales/es/documents/nc';
+import esOc from './locales/es/documents/oc';
 import esPartners from './locales/es/partners/partners';
 
 i18n
@@ -43,6 +44,7 @@ i18n
         catalogPartners: esCatalogPartners,
         crp: esCrp,
         nc: esNc,
+        oc: esOc,
         partners: esPartners
       }
     },

@@ -194,6 +194,38 @@
                     ]
                 },
                 {
+                    "label": "Consulta autorizaciones OC",
+                    "icon": "pi pi-search",
+                    "items": [
+                        {
+                            "label": "En proceso de autorización",
+                            "icon": "pi pi-clock",
+                            "to": "/pages/documents/oc/authorizations/consultationAuth/inProcess"
+                        },
+                        {
+                            "label": "Autorizadas",
+                            "icon": "pi pi-check-circle",
+                            "to": "/pages/documents/oc/authorizations/consultationAuth/authorized"
+                        },
+                        {
+                            "label": "Rechazadas",
+                            "icon": "pi pi-times-circle",
+                            "to": "/pages/documents/oc/authorizations/consultationAuth/rejected"
+                        }
+                    ]
+                },
+                {
+                    "label": "Autorización OC",
+                    "icon": "pi pi-pencil",
+                    "items": [
+                        {
+                            "label": "Pendientes de autorizar",
+                            "icon": "pi pi-exclamation-circle",
+                            "to": "/pages/documents/oc/authorizations/authOc"
+                        }
+                    ]
+                },
+                {
                     "label": "Recepción proveedores",
                     "icon": "pi pi-truck",
                     "items": [
