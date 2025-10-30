@@ -292,8 +292,8 @@ const ConsultPaymentProgramded = () => {
                         getlFiles={getlFiles}
                         loadingFiles={loadingFiles}
                         oUser={oUser}
-                        withHistoryAuth={true}
-                        getHistoryAuth={getHistoryAuth}
+                        withHistoryAuth={false}
+                        // getHistoryAuth={getHistoryAuth}
                         loadingHistoryAuth={loadingHistoryAuth}
                         lHistoryAuth={historyAuth}
                     />
