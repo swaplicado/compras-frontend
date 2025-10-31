@@ -354,7 +354,7 @@ export default function UploadDialog({
             formData.append('is_internal_user', oValidUser.isInternalUser ? 'True' : 'False');
 
             const splitFolio = oDps.folio.split('-');
-            const number = splitFolio.length > 1 ? splitFolio[1] : splitFolio[0];
+            const number = splitFolio.length > 1 ? splitFolio.slice(1).join('-') : splitFolio[0];
             
             let document = {
                 transaction_class: constants.TRANSACTION_CLASS_COMPRAS,

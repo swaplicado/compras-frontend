@@ -52,6 +52,7 @@ const constants = {
     ROUTE_GET_INVOICES_NC: '/transactions/documents/select-doc-uncovered/',
     ROUTE_GET_INVOICES_TO_REVIEW_NC: '/transactions/documents/get-documents/',
     ROUTE_GET_PANEL_DATA: '/transactions/get-panel-data/',
+    ROUTE_GET_OC_JSON: '/transactions/documents/get-json-doc/', //doc_id
 
     ROUTE_POST_VALIDATE_XML: '/transactions/documents/validate-xml/',
     ROUTE_POST_DOCUMENT_TRANSACTION: '/transactions/document-transaction/',
@@ -66,6 +67,7 @@ const constants = {
     ROUTE_POST_ACCOUNT_STATES: '/transactions/partners/account-state/',
     ROUTE_POST_VALIDATE_XML_NC: '/transactions/documents/validate-xml-nc/',
     ROUTE_POST_NC: '/transactions/document-transaction-nc/',
+    ROUTE_POST_CANCEL_FLOW: '/transactions/cancel-flow/',
 
     //Constantes de estados de las facturas
     REVIEW_ACCEPT: 'O',
@@ -124,7 +126,7 @@ const constants = {
 
     //Tipo de documento
     DOC_TYPE_INVOICE: 41,
-    DOC_TYPE_OC: 2,
+    DOC_TYPE_OC: 21,
     DOC_TYPE_CRP: 51,
     DOC_TYPE_NC: 46,
 
@@ -148,6 +150,7 @@ const constants = {
     RESOURCE_TYPE_PROVIDER: 21,
     RESOURCE_TYPE_CRP: 16,
     RESOURCE_TYPE_NC: 6,
+    RESOURCE_TYPE_OC: 3,
 
     //estatus de pagos
     PAYMENT_STATUS_NEW_ID: 1,

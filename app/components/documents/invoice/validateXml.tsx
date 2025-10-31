@@ -85,7 +85,7 @@ export const ValidateXml = ( { xmlUploadRef, oCompany, oPartner, user_id, oRef, 
                         amount: data.data.amount,
                         oCurrency: oCurrency,
                         currency: currency,
-                        exchange_rate: data.data.exchange_rate,
+                        exchange_rate: data.data.exchange_rate ? data.data.exchange_rate : 1,
                         uuid: data.data.uuid
                     }
                     setODps(oDps);

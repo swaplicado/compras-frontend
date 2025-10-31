@@ -7,6 +7,8 @@ import { useTranslation } from 'react-i18next';
 import { Calendar } from 'primereact/calendar';
 import { addLocale } from 'primereact/api';
 import { Checkbox } from 'primereact/checkbox';
+import moment from 'moment';
+import { Nullable } from 'primereact/ts-helpers';
 
 interface myToolbarPropps {
     isMobile: boolean;
@@ -17,8 +19,10 @@ interface myToolbarPropps {
     onGlobalFilterChange1: (e: React.ChangeEvent<HTMLInputElement>) => void;
     clearFilter1: () => void;
     setFlowAuthDialogVisible?: React.Dispatch<React.SetStateAction<boolean>>;
-    setDpsDateFilter?: React.Dispatch<React.SetStateAction<string>>;
+    setDpsDateFilter?: React.Dispatch<React.SetStateAction<any>>;
     dpsDateFilter?: any;
+    setDateFilterMode?: any;
+    dateFilterMode?: any;
     withBtnCreate?: boolean;
     withBtnSendAuth?: boolean;
     withBtnCleanFilter?: boolean;
@@ -30,6 +34,7 @@ interface myToolbarPropps {
     withFilterProvider?: boolean;
     handleFilterProvider?: () => void;
     filterProvider?: boolean;
+    withBtnLast3Months?: boolean;
 }
 
 export const MyToolbar = ({
@@ -53,13 +58,59 @@ export const MyToolbar = ({
     SendToUpoload,
     withFilterProvider,
     handleFilterProvider,
-    filterProvider = false
+    filterProvider = false,
+    setDateFilterMode,
+    dateFilterMode = 'single',
+    withBtnLast3Months = false
 }: myToolbarPropps) => {
     const { t } = useTranslation('invoices');
     const { t: tCommon } = useTranslation('common');
+    const [key, setKey] = useState(0);
 
     const renderBigScreen = () => {
         addLocale('es', tCommon('calendar', { returnObjects: true }) as any);
+
+        const handleCalendarChange = (e: any) => {
+            if (dateFilterMode === 'range') {
+                setTimeout(() => {
+                    setDateFilterMode?.('single');
+                    setDpsDateFilter?.(e.value && e.value[0] ? e.value[0] : null);
+                    setKey(prev => prev + 1); // Forzar re-render
+                }, 0);
+            } else {
+                setDpsDateFilter?.(e.value);
+            }
+        };
+
+        const lastThreeMonths = () => {
+            setDateFilterMode?.('range');
+            const today = new Date();
+            const months = [];
+            
+            for (let i = 0; i < 3; i++) {
+                const date = new Date(today.getFullYear(), today.getMonth() - i, 1);
+                months.push(date);
+            }
+            months.sort((a, b) => a.getTime() - b.getTime());
+            setDpsDateFilter?.([months[0], months[2]]);
+            setKey(prev => prev + 1); // Forzar re-render
+        }
+
+        const buttonBarTemplate = () => {
+            return (
+                withBtnLast3Months ?
+                <div className="flex align-items-center gap-2">
+                    <Button
+                        label={tCommon('last3Months')}
+                        severity="secondary"
+                        text
+                        size="small"
+                        onClick={() => { lastThreeMonths() }}
+                    />
+                </div>
+                : null
+            );
+        }
 
         return (
             <div className="border-bottom-1 surface-border surface-card shadow-1 transition-all transition-duration-300 w-full shadow-4 p-3" style={{ borderRadius: '3rem' }}>
@@ -114,12 +165,20 @@ export const MyToolbar = ({
                                 <label htmlFor="filterProvider" className="ml-2">Ver mis proveedores</label>
                             </div>
                         )}
-
                     </div>
 
                     {withMounthFilter && (
                         <div className="flex align-items-center gap-2 flex-wrap">
-                            <Calendar value={dpsDateFilter || ''} onChange={(e: any) => setDpsDateFilter?.(e.value)} view="month" dateFormat="MM/yy" locale="es"/>
+                            <Calendar 
+                                key={key}
+                                value={dpsDateFilter || null} 
+                                onChange={ (e: any) => handleCalendarChange(e)}
+                                selectionMode={dateFilterMode}
+                                view="month" 
+                                dateFormat={ dateFilterMode == 'single' ? "MM/yy" : "M/yy"} 
+                                locale="es"
+                                footerTemplate={buttonBarTemplate}
+                            />
                         </div>
                     )}
                     {withSearch && (

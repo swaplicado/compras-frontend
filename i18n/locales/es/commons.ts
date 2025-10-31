@@ -23,6 +23,7 @@ const commons = {
     btnSend: "Enviar",
     active: "Activo",
     inactive: "Inactivo",
+    last3Months: "Últimos 3 meses",
 
     btnReload: "Recargar",
     tooltipBtnReload: "Recargar la página",

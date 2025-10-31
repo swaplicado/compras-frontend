@@ -26,7 +26,7 @@ export const FormateadorMonetario = (valor: number | string) => {
       if (isNaN(numero)) return 'Valor inválido';
       
       // Formatear a 2 decimales
-      return numero.toLocaleString('es-ES', {
+      return numero.toLocaleString('es-MX', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
       });
