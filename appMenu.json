@@ -14,6 +14,11 @@
             "label": "Documentos",
             "items": [
                 {
+                    "label": "Todas las facturas",
+                    "icon": "bx bx-list-ul bx-sm",
+                    "to": "/pages/documents/invoices/allInvoices"
+                },
+                {
                     "label": "Recepción facturas",
                     "icon": "pi pi-inbox",
                     "items": [

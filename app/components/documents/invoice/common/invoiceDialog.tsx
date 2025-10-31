@@ -73,6 +73,7 @@ interface InvoiceDialogProps {
     reviewErrors?: any;
     setReviewErrors?: React.Dispatch<React.SetStateAction<any>>;
     canCancellFlowAuth?: boolean;
+    withSingleFooter?: boolean;
 }
 
 interface renderFieldProps {
@@ -134,6 +135,7 @@ export const InvoiceDialog = ({
     reviewErrors,
     setReviewErrors,
     canCancellFlowAuth = false,
+    withSingleFooter = false
 }: InvoiceDialogProps) => {
     const [oCompany, setOCompany] = useState<any>(null);
     const [oProvider, setOProvider] = useState<any>(null);
@@ -1189,6 +1191,15 @@ export const InvoiceDialog = ({
             ''
         );
 
+    const singleFooter = (
+        <>
+            {btnToScroll}
+            <div className="flex flex-column md:flex-row justify-content-between gap-2">
+                <Button label={tCommon('btnClose')} icon="bx bx-x" onClick={onHide} severity="secondary" disabled={loading} />
+            </div>
+        </>
+    )
+
     // let footerContent = dialogMode == 'create' ? footerCreate : dialogMode == 'review' ? footerAccept : dialogMode == 'authorization' ? footerAuth : '';
     let footerContent;
     switch (dialogMode) {
@@ -1196,6 +1207,16 @@ export const InvoiceDialog = ({
             footerContent = footerCreate;
             break;
         case 'review':
+            if (withSingleFooter) {
+                footerContent = singleFooter;
+                break;
+            }
+
+            if (canCancellFlowAuth) {
+                footerContent = footerCancellFlowAuth;
+                break;
+            }
+
             if (!isEdit) {
                 footerContent = footerAccept;
             }
@@ -1208,10 +1229,6 @@ export const InvoiceDialog = ({
                 if (typeEdit == 'authorization') {
                     footerContent = footerEditAuth;
                 }
-            }
-
-            if (canCancellFlowAuth) {
-                footerContent = footerCancellFlowAuth;
             }
             break;
         case 'authorization':
