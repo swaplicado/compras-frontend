@@ -72,6 +72,8 @@ const Upload = () => {
     const [historyAuth, setHistoryAuth] = useState<any[]>([]);
     const [loadingHistoryAuth, setLoadingHistoryAuth] = useState<boolean>(false);
 
+    const [canCancellFlowAuth, setCanCancellFlowAuth] = useState<boolean>(false);
+
     const headerCard = (
         <div
             className="
@@ -517,6 +519,8 @@ const Upload = () => {
             return;
         }
 
+        setCanCancellFlowAuth(e.data.created_by == userId);
+        // setCanCancellFlowAuth(true);
         setSelectedRow(e.data);
         setDialogMode('review');
         setDialogVisible(true);
@@ -630,6 +634,8 @@ const Upload = () => {
                         getHistoryAuth={getHistoryAuth}
                         loadingHistoryAuth={loadingHistoryAuth}
                         lHistoryAuth={historyAuth}
+                        canCancellFlowAuth={canCancellFlowAuth}
+                        userExternalId={userExternalId}
                     />
 
                     <TableInvoices

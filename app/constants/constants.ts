@@ -67,6 +67,7 @@ const constants = {
     ROUTE_POST_ACCOUNT_STATES: '/transactions/partners/account-state/',
     ROUTE_POST_VALIDATE_XML_NC: '/transactions/documents/validate-xml-nc/',
     ROUTE_POST_NC: '/transactions/document-transaction-nc/',
+    ROUTE_POST_CANCEL_FLOW: '/transactions/cancel-flow/',
 
     //Constantes de estados de las facturas
     REVIEW_ACCEPT: 'O',

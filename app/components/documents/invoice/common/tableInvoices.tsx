@@ -562,6 +562,7 @@ export const TableInvoices = ({
                 <Column field="payment_notes" header="payment_notes" hidden />
                 <Column field="lReferences" header="lReferences" hidden />
                 <Column field="oPartner" header="oPartner" hidden />
+                <Column field="created_by" header="created_by" hidden />
                 <Column field="priority" header="Prioridad" body={priorityTemplate} footer="Prioridad" sortable />
                 <Column field="company" header={t('invoicesTable.columns.company')} footer={t('invoicesTable.columns.company')} sortable filter showFilterMatchModes={false} filterElement={companyFilterTemplate} filterApply={<></>} filterClear={<></>} />
                 <Column

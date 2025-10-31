@@ -89,6 +89,7 @@ export const getDps = async ( props: getDpsProps  ) => {
                     is_payment_loc: data[i].is_payment_loc,
                     payment_notes: data[i].payment_notes,
                     priority: data[i].priority,
+                    created_by: data[i].created_by
                 });
             }
             props.setLDps(dps);

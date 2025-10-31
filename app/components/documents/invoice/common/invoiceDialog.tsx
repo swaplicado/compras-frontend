@@ -72,6 +72,7 @@ interface InvoiceDialogProps {
     lHistoryAuth?: any[];
     reviewErrors?: any;
     setReviewErrors?: React.Dispatch<React.SetStateAction<any>>;
+    canCancellFlowAuth?: boolean;
 }
 
 interface renderFieldProps {
@@ -131,7 +132,8 @@ export const InvoiceDialog = ({
     loadingHistoryAuth,
     lHistoryAuth = [],
     reviewErrors,
-    setReviewErrors
+    setReviewErrors,
+    canCancellFlowAuth = false,
 }: InvoiceDialogProps) => {
     const [oCompany, setOCompany] = useState<any>(null);
     const [oProvider, setOProvider] = useState<any>(null);
@@ -980,6 +982,45 @@ export const InvoiceDialog = ({
         }
     };
 
+    const handleCancelFlowAuth = async () => {
+        try {
+            if (!oDps.auth_notes) {
+                showToast?.('info', 'Debes ingresar comentarios de la cancelación', 'Info');
+                return;
+            }
+
+            setLoading?.(true);
+            const route = constants.ROUTE_POST_CANCEL_FLOW;
+            const response = await axios.post(constants.API_AXIOS_PATCH, {
+                route,
+                jsonData: {
+                    id_external_system: 1,
+                    id_company: oDps.company_external_id,
+                    id_resource_type: constants.RESOURCE_TYPE_PUR_INVOICE,
+                    external_resource_id: oDps.id_dps,
+                    external_user_id: userExternalId,
+                    id_actor_type: 2,
+                    notes: oDps.auth_notes || ''
+                }
+            });
+
+            if (response.status === 200) {
+                setSuccessMessage('Se ha cancelado el proceso de autorización, tu factura ha apasado a la pantalla de "carga de facturas"');
+                setResultUpload('success');
+                if (getDps) {
+                    await getDps(getDpsParams);
+                }
+            } else {
+                throw new Error(`Error al cancelar el proceso de autorización: ${response.statusText}`);
+            }
+        } catch (error: any) {
+            setErrorMessage(error.response?.data?.error || 'Error al cancelar el proceso de autorización');
+            setResultUpload('error');
+        } finally {
+            setLoading?.(false);
+        }
+    }
+
     const footerAuth =
         resultUpload === 'waiting' && isUserAuth && oDps?.authz_authorization_code == 'PR' ? (
             <>
@@ -1135,6 +1176,19 @@ export const InvoiceDialog = ({
             ''
         );
 
+    const footerCancellFlowAuth =
+        resultUpload === 'waiting' ? (
+            <>
+                {btnToScroll}
+                <div className="flex flex-column md:flex-row justify-content-between gap-2">
+                    <Button label={tCommon('btnClose')} icon="bx bx-x" onClick={onHide} severity="secondary" disabled={loading} />
+                    <Button label={'Cancelar proceso de autorización'} icon="bx bx-stop-circle" onClick={() => handleCancelFlowAuth()} autoFocus disabled={loading} severity="warning" />
+                </div>
+            </>
+        ) : (
+            ''
+        );
+
     // let footerContent = dialogMode == 'create' ? footerCreate : dialogMode == 'review' ? footerAccept : dialogMode == 'authorization' ? footerAuth : '';
     let footerContent;
     switch (dialogMode) {
@@ -1154,6 +1208,10 @@ export const InvoiceDialog = ({
                 if (typeEdit == 'authorization') {
                     footerContent = footerEditAuth;
                 }
+            }
+
+            if (canCancellFlowAuth) {
+                footerContent = footerCancellFlowAuth;
             }
             break;
         case 'authorization':
@@ -1562,6 +1620,40 @@ export const InvoiceDialog = ({
                                     </div>
                                 )}
                             </>
+                        )}
+
+                        {canCancellFlowAuth && (
+                            <div className={`field col-12 md:col-12`}>
+                                <div className="formgrid grid">
+                                    <div className="col">
+                                        <label data-pr-tooltip="" className='opacity-100 text-blue-600'>Comentarios para cancelación:</label>
+                                        &nbsp;
+                                        <Tooltip target=".custom-target-icon" />
+                                        <i
+                                            className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
+                                            data-pr-tooltip={'Ingresa comentarios para cancelar'}
+                                            data-pr-position="right"
+                                            data-pr-my="left center-2"
+                                            style={{ fontSize: '1rem', cursor: 'pointer' }}
+                                        ></i>
+                                        <div>
+                                            <InputTextarea
+                                                id="comments"
+                                                rows={3}
+                                                cols={30}
+                                                maxLength={100}
+                                                disabled={false}
+                                                className={`w-full ${authErrors.auth_notes ? 'p-invalid' : ''} `}
+                                                value={oDps?.auth_notes}
+                                                onChange={(e) => {
+                                                    setODps((prev: any) => ({ ...prev, auth_notes: e.target.value }));
+                                                }}
+                                            />
+                                            {authErrors.auth_notes && <small className="p-error">Ingresa comentarios para cancelar</small>}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         )}
 
                         {(dialogMode == 'view' || dialogMode == 'review' || dialogMode == 'authorization') &&
