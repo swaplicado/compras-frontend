@@ -41,7 +41,8 @@ interface renderFieldProps {
     errors?: any,
     errorMessage?: string,
     lOptions?: any[],
-    labelClass?: string
+    labelClass?: string,
+    lengthTextArea?: number
 }
 
 export const FieldsDps = ({
@@ -267,7 +268,7 @@ export const FieldsDps = ({
                                     id="comments"
                                     rows={3}
                                     cols={30}
-                                    maxLength={100}
+                                    maxLength={ props.lengthTextArea ? props.lengthTextArea : 500}
                                     className={`w-full ${props.errors?.[props.errorKey] ? 'p-invalid' : ''} `}
                                     value={props.value || ''}
                                     readOnly={props.disabled}
@@ -635,7 +636,8 @@ export const FieldsDps = ({
                             errors: errors,
                             errorKey: '',
                             errorMessage: '',
-                            labelClass: 'opacity-100 text-blue-600'
+                            labelClass: 'opacity-100 text-blue-600',
+                            lengthTextArea: 100
                         })}
                         {renderField({
                             label: t('uploadDialog.rejectComments.label'),

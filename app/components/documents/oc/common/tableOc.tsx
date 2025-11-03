@@ -307,6 +307,8 @@ export const TableOc = ({
                 <Column field="functional_area_id" header="functional_area_id" hidden />
                 <Column field="functional_area_code" header="functional_area_code" hidden />
                 <Column field="functional_area_name" header="functional_area_name" hidden />
+                <Column field="concepts" header="concepts" hidden />
+                <Column field="cost_profit_center" header="cost_profit_center" hidden />
                 <Column field="priority" header={t('datatable.columns.priority')} footer={t('datatable.columns.priority')} body={priorityTemplate} sortable/>
                 <Column field="company_trade_name" header={t('datatable.columns.company_trade_name')} footer={t('datatable.columns.company_trade_name')} sortable/>
                 <Column field="partner_full_name" header={t('datatable.columns.partner_full_name')} footer={t('datatable.columns.partner_full_name')} sortable/>

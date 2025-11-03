@@ -112,6 +112,18 @@ const oc = {
                 placeholder: "Notas de la OC",
                 tooltip: "Notas de la OC"
             },
+            CeCo: {
+                concepts: {
+                    label: "Concepto/gasto",
+                    placeholder: "Concepto/gasto",
+                    tooltip: "Concepto/gasto"
+                },
+                cost_profit_center: {
+                    label: "Centros costo",
+                    placeholder: "Centros costo",
+                    tooltip: "Centros costo"
+                }
+            }
         },
         tableEtys: {
             columns: {

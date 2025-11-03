@@ -288,27 +288,59 @@ export const DialogOc = ({
                                         errorMessage={'Selecciona proveedor'}
                                     />
                                 )}
-                                <RenderField
-                                    label={t('dialog.fields.notes_start_auth.label')}
-                                    tooltip={t('dialog.fields.notes_start_auth.tooltip')}
-                                    value={oOc?.jsonOc?.oDpsHeader.notesAuth}
-                                    disabled={dialogMode == 'view' || dialogMode == 'edit'}
-                                    mdCol={12}
-                                    type={'textArea'}
-                                    onChange={(value) => {
-                                        setOOc?.((prev: any) => ({ ...prev, notes_start_auth: value }));
-                                        setFormErrors?.((prev: any) => ({ ...prev, notes_start_auth: false }));
-                                    }}
-                                    options={[]}
-                                    placeholder={t('dialog.fields.notes_start_auth.placeholder')}
-                                    errorKey={'notes_start_auth'}
-                                    errors={formErrors}
-                                    errorMessage={''}
-                                />
+                                { oOc?.jsonOc?.oDpsHeader.notesAuth && (
+                                    <RenderField
+                                        label={t('dialog.fields.notes_start_auth.label')}
+                                        tooltip={t('dialog.fields.notes_start_auth.tooltip')}
+                                        value={oOc?.jsonOc?.oDpsHeader.notesAuth}
+                                        disabled={dialogMode == 'view' || dialogMode == 'edit'}
+                                        mdCol={12}
+                                        type={'textArea'}
+                                        onChange={(value) => {
+                                            setOOc?.((prev: any) => ({ ...prev, notes_start_auth: value }));
+                                            setFormErrors?.((prev: any) => ({ ...prev, notes_start_auth: false }));
+                                        }}
+                                        options={[]}
+                                        placeholder={t('dialog.fields.notes_start_auth.placeholder')}
+                                        errorKey={'notes_start_auth'}
+                                        errors={formErrors}
+                                        errorMessage={''}
+                                    />
+                                )}
                             </div>
                         )}
                         {withBody && isXmlValid && (dialogMode == 'create' || dialogMode == 'edit' || dialogMode == 'view') && (
                             <div className="p-fluid formgrid grid">
+                                
+                                <RenderField
+                                    label={t('dialog.fields.CeCo.concepts.label')}
+                                    tooltip={t('dialog.fields.CeCo.concepts.tooltip')}
+                                    value={oOc?.concepts}
+                                    readonly={!editableBodyFields}
+                                    mdCol={3}
+                                    type={'textArea'}
+                                    onChange={() => null}
+                                    options={[]}
+                                    placeholder={t('dialog.fields.CeCo.concepts.placeholder')}
+                                    errorKey={''}
+                                    errors={formErrors}
+                                    errorMessage={''}
+                                />
+                                <RenderField
+                                    label={t('dialog.fields.CeCo.cost_profit_center.label')}
+                                    tooltip={t('dialog.fields.CeCo.cost_profit_center.tooltip')}
+                                    value={oOc?.cost_profit_center}
+                                    readonly={!editableBodyFields}
+                                    mdCol={6}
+                                    type={'textArea'}
+                                    onChange={() => null}
+                                    options={[]}
+                                    placeholder={t('dialog.fields.CeCo.cost_profit_center.placeholder')}
+                                    errorKey={''}
+                                    errors={formErrors}
+                                    errorMessage={''}
+                                />
+
                                 <RenderField
                                     label={t('dialog.fields.folio.label')}
                                     tooltip={t('dialog.fields.folio.tooltip')}

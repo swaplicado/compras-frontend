@@ -96,6 +96,8 @@ export const getOc = async (props: getOcProps) => {
                     functional_area_code: data[i].functional_area?.code,
                     functional_area_name: data[i].functional_area?.name,
                     actors_of_action: actors_of_action ? JSON.stringify(actors_of_action) : '',
+                    concepts: data[i].reference_external?.concepts ? data[i].reference_external.concepts.split(';').map((concept: any) => concept.trim() + ';\n').join('') : 'N/D',
+                    cost_profit_center: data[i].reference_external?.cost_profit_center ? data[i].reference_external.cost_profit_center.split(';').map((concept: any) => concept.trim() + ';\n').join('') : 'N/D',
                 })
             }
 
