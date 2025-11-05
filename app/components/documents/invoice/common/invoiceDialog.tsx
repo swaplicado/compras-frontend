@@ -854,10 +854,7 @@ export const InvoiceDialog = ({
     }, [visible]);
 
     useEffect(() => {
-        console.log('partnerPaymentDay: ', partnerPaymentDay);
-        console.log('oDps: ', oDps);
         if (partnerPaymentDay && !oDps.payday) {
-            console.log(2);
             setODps((prev: any) => ({
                 ...prev,
                 payday: partnerPaymentDay
