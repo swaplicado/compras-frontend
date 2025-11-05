@@ -45,7 +45,8 @@ export const getDps = async ( props: getDpsProps  ) => {
                 const oPartner = {
                     id: data[i]?.partner.id,
                     name: data[i]?.partner.full_name,
-                    country: data[i]?.partner.country
+                    country: data[i]?.partner.country,
+                    credit_days: data[i]?.partner.credit_days,
                 }
 
                 dps.push({
@@ -89,7 +90,8 @@ export const getDps = async ( props: getDpsProps  ) => {
                     is_payment_loc: data[i].is_payment_loc,
                     payment_notes: data[i].payment_notes,
                     priority: data[i].priority,
-                    created_by: data[i].created_by
+                    created_by: data[i].created_by,
+                    notes_manual_payment_date: data[i].notes_manual_payment_date
                 });
             }
             props.setLDps(dps);

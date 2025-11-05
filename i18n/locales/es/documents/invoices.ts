@@ -212,6 +212,14 @@ const invoices = {
             tooltip: "Selecciona la fecha de pago de la factura solicitada por el comprador.",
             tooltipReview: "Esta es la fecha de pago solicitada por el comprador de la factura.",
         },
+        edit_payDay: {
+            label: "Editar fecha pago:",
+        },
+        notes_manual_payment_date: {
+            label: 'Comentarios cambio de fecha de pago',
+            tooltip: 'Ingresa los comentarios del motivo del cambio de fecha de pago',
+            helperText: 'Ingresa comentario de cambio de fecha'
+        },
         percentOption: {
             label: "% de pago:",
             placeholder: "Selecciona porcentaje de pago",
