@@ -17,14 +17,30 @@ interface FileInfo {
 
 interface FileViewerProps {
     lFiles: FileInfo[];
+    expanded?: boolean;
+    withShowBtn?: boolean;
+    xmlWidht?: string;
+    xmlHeight?: string;
+    withBtnCompare?: boolean;
+    urlCompare?: string;
+    startIndex?: number;
 }
 
 type FileExtension = 'xml' | 'xls' | 'xlsx' | 'pdf' | 'jpg' | 'jpeg' | 'png' | 'txt';
 
-export const CustomFileViewer: React.FC<FileViewerProps> = ({ lFiles }) => {
-    const [currentFileIndex, setCurrentFileIndex] = useState(0);
+export const CustomFileViewer: React.FC<FileViewerProps> = ({ 
+    lFiles,
+    expanded = false,
+    withShowBtn = true,
+    xmlWidht = '100%',
+    xmlHeight = '500px',
+    withBtnCompare,
+    urlCompare,
+    startIndex = 0
+}) => {
+    const [currentFileIndex, setCurrentFileIndex] = useState( lFiles?.length > 1 ? startIndex : 0);
     const [fileContent, setFileContent] = useState<string>('');
-    const [isExpanded, setIsExpanded] = useState(false);
+    const [isExpanded, setIsExpanded] = useState(expanded);
     const [isLoading, setIsLoading] = useState(false);
     const [objectUrl, setObjectUrl] = useState<string>('');
     const [error, setError] = useState<string>('');
@@ -33,6 +49,10 @@ export const CustomFileViewer: React.FC<FileViewerProps> = ({ lFiles }) => {
     // const currentFile = useMemo(() => lFiles[currentFileIndex], [lFiles, currentFileIndex]);
     const [currentFile, setCurrentFile] = useState(lFiles[currentFileIndex]);
     const canRender = ['pdf', 'jpg', 'jpeg', 'png'];
+
+    useEffect(() => {
+        setCurrentFileIndex(startIndex)
+    }, [startIndex])
 
     useEffect(() => {
         setCurrentFile(lFiles[currentFileIndex]);
@@ -50,9 +70,17 @@ export const CustomFileViewer: React.FC<FileViewerProps> = ({ lFiles }) => {
         if (!currentFile?.url) return;
 
         if (currentFile.extension == 'xml') {
-            fetchXmlContent(currentFile.url);
+            if (currentFile.url != '#') {
+                fetchXmlContent(currentFile.url);
+            } else {
+                return;
+            }
         } else  if (canRender.includes(currentFile?.extension)){
-            loadFile(currentFile.url);
+            if (currentFile.url != '#') {
+                loadFile(currentFile.url);
+            } else {
+                return;
+            }
         }
     }, [currentFile]);
 
@@ -162,8 +190,8 @@ export const CustomFileViewer: React.FC<FileViewerProps> = ({ lFiles }) => {
                             customStyle={{
                                 borderRadius: '8px',
                                 fontSize: '14px',
-                                height: '500px',
-                                width: '100%',
+                                height: `${xmlHeight}`,
+                                width: `${xmlWidht}`,
                                 overflow: 'auto'
                             }}
                         >
@@ -216,7 +244,14 @@ export const CustomFileViewer: React.FC<FileViewerProps> = ({ lFiles }) => {
 
     return (
         <div className="mt-3">
-            <Button label={isExpanded ? t('btnHideFiles') : t('btnShowFiles')} onClick={() => setIsExpanded(!isExpanded)} className="mb-2" icon={isExpanded ? 'pi pi-eye-slash' : 'pi pi-eye'} />
+            <div className='flex justify-content-between'>
+                { withShowBtn && (
+                    <Button label={isExpanded ? t('btnHideFiles') : t('btnShowFiles')} onClick={() => setIsExpanded(!isExpanded)} className="mb-2" icon={isExpanded ? 'pi pi-eye-slash' : 'pi pi-eye'} />
+                )}
+                { withBtnCompare && (
+                    <Button label={'Comparar archivos'} onClick={() => window.open(urlCompare)} className="mb-2" icon={'bx bx-border-all'} />
+                )}
+            </div>
 
             {isExpanded && (
                 <div className="field col-12">
