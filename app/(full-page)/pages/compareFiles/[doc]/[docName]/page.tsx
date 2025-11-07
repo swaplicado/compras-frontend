@@ -28,7 +28,10 @@ const CompareFiles = () => {
 
     useEffect(() => {
         if (lUrlFiles.length > 0) {
-            setStartIndex(lUrlFiles.findIndex((file: any) => file.name.startsWith('ext_') ));
+            const index = lUrlFiles.findIndex((file: any) => file.name.startsWith('ext_') )
+            if (index !== -1) {
+                setStartIndex(index);
+            }
         }
     }, [lUrlFiles])
 

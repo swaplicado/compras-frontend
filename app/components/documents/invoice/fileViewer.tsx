@@ -218,12 +218,12 @@ export const CustomFileViewer: React.FC<FileViewerProps> = ({
                 case 'png':
                     return (
                         <div className="flex justify-content-center align-items-center" style={{ height: '500px' }}>
-                            <img src={objectUrl} alt={currentFile.name} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+                            <img src={objectUrl} alt={currentFile?.name} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
                         </div>
                     );
                 default:
                     return objectUrl ? (
-                        <iframe src={objectUrl} style={{ height: '500px', border: 'none', width: '100%' }} title={`File Viewer: ${currentFile.name}`} className="w-full border-1 border-gray-200" onLoad={() => setIsLoading(false)} />
+                        <iframe src={objectUrl} style={{ height: '500px', border: 'none', width: '100%' }} title={`File Viewer: ${currentFile?.name}`} className="w-full border-1 border-gray-200" onLoad={() => setIsLoading(false)} />
                     ) : (
                         <div className="flex justify-content-center align-items-center" style={{ height: '200px' }}>
                             <h3>{t('noFile')}</h3>
@@ -260,7 +260,7 @@ export const CustomFileViewer: React.FC<FileViewerProps> = ({
                         <Button icon="pi pi-chevron-left" onClick={() => navigateFile('prev')} disabled={lFiles.length <= 1} className="p-button-text" />
 
                         <div className="text-center">
-                            <h5 className="mb-1">{currentFile.name}</h5>
+                            <h5 className="mb-1">{currentFile?.name}</h5>
                             <small className="text-color-secondary">{t('fileCounter', { current: currentFileIndex + 1, total: lFiles.length })}</small>
                         </div>
 
