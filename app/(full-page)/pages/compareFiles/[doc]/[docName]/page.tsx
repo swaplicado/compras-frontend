@@ -45,7 +45,7 @@ const CompareFiles = () => {
                             <div className="formgrid">
                                 <div className="col">
                                     { lUrlFiles.length > 0 && (
-                                        <CustomFileViewer lFiles={lUrlFiles} xmlHeight='auto' expanded={true} withShowBtn={false}/>
+                                        <CustomFileViewer lFiles={lUrlFiles} xmlHeight='auto' expanded={true} withShowBtn={false} pdfHeight='auto'/>
                                     )}
                                 </div>
                             </div>
@@ -54,7 +54,7 @@ const CompareFiles = () => {
                             <div className="formgrid">
                                 <div className="col">
                                     { lUrlFiles.length > 0 && (
-                                        <CustomFileViewer lFiles={lUrlFiles} xmlHeight='auto' expanded={true} withShowBtn={false} startIndex={startIndex}/>
+                                        <CustomFileViewer lFiles={lUrlFiles} xmlHeight='auto' expanded={true} withShowBtn={false} startIndex={startIndex} pdfHeight='auto'/>
                                     )}
                                 </div>
                             </div>

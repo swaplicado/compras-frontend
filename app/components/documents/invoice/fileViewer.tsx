@@ -21,6 +21,8 @@ interface FileViewerProps {
     withShowBtn?: boolean;
     xmlWidht?: string;
     xmlHeight?: string;
+    pdfWidht?: string;
+    pdfHeight?: string;
     withBtnCompare?: boolean;
     urlCompare?: string;
     startIndex?: number;
@@ -34,6 +36,8 @@ export const CustomFileViewer: React.FC<FileViewerProps> = ({
     withShowBtn = true,
     xmlWidht = '100%',
     xmlHeight = '500px',
+    pdfWidht = '100%',
+    pdfHeight = '500px',
     withBtnCompare,
     urlCompare,
     startIndex = 0
@@ -223,7 +227,7 @@ export const CustomFileViewer: React.FC<FileViewerProps> = ({
                     );
                 default:
                     return objectUrl ? (
-                        <iframe src={objectUrl} style={{ height: '500px', border: 'none', width: '100%' }} title={`File Viewer: ${currentFile?.name}`} className="w-full border-1 border-gray-200" onLoad={() => setIsLoading(false)} />
+                        <iframe src={objectUrl} style={{ height: `${pdfHeight}`, border: 'none', width: `${pdfWidht}` }} title={`File Viewer: ${currentFile?.name}`} className="w-full border-1 border-gray-200" onLoad={() => setIsLoading(false)} />
                     ) : (
                         <div className="flex justify-content-center align-items-center" style={{ height: '200px' }}>
                             <h3>{t('noFile')}</h3>
