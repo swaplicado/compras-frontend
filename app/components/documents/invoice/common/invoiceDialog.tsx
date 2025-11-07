@@ -958,7 +958,7 @@ export const InvoiceDialog = ({
                 if (getDps) {
                     await getDps(getDpsParams);
                 }
-                setSuccessMessage('Factura autorizada');
+                setSuccessMessage('Factura autorizada' + ' para la semana: ' + response.data.data?.extra?.week_number);
                 setResultUpload('success');
             } else {
                 throw new Error(`Factura autorizada: ${response.statusText}`);

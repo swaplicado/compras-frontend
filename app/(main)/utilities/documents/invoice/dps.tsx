@@ -91,7 +91,8 @@ export const getDps = async ( props: getDpsProps  ) => {
                     payment_notes: data[i].payment_notes,
                     priority: data[i].priority,
                     created_by: data[i].created_by,
-                    notes_manual_payment_date: data[i].notes_manual_payment_date
+                    notes_manual_payment_date: data[i].notes_manual_payment_date,
+                    week: data[i].number_week_revision
                 });
             }
             props.setLDps(dps);

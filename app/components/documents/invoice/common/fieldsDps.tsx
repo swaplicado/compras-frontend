@@ -413,6 +413,19 @@ export const FieldsDps = ({
 
             {withBodyDps && (
                 <div className="p-fluid formgrid grid">
+                    { oDps?.week && (
+                        renderField({
+                            label: t('uploadDialog.week.label'),
+                            tooltip: t('uploadDialog.week.tooltipReview'),
+                            value: oDps?.week,
+                            onChange: () => ({}),
+                            disabled: true,
+                            mdCol: 1,
+                            type: 'text',
+                            placeholder: '',
+                            errorKey: ''
+                        })
+                    )}
                     {renderField({
                         label: t('uploadDialog.folio.label'),
                         tooltip: t('uploadDialog.folio.tooltipReview'),
@@ -429,7 +442,7 @@ export const FieldsDps = ({
                         tooltip: t('uploadDialog.xml_date.tooltipReview'),
                         value: mode == 'edit' ? oDps?.date : oDps?.dateFormated,
                         disabled: mode == 'view',
-                        mdCol: 3,
+                        mdCol: !oDps?.week ? 3 : 2,
                         type: mode == 'view' ? 'text' : 'calendar',
                         onChange: (value) => setODps((prev: any) => ({ ...prev, date: value })),
                         placeholder: '',
