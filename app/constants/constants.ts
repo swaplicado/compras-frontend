@@ -53,6 +53,9 @@ const constants = {
     ROUTE_GET_INVOICES_TO_REVIEW_NC: '/transactions/documents/get-documents/',
     ROUTE_GET_PANEL_DATA: '/transactions/get-panel-data/',
     ROUTE_GET_OC_JSON: '/transactions/documents/get-json-doc/', //doc_id
+    ROUTE_GET_PAYMENT_DAYS: '/transactions/payment-days/',
+    ROUTE_GET_PARTNER_PAYMENT_DAY: '/transactions/partner-payment-day/',
+    ROUTE_COMPARE_FILES: '/pages/compareFiles/',
 
     ROUTE_POST_VALIDATE_XML: '/transactions/documents/validate-xml/',
     ROUTE_POST_DOCUMENT_TRANSACTION: '/transactions/document-transaction/',

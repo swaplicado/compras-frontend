@@ -63,6 +63,10 @@ const Upload = () => {
             payment_percentage: false
         });
     const [withMounthFilter, setWithMounthFilter] = useState<boolean>(false);
+    const [lDaysToPay, setLDaysToPay] = useState<any[]>([]);
+    const [partnerPaymentDay, setPartnerPaymentDay] = useState<any>('');
+    const [loadingPartnerPaymentDay, setLoadingPartnerPaymentDay] = useState<boolean>(false);
+    const [withEditPaymentDay, setWithEditPaymentDay] = useState<boolean>(true);
 
     const headerCard = (
         <div
@@ -464,6 +468,51 @@ const Upload = () => {
         }
     }
 
+    const getLDaysToPay = async () => {
+        try {
+            const route = constants.ROUTE_GET_PAYMENT_DAYS;
+            const response = await axios.get(constants.API_AXIOS_GET, {
+                params: {
+                    route: route
+                }
+            });
+
+            if (response.status === 200) {
+                const data = response.data.data || [];
+                setLDaysToPay(data.enabled_days);
+            } else {
+                throw new Error(`${t('errors.getDaysToPayError')}: ${response.statusText}`);
+            }
+        } catch (error: any) {
+            showToast('error', error.response?.data?.error || t('errors.getDaysToPayError'), t('errors.getDaysToPayError'));
+        }
+    }
+
+    const getPayDay = async () => {
+        try {
+            setLoadingPartnerPaymentDay(true);
+            const route = constants.ROUTE_GET_PARTNER_PAYMENT_DAY;
+            const response = await axios.get(constants.API_AXIOS_GET, {
+                params: {
+                    route: route,
+                    partner_id: selectedRow.provider_id
+                }
+            });
+            
+            if (response.status === 200) {
+                const data = response.data.data || [];
+                const date = data.payment_date;
+                setPartnerPaymentDay(date);
+            } else {
+                throw new Error(`${t('errors.getPayDayError')}: ${response.statusText}`);
+            }
+        } catch (error: any) {
+            showToast('error', error.response?.data?.error || t('errors.getPayDayError'), t('errors.getPayDayError'));
+        } finally {
+            setLoadingPartnerPaymentDay(false);
+        }
+    }
+ 
     const handleAcceptance = async () => {
         const date = selectedRow.payday ? DateFormatter(selectedRow.payday, 'YYYY-MM-DD') : '';
         const route = '/transactions/documents/' + selectedRow?.id_dps + '/set-authz/';
@@ -481,7 +530,9 @@ const Upload = () => {
                 payment_definition: selectedRow.payment_definition,
                 is_payment_loc: selectedRow.is_payment_loc,
                 payment_notes: selectedRow.payment_notes,
-                priority: selectedRow.priority
+                priority: selectedRow.priority,
+                is_manual_payment_date: selectedRow.is_edit_payment_date,
+                notes_manual_payment_date: selectedRow.notes_manual_payment_date
             }
         });
 
@@ -498,12 +549,18 @@ const Upload = () => {
                 return;
             }
 
+            if (selectedRow.is_edit_payment_date && !selectedRow.notes_manual_payment_date) {
+                setReviewErrors?.((prev: any) => ({ ...prev, notes_manual_payment_date: true }));
+                showToast?.('info', 'Ingresa comentario de cambio de fecha');
+                return;
+            }
+
             setDialogVisible(false);
             setTimeout(() => {
                 setFlowAuthDialogVisible(true);
             }, 100);
         } catch (error: any) {
-            showToast('error', error.response?.data?.error || 'Error al editar la factura');
+            showToast('error', error.response?.data?.error || 'Error al aceptar la factura');
         } finally {
             setLoading(false);
         }
@@ -582,6 +639,10 @@ const Upload = () => {
             return;
         }
 
+        if (e.data.payday) {
+            setPartnerPaymentDay(e.data.payday);
+        }
+        
         setSelectedRow(e.data);
         setDialogMode('review');
         setDialogVisible(true);
@@ -642,10 +703,17 @@ const Upload = () => {
             await getlFiscalRegime();
             await getlPaymentMethod();
             await getlUseCfdi();
+            await getLDaysToPay();
             // setLoading(false);
         };
         fetchReferences();
     }, []);
+
+    useEffect(() => {
+        if (!dialogVisible) {
+            setPartnerPaymentDay('');
+        }
+    }, [dialogVisible])
 
     return (
         <div className="grid">
@@ -684,6 +752,11 @@ const Upload = () => {
                         handleReviewAndSendAuth={handleReviewAndSendAuth}
                         reviewErrors={reviewErrors}
                         setReviewErrors={setReviewErrors}
+                        lDaysToPay={lDaysToPay}
+                        getPayDay={getPayDay}
+                        partnerPaymentDay={partnerPaymentDay}
+                        loadingPartnerPaymentDay={loadingPartnerPaymentDay}
+                        withEditPaymentDay={withEditPaymentDay}
                     />
                     { oValidUser.isInternalUser && (
                         <FlowAuthorizationDialog 

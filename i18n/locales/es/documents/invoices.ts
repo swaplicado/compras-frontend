@@ -212,6 +212,14 @@ const invoices = {
             tooltip: "Selecciona la fecha de pago de la factura solicitada por el comprador.",
             tooltipReview: "Esta es la fecha de pago solicitada por el comprador de la factura.",
         },
+        edit_payDay: {
+            label: "Editar fecha pago:",
+        },
+        notes_manual_payment_date: {
+            label: 'Comentarios cambio de fecha de pago',
+            tooltip: 'Ingresa los comentarios del motivo del cambio de fecha de pago',
+            helperText: 'Ingresa comentario de cambio de fecha'
+        },
         percentOption: {
             label: "% de pago:",
             placeholder: "Selecciona porcentaje de pago",
@@ -271,6 +279,11 @@ const invoices = {
             helperText: "Por favor ingresa los comentarios de rechazo. Luego vuelve a presionar el botón de rechazar.",
             tooltip: "Ingresa los comentarios de rechazo si la factura es rechazada. Luego vuelve a presionar el botón de rechazar.",
             tooltipReview: "Estos son los comentarios de aprobación/rechazo de la factura.",
+        },
+        week: {
+            label: "Sem.:",
+            placeholder: "Sem.",
+            tooltip: "Número de semana de la factura.",
         }
     },
     errors: {

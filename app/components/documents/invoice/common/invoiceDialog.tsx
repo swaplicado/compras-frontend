@@ -74,6 +74,11 @@ interface InvoiceDialogProps {
     setReviewErrors?: React.Dispatch<React.SetStateAction<any>>;
     canCancellFlowAuth?: boolean;
     withSingleFooter?: boolean;
+    lDaysToPay?: any[];
+    getPayDay?: () => Promise<any>;
+    partnerPaymentDay?: string;
+    loadingPartnerPaymentDay?: boolean;
+    withEditPaymentDay?: boolean;
 }
 
 interface renderFieldProps {
@@ -135,7 +140,12 @@ export const InvoiceDialog = ({
     reviewErrors,
     setReviewErrors,
     canCancellFlowAuth = false,
-    withSingleFooter = false
+    withSingleFooter = false,
+    lDaysToPay = [],
+    getPayDay,
+    partnerPaymentDay,
+    loadingPartnerPaymentDay,
+    withEditPaymentDay = false
 }: InvoiceDialogProps) => {
     const [oCompany, setOCompany] = useState<any>(null);
     const [oProvider, setOProvider] = useState<any>(null);
@@ -521,6 +531,12 @@ export const InvoiceDialog = ({
                     showToast?.('info', 'Ingresa una fecha de pago de la factura');
                     return;
                 }
+
+                if (oDps.is_edit_payment_date && !oDps.notes_manual_payment_date) {
+                    setReviewErrors?.((prev: any) => ({ ...prev, notes_manual_payment_date: true }));
+                    showToast?.('info', 'Ingresa comentario de cambio de fecha');
+                    return;
+                }
             }
 
             const date = oDps.payday ? DateFormatter(oDps.payday, 'YYYY-MM-DD') : '';
@@ -539,7 +555,9 @@ export const InvoiceDialog = ({
                     payment_definition: oDps.payment_definition,
                     is_payment_loc: oDps.is_payment_loc,
                     payment_notes: oDps.payment_notes,
-                    priority: oDps.priority ? oDps.priority : false
+                    priority: oDps.priority ? oDps.priority : false,
+                    is_manual_payment_date: oDps.is_edit_payment_date,
+                    notes_manual_payment_date: oDps.notes_manual_payment_date
                 }
             });
 
@@ -829,7 +847,20 @@ export const InvoiceDialog = ({
         if (dialogMode == 'create') {
             setLRefToValidateXml([]);
         }
+
+        if (dialogMode == 'review' && !oDps.payday && oDps.provider_id) {
+            getPayDay?.();
+        }
     }, [visible]);
+
+    useEffect(() => {
+        if (partnerPaymentDay && !oDps.payday) {
+            setODps((prev: any) => ({
+                ...prev,
+                payday: partnerPaymentDay
+            }))
+        }
+    }, [partnerPaymentDay]);
 
     useEffect(() => {
         if (dialogMode == 'create') {
@@ -927,7 +958,7 @@ export const InvoiceDialog = ({
                 if (getDps) {
                     await getDps(getDpsParams);
                 }
-                setSuccessMessage('Factura autorizada');
+                setSuccessMessage('Factura autorizada' + ' para la semana: ' + response.data.data?.extra?.week_number);
                 setResultUpload('success');
             } else {
                 throw new Error(`Factura autorizada: ${response.statusText}`);
@@ -1414,13 +1445,13 @@ export const InvoiceDialog = ({
                                     <div className="formgrid grid">
                                         <div className="col">
                                             {lRefToValidateXml.map((item: any, index: number) => (
-                                                <>
+                                                <div key={index}>
                                                     { lRefToValidateXml.length > 1 && (
                                                         <div className={`field col-12 md:col-12 mb-0`}>
                                                             <h6>{t('uploadDialog.CeCo.title')} {item.reference}</h6>
                                                         </div>
                                                     )}
-                                                    <div className="grid" key={index}>
+                                                    <div className="grid">
                                                             {renderField({
                                                                 label: t('uploadDialog.CeCo.concept.label'),
                                                                 tooltip: t('uploadDialog.CeCo.concept.tooltip'),
@@ -1464,7 +1495,7 @@ export const InvoiceDialog = ({
                                                                 errorMessage: ''
                                                             })}
                                                     </div>
-                                                </>
+                                                </div>
                                             ))}
                                         </div>
                                     </div>
@@ -1527,6 +1558,10 @@ export const InvoiceDialog = ({
                                 footerMode={footerMode}
                                 errors={dialogMode == 'create' ? formErrors : reviewErrors}
                                 setErrors={dialogMode == 'create' ? setFormErrors : setReviewErrors}
+                                lDaysToPay={lDaysToPay}
+                                loadingPartnerPaymentDay={loadingPartnerPaymentDay}
+                                partnerPaymentDay={partnerPaymentDay}
+                                withEditPaymentDay={withEditPaymentDay}
                             />
                         )}
                         {(dialogMode == 'create' || dialogMode == 'edit') && (isXmlValid || (oProvider ? oProvider.country != constants.COUNTRIES.MEXICO_ID : false)) && (
@@ -1676,7 +1711,7 @@ export const InvoiceDialog = ({
                         {(dialogMode == 'view' || dialogMode == 'review' || dialogMode == 'authorization') &&
                             (!loadingUrlsFiles ? (
                                 // Estos son datos de prueba, falta funcion para cargar datos reales (en proceso)
-                                <CustomFileViewer lFiles={lUrlFiles} />
+                                <CustomFileViewer lFiles={lUrlFiles} withBtnCompare={true} urlCompare={constants.ROUTE_COMPARE_FILES + oDps?.id_dps + '/' + oDps?.folio}/>
                             ) : (
                                 <div className="flex justify-content-center">
                                     <ProgressSpinner style={{ width: '50px', height: '50px' }} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />
