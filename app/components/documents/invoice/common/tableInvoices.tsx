@@ -28,6 +28,9 @@ interface columnsProps {
     authorization: {
         hidden: boolean
     }
+    payments: {
+        hidden: boolean
+    }
 }
 
 interface TableInvoicesProps {
@@ -90,6 +93,9 @@ export const TableInvoices = ({
         },
         authorization: {
             hidden: false
+        },
+        payments: {
+            hidden: true
         }
     },
     withBtnSendToUpoload,
@@ -430,6 +436,36 @@ export const TableInvoices = ({
         )
     }
 
+    const PaymentsOverlay = ({ payments, folio }: any) => {
+        const overlayPayment = useRef<any>(null);
+        
+        return (
+            <div className="">
+                <Button 
+                    type="button" 
+                    icon="bx bxs-wallet" 
+                    label="" 
+                    onClick={(e) => overlayPayment.current?.toggle(e)} 
+                />
+                <OverlayPanel ref={overlayPayment} showCloseIcon closeOnEscape dismissable={false}>
+                    <DataTable value={payments} emptyMessage={'Sin datos para mostrar.'}>
+                        <Column field="folio" header="Folio" />
+                        <Column field="amount" header="Monto" />
+                        <Column field="currency" header="Moneda" />
+                        <Column field="authorized_at" header="F. Autorización" />
+                        <Column field="sched_date" header="F. programado" />
+                        <Column field="exec_date" header="F. Ejecutado" />
+                        <Column field="status" header="Estatus" />
+                    </DataTable>
+                </OverlayPanel>
+            </div>
+        );
+    };
+    
+    const paymentsBodyTemplate = (rowData: any) => {
+        return <PaymentsOverlay payments={rowData.payments} folio={rowData.folio} />;
+    };
+
     //Init
     useEffect(() => {
         const Init = async () => {
@@ -590,6 +626,7 @@ export const TableInvoices = ({
                 <Column field="acceptance" header={t('invoicesTable.columns.acceptance')} footer={t('invoicesTable.columns.acceptance')} body={statusAcceptanceDpsBodyTemplate} sortable hidden={ columnsProps?.acceptance.hidden } />
                 <Column field="actors_of_action" header={'Usuario en turno'} footer={'Usuario en turno'} body={actorsOfActionBody} sortable hidden={ columnsProps?.actors_of_action.hidden } />
                 <Column field="authorization" header={t('invoicesTable.columns.authorization')} footer={t('invoicesTable.columns.authorization')} body={statusAuthDpsBodyTemplate} sortable hidden={ columnsProps?.authorization.hidden } />
+                <Column field="payments" header="Pagos" footer="Pagos" hidden={ columnsProps?.payments.hidden } body={paymentsBodyTemplate} />
                 <Column field="files" header={t('invoicesTable.columns.files')} footer={t('invoicesTable.columns.files')} body={fileBodyTemplate} />
                 <Column field="id_dps" header={'Eliminar'} footer={'Eliminar'} body={deleteBodyTemplate} hidden={ columnsProps?.delete.hidden } />
             </DataTable>

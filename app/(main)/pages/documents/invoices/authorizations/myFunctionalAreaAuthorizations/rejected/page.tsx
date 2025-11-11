@@ -69,6 +69,9 @@ const Upload = () => {
         },
         authorization: {
             hidden: false
+        },
+        payments: {
+            hidden: true
         }
     });
     const [historyAuth, setHistoryAuth] = useState<any[]>([]);
