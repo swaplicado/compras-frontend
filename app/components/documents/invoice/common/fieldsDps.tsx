@@ -179,9 +179,9 @@ export const FieldsDps = ({
         }
     };
 
-    useEffect(() => {
-        checkedIsPaymentLoc();
-    }, []);
+    // useEffect(() => {
+    //     checkedIsPaymentLoc();
+    // }, []);
 
     const disabledIsPaymentLoc = () => {
         let disabled = false;
@@ -738,10 +738,10 @@ export const FieldsDps = ({
                                             setODps((prev: any) => ({ ...prev, is_payment_loc: e.checked }));
                                         }}
                                         checked={oDps?.is_payment_loc}
-                                        disabled={disabledIsPaymentLoc()}
+                                        disabled={footerMode != 'edit'}
                                     />
                                     <label htmlFor="is_payment_loc" className="ml-2">
-                                        Pago en moneda local
+                                        {t('uploadDialog.is_payment_loc.label')}
                                     </label>
                                 </div>
                             </div>
@@ -786,8 +786,8 @@ export const FieldsDps = ({
                             })}
 
                         {renderField({
-                            label: 'Intrucciones pago:',
-                            tooltip: '',
+                            label: t('uploadDialog.paymentInstruction.label'),
+                            tooltip: t('uploadDialog.paymentInstruction.tooltip'),
                             value: oDps?.payment_notes,
                             onChange: (value) => {
                                 setODps((prev: any) => ({ ...prev, payment_notes: value }));
@@ -795,10 +795,10 @@ export const FieldsDps = ({
                             disabled: footerMode == 'view',
                             mdCol: 12,
                             type: 'textArea',
-                            placeholder: '',
+                            placeholder: t('uploadDialog.paymentInstruction.placeholder'),
                             errors: errors,
                             errorKey: '',
-                            errorMessage: '',
+                            errorMessage: t('uploadDialog.paymentInstruction.helperText'),
                             labelClass: 'opacity-100 text-blue-600',
                             lengthTextArea: 100
                         })}
@@ -817,7 +817,7 @@ export const FieldsDps = ({
                             errors: errors,
                             errorKey: 'rejectComments',
                             errorMessage: t('uploadDialog.rejectComments.helperText'),
-                            labelClass: 'font-bold text-blue-600'
+                            labelClass: 'text-blue-600'
                         })}
                     </div>
                 </>
