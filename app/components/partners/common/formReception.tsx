@@ -190,7 +190,7 @@ export const FormReceptionPartner = ({
             <RenderField
                 label={'Apellido'}
                 tooltip={'Apellido'}
-                value={oProvider?.lastname}
+                value={oProvider?.last_name}
                 disabled={formMode == 'view'}
                 mdCol={6}
                 type={'text'}
