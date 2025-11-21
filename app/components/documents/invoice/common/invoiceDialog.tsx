@@ -670,7 +670,7 @@ export const InvoiceDialog = ({
                 partner: oProvider?.id || '',
                 series: serie,
                 number: number,
-                date: moment(oDps.date).format('YYYY-MM-DD'),
+                date: oDps.date ? moment(oDps.date).format('YYYY-MM-DD') : moment(new Date).format('YYYY-MM-DD'),
                 currency: oDps.oCurrency?.id || '',
                 amount: oDps.amount,
                 exchange_rate: oDps.exchange_rate ? oDps.exchange_rate : 0,
