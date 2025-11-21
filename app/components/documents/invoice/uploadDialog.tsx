@@ -362,7 +362,7 @@ export default function UploadDialog({
                 partner: selectProvider?.id || '',
                 series: oDps.serie,
                 number: number,
-                date: moment(oDps.xml_date).format('YYYY-MM-DD'),
+                date: oDps.xml_date ? moment(oDps.xml_date).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD'),
                 currency: oDps.currency?.id || '',
                 amount: oDps.amount,
                 exchange_rate: oDps.exchange_rate ? oDps.exchange_rate : 0,
