@@ -235,11 +235,21 @@ const invoices = {
             tooltipReview: "Este es el monto de pago de la factura.",
         },
         aceptNotes: {
-            label: "Descripción factura:",
-            placeholder: "Ingresa la descripción de la factura",
-            helperText: "Por favor ingresa la descripción.",
-            tooltip: "Descripción de la factura.",
-            tooltipReview: "Esta es la descripción de la factura.",
+            label: "Descripción de la factura:",
+            placeholder: "Ej: Servicio de consultoría",
+            helperText: "Describe el concepto o servicio por el que se emite esta factura.",
+            tooltip: "Breve descripción que identifique el propósito de la factura.",
+            tooltipReview: "Descripción de la factura ingresada por el usuario.",
+        },
+        paymentInstruction: {
+            label: "Instrucciones de pago:",
+            placeholder: "Ej: Pagar en dolares",
+            helperText: "Indica los métodos y detalles específicos para realizar el pago.",
+            tooltip: "Pasos, métodos o información clave que se deben seguir para pagar.",
+            tooltipReview: "Instrucciones de pago proporcionadas para el cliente.",
+        },
+        is_payment_loc: {
+            label: "Pagar en pesos mexicanos"
         },
         files: {
             label: "Archivos de factura: *",

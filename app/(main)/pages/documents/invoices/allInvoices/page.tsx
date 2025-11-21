@@ -57,6 +57,23 @@ const Upload = () => {
     const isMobile = useIsMobile();
     const [getDpsParams, setGetDpsParams] = useState<any>(null);
     const [withBtnSendToUpoload, setWithBtnSendToUpoload] = useState<boolean>(false);
+    const [columnsProps, setColumnsProps] = useState<any>({
+            acceptance: {
+                hidden: true
+            },
+            actors_of_action: {
+                hidden: true
+            },
+            delete: {
+                hidden: true
+            },
+            authorization: {
+                hidden: false
+            },
+            payments: {
+                hidden: false
+            }
+        });
 
     const headerCard = (
         <div
@@ -459,7 +476,8 @@ const Upload = () => {
                     transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
                     document_type: constants.DOC_TYPE_INVOICE,
                     start_date: start_date,
-                    end_date: end_date
+                    end_date: end_date,
+                    include_payments: true,
                 };
                 setGetDpsParams({ params, errorMessage: t('errors.getInvoicesError'), setLDps, showToast });
 
@@ -547,6 +565,7 @@ const Upload = () => {
                         setDialogMode={setDialogMode}
                         setDialogVisible={setDialogVisible}
                         setFlowAuthDialogVisible={setFlowAuthDialogVisible}
+                        columnsProps={columnsProps}
                         // withBtnSendAuth={ oValidUser.isInternalUser }
                         // withBtnSendToUpoload={withBtnSendToUpoload}
                         // SendToUpoload={handleSendToUpload}

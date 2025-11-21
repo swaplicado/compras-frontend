@@ -56,7 +56,7 @@ const RejectedPartners = () => {
     const configOPartner = (data: any) => {
         setOPartner({
             id: data.id,
-            provider_name: data.full_name,
+            provider_name: data.trade_name,
             rfc: data.fiscal_id,
             entity_type: data.entity_type,
             fiscal_regime: data.fiscal_regime,

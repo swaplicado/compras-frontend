@@ -558,6 +558,9 @@ const Upload = () => {
                             },
                             authorization: {
                                 hidden: true
+                            },
+                            payments: {
+                                hidden: true
                             }
                         }}
                     />

@@ -195,8 +195,8 @@ export const FormReceptionPartner = ({
                 mdCol={6}
                 type={'text'}
                 onChange={(value) => {
-                    setOProvider((prev: any) => ({ ...prev, last_name: value }));
-                    setFormErrors((prev: any) => ({ ...prev, last_name: false }));
+                    setOProvider((prev: any) => ({ ...prev, lastname: value }));
+                    setFormErrors((prev: any) => ({ ...prev, lastname: false }));
                 }}
                 options={[]}
                 placeholder={''}
