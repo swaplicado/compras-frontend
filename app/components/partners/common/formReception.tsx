@@ -190,13 +190,13 @@ export const FormReceptionPartner = ({
             <RenderField
                 label={'Apellido'}
                 tooltip={'Apellido'}
-                value={oProvider?.last_name}
+                value={oProvider?.lastname}
                 disabled={formMode == 'view'}
                 mdCol={6}
                 type={'text'}
                 onChange={(value) => {
-                    setOProvider((prev: any) => ({ ...prev, last_name: value }));
-                    setFormErrors((prev: any) => ({ ...prev, last_name: false }));
+                    setOProvider((prev: any) => ({ ...prev, lastname: value }));
+                    setFormErrors((prev: any) => ({ ...prev, lastname: false }));
                 }}
                 options={[]}
                 placeholder={''}

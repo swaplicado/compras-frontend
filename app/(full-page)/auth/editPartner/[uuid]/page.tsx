@@ -232,7 +232,7 @@ const RegisterProvider = () => {
             entity_type: !oProvider.entity_type,
             fiscal_regime: !oProvider.fiscal_regime,
             name: oProvider.name.trim() == '',
-            lastname: oProvider.last_name.trim() == '',
+            lastname: oProvider.lastname.trim() == '',
             phone: oProvider.phone.trim() == '',
             email: oProvider.email.trim() == '',
             street: oProvider.street.trim() == '',
@@ -341,7 +341,7 @@ const RegisterProvider = () => {
 
                 setOProvider({
                     id: data.id,
-                    provider_name: data.full_name,
+                    provider_name: data.trade_name,
                     rfc: data.fiscal_id,
                     entity_type: data.entity_type_obj,
                     fiscal_regime: lFiscalRegimes.find((item) => item.id ==  data.fiscal_regime_obj.id),
