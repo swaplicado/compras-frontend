@@ -1711,7 +1711,7 @@ export const InvoiceDialog = ({
                         {(dialogMode == 'view' || dialogMode == 'review' || dialogMode == 'authorization') &&
                             (!loadingUrlsFiles ? (
                                 // Estos son datos de prueba, falta funcion para cargar datos reales (en proceso)
-                                <CustomFileViewer lFiles={lUrlFiles} withBtnCompare={true} urlCompare={constants.ROUTE_COMPARE_FILES + oDps?.id_dps + '/' + oDps?.folio}/>
+                                <CustomFileViewer lFiles={lUrlFiles} withBtnCompare={true} urlCompare={constants.ROUTE_COMPARE_FILES + oDps?.id_dps}/>
                             ) : (
                                 <div className="flex justify-content-center">
                                     <ProgressSpinner style={{ width: '50px', height: '50px' }} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />
