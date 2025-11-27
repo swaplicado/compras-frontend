@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { FileUpload, FileUploadHeaderTemplateOptions, FileUploadSelectEvent, ItemTemplateOptions } from 'primereact/fileupload';
 import { ProgressBar } from 'primereact/progressbar';
 import { Tag } from 'primereact/tag';
@@ -11,7 +11,7 @@ interface CustomFileUploadProps {
     fileUploadRef: React.RefObject<FileUpload>;
     totalSize: number;
     maxUnitFileSize?: number;
-    setTotalSize: React.Dispatch<React.SetStateAction<number>>;
+    setTotalSize: React.Dispatch<React.SetStateAction<number>> | ((value: any) => void);
     errors: {
         files?: boolean;
         includePdf?: boolean;
@@ -53,27 +53,40 @@ export const CustomFileUpload = ({
     const { t } = useTranslation('invoices');
     const { t: tCommon } = useTranslation('common');
 
+    // Recalculate totalSize based on actual files when component mounts or re-renders
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            const currentFiles = fileUploadRef.current?.getFiles() || [];
+            const actualTotalSize = currentFiles.reduce((sum, file) => sum + (file.size || 0), 0);
+            if (actualTotalSize !== totalSize && actualTotalSize > 0) {
+                setTotalSize(actualTotalSize);
+            }
+        }, 100);
+        
+        return () => clearTimeout(timer);
+    }, [fileUploadRef?.current]);
+
     const chooseOptions = {
         icon: 'pi pi-folder-open',
         label: tCommon('btnSelectFiles'),
         className: 'custom-choose-btn p-button-rounded p-button-text',
-        style: { padding: '0.5rem 1rem' }
+        style: { padding: '0.5rem 0.2rem' }
     };
 
     const cancelOptions = {
         icon: 'pi pi-times',
         label: tCommon('btnClear'),
         className: 'custom-cancel-btn p-button-danger p-button-rounded p-button-text',
-        style: { padding: '0.5rem 1rem' }
+        style: { padding: '0.5rem 0.2rem' }
     };
 
     const headerTemplate = (options: FileUploadHeaderTemplateOptions) => {
         const { className, chooseButton, cancelButton } = options;
         const value = totalSize / maxFilesSize;
-        const formatedValue = fileUploadRef.current?.formatSize(totalSize) || '0 B';
+        const formatedValue = fileUploadRef?.current?.formatSize(totalSize) || '0 B';
 
         return (
-            <div className={className} style={{ backgroundColor: 'transparent', display: 'flex', alignItems: 'center', padding: '0.7rem' }}>
+            <div className={className} style={{ backgroundColor: 'transparent', display: 'flex', alignItems: 'center', padding: '0.2rem' }}>
                 {chooseButton}
                 {cancelButton}
                 <div className="flex align-items-center gap-3 ml-auto">
@@ -102,8 +115,9 @@ export const CustomFileUpload = ({
 
     const itemTemplate = (inFile: object, props: ItemTemplateOptions) => {
         const file = inFile as File;
+        const uniqueKey = `${file.name}-${file.size}-${file.lastModified || Date.now()}`;
         return (
-            <div className="flex align-items-center flex-wrap">
+            <div key={uniqueKey} className="flex align-items-center flex-wrap">
                 <div className="flex align-items-center" style={{ width: '40%' }}>
                     <span className="flex flex-column text-left ml-3">
                         {file.name}
@@ -111,7 +125,7 @@ export const CustomFileUpload = ({
                     </span>
                 </div>
                 <Tag value={props.formatSize} severity="warning" className="px-3 py-2" />
-                <Button type="button" icon="pi pi-times" className="p-button-outlined p-button-rounded p-button-danger ml-auto" onClick={() => onTemplateRemove(file, props.onRemove)} style={{ padding: '0.5rem 1rem' }} />
+                <Button type="button" icon="pi pi-times" className="p-button-outlined p-button-rounded p-button-danger ml-auto" onClick={() => onTemplateRemove(file, props.onRemove)} style={{ padding: '0.5rem 1rem' }} disabled={disabled} />
             </div>
         );
     };
@@ -121,44 +135,44 @@ export const CustomFileUpload = ({
     };
 
     const onTemplateSelect = (e: FileUploadSelectEvent) => {
-        let _totalSize = 0;
-        const validFiles: File[] = [];
+        let validFiles: File[] = [];
+        let hasInvalidFiles = false;
 
-        let validSizes = true;
-        let validType = true;
-
+        // Validate each file
         for (const file of e.files) {
-            if (maxUnitFileSize) {
-                if (!validateFileSize(file, maxUnitFileSize)) {
-                    addErrorMessage(errorMessages.invalidFileSize);
-                    fileUploadRef.current?.setFiles(validFiles);
-                    continue;
-                }
+            let isValid = true;
+
+            if (maxUnitFileSize && !validateFileSize(file, maxUnitFileSize)) {
+                addErrorMessage(errorMessages.invalidFileSize);
+                isValid = false;
             }
 
             if (!validateFileType(file, allowedExtensions)) {
-                validType = false;
-                continue;
+                addErrorMessage(errorMessages.invalidFileType);
+                isValid = false;
             }
 
-            if (_totalSize > maxFilesSize) {
-                validSizes = false;
-                continue;
+            if (isValid) {
+                validFiles.push(file);
+            } else {
+                hasInvalidFiles = true;
             }
-
-            validFiles.push(file);
-            _totalSize += file.size || 0;
         }
 
-        if (!validType) {
-            fileUploadRef.current?.setFiles(validFiles);
-            addErrorMessage(errorMessages.invalidFileType);
+        // If there are invalid files, clear the selection to prevent them from being added
+        if (hasInvalidFiles && validFiles.length === 0) {
+            setTimeout(() => {
+                const currentFiles = fileUploadRef.current?.getFiles() || [];
+                fileUploadRef.current?.setFiles(currentFiles.slice(0, -e.files.length));
+            }, 0);
         }
 
-        if (!validSizes) {
-            fileUploadRef.current?.setFiles(validFiles);
-            addErrorMessage(errorMessages.invalidAllFilesSize);
-        }
+        // Update total size based on all current files
+        setTimeout(() => {
+            const allFiles = fileUploadRef.current?.getFiles() || [];
+            const newTotalSize = allFiles.reduce((sum, file) => sum + (file.size || 0), 0);
+            setTotalSize(newTotalSize);
+        }, 0);
 
         if (onFileSelect && validFiles.length > 0) {
             onFileSelect(validFiles);
@@ -166,17 +180,14 @@ export const CustomFileUpload = ({
 
         setErrors((prev: any) => ({
             ...prev,
-            files: (fileUploadRef.current?.getFiles().length || 0) > 1,
+            files: false,
             includePdf: false,
             includeXml: false
         }));
-
-        setTotalSize(_totalSize);
     };
 
     const onTemplateClear = () => {
         setTotalSize(0);
-        const currentFiles = fileUploadRef.current?.getFiles() || [];
         if (onFileRemove) {
             onFileRemove();
         }
@@ -184,7 +195,7 @@ export const CustomFileUpload = ({
         if (onClearCallback) {
             onClearCallback();
         }
-    } 
+    };
 
     return (
         <>
@@ -213,7 +224,7 @@ export const CustomFileUpload = ({
                     }
                 }}
                 style={
-                    errors.files || errors.includePdf || errors.includeXml
+                    errors?.files || errors?.includePdf || errors?.includeXml
                         ? {
                               borderColor: 'red',
                               borderStyle: 'solid',
@@ -223,9 +234,9 @@ export const CustomFileUpload = ({
                         : {}
                 }
             />
-            {errors.files && <small className="p-error">{errorMessages?.helperTextFiles}</small>}
-            {errors.includePdf && <small className="p-error">{errorMessages?.helperTextPdf}</small>}
-            {errors.includeXml && <small className="p-error">{errorMessages?.helperTextXml}</small>}
+            {errors?.files && <small className="p-error">{errorMessages?.helperTextFiles}</small>}
+            {errors?.includePdf && <small className="p-error">{errorMessages?.helperTextPdf}</small>}
+            {errors?.includeXml && <small className="p-error">{errorMessages?.helperTextXml}</small>}
         </>
     );
 };

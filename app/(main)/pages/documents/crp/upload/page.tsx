@@ -24,6 +24,7 @@ import { FileUpload } from "primereact/fileupload";
 import { getlUrlFilesDps } from "@/app/(main)/utilities/documents/common/filesUtils";
 import { downloadFiles } from '@/app/(main)/utilities/documents/common/filesUtils';
 import { RenderInfoButton } from "@/app/components/commons/instructionsButton";
+import { getlFiscalRegime } from '@/app/(main)/utilities/documents/common/fiscalRegimeUtils';
 
 const ConsultPaymentProgramded = () => {
     const [startDate, setStartDate] = useState<string>('');
@@ -71,6 +72,7 @@ const ConsultPaymentProgramded = () => {
     const [showInfo, setShowInfo] = useState <boolean>(false);
     const [showManual, setShowManual] = useState <boolean>(false);
     const isMobile = useIsMobile();
+    const [lFiscalRegimes, setLFiscalRegimes] = useState<any[]>([]);
 
     const columnsProps = {
         company: { hidden: false },
@@ -532,6 +534,10 @@ const ConsultPaymentProgramded = () => {
                 setLProviders,
                 showToast,
             });
+            await getlFiscalRegime({
+                setLFiscalRegimes,
+                showToast,
+            });
             await getLCrp();
             setLoading(false);
         }
@@ -600,6 +606,7 @@ const ConsultPaymentProgramded = () => {
                         fileEditAcceptRef={fileEditAcceptRef}
                         lFilesNames={lFilesNames}
                         setLFilesToEdit={setLFilesToEdit}
+                        lFiscalRegimes={lFiscalRegimes}
                     />
                     <TableCrp 
                         lCrp={lCrp}

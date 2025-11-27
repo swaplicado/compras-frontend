@@ -28,6 +28,11 @@
                             "to": "/pages/documents/invoices/uploading/upload"
                         },
                         {
+                            "label": "Carga masiva",
+                            "icon": "pi pi-cloud-upload",
+                            "to": "/pages/documents/invoices/bulkInvoiceUpload"
+                        },
+                        {
                             "label": "Facturas aceptadas",
                             "icon": "pi pi-check-square",
                             "to": "/pages/documents/invoices/uploading/accepted"

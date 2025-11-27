@@ -68,7 +68,8 @@ interface DialogCrpProps {
     lFilesNames: any[];
     setLFilesToEdit: React.Dispatch<React.SetStateAction<any>>;
     showAuthComments?: boolean,
-    isInAuth?: boolean
+    isInAuth?: boolean,
+    lFiscalRegimes: any,
 }
 
 export const DialogCrp = ({
@@ -114,6 +115,7 @@ export const DialogCrp = ({
     setLFilesToEdit,
     showAuthComments = false,
     isInAuth = false,
+    lFiscalRegimes
 }: DialogCrpProps) => {
     const { t } = useTranslation('crp');
     const { t: tCommon } = useTranslation('common');
@@ -211,39 +213,39 @@ export const DialogCrp = ({
                         <br />
                         {withHeader && (
                             <div className="p-fluid formgrid grid">
-                                {RenderField({
-                                    label: 'Empresa',
-                                    tooltip: 'Empresa',
-                                    value: oCrp?.oCompany,
-                                    disabled: dialogMode == 'view' || dialogMode == 'edit',
-                                    mdCol: 6,
-                                    type: dialogMode == 'create' ? 'dropdown' : 'text',
-                                    onChange: (value) => {
+                                <RenderField
+                                    label={'Empresa'}
+                                    tooltip={'Empresa'}
+                                    value={oCrp?.oCompany}
+                                    disabled={dialogMode == 'view' || dialogMode == 'edit'}
+                                    mdCol={6}
+                                    type={dialogMode == 'create' ? 'dropdown' : 'text'}
+                                    onChange={(value: any) => {
                                         setOCrp?.((prev: any) => ({ ...prev, oCompany: value }));
-                                    },
-                                    options: lCompanies,
-                                    placeholder: 'Selecciona empresa',
-                                    errorKey: '',
-                                    errors: formErrors,
-                                    errorMessage: ''
-                                })}
+                                    }}
+                                    options={lCompanies}
+                                    placeholder={'Selecciona empresa'}
+                                    errorKey={''}
+                                    errors={formErrors}
+                                    errorMessage={''}
+                                />
                                 { !oUser?.isProvider && (
-                                    RenderField({
-                                        label: 'Proveedor',
-                                        tooltip: 'Proveedor',
-                                        value: oCrp?.oProvider,
-                                        disabled: dialogMode == 'view' || dialogMode == 'edit',
-                                        mdCol: 6,
-                                        type: dialogMode == 'create' ? 'dropdown' : 'text',
-                                        onChange: (value) => {
+                                    <RenderField
+                                        label={"Proveedor"}
+                                        tooltip={"Proveedor"}
+                                        value={oCrp?.oProvider}
+                                        disabled={dialogMode == 'view' || dialogMode == 'edit'}
+                                        mdCol={6}
+                                        type={dialogMode == 'create' ? 'dropdown' : 'text'}
+                                        onChange={(value) => {
                                             setOCrp?.((prev: any) => ({ ...prev, oProvider: value }));
-                                        },
-                                        options: lProviders,
-                                        placeholder: 'Selecciona proveedor',
-                                        errorKey: '',
-                                        errors: formErrors,
-                                        errorMessage: ''
-                                    })
+                                        }}
+                                        options={lProviders}
+                                        placeholder={"Selecciona proveedor"}
+                                        errorKey={""}
+                                        errors={formErrors}
+                                        errorMessage={""}
+                                    />
                                 )}
 
                                 {(!loadinglPaymentsExec || (dialogMode == 'view' || dialogMode == 'edit')) && (
@@ -347,6 +349,7 @@ export const DialogCrp = ({
                                                     setIsXmlValid={setIsXmlValid}
                                                     setLoadingValidateXml={setLoadingValidateXml}
                                                     showToast={showToast}
+                                                    lFiscalRegimes={lFiscalRegimes}
                                                 />
                                                 {loadingValidateXml && (
                                                     <div className="flex justify-content-center">
@@ -361,103 +364,108 @@ export const DialogCrp = ({
                         )}
                         {withBody && isXmlValid && (dialogMode == 'create' || dialogMode == 'edit' || dialogMode == 'view') && (
                             <div className="p-fluid formgrid grid">
-                                {RenderField({
-                                    label: 'RFC emisor:',
-                                    tooltip: 'RFC emisor:',
-                                    value: oCrp?.rfc_issuer,
-                                    disabled: true,
-                                    mdCol: 6,
-                                    type: 'text',
-                                    onChange: (value) => {
+                                <RenderField
+                                    label={"RFC emisor:"}
+                                    tooltip={"RFC emisor:"}
+                                    value={oCrp?.rfc_issuer}
+                                    disabled={true}
+                                    mdCol={6}
+                                    type={"text"}
+                                    onChange={(value) => {
                                         setOCrp?.((prev: any) => ({ ...prev, rfc_issuer: value }));
-                                    },
-                                    options: [],
-                                    placeholder: '',
-                                    errorKey: '',
-                                    errors: formErrors,
-                                    errorMessage: ''
-                                })}
-                                {RenderField({
-                                    label: 'Régimen fiscal emisor:',
-                                    tooltip: 'Régimen fiscal emisor:',
-                                    value: oCrp?.tax_regime_issuer?.code + ' - ' + oCrp?.tax_regime_issuer?.name,
-                                    disabled: true,
-                                    mdCol: 6,
-                                    type: 'text',
-                                    onChange: (value) => {
+                                    }}
+                                    options={[]}
+                                    placeholder={""}
+                                    errorKey={""}
+                                    errors={formErrors}
+                                    errorMessage={""}
+                                />
+
+                                <RenderField
+                                    label={"Régimen fiscal emisor:"}
+                                    tooltip={"Régimen fiscal emisor:"}
+                                    value={`${oCrp?.tax_regime_issuer?.name}`}
+                                    disabled={true}
+                                    mdCol={6}
+                                    type={"text"}
+                                    onChange={(value) => {
                                         setOCrp?.((prev: any) => ({ ...prev, tax_regime_issuer: value }));
-                                    },
-                                    options: [],
-                                    placeholder: '',
-                                    errorKey: '',
-                                    errors: formErrors,
-                                    errorMessage: ''
-                                })}
-                                {RenderField({
-                                    label: 'RFC receptor:',
-                                    tooltip: 'RFC receptor:',
-                                    value: oCrp?.rfc_receiver,
-                                    disabled: true,
-                                    mdCol: 6,
-                                    type: 'text',
-                                    onChange: (value) => {
+                                    }}
+                                    options={[]}
+                                    placeholder={""}
+                                    errorKey={""}
+                                    errors={formErrors}
+                                    errorMessage={""}
+                                />
+
+                                <RenderField
+                                    label={"RFC receptor:"}
+                                    tooltip={"RFC receptor:"}
+                                    value={oCrp?.rfc_receiver}
+                                    disabled={true}
+                                    mdCol={6}
+                                    type={"text"}
+                                    onChange={(value) => {
                                         setOCrp?.((prev: any) => ({ ...prev, rfc_receiver: value }));
-                                    },
-                                    options: [],
-                                    placeholder: '',
-                                    errorKey: '',
-                                    errors: formErrors,
-                                    errorMessage: ''
-                                })}
-                                {RenderField({
-                                    label: 'Régimen fiscal receptor:',
-                                    tooltip: 'Régimen fiscal receptor:',
-                                    value: oCrp?.tax_regime_receiver?.code + ' - ' + oCrp?.tax_regime_receiver?.name,
-                                    disabled: true,
-                                    mdCol: 6,
-                                    type: 'text',
-                                    onChange: (value) => {
+                                    }}
+                                    options={[]}
+                                    placeholder={""}
+                                    errorKey={""}
+                                    errors={formErrors}
+                                    errorMessage={""}
+                                />
+
+                                <RenderField
+                                    label={"Régimen fiscal receptor:"}
+                                    tooltip={"Régimen fiscal receptor:"}
+                                    value={`${oCrp?.tax_regime_receiver?.name}`}
+                                    disabled={true}
+                                    mdCol={6}
+                                    type={"text"}
+                                    onChange={(value) => {
                                         setOCrp?.((prev: any) => ({ ...prev, tax_regime_receiver: value }));
-                                    },
-                                    options: [],
-                                    placeholder: '',
-                                    errorKey: '',
-                                    errors: formErrors,
-                                    errorMessage: ''
-                                })}
-                                {RenderField({
-                                    label: 'UUID:',
-                                    tooltip: 'UUID:',
-                                    value: oCrp?.uuid,
-                                    disabled: true,
-                                    mdCol: 6,
-                                    type: 'text',
-                                    onChange: (value) => {
+                                    }}
+                                    options={[]}
+                                    placeholder={""}
+                                    errorKey={""}
+                                    errors={formErrors}
+                                    errorMessage={""}
+                                />
+
+                                <RenderField
+                                    label={"UUID:"}
+                                    tooltip={"UUID:"}
+                                    value={oCrp?.uuid}
+                                    disabled={true}
+                                    mdCol={6}
+                                    type={"text"}
+                                    onChange={(value) => {
                                         setOCrp?.((prev: any) => ({ ...prev, uuid: value }));
-                                    },
-                                    options: [],
-                                    placeholder: '',
-                                    errorKey: '',
-                                    errors: formErrors,
-                                    errorMessage: ''
-                                })}
-                                {RenderField({
-                                    label: 'Fecha:',
-                                    tooltip: 'Fecha:',
-                                    value: oCrp?.xml_date,
-                                    disabled: true,
-                                    mdCol: 6,
-                                    type: dialogMode == 'create' ? 'calendar' : 'text',
-                                    inputRef: inputCalendarRef,
-                                    onChange: (value) => {
+                                    }}
+                                    options={[]}
+                                    placeholder={""}
+                                    errorKey={""}
+                                    errors={formErrors}
+                                    errorMessage={""}
+                                />
+
+                                <RenderField
+                                    label={"Fecha:"}
+                                    tooltip={"Fecha:"}
+                                    value={oCrp?.xml_date}
+                                    disabled={true}
+                                    mdCol={6}
+                                    type={dialogMode == 'create' ? 'calendar' : 'text'}
+                                    inputRef={inputCalendarRef}
+                                    onChange={(value) => {
                                         setOCrp?.((prev: any) => ({ ...prev, xml_date: value }));
-                                    },
-                                    options: [],
-                                    placeholder: '',
-                                    errorKey: '',
-                                    errors: formErrors,
-                                    errorMessage: ''
-                                })}
+                                    }}
+                                    options={[]}
+                                    placeholder={""}
+                                    errorKey={""}
+                                    errors={formErrors}
+                                    errorMessage={""}
+                                />
                                 { (dialogMode == 'create') && (
                                     <div className="field col-12 md:col-12">
                                         <div className="formgrid grid">
@@ -503,41 +511,41 @@ export const DialogCrp = ({
                         )}
 
                         { (dialogMode == 'view' || dialogMode == 'edit') && (
-                            RenderField({
-                                label: 'Comentarios de aceptación/rechazo:',
-                                tooltip: 'Comentarios de aceptación/rechazo:',
-                                value: oCrp?.authz_acceptance_notes,
-                                disabled: !isInReview,
-                                mdCol: 12,
-                                type: 'textArea',
-                                onChange: (value) => {
+                            <RenderField
+                                label={'Comentarios de aceptación/rechazo:'}
+                                tooltip={'Comentarios de aceptación/rechazo:'}
+                                value={oCrp?.authz_acceptance_notes}
+                                disabled={!isInReview}
+                                mdCol={12}
+                                type={'textArea'}
+                                onChange={ (value) => {
                                     setOCrp?.((prev: any) => ({ ...prev, authz_acceptance_notes: value }));
-                                },
-                                options: [],
-                                placeholder: '',
-                                errorKey: 'authz_acceptance_notes',
-                                errors: formErrors,
-                                errorMessage: 'Ingrese comentario para rechazar'
-                            })
+                                }}
+                                options={[]}
+                                placeholder={''}
+                                errorKey={'authz_acceptance_notes'}
+                                errors={formErrors}
+                                errorMessage={'Ingrese comentario para rechazar'}
+                            />
                         )}
 
                         { showAuthComments && (
-                            RenderField({
-                                label: 'Comentarios de autorización/rechazo:',
-                                tooltip: 'Comentarios de autorización/rechazo:',
-                                value: oCrp?.authz_authorization_notes,
-                                disabled: !isInAuth,
-                                mdCol: 12,
-                                type: 'textArea',
-                                onChange: (value) => {
+                            <RenderField
+                                label={'Comentarios de autorización/rechazo:'}
+                                tooltip={'Comentarios de autorización/rechazo:'}
+                                value={oCrp?.authz_authorization_notes}
+                                disabled={!isInAuth}
+                                mdCol={12}
+                                type={'textArea'}
+                                onChange={(value) => {
                                     setOCrp?.((prev: any) => ({ ...prev, authz_authorization_notes: value }));
-                                },
-                                options: [],
-                                placeholder: '',
-                                errorKey: 'authz_authorization_notes',
-                                errors: formErrors,
-                                errorMessage: 'Ingrese comentario para rechazar'
-                            })
+                                }}
+                                options={[]}
+                                placeholder={''}
+                                errorKey={'authz_authorization_notes'}
+                                errors={formErrors}
+                                errorMessage={'Ingrese comentario para rechazar'}
+                            />
                         )}
 
                         { withFooter && (dialogMode == 'view' || dialogMode == 'edit') && (

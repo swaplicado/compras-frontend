@@ -57,7 +57,8 @@ const constants = {
     ROUTE_GET_PARTNER_PAYMENT_DAY: '/transactions/partner-payment-day/',
     ROUTE_COMPARE_FILES: '/pages/compareFiles/',
 
-    ROUTE_POST_VALIDATE_XML: '/transactions/documents/validate-xml/',
+    // ROUTE_POST_VALIDATE_XML: '/transactions/documents/validate-xml/',
+    ROUTE_POST_VALIDATE_XML: '/transactions/documents/xml_validator/',
     ROUTE_POST_DOCUMENT_TRANSACTION: '/transactions/document-transaction/',
     ROUTE_POST_START_AUTHORIZATION: '/transactions/start-authorization/',
     ROUTE_POST_AUTHORIZE_RESOURCE: '/transactions/authorize-resource/',
@@ -175,7 +176,17 @@ const constants = {
     FLOW_AUTH_NC: 17,
 
     //Calendar
-    MONTHS_BACK_LIMIT: 6
+    MONTHS_BACK_LIMIT: 6,
+
+    //Tipos de documento para validacion de xml
+    XML_TYPE_INVOICE: 1,
+    XML_TYPE_NC: 2,
+    XML_TYPE_CRP: 3,
+    XML_TYPE_FLETE: 4,
+
+    //Tipos de referencia
+    REFERENCE_TYPE_OC: 22,
+    REFERENCE_TYPE_TICKET: 61,
 }
 
 export default constants;
