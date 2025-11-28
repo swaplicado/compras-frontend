@@ -224,16 +224,18 @@ const BulkInvoiceUpload = () => {
     const inputCalendarPayDay = useRef<HTMLInputElement>(null)
     
     //*******Funciones para el calendario*******
-    const setDateDpsForIndex =  (index: number, payment_date: Date) => {
+    const setDateDpsForIndex = (index: number, payment_date: Date) => {
         setLDps((prev) => {
             const newArray = [...prev];
             newArray[index].payment_date = payment_date?.toISOString();
             return newArray;
         });
+        
         setTimeout(() => {
-        if (inputCalendarRef[index].current && payment_date) {
-            inputCalendarRef[index].current.value = DateFormatter(payment_date);
-        }
+            // Verificar que el índice existe y que current no es null
+            if (inputCalendarRef[index]?.current && payment_date) {
+                inputCalendarRef[index].current.value = DateFormatter(payment_date);
+            }
         }, 100);
     };
 
