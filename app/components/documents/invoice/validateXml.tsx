@@ -102,7 +102,7 @@ export const ValidateXml = ( {
                     const currency = oCurrency ? oCurrency.name : '';
 
                     let oDps: any = {};
-                    if (type != constants.XML_TYPE_FLETE) {
+                    if (type != constants.XML_TYPE_FLETE && type != constants.XML_TYPE_COMPRA) {
                         oDps = {
                             serie: data.data.serie,
                             folio: data.data.serie ? (data.data.serie + '-' + data.data.folio) : data.data.folio,
@@ -126,7 +126,7 @@ export const ValidateXml = ( {
                         }
                         setODps(oDps);
                     }
-                    if (type == constants.XML_TYPE_FLETE) {
+                    if (type == constants.XML_TYPE_FLETE || type == constants.XML_TYPE_COMPRA) {
                         setODps((prev: any) => ({ 
                             ...prev,    
                             serie: data.data.serie,

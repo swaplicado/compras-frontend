@@ -183,10 +183,18 @@ const constants = {
     XML_TYPE_NC: 2,
     XML_TYPE_CRP: 3,
     XML_TYPE_FLETE: 4,
+    XML_TYPE_COMPRA: 5,
 
     //Tipos de referencia
     REFERENCE_TYPE_OC: 22,
     REFERENCE_TYPE_TICKET: 61,
+
+    //Processing type para facturas
+    PROCESSING_TYPE_INVOICE_FLETE: 11,
+    PROCESSING_TYPE_INVOICE_COMPRA: 12,
+
+    //area compras aguacate
+    AREA_COMPRAS_AGUACATE: 4
 }
 
 export default constants;

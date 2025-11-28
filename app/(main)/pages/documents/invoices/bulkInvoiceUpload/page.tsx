@@ -132,6 +132,7 @@ const BulkInvoiceUpload = () => {
                     references.push({
                         id: data[i].id,
                         name: data[i].reference,
+                        area_id: data[i].functional_area_id,
                     })
                 }
 
@@ -470,15 +471,15 @@ const BulkInvoiceUpload = () => {
                 });
                 
                 // const area_id = lRefToValidateXml[0].id == 0 ? oArea?.id : lRefToValidateXml[0].functional_area_id;
-                const area_id = 0;
+                const area_id = invoiceType == 'Fletes' ? lDps[i].reference[0].area_id : constants.AREA_COMPRAS_AGUACATE;
     
-                formData.append('references', JSON.stringify(lDps[i].reference));
+                formData.append('references', lDps[i].reference ? JSON.stringify(lDps[i].reference) : '[]');
                 formData.append('area_id', area_id || '');
                 formData.append('route', route);
                 formData.append('company', lDps[i].company_partner_id);
                 formData.append('user_id', oUser.oUser.id.toString());
                 formData.append('is_internal_user', oUser.isInternalUser ? 'True' : 'False');
-                formData.append('processing_type_id', '1');
+                formData.append('processing_type_id', invoiceType == 'Fletes' ? constants.PROCESSING_TYPE_INVOICE_FLETE.toString() : constants.PROCESSING_TYPE_INVOICE_COMPRA.toString());
                 formData.append('do_payment', lDps[i].do_payment ? '1' : '0' );
     
                 const splitFolio = lDps[i].folio.split('-');
@@ -584,7 +585,7 @@ const BulkInvoiceUpload = () => {
                             <div key={invoiceKeys[index]}>
                                 <Divider/>
                                 <div className='felx text-center'>
-                                    <h4 key={'index_' + invoiceKeys[index]}>Factura: {index + 1}</h4>
+                                    <h4 key={'index_' + invoiceKeys[index]}>Factura número {index + 1}:</h4>
                                 </div>
                                 <div className={`card p-2 relative ${lDps[index].sended == 'sended' ? 'border-green-400' : ( lDps[index].sended == 'error' ? 'border-red-400' : 'border-black-alpha-90' ) }`}>
                                     { loadingDpsArray[index] && (
@@ -638,7 +639,7 @@ const BulkInvoiceUpload = () => {
                                                 clearOnProviderChange={false}
                                                 clearOnCompanyChange={false}
                                                 clearOnRefChange={false}
-                                                type={4}
+                                                type={ invoiceType == 'Fletes' ? constants.XML_TYPE_FLETE :  constants.XML_TYPE_COMPRA }
                                                 disabled={isEditable(index)}
                                                 getReferences={getReferences(index)}
                                                 setReferences={setDpsReferencesArrayForIndex(index)}
