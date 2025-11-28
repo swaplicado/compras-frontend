@@ -30,9 +30,10 @@ interface validateXmlProps {
     clearOnProviderChange?: boolean;
     clearOnCompanyChange?: boolean;
     clearOnRefChange?: boolean;
-    oFlete?: any;
     type?: number;
     disabled?: boolean | null;
+    getReferences?: ((partner_id: string, company_partner_id: string) => void);
+    setReferences?: React.Dispatch<React.SetStateAction<any>> | ((value: any) => void);
 }
 
 export const ValidateXml = ( { 
@@ -55,9 +56,10 @@ export const ValidateXml = ( {
     clearOnProviderChange = true,
     clearOnCompanyChange = true,
     clearOnRefChange = true,
-    oFlete,
     type = 0,
-    disabled = null
+    disabled = null,
+    getReferences,
+    setReferences
 }: validateXmlProps ) => {
     const [totalSize, setTotalSize] = useState(0);
     const message = useRef<Messages>(null);
@@ -124,7 +126,6 @@ export const ValidateXml = ( {
                         }
                         setODps(oDps);
                     }
-                    
                     if (type == constants.XML_TYPE_FLETE) {
                         setODps((prev: any) => ({ 
                             ...prev,    
@@ -148,11 +149,10 @@ export const ValidateXml = ( {
                             partner_id: data.data.partner_id,
                             partner_name: data.data.partner_name,
                             company_partner_id: data.data.company_partner_id,
-                            company_partner_name: data.data.company_partner_name,
+                            company_partner_name: data.data.company_partner_name
                         }));
+                        await getReferences?.(data.data.partner_id, data.data.company_partner_id);
                     }
-
-                    // setODps(oDps);
                     setErrors((prev: any) => ({ ...prev, isValid: true, errors: data.errors }));
                 } else {
                     setErrors((prev: any) => ({ ...prev, isValid: false, errors: data.errors }));
@@ -172,6 +172,20 @@ export const ValidateXml = ( {
 
     const hanldeRemoveFile = () => {
         setIsXmlValid?.(false);
+        setODps({
+            serie: "",
+            folio: "",
+            date: "",
+            payment_method: "",
+            provider_rfc: "",
+            issuer_tax_regime: "",
+            company_rfc: "",
+            receiver_tax_regime: "",
+            useCfdi: "",
+            amount: "",
+            currency: "",
+            exchange_rate: "",
+        })
         if (type != constants.XML_TYPE_FLETE) {
             setODps({
                 serie: "",
@@ -214,8 +228,9 @@ export const ValidateXml = ( {
                 company_partner_id: "",
                 company_partner_name: ""
             }))
-        }
 
+            setReferences?.([]);
+        }
         setErrors(
             {
                 includeXml: false,
