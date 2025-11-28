@@ -368,7 +368,7 @@ const RegisterProvider = () => {
         <div className="form-container-wrapper">
             <Toast ref={toast} />
             {loading && loaderScreen()}
-            <Card className="form-container-card" title={'Registro de proveedor'} footer={footerContent}>
+            <Card className="form-container-card" title={'Solicitud de alta de nuevo proveedor'} footer={footerContent}>
                 {animationSuccess({
                     show: resultUpload === 'success',
                     title: 'Realizado',
@@ -379,10 +379,55 @@ const RegisterProvider = () => {
                 
                 { resultUpload == 'waiting' && (
                     <div className="p-fluid formgrid grid">
-                        <h5 className='md:col-12 col-12'>Datos de empresa</h5>
+                        <h5 className='md:col-12 col-12'>
+                            {t('register.titleProviderData.label')}
+                            &nbsp;
+                            <Tooltip target=".custom-target-icon" />
+                            <i
+                                className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
+                                data-pr-tooltip={t('register.titleProviderData.tooltip')}
+                                data-pr-position="right"
+                                data-pr-my="left center-2"
+                                style={{ fontSize: '1rem', cursor: 'pointer' }}
+                            ></i>
+                        </h5>
                         <RenderField
-                            label={'Nombre comercial'}
-                            tooltip={'Nombre comercial'}
+                            label={t('register.entity_type.label')}
+                            tooltip={t('register.entity_type.tooltip')}
+                            value={oProvider?.entity_type}
+                            disabled={false}
+                            mdCol={6}
+                            type={'dropdown'}
+                            onChange={(value) => {
+                                setOProvider((prev: any) => ({ ...prev, entity_type: value }));
+                                setFormErrors((prev: any) => ({ ...prev, entity_type: false }));
+                            }}
+                            options={lEntityType}
+                            placeholder={t('register.entity_type.placeholder')}
+                            errorKey={'entity_type'}
+                            errors={formErrors}
+                            errorMessage={t('register.entity_type.textHelper')}
+                        />
+                        <RenderField
+                            label={t('register.fiscal_regime.label')}
+                            tooltip={t('register.fiscal_regime.tooltip')}
+                            value={oProvider?.fiscal_regime}
+                            disabled={false}
+                            mdCol={6}
+                            type={'dropdown'}
+                            onChange={(value) => {
+                                setOProvider((prev: any) => ({ ...prev, fiscal_regime: value }));
+                                setFormErrors((prev: any) => ({ ...prev, fiscal_regime: false }));
+                            }}
+                            options={lFiscalRegimes}
+                            placeholder={t('register.fiscal_regime.placeholder')}
+                            errorKey={'fiscal_regime'}
+                            errors={formErrors}
+                            errorMessage={t('register.fiscal_regime.textHelper')}
+                        />
+                        <RenderField
+                            label={t('register.provider_name.label')}
+                            tooltip={t('register.provider_name.tooltip')}
                             value={oProvider.provider_name}
                             disabled={false}
                             mdCol={6}
@@ -395,11 +440,11 @@ const RegisterProvider = () => {
                             placeholder={''}
                             errorKey={'provider_name'}
                             errors={formErrors}
-                            errorMessage={'Ingresa nombre'}
+                            errorMessage={t('register.provider_name.textHelper')}
                         />
                         <RenderField
-                            label={'RFC'}
-                            tooltip={'RFC'}
+                            label={t('register.rfc.label')}
+                            tooltip={t('register.rfc.tooltip')}
                             value={oProvider.rfc}
                             disabled={false}
                             mdCol={6}
@@ -412,45 +457,11 @@ const RegisterProvider = () => {
                             placeholder={''}
                             errorKey={'rfc'}
                             errors={formErrors}
-                            errorMessage={'Ingresa RFC'}
+                            errorMessage={t('register.rfc.textHelper')}
                         />
                         <RenderField
-                            label={'Tipo de entidad'}
-                            tooltip={'Tipo de entidad'}
-                            value={oProvider?.entity_type}
-                            disabled={false}
-                            mdCol={6}
-                            type={'dropdown'}
-                            onChange={(value) => {
-                                setOProvider((prev: any) => ({ ...prev, entity_type: value }));
-                                setFormErrors((prev: any) => ({ ...prev, entity_type: false }));
-                            }}
-                            options={lEntityType}
-                            placeholder={'Selecciona tipo de entidad'}
-                            errorKey={'entity_type'}
-                            errors={formErrors}
-                            errorMessage={'Ingresa tipo de entidad'}
-                        />
-                        <RenderField
-                            label={'Regimen fiscal'}
-                            tooltip={'Regimen fiscal'}
-                            value={oProvider?.fiscal_regime}
-                            disabled={false}
-                            mdCol={6}
-                            type={'dropdown'}
-                            onChange={(value) => {
-                                setOProvider((prev: any) => ({ ...prev, fiscal_regime: value }));
-                                setFormErrors((prev: any) => ({ ...prev, fiscal_regime: false }));
-                            }}
-                            options={lFiscalRegimes}
-                            placeholder={'Selecciona regimen fiscal'}
-                            errorKey={'fiscal_regime'}
-                            errors={formErrors}
-                            errorMessage={'Ingresa régimen fiscal'}
-                        />
-                        <RenderField
-                            label={'Empresa a proveer'}
-                            tooltip={'Empresa'}
+                            label={t('register.company.label')}
+                            tooltip={t('register.company.tooltip')}
                             value={oProvider?.company}
                             disabled={false}
                             mdCol={6}
@@ -460,15 +471,15 @@ const RegisterProvider = () => {
                                 setFormErrors((prev: any) => ({ ...prev, company: false }));
                             }}
                             options={lCompanies}
-                            placeholder={'Selecciona empresa'}
+                            placeholder={t('register.company.placeholder')}
                             errorKey={'company'}
                             errors={formErrors}
-                            errorMessage={'Ingresa empresa a proveer'}
+                            errorMessage={t('register.company.textHelper')}
                         />
                         { !loadingAreas && (
                             <RenderField
-                                label={'Área'}
-                                tooltip={'Área'}
+                                label={t('register.area.label')}
+                                tooltip={t('register.area.tooltip')}
                                 value={oProvider?.area}
                                 disabled={!oProvider.company}
                                 mdCol={6}
@@ -478,10 +489,10 @@ const RegisterProvider = () => {
                                     setFormErrors((prev: any) => ({ ...prev, area: false }));
                                 }}
                                 options={lAreas}
-                                placeholder={'Selecciona area'}
+                                placeholder={t('register.area.placeholder')}
                                 errorKey={'area'}
                                 errors={formErrors}
-                                errorMessage={'Ingresa área'}
+                                errorMessage={t('register.area.textHelper')}
                             />
                         )}
 
@@ -489,10 +500,21 @@ const RegisterProvider = () => {
                             <ProgressSpinner style={{ width: '50px', height: '50px' }} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />
                         )}
 
-                        <h5 className='md:col-12 col-12'>Datos de contacto</h5>
+                        <h5 className='md:col-12 col-12'>
+                            {t('register.titleProviderContact.label')}
+                            &nbsp;
+                            <Tooltip target=".custom-target-icon" />
+                            <i
+                                className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
+                                data-pr-tooltip={t('register.titleProviderContact.tooltip')}
+                                data-pr-position="right"
+                                data-pr-my="left center-2"
+                                style={{ fontSize: '1rem', cursor: 'pointer' }}
+                            ></i>
+                        </h5>
                         <RenderField
-                            label={'Nombre'}
-                            tooltip={'Nombre'}
+                            label={t('register.name.label')}
+                            tooltip={t('register.name.tooltip')}
                             value={oProvider.name}
                             disabled={false}
                             mdCol={6}
@@ -505,11 +527,11 @@ const RegisterProvider = () => {
                             placeholder={''}
                             errorKey={'name'}
                             errors={formErrors}
-                            errorMessage={'Ingresa nombre'}
+                            errorMessage={t('register.name.textHelper')}
                         />
                         <RenderField
-                            label={'Apellido'}
-                            tooltip={'Apellido'}
+                            label={t('register.last_name.label')}
+                            tooltip={t('register.last_name.tooltip')}
                             value={oProvider.lastname}
                             disabled={false}
                             mdCol={6}
@@ -522,11 +544,11 @@ const RegisterProvider = () => {
                             placeholder={''}
                             errorKey={'lastname'}
                             errors={formErrors}
-                            errorMessage={'Ingresa apellido'}
+                            errorMessage={t('register.last_name.textHelper')}
                         />
                         <RenderField
-                            label={'Telefono'}
-                            tooltip={'Telefono'}
+                            label={t('register.phone.label')}
+                            tooltip={t('register.phone.tooltip')}
                             value={oProvider.phone}
                             disabled={false}
                             mdCol={6}
@@ -539,11 +561,11 @@ const RegisterProvider = () => {
                             placeholder={''}
                             errorKey={'phone'}
                             errors={formErrors}
-                            errorMessage={'Ingresa numero de teléfono'}
+                            errorMessage={t('register.phone.textHelper')}
                         />
                         <RenderField
-                            label={'Email'}
-                            tooltip={'Email'}
+                            label={t('register.email.label')}
+                            tooltip={t('register.email.tooltip')}
                             value={oProvider.email}
                             disabled={false}
                             mdCol={6}
@@ -556,13 +578,24 @@ const RegisterProvider = () => {
                             placeholder={''}
                             errorKey={'email'}
                             errors={formErrors}
-                            errorMessage={'Ingresa email'}
+                            errorMessage={t('register.email.textHelper')}
                         />
                         
-                        <h5 className='md:col-12 col-12'>Direccion</h5>
+                        <h5 className='md:col-12 col-12'>
+                            {t('register.titleProviderLocation.label')}
+                            &nbsp;
+                            <Tooltip target=".custom-target-icon" />
+                            <i
+                                className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
+                                data-pr-tooltip={t('register.titleProviderLocation.tooltip')}
+                                data-pr-position="right"
+                                data-pr-my="left center-2"
+                                style={{ fontSize: '1rem', cursor: 'pointer' }}
+                            ></i>
+                        </h5>
                         <RenderField
-                            label={'Calle'}
-                            tooltip={'Calle'}
+                            label={t('register.street.label')}
+                            tooltip={t('register.street.tooltip')}
                             value={oProvider.street}
                             disabled={false}
                             mdCol={6}
@@ -575,11 +608,11 @@ const RegisterProvider = () => {
                             placeholder={''}
                             errorKey={'street'}
                             errors={formErrors}
-                            errorMessage={'Ingresa calle'}
+                            errorMessage={t('register.street.textHelper')}
                         />
                         <RenderField
-                            label={'Numero domicilio'}
-                            tooltip={'Numero domicilio'}
+                            label={t('register.number.label')}
+                            tooltip={t('register.number.tooltip')}
                             value={oProvider.number}
                             disabled={false}
                             mdCol={6}
@@ -592,11 +625,11 @@ const RegisterProvider = () => {
                             placeholder={''}
                             errorKey={'number'}
                             errors={formErrors}
-                            errorMessage={'Ingresa number de domicilio'}
+                            errorMessage={t('register.number.textHelper')}
                         />
                         <RenderField
-                            label={'País'}
-                            tooltip={'País'}
+                            label={t('register.country.label')}
+                            tooltip={t('register.country.tooltip')}
                             value={oProvider?.country}
                             disabled={false}
                             mdCol={6}
@@ -606,14 +639,14 @@ const RegisterProvider = () => {
                                 setFormErrors((prev: any) => ({ ...prev, country: false }));
                             }}
                             options={lCountries}
-                            placeholder={'Selecciona país'}
+                            placeholder={t('register.country.placeholder')}
                             errorKey={'country'}
                             errors={formErrors}
-                            errorMessage={'Ingresa país'}
+                            errorMessage={t('register.country.textHelper')}
                         />
                         <RenderField
-                            label={'Estado'}
-                            tooltip={'Estado'}
+                            label={t('register.state.label')}
+                            tooltip={t('register.state.tooltip')}
                             value={oProvider.state}
                             disabled={false}
                             mdCol={6}
@@ -626,11 +659,11 @@ const RegisterProvider = () => {
                             placeholder={''}
                             errorKey={'state'}
                             errors={formErrors}
-                            errorMessage={'Ingresa estado'}
+                            errorMessage={t('register.state.textHelper')}
                         />
                         <RenderField
-                            label={'Ciudad'}
-                            tooltip={'Ciudad'}
+                            label={t('register.city.label')}
+                            tooltip={t('register.city.tooltip')}
                             value={oProvider.city}
                             disabled={false}
                             mdCol={6}
@@ -643,11 +676,11 @@ const RegisterProvider = () => {
                             placeholder={''}
                             errorKey={'city'}
                             errors={formErrors}
-                            errorMessage={'Ingresa ciudad'}
+                            errorMessage={t('register.city.textHelper')}
                         />
                         <RenderField
-                            label={'Código postal'}
-                            tooltip={'Código postal'}
+                            label={t('register.postal_code.label')}
+                            tooltip={t('register.postal_code.tooltip')}
                             value={oProvider.postal_code}
                             disabled={false}
                             mdCol={6}
@@ -660,24 +693,36 @@ const RegisterProvider = () => {
                             placeholder={''}
                             errorKey={'postal_code'}
                             errors={formErrors}
-                            errorMessage={'Ingresa codigo postal'}
+                            errorMessage={t('register.postal_code.textHelper')}
                         />
+                        <h5 className='md:col-12 col-12'>
+                            {t('register.files.labelListFiles')}
+                            &nbsp;
+                            <Tooltip target=".custom-target-icon" />
+                            <i
+                                className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
+                                data-pr-tooltip={t('register.files.tooltipListFiles')}
+                                data-pr-position="right"
+                                data-pr-my="left center-2"
+                                style={{ fontSize: '1rem', cursor: 'pointer' }}
+                            ></i>
+                        </h5>
                         <div className="field col-12">
-                            <h6>Archivos a cargar:</h6>
-                            <ul>
+                            <p>Carga de favor los siguientes archivos:</p>
+                            <ol>
                                 {Object.keys(instructions).map((key, index) => (
                                     <li key={index}>
                                         <b>{instructions[key].name}: </b>
                                         {instructions[key].description}
                                     </li>
                                 ))}
-                            </ul>
-                            <label>Archivos</label>
+                            </ol>
+                            <label>{t('register.files.label')}</label>
                             &nbsp;
                             <Tooltip target=".custom-target-icon" />
                             <i
                                 className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                                data-pr-tooltip={'Archivos'}
+                                data-pr-tooltip={t('register.files.tooltip')}
                                 data-pr-position="right"
                                 data-pr-my="left center-2"
                                 style={{ fontSize: '1rem', cursor: 'pointer' }}
