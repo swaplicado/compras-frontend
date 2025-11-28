@@ -21,7 +21,7 @@ const crp = {
         rejectedTitle: "CRP",
         files: {
             label: "Archivos del comprobante de pago: *",
-            placeholderMultiple: "Suelte los archivos aquí para comenzar a cargarlos",
+            placeholderMultiple: "Suelta aquí los archivos para comenzar a cargarlos",
             placeholderSingle: "Suelte el archivo aquí para comenzar a cargarlo",
             helperTextFiles: "Selecciona los archivos del comprobante de pago.",
             helperTextPdf: "Debe cargar la representación impresa en PDF del comprobante de pago.",
