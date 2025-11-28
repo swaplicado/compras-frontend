@@ -232,9 +232,9 @@ const BulkInvoiceUpload = () => {
         });
         
         setTimeout(() => {
-            // Verificar que el índice existe y que current no es null
-            if (inputCalendarRef[index]?.current && payment_date) {
-                inputCalendarRef[index].current.value = DateFormatter(payment_date);
+            const ref = inputCalendarRef[index];
+            if (ref?.current && payment_date) {
+                ref.current.value = DateFormatter(payment_date);
             }
         }, 100);
     };
@@ -287,8 +287,11 @@ const BulkInvoiceUpload = () => {
     const datesArray = useMemo(() => JSON.stringify(lDps.map(dps => dps?.payment_date)), [lDps]);
     useEffect(() => {
         lInvoices.forEach((_, index) => {
-            if (inputCalendarRef[index]?.current && lDps[index]?.payment_date) {
-                inputCalendarRef[index].current.value = DateFormatter(lDps[index].payment_date);
+            const inputRef = inputCalendarRef[index]?.current;
+            const paymentDate = lDps[index]?.payment_date;
+            
+            if (inputRef && paymentDate) {
+                inputRef.value = DateFormatter(paymentDate);
             }
         });
     }, [datesArray]);
