@@ -53,15 +53,17 @@ export const ValidateNcXml = ({
         try {
             setLoadingValidateXml?.(true);
             setErrors((prev: any) => ({ ...prev, addedXml: true }));
-            const route = constants.ROUTE_POST_VALIDATE_XML_NC;
+            // const route = constants.ROUTE_POST_VALIDATE_XML_NC;
+            const route = constants.ROUTE_POST_VALIDATE_XML;
             const formData = new FormData();
             formData.append('files', validFiles[0]);
             formData.append('route', route);
             formData.append('company_id', oCompany?.id || '');
             formData.append('partner_id', oPartner?.id || '');
             // formData.append('ref_id', oRef?.id || '');
-            formData.append('documents', invoices[0].id != 0 ? JSON.stringify(invoices) : '[]');
+            formData.append('complements', invoices[0].id != 0 ? JSON.stringify(invoices) : '[]');
             formData.append('user_id', user_id.toString());
+            formData.append('type', constants.XML_TYPE_NC.toString());
 
             const response = await axios.post(constants.API_AXIOS_POST, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }

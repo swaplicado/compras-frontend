@@ -15,6 +15,7 @@ interface ValidateXmlCrpProps {
     oUser: any;
     oPay: any[];
     oCrp: any;
+    lFiscalRegimes: any;
     errors: {
         includeXml?: boolean;
     };
@@ -26,7 +27,7 @@ interface ValidateXmlCrpProps {
     showToast?: (type: 'success' | 'info' | 'warn' | 'error', message: string, summaryText?: string) => void;
 }
 
-export const ValidateXmlCrp = ({ xmlUploadRef, oCompany, oPartner, oUser, oPay, oCrp, errors, setErrors, setOCrp, setIsXmlValid, isXmlValid, setLoadingValidateXml, showToast }: ValidateXmlCrpProps) => {
+export const ValidateXmlCrp = ({ xmlUploadRef, oCompany, oPartner, oUser, oPay, oCrp, errors, setErrors, setOCrp, setIsXmlValid, isXmlValid, setLoadingValidateXml, showToast, lFiscalRegimes }: ValidateXmlCrpProps) => {
     const [totalSize, setTotalSize] = useState(0);
     const message = useRef<Messages>(null);
     const { t } = useTranslation('invoices');
@@ -39,13 +40,15 @@ export const ValidateXmlCrp = ({ xmlUploadRef, oCompany, oPartner, oUser, oPay, 
             setLoadingValidateXml?.(true);
             setLErrors([]);
             setLWarnings([]);
-            const route = constants.ROUTE_POST_VALIDATE_XML_CRP;
+            // const route = constants.ROUTE_POST_VALIDATE_XML_CRP;
+            const route = constants.ROUTE_POST_VALIDATE_XML;
             const formData = new FormData();
             formData.append('files', validFiles[0]);
             formData.append('route', route);
             formData.append('company_id', oCrp?.oCompany.id || '');
             formData.append('partner_id', oCrp?.oProvider.id || '');
             formData.append('user_id', oUser.id || '');
+            formData.append('type', constants.XML_TYPE_CRP.toString());
 
             const response = await axios.post(constants.API_AXIOS_POST, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
@@ -57,12 +60,14 @@ export const ValidateXmlCrp = ({ xmlUploadRef, oCompany, oPartner, oUser, oPay, 
                 setIsXmlValid?.(data.valid);
                 setLWarnings(data.warnings);
                 if (data.valid) {
+                    const oIssuer_tax_regime = findFiscalRegime(lFiscalRegimes, data.data.tax_regime_issuer)
+                    const oReceiver_tax_regime = findFiscalRegime(lFiscalRegimes, data.data.tax_regime_receiver);
                     setOCrp?.((prev: any) => ({
                         ...prev,   
                         rfc_issuer: data.data.rfc_issuer,
                         rfc_receiver: data.data.rfc_receiver,
-                        tax_regime_issuer: data.data.tax_regime_issuer,
-                        tax_regime_receiver: data.data.tax_regime_receiver,
+                        tax_regime_issuer: oIssuer_tax_regime,
+                        tax_regime_receiver: oReceiver_tax_regime,
                         uuid: data.data.uuid,
                         version: data.data.version,
                         xml_date: data.data.xml_date,

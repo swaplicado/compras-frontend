@@ -88,12 +88,12 @@ const Upload = () => {
             }}
         >
             <h3 className="m-0 text-900 font-medium">
-                {t('titleAccepted')}
+                {t('titleAllInvoices')}
                 &nbsp;&nbsp;
                 <Tooltip target=".custom-target-icon" />
                 <i
                     className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                    data-pr-tooltip={t('titleAcceptedTooltip')}
+                    data-pr-tooltip={t('titleAllInvoicesTooltip')}
                     data-pr-position="right"
                     data-pr-my="left center-2"
                     style={{ fontSize: '1rem', cursor: 'pointer' }}
@@ -163,7 +163,8 @@ const Upload = () => {
                 params: {
                     route: route,
                     partner_id: partner_id,
-                    company_id: company_id
+                    company_id: company_id,
+                    type_id: constants.REFERENCE_TYPE_OC
                 }
             });
 
@@ -569,6 +570,7 @@ const Upload = () => {
                         // withBtnSendAuth={ oValidUser.isInternalUser }
                         // withBtnSendToUpoload={withBtnSendToUpoload}
                         // SendToUpoload={handleSendToUpload}
+                        withHistoryAuth={true}
                     />
                 </Card>
             </div>

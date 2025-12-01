@@ -1536,6 +1536,7 @@ export const InvoiceDialog = ({
                                                 lUseCfdi={lUseCfdi}
                                                 setLoadingValidateXml={setLoadingValidateXml}
                                                 showToast={showToast}
+                                                type={constants.XML_TYPE_INVOICE}
                                             />
                                         </div>
                                     </div>

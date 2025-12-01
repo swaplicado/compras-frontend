@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Tooltip } from 'primereact/tooltip';
 import { useTranslation } from 'react-i18next';
 
@@ -12,7 +12,7 @@ export const XmlWarnings = ( props: XmlWarningsProps ) => {
     
     return (
         <>
-            {props.xmlValidateErrors.warnings.length > 0 && (
+            {props.xmlValidateErrors.warnings?.length > 0 && (
                 <div className="field col-12 md:col-12">
                     <div className="formgrid grid">
                         <div className="col">
@@ -40,7 +40,7 @@ export const XmlWarnings = ( props: XmlWarningsProps ) => {
                 </div>
             )}
 
-            {!props.xmlValidateErrors.isValid && props.xmlValidateErrors.errors.length > 0 && (
+            {!props.xmlValidateErrors.isValid && props.xmlValidateErrors.errors?.length > 0 && (
                 <div className="field col-12 md:col-12">
                     <div className="formgrid grid">
                         <div className="col">

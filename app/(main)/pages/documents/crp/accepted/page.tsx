@@ -24,6 +24,7 @@ import { FileUpload } from "primereact/fileupload";
 import { getlUrlFilesDps } from "@/app/(main)/utilities/documents/common/filesUtils";
 import { downloadFiles } from '@/app/(main)/utilities/documents/common/filesUtils';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
+import { getlFiscalRegime } from '@/app/(main)/utilities/documents/common/fiscalRegimeUtils';
 
 const ConsultPaymentProgramded = () => {
     const [startDate, setStartDate] = useState<string>('');
@@ -68,6 +69,7 @@ const ConsultPaymentProgramded = () => {
     const [loadingFileNames, setLoadingFileNames] = useState<boolean>(false);
     const [lFilesNames, setLFilesNames] = useState<any[]>([]);
     const [lFilesToEdit, setLFilesToEdit] = useState<any[]>([]);
+    const [lFiscalRegimes, setLFiscalRegimes] = useState<any[]>([]);
 
     const [flowAuthDialogVisible, setFlowAuthDialogVisible] = useState<boolean>(false);
 
@@ -415,6 +417,10 @@ const ConsultPaymentProgramded = () => {
                 setLProviders,
                 showToast,
             });
+            await getlFiscalRegime({
+                setLFiscalRegimes,
+                showToast,
+            });
             await getLCrp();
             setLoading(false);
         }
@@ -478,6 +484,7 @@ const ConsultPaymentProgramded = () => {
                         fileEditAcceptRef={fileEditAcceptRef}
                         lFilesNames={lFilesNames}
                         setLFilesToEdit={setLFilesToEdit}
+                        lFiscalRegimes={lFiscalRegimes}
                     />
                     <TableCrp 
                         lCrp={lCrp}

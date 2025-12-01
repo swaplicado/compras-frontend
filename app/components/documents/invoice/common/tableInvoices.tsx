@@ -14,6 +14,8 @@ import moment from 'moment';
 import { OverlayPanel } from 'primereact/overlaypanel';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { Nullable } from 'primereact/ts-helpers';
+import { HistoryAuth } from '@/app/components/documents/invoice/historyAuth';
+import { ProgressSpinner } from 'primereact/progressspinner';
 
 interface columnsProps {
     acceptance: {
@@ -58,6 +60,7 @@ interface TableInvoicesProps {
     withBtnSendToUpoload?: boolean;
     SendToUpoload?: () => void;
     withBtnLast3Months?: boolean;
+    withHistoryAuth?: boolean;
 }
 
 export const TableInvoices = ({
@@ -100,7 +103,8 @@ export const TableInvoices = ({
     },
     withBtnSendToUpoload,
     SendToUpoload,
-    withBtnLast3Months = true
+    withBtnLast3Months = true,
+    withHistoryAuth = false
 }: TableInvoicesProps) => {
     // const [lDps, setLDps] = useState<any[]>([]);
     const [filters, setFilters] = useState<DataTableFilterMeta>({});
@@ -340,8 +344,80 @@ export const TableInvoices = ({
         return <span className={`status-dps-badge status-${rowData.acceptance}`}>{rowData.acceptance}</span>;
     };
 
+    const getHistory = async (rowData: any, setHistory: React.Dispatch<React.SetStateAction<any>>, setLoadingHistory: React.Dispatch<React.SetStateAction<boolean>>, overlayRef: any) => {
+        try {
+            setLoadingHistory(true);
+            let history: any[] = [];
+            const route = constants.ROUTE_GET_HISTORY_AUTH;
+            const response = await axios.get(constants.API_AXIOS_GET, {
+                params: {
+                    route: route,
+                    external_id: rowData.id_dps,
+                    resource_type: constants.RESOURCE_TYPE_PUR_INVOICE,
+                    id_company: rowData.company_external_id
+                }
+            });
+
+            if (response.status === 200) {
+                const data = response.data.data || [];
+                for (const item of data) {
+                    history.push({
+                        actioned_by: item.actioned_by ? item.actioned_by.full_name : item.all_actors[0].full_name,
+                        status: item.flow_status.name,
+                        notes: item.notes,
+                        actioned_at: item.actioned_at ? DateFormatter(item.actioned_at, 'DD-MMM-YYYY HH:mm:ss') : ''
+                    });
+                }
+                setHistory(history);
+            } else {
+                throw new Error(`Error al obtener el historial de autorización: ${response.statusText}`);
+            }
+        } catch (error: any) {
+            // showToast('error', error.response?.data?.error || 'Error al obtener el historial de autorización', 'Error al obtener el historial de autorización');
+        } finally {
+            setLoadingHistory(false);
+            // Force overlay to reposition after content changes
+            setTimeout(() => {
+                overlayRef.current?.align();
+            }, 100);
+        }
+    }
+
+    const HistoryOverlay = ({rowData}: any) => {
+        const [history, setHistory] = useState<any[]>([])
+        const [loadingHistory, setLoadingHistory] = useState(false)
+        const overlayhistoryAuth = useRef<any>(null);
+        
+        return (
+            <div className="">
+                <div className='flex align-items-center justify-content-center'>
+                <span className={`status-dps-badge status-${rowData.authorization}`}>{rowData.authorization}</span>
+                    <Button 
+                        type="button" 
+                        icon="bx bx-list-ol" 
+                        label="" 
+                        onClick={(e) => { overlayhistoryAuth.current?.toggle(e); getHistory(rowData, setHistory, setLoadingHistory, overlayhistoryAuth); }} 
+                    />
+                </div>
+                <OverlayPanel ref={overlayhistoryAuth} showCloseIcon closeOnEscape dismissable={false}>
+                    {loadingHistory ? (
+                        <div className="flex justify-content-center align-items-center p-4">
+                            <ProgressSpinner style={{ width: '50px', height: '50px' }} />
+                        </div>
+                    ) : (
+                        <HistoryAuth lHistory={history} />
+                    )}
+                </OverlayPanel>
+            </div>
+        );
+    };
+
     const statusAuthDpsBodyTemplate = (rowData: any) => {
-        return <span className={`status-dps-badge status-${rowData.authorization}`}>{rowData.authorization}</span>;
+        if (!withHistoryAuth) {
+            return <span className={`status-dps-badge status-${rowData.authorization}`}>{rowData.authorization}</span>;
+        } else if (withHistoryAuth) {
+            return <HistoryOverlay rowData={rowData} />
+        }
     };
 
     const dateBodyTemplate = (rowData: any) => {

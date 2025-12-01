@@ -8,6 +8,9 @@ import { ProgressSpinner } from 'primereact/progressspinner';
 import { Calendar } from 'primereact/calendar';
 import DateFormatter from '@/app/components/commons/formatDate';
 import { MultiSelect } from 'primereact/multiselect';
+import { addLocale } from 'primereact/api';
+import { useTranslation } from 'react-i18next';
+import { Checkbox } from "primereact/checkbox";
 
 interface renderFieldProps {
     label: string;
@@ -16,7 +19,7 @@ interface renderFieldProps {
     disabled?: boolean;
     readonly?: boolean;
     mdCol: number | 6;
-    type: 'text' | 'dropdown' | 'number' | 'textArea' | 'calendar' | 'multiselect';
+    type: 'text' | 'dropdown' | 'number' | 'textArea' | 'calendar' | 'multiselect' | 'checkbox';
     onChange?: (value: any) => void;
     options?: any[];
     placeholder?: string;
@@ -24,21 +27,31 @@ interface renderFieldProps {
     errors: any;
     errorMessage?: string;
     inputRef?: any;
-    labelClass?: string
-    suffix?: string
+    labelClass?: string;
+    suffix?: string;
+    checked?: boolean;
+    checkboxKey?: string | number;
+    passthrough?: any;
+    textAreaRows?: number;
 }
 
 export const RenderField = (props: renderFieldProps) => {
+    const { t: tCommon } = useTranslation('common');
+    addLocale('es', tCommon('calendar', { returnObjects: true }) as any);
     return (
         <>
             {props.type == 'dropdown' && (
-                <div className={`field col-12 md:col-${props.mdCol}`}>
+                <div className={`mb-2 col-12 md:col-${props.mdCol}`}>
                     <div className="">
-                        <div className="col">
-                            <label className={`${props.labelClass}`} data-pr-tooltip="">{props.label}</label>
-                            &nbsp;
-                            <Tooltip target=".custom-target-icon" />
-                            <i className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge" data-pr-tooltip={props.tooltip} data-pr-position="right" data-pr-my="left center-2" style={{ fontSize: '1rem', cursor: 'pointer' }}></i>
+                        <div >
+                            { props.label && (
+                                <>
+                                    <label className={`${props.labelClass}`} data-pr-tooltip="">{props.label}</label>
+                                    &nbsp;
+                                    <Tooltip target=".custom-target-icon" />
+                                    <i className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge" data-pr-tooltip={props.tooltip} data-pr-position="right" data-pr-my="left center-2" style={{ fontSize: '1rem', cursor: 'pointer' }}></i>
+                                </>
+                            )}
                             <div>
                                 <Dropdown
                                     value={props.value}
@@ -51,6 +64,7 @@ export const RenderField = (props: renderFieldProps) => {
                                     showClear
                                     disabled={props.disabled}
                                     readOnly={props.readonly}
+                                    pt={props.passthrough}
                                 />
                                 {props.errors[props.errorKey] && <small className="p-error">{props.errorMessage}</small>}
                             </div>
@@ -60,9 +74,9 @@ export const RenderField = (props: renderFieldProps) => {
             )}
 
             {props.type == 'multiselect' && (
-                <div className={`field col-12 md:col-${props.mdCol}`}>
+                <div className={`mb-2 col-12 md:col-${props.mdCol}`}>
                     <div className="">
-                        <div className="col">
+                        <div >
                             <label className={`${props.labelClass}`} data-pr-tooltip="">{props.label}</label>
                             &nbsp;
                             <Tooltip target=".custom-target-icon" />
@@ -81,6 +95,7 @@ export const RenderField = (props: renderFieldProps) => {
                                     selectedItemsLabel="{0} seleccionados"
                                     showClear
                                     disabled={props.disabled}
+                                    pt={props.passthrough}
                                 />
                                 {props.errors[props.errorKey] && <small className="p-error">{props.errorMessage}</small>}
                             </div>
@@ -90,9 +105,9 @@ export const RenderField = (props: renderFieldProps) => {
             )}
             
             {props.type == 'text' && (
-                <div className={`field col-12 md:col-${props.mdCol}`}>
+                <div className={`mb-2 col-12 md:col-${props.mdCol}`}>
                     <div className="">
-                        <div className="col">
+                        <div >
                             <label className={`${props.labelClass}`} data-pr-tooltip="">{props.label}</label>
                             &nbsp;
                             <Tooltip target=".custom-target-icon" />
@@ -106,6 +121,7 @@ export const RenderField = (props: renderFieldProps) => {
                                     onChange={(e) => {
                                         props.onChange?.(e.target.value);
                                     }}
+                                    pt={props.passthrough}
                                 />
                                 {props.errors[props.errorKey] && <small className="p-error">{props.errorMessage}</small>}
                             </div>
@@ -115,9 +131,9 @@ export const RenderField = (props: renderFieldProps) => {
             )}
 
             {props.type == 'number' && (
-                <div className={`field col-12 md:col-${props.mdCol}`}>
+                <div className={`mb-2 col-12 md:col-${props.mdCol}`}>
                     <div className="">
-                        <div className="col">
+                        <div >
                             <label className={`${props.labelClass}`} data-pr-tooltip="">{props.label}</label>
                             &nbsp;
                             <Tooltip target=".custom-target-icon" />
@@ -137,6 +153,7 @@ export const RenderField = (props: renderFieldProps) => {
                                         props.onChange?.(e.value);
                                     }}
                                     suffix={props.suffix}
+                                    pt={props.passthrough}
                                 />
                                 {props.errors[props.errorKey] && <small className="p-error">{props.errorMessage}</small>}
                             </div>
@@ -146,9 +163,9 @@ export const RenderField = (props: renderFieldProps) => {
             )}
 
             {props.type == 'textArea' && (
-                <div className={`field col-12 md:col-${props.mdCol}`}>
+                <div className={`mb-2 col-12 md:col-${props.mdCol}`}>
                     <div className="">
-                        <div className="col">
+                        <div >
                             <label className={`${props.labelClass}`} data-pr-tooltip="">{props.label}</label>
                             &nbsp;
                             <Tooltip target=".custom-target-icon" />
@@ -156,7 +173,7 @@ export const RenderField = (props: renderFieldProps) => {
                             <div>
                                 <InputTextarea 
                                     id="comments"
-                                    rows={3}
+                                    rows={props.textAreaRows || 3}
                                     cols={30}
                                     maxLength={500}
                                     className={`w-full ${props.errors[props.errorKey] ? 'p-invalid' : ''}`}
@@ -166,6 +183,7 @@ export const RenderField = (props: renderFieldProps) => {
                                     onChange={(e) => {
                                         props.onChange?.(e.target.value);
                                     }}
+                                    pt={props.passthrough}
                                 />
                                 {props.errors[props.errorKey] && <small className="p-error">{props.errorMessage}</small>}
                             </div>
@@ -175,9 +193,9 @@ export const RenderField = (props: renderFieldProps) => {
             )}
 
             {props.type == 'calendar' && (
-                <div className={`field col-12 md:col-${props.mdCol}`}>
+                <div className={`mb-2 col-12 md:col-${props.mdCol}`}>
                     <div className="">
-                        <div className="col">
+                        <div >
                             <label className={`${props.labelClass}`} data-pr-tooltip="">{props.label}</label>
                             &nbsp;
                             <Tooltip target=".custom-target-icon" />
@@ -185,8 +203,8 @@ export const RenderField = (props: renderFieldProps) => {
                             <div>
                             <Calendar
                                 value={props.value || ''}
-                                className={`w-full ${props.errors?.xml_date ? 'p-invalid' : ''}`}
-                                placeholder='Fecha de emisión'
+                                className={`w-full ${props.errors?.[props.errorKey] ? 'p-invalid' : ''}`}
+                                placeholder={props.placeholder}
                                 onChange={(e) => props.onChange?.(e.value)}
                                 showIcon
                                 locale="es"
@@ -202,8 +220,33 @@ export const RenderField = (props: renderFieldProps) => {
                                         props.inputRef.current.value = DateFormatter(props.value);
                                     }
                                 }}
+                                pt={props.passthrough}
                             />
+                            {props.errors[props.errorKey] && <small className="p-error">{props.errorMessage}</small>}
                             </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {props.type == 'checkbox' && (
+                <div className={`mb-2 col-12 md:col-${props.mdCol}`}>
+                    <div className="">
+                        <div >
+                            <Checkbox
+                                inputId={`is_checkbox_${props.checkboxKey}`}
+                                name={`is_checkbox_${props.checkboxKey}`}
+                                value={props}
+                                onChange={(e: any) => {
+                                    props.onChange?.(e.checked);
+                                }}
+                                checked={props.value || false}
+                                disabled={props.disabled}
+                                pt={props.passthrough}
+                            />
+                            <label htmlFor={`is_checkbox_${props.checkboxKey}`} className="ml-2">
+                                {props.label}
+                            </label>
                         </div>
                     </div>
                 </div>

@@ -17,18 +17,50 @@ interface validateXmlProps {
     errors: {
         includeXml?: boolean;
     };
-    setErrors: React.Dispatch<React.SetStateAction<any>>;
-    setODps: React.Dispatch<React.SetStateAction<any>>;
-    setIsXmlValid?: React.Dispatch<React.SetStateAction<any>>;
+    setErrors: React.Dispatch<React.SetStateAction<any>> | ((value: any) => void);
+    setODps: React.Dispatch<React.SetStateAction<any>> | ((value: any) => void);
+    setIsXmlValid?: React.Dispatch<React.SetStateAction<any>> | ((value: any) => void);
     lCurrencies: any[];
     lFiscalRegimes: any[];
     lPaymentMethod: any[];
     lUseCfdi: any[];
-    setLoadingValidateXml?: React.Dispatch<React.SetStateAction<boolean>>;
+    setLoadingValidateXml?: React.Dispatch<React.SetStateAction<boolean>> | ((value: any) => void);
     showToast?: (type: 'success' | 'info' | 'warn' | 'error', message: string, summaryText?: string) => void;
+    withRef?: boolean;
+    clearOnProviderChange?: boolean;
+    clearOnCompanyChange?: boolean;
+    clearOnRefChange?: boolean;
+    type?: number;
+    disabled?: boolean | null;
+    getReferences?: ((partner_id: string, company_partner_id: string) => void);
+    setReferences?: React.Dispatch<React.SetStateAction<any>> | ((value: any) => void);
 }
 
-export const ValidateXml = ( { xmlUploadRef, oCompany, oPartner, user_id, oRef, errors, setErrors, setODps, setIsXmlValid, lCurrencies, lFiscalRegimes, lPaymentMethod, lUseCfdi, setLoadingValidateXml, showToast }: validateXmlProps ) => {
+export const ValidateXml = ( { 
+    xmlUploadRef, 
+    oCompany, 
+    oPartner, 
+    user_id, 
+    oRef, 
+    errors, 
+    setErrors, 
+    setODps, 
+    setIsXmlValid, 
+    lCurrencies, 
+    lFiscalRegimes, 
+    lPaymentMethod, 
+    lUseCfdi, 
+    setLoadingValidateXml, 
+    showToast,
+    withRef = true,
+    clearOnProviderChange = true,
+    clearOnCompanyChange = true,
+    clearOnRefChange = true,
+    type = 0,
+    disabled = null,
+    getReferences,
+    setReferences
+}: validateXmlProps ) => {
     const [totalSize, setTotalSize] = useState(0);
     const message = useRef<Messages>(null);
     const { t } = useTranslation('invoices');
@@ -42,16 +74,18 @@ export const ValidateXml = ( { xmlUploadRef, oCompany, oPartner, user_id, oRef, 
             const formData = new FormData();
             formData.append('files', validFiles[0]);
             formData.append('route', route);
-            formData.append('company_id', oCompany?.id || '');
-            formData.append('partner_id', oPartner?.id || '');
+            formData.append('company_id', oCompany?.id || '0');
+            formData.append('partner_id', oPartner?.id || '0');
+            formData.append('type', type.toString());
             // formData.append('ref_id', oRef?.id || '');
-            formData.append('references', oRef[0].id != 0 ? JSON.stringify(oRef) : '[]');
+            // formData.append('references', oRef[0]?.id != 0 ? JSON.stringify(oRef) : '[]');
+            formData.append('complements', oRef[0]?.id != 0 ? JSON.stringify(oRef) : '[]');
             formData.append('user_id', user_id.toString());
 
             const response = await axios.post(constants.API_AXIOS_POST, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
-
+            
             if (response.status === 200 || response.status === 201) {
                 const data = response.data.data;
                 setIsXmlValid?.(data.valid);
@@ -67,28 +101,58 @@ export const ValidateXml = ( { xmlUploadRef, oCompany, oPartner, user_id, oRef, 
                     const oCurrency = findCurrency( lCurrencies, data.data.currency);
                     const currency = oCurrency ? oCurrency.name : '';
 
-                    const oDps = {
-                        serie: data.data.serie,
-                        folio: data.data.serie ? (data.data.serie + '-' + data.data.folio) : data.data.folio,
-                        date: data.data.xml_date,
-                        dateFormated: DateFormatter(data.data.xml_date),
-                        oPaymentMethod: oPaymentMethod,
-                        payment_method: payment_method,
-                        provider_rfc: data.data.rfc_issuer,
-                        oIssuer_tax_regime: oIssuer_tax_regime,
-                        issuer_tax_regime: issuer_tax_regime,
-                        company_rfc: data.data.rfc_receiver,
-                        oReceiver_tax_regime: oReceiver_tax_regime,
-                        receiver_tax_regime: receiver_tax_regime,
-                        oUseCfdi: oUseCfdi,
-                        useCfdi: useCfdi,
-                        amount: data.data.amount,
-                        oCurrency: oCurrency,
-                        currency: currency,
-                        exchange_rate: data.data.exchange_rate ? data.data.exchange_rate : 1,
-                        uuid: data.data.uuid
+                    let oDps: any = {};
+                    if (type != constants.XML_TYPE_FLETE && type != constants.XML_TYPE_COMPRA) {
+                        oDps = {
+                            serie: data.data.serie,
+                            folio: data.data.serie ? (data.data.serie + '-' + data.data.folio) : data.data.folio,
+                            date: data.data.xml_date,
+                            dateFormated: DateFormatter(data.data.xml_date),
+                            oPaymentMethod: oPaymentMethod,
+                            payment_method: payment_method,
+                            provider_rfc: data.data.rfc_issuer,
+                            oIssuer_tax_regime: oIssuer_tax_regime,
+                            issuer_tax_regime: issuer_tax_regime,
+                            company_rfc: data.data.rfc_receiver,
+                            oReceiver_tax_regime: oReceiver_tax_regime,
+                            receiver_tax_regime: receiver_tax_regime,
+                            oUseCfdi: oUseCfdi,
+                            useCfdi: useCfdi,
+                            amount: data.data.amount,
+                            oCurrency: oCurrency,
+                            currency: currency,
+                            exchange_rate: data.data.exchange_rate ? data.data.exchange_rate : 1,
+                            uuid: data.data.uuid
+                        }
+                        setODps(oDps);
                     }
-                    setODps(oDps);
+                    if (type == constants.XML_TYPE_FLETE || type == constants.XML_TYPE_COMPRA) {
+                        setODps((prev: any) => ({ 
+                            ...prev,    
+                            serie: data.data.serie,
+                            folio: data.data.serie ? (data.data.serie + '-' + data.data.folio) : data.data.folio,
+                            oPaymentMethod: oPaymentMethod,
+                            payment_method: payment_method,
+                            provider_rfc: data.data.rfc_issuer,
+                            oIssuer_tax_regime: oIssuer_tax_regime,
+                            issuer_tax_regime: issuer_tax_regime,
+                            company_rfc: data.data.rfc_receiver,
+                            oReceiver_tax_regime: oReceiver_tax_regime,
+                            receiver_tax_regime: receiver_tax_regime,
+                            oUseCfdi: oUseCfdi,
+                            useCfdi: useCfdi,
+                            amount: data.data.amount,
+                            oCurrency: oCurrency,
+                            currency: currency,
+                            exchange_rate: data.data.exchange_rate ? data.data.exchange_rate : 1,
+                            uuid: data.data.uuid,
+                            partner_id: data.data.partner_id,
+                            partner_name: data.data.partner_name,
+                            company_partner_id: data.data.company_partner_id,
+                            company_partner_name: data.data.company_partner_name
+                        }));
+                        await getReferences?.(data.data.partner_id, data.data.company_partner_id);
+                    }
                     setErrors((prev: any) => ({ ...prev, isValid: true, errors: data.errors }));
                 } else {
                     setErrors((prev: any) => ({ ...prev, isValid: false, errors: data.errors }));
@@ -122,7 +186,51 @@ export const ValidateXml = ( { xmlUploadRef, oCompany, oPartner, user_id, oRef, 
             currency: "",
             exchange_rate: "",
         })
+        if (type != constants.XML_TYPE_FLETE) {
+            setODps({
+                serie: "",
+                folio: "",
+                date: "",
+                payment_method: "",
+                provider_rfc: "",
+                issuer_tax_regime: "",
+                company_rfc: "",
+                receiver_tax_regime: "",
+                useCfdi: "",
+                amount: "",
+                currency: "",
+                exchange_rate: "",
+            })
+        }
 
+        if (type == constants.XML_TYPE_FLETE) {
+            setODps((prev: any) => ({ 
+                ...prev,
+                serie: "",
+                folio: "",
+                oPaymentMethod: "",
+                payment_method: "",
+                provider_rfc: "",
+                oIssuer_tax_regime: "",
+                issuer_tax_regime: "",
+                company_rfc: "",
+                oReceiver_tax_regime: "",
+                receiver_tax_regime: "",
+                oUseCfdi: "",
+                useCfdi: "",
+                amount: "",
+                oCurrency: "",
+                currency: "",
+                exchange_rate: "",
+                uuid: "",
+                partner_id: "",
+                partner_name: "",
+                company_partner_id: "",
+                company_partner_name: ""
+            }))
+
+            setReferences?.([]);
+        }
         setErrors(
             {
                 includeXml: false,
@@ -139,18 +247,24 @@ export const ValidateXml = ( { xmlUploadRef, oCompany, oPartner, user_id, oRef, 
     }
 
     const isDisabled = () => {
-        if (oRef.length == 0) {
-            return true;
+        if (disabled) {
+            return disabled;
         }
 
-        if (oRef[0].id == 0) {
-            return false;
-        }
-
-        if (oRef.length > 1) {
-            for (let i = 0; i < oRef.length; i++) {
-                if (oRef[i].amount == 0) {
-                    return true;
+        if (withRef) {
+            if (oRef.length == 0) {
+                return true;
+            }
+    
+            if (oRef[0].id == 0) {
+                return false;
+            }
+    
+            if (oRef.length > 1) {
+                for (let i = 0; i < oRef.length; i++) {
+                    if (oRef[i].amount == 0) {
+                        return true;
+                    }
                 }
             }
         }
@@ -159,12 +273,14 @@ export const ValidateXml = ( { xmlUploadRef, oCompany, oPartner, user_id, oRef, 
     }
 
     useEffect(() => {
-        if (xmlUploadRef.current) {
-            xmlUploadRef.current.clear();
-            setTotalSize(0);
-            hanldeRemoveFile();
+        if (clearOnProviderChange || clearOnCompanyChange || clearOnRefChange) {
+            if (xmlUploadRef.current) {
+                xmlUploadRef.current.clear();
+                setTotalSize(0);
+                hanldeRemoveFile();
+            }
         }
-    }, [oPartner, oCompany, oRef]);
+    }, [oPartner?.id, oCompany?.id, JSON.stringify(oRef)]);
 
     return (
         <>

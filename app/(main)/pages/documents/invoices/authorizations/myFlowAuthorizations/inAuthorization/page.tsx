@@ -125,7 +125,8 @@ const Upload = () => {
                 params: {
                     route: route,
                     partner_id: partner_id,
-                    company_id: company_id
+                    company_id: company_id,
+                    type_id: constants.REFERENCE_TYPE_OC
                 }
             });
 

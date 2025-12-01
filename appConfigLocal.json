@@ -8,5 +8,5 @@
         { "id": 4, "name": "pagador" },
         { "id": 5, "name": "proveedor" }
     ],
-    "apiTransactionsUrl" : "http://192.168.7.78:8003/api"
+    "apiTransactionsUrl" : "http://192.168.1.29:8003/api"
 }

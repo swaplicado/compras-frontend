@@ -166,7 +166,8 @@ const Upload = () => {
                     route: route,
                     partner_id: partner_id,
                     company_id: company_id,
-                    filter_full: filtered
+                    filter_full: filtered,
+                    type_id: constants.REFERENCE_TYPE_OC
                 }
             });
 

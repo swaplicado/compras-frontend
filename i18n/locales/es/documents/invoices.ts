@@ -1,6 +1,8 @@
 import { Tooltip } from "chart.js";
 
 const invoices = {
+    titleAllInvoices: "Todas las facturas",
+    titleAllInvoicesTooltip: "Pantalla para ver todas las facturas",
     titleUpload: "Carga de facturas",
     titleAccepted: "Facturas aceptadas",
     titleAcceptanceRejected: "Facturas rechazadas en aceptación",

@@ -20,6 +20,7 @@ import esCrp from './locales/es/documents/crp';
 import esNc from './locales/es/documents/nc';
 import esOc from './locales/es/documents/oc';
 import esPartners from './locales/es/partners/partners';
+import esBulkInvoiceUpload from './locales/es/documents/bulkInvoiceUpload';
 
 i18n
   .use(initReactI18next)
@@ -45,7 +46,8 @@ i18n
         crp: esCrp,
         nc: esNc,
         oc: esOc,
-        partners: esPartners
+        partners: esPartners,
+        bulkInvoiceUpload: esBulkInvoiceUpload
       }
     },
     lng: "es",
