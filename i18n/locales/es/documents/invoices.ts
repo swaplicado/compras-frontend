@@ -360,6 +360,7 @@ const invoices = {
             date: "Fecha",
             payday: "Fecha pago",
             payment_percentage: "% pago",
+            useCfdi: "Tipo"
         },
         currentPageReportTemplate: "Mostrando {first} a {last} de {totalRecords} registros",
         emptyMessage: "Sin datos para mostrar.",   

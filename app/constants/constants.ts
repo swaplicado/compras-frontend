@@ -194,7 +194,17 @@ const constants = {
     PROCESSING_TYPE_INVOICE_COMPRA: 12,
 
     //area compras aguacate
-    AREA_COMPRAS_AGUACATE: 4
+    AREA_COMPRAS_AGUACATE: 4,
+
+    //Uso de cfdi de activo fijo
+    USE_CFDI_ACTIVO_FIJO: ['I01', 'I02', 'I03', 'I04', 'I05', 'I06', 'I07', 'I08'],
+
+    //Valores para el filtro de activo fijo
+    USE_CFDI_ACTIVO_FIJO_FILTER_OPTIONS: [
+        { label: 'Todos', value: 'all' },
+        { label: 'Gastos', value: 'no' },
+        { label: 'Activo fijo', value: 'yes' }
+    ]
 }
 
 export default constants;
