@@ -76,7 +76,7 @@ export const ValidateNcXml = ({
                 setLWarnings(data.warnings);
                 if (data.valid) {
                     
-                    const folio = data.data.series ? data.data.series + '-' + data.data.number : data.data.number;
+                    const folio = data.data.series ? data.data.series + '-' + data.data.folio : data.data.folio;
                     const oCurrency = findCurrency(lCurrencies, data.data.currency)
                     const oIssuer_tax_regime = findFiscalRegime(lFiscalRegimes, data.data.tax_regime_issuer)
                     const oReceiver_tax_regime = findFiscalRegime(lFiscalRegimes, data.data.tax_regime_receiver);
