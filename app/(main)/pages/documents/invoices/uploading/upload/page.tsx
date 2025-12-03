@@ -14,7 +14,7 @@ import DateFormatter from '@/app/components/commons/formatDate';
 import moment from 'moment';
 import { useIsMobile } from '@/app/components/commons/screenMobile';
 import { InvoiceDialog } from '@/app/components/documents/invoice/common/invoiceDialog';
-import { getDps } from "@/app/(main)/utilities/documents/invoice/dps"
+import { getDps, getlAdvance } from "@/app/(main)/utilities/documents/invoice/dps"
 import { Tooltip } from 'primereact/tooltip';
 import { FlowAuthorizationDialog } from '@/app/components/documents/invoice/flowAuthorizationDialog';
 import { Button } from 'primereact/button';
@@ -67,6 +67,7 @@ const Upload = () => {
     const [partnerPaymentDay, setPartnerPaymentDay] = useState<any>('');
     const [loadingPartnerPaymentDay, setLoadingPartnerPaymentDay] = useState<boolean>(false);
     const [withEditPaymentDay, setWithEditPaymentDay] = useState<boolean>(true);
+    const [lAdvance, setLAdvance] = useState<Array<any>>([]);
 
     const headerCard = (
         <div
@@ -705,6 +706,14 @@ const Upload = () => {
             await getlPaymentMethod();
             await getlUseCfdi();
             await getLDaysToPay();
+            await getlAdvance({
+                params: {
+                    route: constants.ROUTE_GET_ADVANCE_APPLICATION
+                },
+                errorMessage: '',
+                setLAdvance,
+                showToast
+            });
             // setLoading(false);
         };
         fetchReferences();
@@ -758,6 +767,7 @@ const Upload = () => {
                         partnerPaymentDay={partnerPaymentDay}
                         loadingPartnerPaymentDay={loadingPartnerPaymentDay}
                         withEditPaymentDay={withEditPaymentDay}
+                        lAdvance={lAdvance}
                     />
                     { oValidUser.isInternalUser && (
                         <FlowAuthorizationDialog 

@@ -296,6 +296,14 @@ const invoices = {
             label: "Sem.:",
             placeholder: "Sem.",
             tooltip: "Número de semana de la factura.",
+        },
+        is_advance: {
+            label: "Es anticipo",
+            tooltip: "Indica si la factura es un anticipo.",
+        },
+        advance_application: {
+            label: "Aplicación anticipo",
+            tooltip: "Indica como vas a aplicar tu anticipo"
         }
     },
     errors: {

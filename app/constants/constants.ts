@@ -55,6 +55,8 @@ const constants = {
     ROUTE_GET_OC_JSON: '/transactions/documents/get-json-doc/', //doc_id
     ROUTE_GET_PAYMENT_DAYS: '/transactions/payment-days/',
     ROUTE_GET_PARTNER_PAYMENT_DAY: '/transactions/partner-payment-day/',
+    ROUTE_GET_ADVANCE_APPLICATION: '/transactions/advance-application-list',
+
     ROUTE_COMPARE_FILES: '/pages/compareFiles/',
 
     // ROUTE_POST_VALIDATE_XML: '/transactions/documents/validate-xml/',

@@ -79,6 +79,7 @@ interface InvoiceDialogProps {
     partnerPaymentDay?: string;
     loadingPartnerPaymentDay?: boolean;
     withEditPaymentDay?: boolean;
+    lAdvance?: any[];
 }
 
 interface renderFieldProps {
@@ -145,7 +146,8 @@ export const InvoiceDialog = ({
     getPayDay,
     partnerPaymentDay,
     loadingPartnerPaymentDay,
-    withEditPaymentDay = false
+    withEditPaymentDay = false,
+    lAdvance = []
 }: InvoiceDialogProps) => {
     const [oCompany, setOCompany] = useState<any>(null);
     const [oProvider, setOProvider] = useState<any>(null);
@@ -225,6 +227,8 @@ export const InvoiceDialog = ({
     const visibleElement = useIntersectionObserver({ current: elementRef });
     const dialogContentRef = useRef<HTMLDivElement>(null);
     const btnToScroll = btnScroll(dialogContentRef, visibleElement);
+    const [isAdvance, setIsAdvance] = useState<boolean>(false);
+    const [oAdvance, setOAdvance] = useState<any>(null);
 
     const renderField = (props: renderFieldProps) => (
         <>
@@ -679,7 +683,9 @@ export const InvoiceDialog = ({
                 issuer_tax_regime: oDps.oIssuer_tax_regime ? oDps.oIssuer_tax_regime.id : '',
                 receiver_tax_regime: oDps.oReceiver_tax_regime ? oDps.oReceiver_tax_regime.id : '',
                 uuid: oDps.uuid || '',
-                functional_area: area_id
+                functional_area: area_id,
+                is_advance: isAdvance,
+                advance_application: oAdvance
             };
 
             formData.append('document', JSON.stringify(document));
@@ -1410,6 +1416,8 @@ export const InvoiceDialog = ({
                                     errorMessage: t('uploadDialog.areas.helperText')
                                 })}
 
+                            
+
                             {lRefToValidateXml && lRefToValidateXml[0]?.id != 0 && lRefToValidateXml?.length > 1 && dialogMode == 'create' && (
                                 <div className={`field col-12 md:col-6`}>
                                     <div className="formgrid grid">
@@ -1438,6 +1446,42 @@ export const InvoiceDialog = ({
                                         </div>
                                     </div>
                                 </div>
+                            )}
+                            <div className="field col-12 md:col-2 align-content-center">
+                                <div className="col pt-2">
+                                    <Checkbox
+                                        inputId="is_advance"
+                                        name="is_advance"
+                                        value="is_advance"
+                                        onChange={(e: any) => {
+                                            setIsAdvance(e.checked);
+                                            !e.checked ? setOAdvance(null) : '';
+                                        }}
+                                        checked={ dialogMode == 'create' ? isAdvance : oDps?.is_advance }
+                                        disabled={dialogMode != 'create'}
+                                        tooltip={t('uploadDialog.is_advance.tooltip')}
+                                    />
+                                    <label htmlFor="is_advance" className="ml-2">
+                                        {t('uploadDialog.is_advance.label')}
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            { (isAdvance || oDps?.is_advance) && (
+                                renderField({
+                                    label: t('uploadDialog.advance_application.label'),
+                                    tooltip: t('uploadDialog.advance_application.tooltip'),
+                                    value: dialogMode == 'create' ? oAdvance : oDps?.advance_application,
+                                    disabled: dialogMode != 'create' || !isAdvance,
+                                    mdCol: 4,
+                                    type: dialogMode == 'create' ? 'dropdown' : 'text',
+                                    onChange: (value) => setOAdvance(value),
+                                    options: lAdvance,
+                                    placeholder: '',
+                                    errorKey: '',
+                                    errors: formErrors,
+                                    errorMessage: ''
+                                })
                             )}
 
                             { lRefToValidateXml && lRefToValidateXml[0]?.id != 0 && dialogMode != 'create' && (
