@@ -744,9 +744,11 @@ export const InvoiceDialog = ({
                 formData.append('files', file);
             });
             formData.append('route', route);
+            formData.append('only_add', 'true');
+            formData.append('user_id', userId.toString());
 
             let files_ids = lFilesNames.map((file: any) => file.id);
-            formData.append('files_ids', JSON.stringify(files_ids));
+            formData.append('file_ids', JSON.stringify(files_ids));
             
             const response = await axios.post(constants.API_AXIOS_PATCH, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
