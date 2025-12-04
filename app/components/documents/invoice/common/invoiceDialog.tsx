@@ -716,6 +716,7 @@ export const InvoiceDialog = ({
         try {
             setLoading?.(true);
             const formData = new FormData();
+            const route = '/transactions/documents/' + oDps.id_dps + '/update-files/';
             const files = extraFileUploadRef.current?.getFiles() || [];
 
             if (files.length == 0) {
@@ -726,15 +727,18 @@ export const InvoiceDialog = ({
             files.forEach((file: string | Blob) => {
                 formData.append('files', file);
             });
-            
-            formData.append('dps_id', oDps.dps_id);
-            formData.append('route', '');
+            formData.append('route', route);
 
-            const response = await axios.post(constants.API_AXIOS_POST, formData, {
+            let files_ids = lFilesNames.map((file: any) => file.id);
+            formData.append('files_ids', JSON.stringify(files_ids));
+            
+            const response = await axios.post(constants.API_AXIOS_PATCH, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
 
             if (response.status === 200 || response.status === 201) {
+                console.log('response: ', response);
+                
                 setSuccessMessage(response.data.data.success);
                 setResultUpload('success');
             } else {
@@ -894,6 +898,10 @@ export const InvoiceDialog = ({
 
         if (dialogMode == 'review' && !oDps.payday && oDps.provider_id) {
             getPayDay?.();
+        }
+
+        if (oDps?.authz_authorization_id == constants.INVOICE_AUTH_ACCEPTED) {
+            getlFilesNames();
         }
     }, [visible]);
 
