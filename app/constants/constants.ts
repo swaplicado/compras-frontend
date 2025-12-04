@@ -206,7 +206,18 @@ const constants = {
         { label: 'Todos', value: 'all' },
         { label: 'Gastos', value: 'no' },
         { label: 'Activo fijo', value: 'yes' }
-    ]
+    ],
+
+    //codigos de aceptación de facturas
+    INVOICE_ACCEPTANCE_PENDING: 1,
+    INVOICE_ACCEPTANCE_PROCESSING: 2,
+    INVOICE_ACCEPTANCE_REJECTED: 8,
+    INVOICE_ACCEPTANCE_ACCEPTED: 9,
+    //codigos de autorización de facturas
+    INVOICE_AUTH_PENDING: 1,
+    INVOICE_AUTH_PROCESSING: 2,
+    INVOICE_AUTH_REJECTED: 8,
+    INVOICE_AUTH_ACCEPTED: 9
 }
 
 export default constants;

@@ -154,6 +154,7 @@ export const InvoiceDialog = ({
     const [oReference, setOReference] = useState<any[]>([]);
     const [oArea, setOArea] = useState<any>(null);
     const fileUploadRef = useRef<FileUpload>(null);
+    const extraFileUploadRef = useRef<FileUpload>(null);
     const fileEditAcceptRef = useRef<FileUpload>(null);
     const xmlUploadRef = useRef<FileUpload>(null);
     const [xmlValidateErrors, setXmlValidateErrors] = useState({
@@ -711,6 +712,43 @@ export const InvoiceDialog = ({
         }
     };
 
+    const handleUploadExtraFiles = async () => {
+        try {
+            setLoading?.(true);
+            const formData = new FormData();
+            const files = extraFileUploadRef.current?.getFiles() || [];
+
+            if (files.length == 0) {
+                showToast?.('info', 'No hay archivos para cargar', 'info');
+                return;
+            }
+
+            files.forEach((file: string | Blob) => {
+                formData.append('files', file);
+            });
+            
+            formData.append('dps_id', oDps.dps_id);
+            formData.append('route', '');
+
+            const response = await axios.post(constants.API_AXIOS_POST, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+
+            if (response.status === 200 || response.status === 201) {
+                setSuccessMessage(response.data.data.success);
+                setResultUpload('success');
+            } else {
+                throw new Error('Error al cargar los archivos');
+            }
+        } catch (error: any) {
+            console.error('Error al subir archivos:', error);
+            setErrorMessage(error.response?.data?.error);
+            setResultUpload('error');
+        } finally {
+            setLoading?.(false);
+        }
+    }
+
     const getlUrlFilesDps = async () => {
         try {
             setLoadingUrlsFiles(true);
@@ -937,6 +975,9 @@ export const InvoiceDialog = ({
                     {btnToScroll}
                     <div className="flex flex-column md:flex-row justify-content-between gap-2">
                         <Button label={tCommon('btnClose')} icon="bx bx-x" onClick={onHide} severity="secondary" disabled={loading} />
+                        { oDps?.authz_authorization_id == constants.INVOICE_AUTH_ACCEPTED && (
+                            <Button label={'Cargar archivos adicionales'} icon="bx bx-upload" onClick={handleUploadExtraFiles} disabled={loading} />
+                        )}
                     </div>
                 </>
             )
@@ -1783,6 +1824,48 @@ export const InvoiceDialog = ({
                                     </div>
                                 )}
                             </>
+                        )}
+
+                        { oDps?.authz_authorization_id == constants.INVOICE_AUTH_ACCEPTED && (
+                            <div className="field col-12 md:col-12">
+                                <div className="formgrid grid">
+                                    <div className="col">
+                                        <label>Archivos adicionales</label>
+                                        &nbsp;
+                                        <Tooltip target=".custom-target-icon" />
+                                        <i
+                                            className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
+                                            data-pr-tooltip={t('uploadDialog.files.tooltip')}
+                                            data-pr-position="right"
+                                            data-pr-my="left center-2"
+                                            style={{ fontSize: '1rem', cursor: 'pointer' }}
+                                        ></i>
+                                        <CustomFileUpload
+                                            fileUploadRef={extraFileUploadRef}
+                                            totalSize={totalSize}
+                                            setTotalSize={setTotalSize}
+                                            errors={{}}
+                                            setErrors={setFilesErrros}
+                                            message={message}
+                                            multiple={true}
+                                            allowedExtensions={constants.allowedExtensions}
+                                            allowedExtensionsNames={constants.allowedExtensionsNames}
+                                            maxFilesSize={constants.maxFilesSize}
+                                            maxFileSizeForHuman={constants.maxFileSizeForHuman}
+                                            maxUnitFileSize={constants.maxUnitFile}
+                                            errorMessages={{
+                                                invalidFileType: t('uploadDialog.files.invalidFileType'),
+                                                invalidAllFilesSize: t('uploadDialog.files.invalidAllFilesSize'),
+                                                invalidFileSize: t('uploadDialog.files.invalidFileSize'),
+                                                invalidFileSizeMessageSummary: t('uploadDialog.files.invalidFileSizeMessageSummary'),
+                                                helperTextFiles: t('uploadDialog.files.helperTextFiles'),
+                                                helperTextPdf: t('uploadDialog.files.helperTextPdf'),
+                                                helperTextXml: t('uploadDialog.files.helperTextXml')
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
                         )}
 
                         {withHistoryAuth &&
