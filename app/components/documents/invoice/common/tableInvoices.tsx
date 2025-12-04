@@ -62,6 +62,7 @@ interface TableInvoicesProps {
     SendToUpoload?: () => void;
     withBtnLast3Months?: boolean;
     withHistoryAuth?: boolean;
+    disabledUpload?: boolean;
 }
 
 export const TableInvoices = ({
@@ -105,7 +106,8 @@ export const TableInvoices = ({
     withBtnSendToUpoload,
     SendToUpoload,
     withBtnLast3Months = true,
-    withHistoryAuth = false
+    withHistoryAuth = false,
+    disabledUpload = false
 }: TableInvoicesProps) => {
     // const [lDps, setLDps] = useState<any[]>([]);
     const [filters, setFilters] = useState<DataTableFilterMeta>({});
@@ -665,7 +667,7 @@ export const TableInvoices = ({
             <ConfirmDialog />
             <MyToolbar 
                 isMobile={isMobile}
-                disabledUpload={false}
+                disabledUpload={disabledUpload}
                 setDialogMode={setDialogMode}
                 setDialogVisible={setDialogVisible}
                 globalFilterValue1={globalFilterValue}

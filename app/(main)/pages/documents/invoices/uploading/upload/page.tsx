@@ -19,6 +19,7 @@ import { Tooltip } from 'primereact/tooltip';
 import { FlowAuthorizationDialog } from '@/app/components/documents/invoice/flowAuthorizationDialog';
 import { Button } from 'primereact/button';
 import { DialogManual } from '@/app/components/videoManual/dialogManual';
+import { getCrpPending } from '@/app/(main)/utilities/documents/invoice/dps';
 
 const Upload = () => {
     const [dialogVisible, setDialogVisible] = useState(false);
@@ -68,6 +69,7 @@ const Upload = () => {
     const [loadingPartnerPaymentDay, setLoadingPartnerPaymentDay] = useState<boolean>(false);
     const [withEditPaymentDay, setWithEditPaymentDay] = useState<boolean>(true);
     const [lAdvance, setLAdvance] = useState<Array<any>>([]);
+    const [crpPending, setCrpPending] = useState<any>(false);
 
     const headerCard = (
         <div
@@ -96,6 +98,12 @@ const Upload = () => {
             {limitDate && !oValidUser.isInternalUser && (
                 <h6 className="ml-3 text-700 font-medium" style={{ color: moment(actualDate).isAfter(limitDate) ? 'red' : 'black' }}>
                     {moment(actualDate).isBefore(limitDate) ? t('dpsDateLimitText') : t('dpsDateAfterLimitText')} {DateFormatter(limitDate)}
+                    { !crpPending?.authorized && (
+                        <p style={{color: "red"}}>
+                            {crpPending?.reason}
+                        </p>
+                        
+                    )}
                 </h6>
             )}
         </div>
@@ -103,11 +111,26 @@ const Upload = () => {
 
     const showBtnCreate = () => {
         let showBtn = true;
-        if (limitDate && !oValidUser.isInternalUser) {
-            showBtn = moment(actualDate).isBefore(limitDate);
-        }
+        // if (limitDate && !oValidUser.isInternalUser) {
+        //     showBtn = moment(actualDate).isBefore(limitDate);
+        // }
 
         return showBtn;
+    }
+
+    const disabledBtnCreate = () => {
+        let disabledBtn = false;
+        if (limitDate && !oValidUser.isInternalUser) {
+            disabledBtn = moment(actualDate).isAfter(limitDate);
+        }
+
+        if (!disabledBtn && !oValidUser.isInternalUser) {
+            if (!crpPending?.authorized) {
+                disabledBtn = true;
+            }
+        }
+
+        return disabledBtn;
     }
 
     const showToast = (type: 'success' | 'info' | 'warn' | 'error' = 'error', message: string, summaryText = 'Error:') => {
@@ -698,6 +721,12 @@ const Upload = () => {
                 await getDpsDates();
                 const isProviderMexico = partnerCountry == constants.COUNTRIES.MEXICO_ID;
                 setOValidUser({ isInternalUser: false, isProvider: true, isProviderMexico: isProviderMexico, oProvider: {id: partnerId, name: '', country: partnerCountry} });
+                await getCrpPending({
+                    params: { route: constants.ROUTE_GET_CRP_PENDING_BY_PARTNER, provider_id: partnerId },
+                    errorMessage: '',
+                    setCrpPending,
+                    showToast   
+                });
             }
 
             await getlCompanies();
@@ -805,6 +834,7 @@ const Upload = () => {
                         setFlowAuthDialogVisible={setFlowAuthDialogVisible}
                         withBtnCreate={showBtnCreate()}
                         withMounthFilter={withMounthFilter}
+                        disabledUpload={disabledBtnCreate()}
                     />
                 </Card>
             </div>

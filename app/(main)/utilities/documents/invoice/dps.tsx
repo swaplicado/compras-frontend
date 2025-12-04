@@ -139,12 +139,39 @@ export const getlAdvance = async ( props: getlAdvanceProps) => {
                 });
             }
             props.setLAdvance(advance);
-            return true;
         } else {
             throw new Error(`${props.errorMessage}: ${response.statusText}`);
         }
 
     } catch (error: any) {
-        
+        props.showToast?.('error', error.response?.data?.error || props.errorMessage, props.errorMessage);
+    }
+}
+
+interface getCrpPending {
+    params: any;
+    errorMessage: string;
+    setCrpPending: React.Dispatch<React.SetStateAction<any>>;
+    showToast?: (type: 'success' | 'info' | 'warn' | 'error', message: string, summaryText?: string) => void;
+}
+
+export const getCrpPending = async (props: getCrpPending) => {
+    try {
+        if (!props) {
+            return;
+        }
+        const response = await axios.get(constants.API_AXIOS_GET, {
+            params: props.params
+        });
+        if (response.status === 200) {
+            const data = response.data.data || [];
+            props.setCrpPending(data);
+            return data;
+        } else {
+            throw new Error(`${props.errorMessage}: ${response.statusText}`);
+        }
+    } catch (error: any) {
+        props.showToast?.('error', error.response?.data?.error || props.errorMessage, props.errorMessage);
+        return null;
     }
 }

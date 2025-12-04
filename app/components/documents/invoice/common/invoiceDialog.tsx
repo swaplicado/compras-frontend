@@ -30,6 +30,7 @@ import { Checkbox } from 'primereact/checkbox';
 import { MultiSelect } from 'primereact/multiselect';
 import { btnScroll } from '@/app/(main)/utilities/commons/useScrollDetection';
 import { useIntersectionObserver } from 'primereact/hooks';
+import { getCrpPending } from '@/app/(main)/utilities/documents/invoice/dps';
 
 interface InvoiceDialogProps {
     visible: boolean;
@@ -222,6 +223,7 @@ export const InvoiceDialog = ({
     const [filterReferences, setFilterReferences] = useState<boolean>(false);
     const [lRefToValidateXml, setLRefToValidateXml] = useState<any[]>([]);
     const [lRefErrors, setLRefErrors] = useState<any[]>([]);
+    const [crpPending, setCrpPending] = useState<any>(false);
 
     //const para el boton de scroll al final
     const [elementRef, setElementRef] = useState<HTMLDivElement | null>(null);
@@ -467,6 +469,20 @@ export const InvoiceDialog = ({
         setOReference([]);
         setOArea(null);
         setOProvider(oProvider);
+        
+        let oCrpPending = null;
+        if (oProvider) {
+            oCrpPending = await getCrpPending({
+                params: { route: constants.ROUTE_GET_CRP_PENDING_BY_PARTNER, provider_id: oProvider.id },
+                errorMessage: '',
+                setCrpPending,
+                showToast
+            });
+        }
+        if (!oCrpPending?.authorized) {
+            setErrorMessage('El proveedor ' + oProvider?.name + ' ' + oCrpPending?.reason );
+            setResultUpload('error');
+        }
         setFormErrors((prev: any) => ({ ...prev, provider: false }));
         if (!oProvider || !oProvider.id) {
             setLReferences([]);
@@ -1407,7 +1423,7 @@ export const InvoiceDialog = ({
                                     label: t('uploadDialog.reference.label'),
                                     tooltip: t('uploadDialog.reference.tooltip'),
                                     value: dialogMode == 'create' ? oReference : oDps?.reference ? oDps.reference : 'Sin referencia',
-                                    disabled: !lReferences || lReferences.length == 0 || dialogMode === 'view' || dialogMode === 'review',
+                                    disabled: !lReferences || lReferences.length == 0 || dialogMode === 'view' || dialogMode === 'review' || crpPending,
                                     mdCol: dialogMode == 'create' ? 4 : 6,
                                     type: dialogMode == 'create' ? 'multiselect' : 'text',
                                     onChange: (value) => handleSelectReference(value),
