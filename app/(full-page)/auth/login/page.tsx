@@ -211,7 +211,7 @@ const LoginPage = () => {
                             <Button label={t('enterButton')} className='w-full p-3 text-xl' onClick={handleLogin}></Button>
                             <div className='flex align-items-center justify-content-center mb-5 mt-5 gap-5'>
                                 <a href='/auth/registerProvider' onClick={() => setLoading(true)} className='font-medium no-underline ml-2 text-right cursor-pointer' style={{ color: 'var(--primary-color)' }}>
-                                    ¿Nuevo con nosotros? Registra tu cuenta
+                                    ¿No eres aún nuestro proveedor? Regístrate aquí
                                 </a>
                             </div>
                         </div>
