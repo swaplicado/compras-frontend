@@ -257,6 +257,27 @@
                     ]
                 },
                 {
+                    "label": "Consulta autorizaciones proveedores",
+                    "icon": "pi pi-search",
+                    "items": [
+                        {
+                            "label": "En proceso de autorización",
+                            "icon": "pi pi-clock",
+                            "to": "/pages/partners/authorization/consultationAuth/inAuthorization"
+                        },
+                        {
+                            "label": "Autorizados",
+                            "icon": "pi pi-check-square",
+                            "to": "/pages/partners/authorization/consultationAuth/authorized"
+                        },
+                        {
+                            "label": "Rechazados",
+                            "icon": "pi pi-times-circle",
+                            "to": "/pages/partners/authorization/consultationAuth/rejected"
+                        }
+                    ]
+                },
+                {
                     "label": "Autorización proveedores",
                     "icon": "pi pi-pencil",
                     "items": [
@@ -264,16 +285,6 @@
                             "label": "Pendientes de autorizar",
                             "icon": "pi pi-exclamation-circle",
                             "to": "/pages/partners/authorization/inAuthorization"
-                        },
-                        {
-                            "label": "Autorizados",
-                            "icon": "pi pi-check-square",
-                            "to": "/pages/partners/authorization/authorized"
-                        },
-                        {
-                            "label": "Rechazados",
-                            "icon": "pi pi-times-circle",
-                            "to": "/pages/partners/authorization/rejected"
                         }
                     ]
                 },
