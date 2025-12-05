@@ -1,4 +1,11 @@
 const partners = {
+    titleNewProvider: "Solicitudes de alta nuevas",
+    titleAccepted: "Solicitudes de alta revisadas",
+    titleRejected: "Solicitudes de alta rechazadas en la revisión",
+    titleInProcess: "Solicitudes de alta en autorización",
+    titleAuthorized: "Solicitudes de alta autorizadas",
+    titleRejectedAuth: "Solicitudes de alta rechazadas en la autorización",
+    titleMyAuth: "Autorizaciones de solicitudes de alta pendientes para mí",
     reviewInstructions: {
         header: "Para revisar un proveedor sigue estos pasos:",
         step1: "Identifica el renglón del proveedor que deseas revisar.",

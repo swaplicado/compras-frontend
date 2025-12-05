@@ -267,6 +267,33 @@ const ReceptionPartners = () => {
     }
 
 //*******OTROS*******
+    const headerCard = (
+            <div
+                className="
+                    flex align-items-center justify-content-center border-bottom-1
+                    surface-border surface-card sticky top-0 z-1 shadow-2 transition-all transition-duration-300
+                    justify-content-between
+                    "
+                style={{
+                    padding: '1rem',
+                    height: '4rem'
+                }}
+            >
+                <h3 className="m-0 text-900 font-medium">
+                    {t('titleNewProvider')}
+                    &nbsp;&nbsp;
+                    <Tooltip target=".custom-target-icon" />
+                    <i
+                        className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
+                        data-pr-tooltip={t('titleNewProvider')}
+                        data-pr-position="right"
+                        data-pr-my="left center-2"
+                        style={{ fontSize: '1rem', cursor: 'pointer' }}
+                    ></i>
+                </h3>
+            </div>
+        );
+
     const dialogFooterContent = () => {
         return (
             showing == 'body' && (
@@ -325,7 +352,7 @@ const ReceptionPartners = () => {
             <div className="col-12">
                 {loading && loaderScreen()}
                 <Toast ref={toast} />
-                <Card header={''} pt={{ content: { className: 'p-0' } }}>
+                <Card header={headerCard} pt={{ content: { className: 'p-0' } }}>
                     <RenderInfoButton
                         instructions={getObjectIntruction()}
                         showInfo={showInfo}

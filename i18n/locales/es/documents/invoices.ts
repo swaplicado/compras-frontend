@@ -3,9 +3,10 @@ import { Tooltip } from "chart.js";
 const invoices = {
     titleAllInvoices: "Todas las facturas",
     titleAllInvoicesTooltip: "Pantalla para ver todas las facturas",
-    titleUpload: "Carga de facturas",
-    titleAccepted: "Facturas aceptadas",
-    titleAcceptanceRejected: "Facturas rechazadas en aceptación",
+    titleUpload: "Cargar y revisar facturas",
+    titleUploadProvider: "Cargar facturas",
+    titleAccepted: "Facturas revisadas",
+    titleAcceptanceRejected: "Facturas rechazadas en la revisión",
     titleAuthorizationRejected: "Facturas rechazadas en autorización",
     titleUploadTooltip: "Pantalla para cargar las facturas",
     titleAcceptedTooltip: "Pantalla para ver las facturas aceptadas",
@@ -14,7 +15,7 @@ const invoices = {
 
     titleAuthorized: 'Facturas autorizadas',
     titleInAuthorization: 'Facturas en autorización',
-    titleAuthorizedRejected: 'Facturas rechazadas',
+    titleAuthorizedRejected: 'Facturas rechazadas en la autorización',
     titleAuthorizedTooltip: 'Pantalla para revisar las facturas autorizadas',
     titleInAuthorizationTooltip: 'Pantalla para revisar las facturas en proceso de autorización',
     titleAuthorizedRejectedTooltip: 'Pantalla para revisar las facturas rechazadas',

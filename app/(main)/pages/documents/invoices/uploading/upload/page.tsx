@@ -84,7 +84,7 @@ const Upload = () => {
             }}
         >
             <h3 className="m-0 text-900 font-medium">
-                {t('titleUpload')}
+                { oValidUser?.isInternalUser ? t('titleUpload') : t('titleUploadProvider') }
                 &nbsp;&nbsp;
                 <Tooltip target=".custom-target-icon" />
                 <i

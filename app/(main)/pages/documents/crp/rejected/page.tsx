@@ -230,7 +230,7 @@ const ConsultPaymentProgramded = () => {
             }}
         >
             <h3 className="m-0 text-900 font-medium">
-                {t('titleUpload')}
+                {t('titleRejected')}
                 &nbsp;&nbsp;
                 <Tooltip target=".custom-target-icon" />
                 <i
