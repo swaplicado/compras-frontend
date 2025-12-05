@@ -32,7 +32,7 @@ const partners = {
     register: {
         titleProviderData: {
             label: "Datos del proveedor",
-            tooltip: "De conformidad con la Constancia de Situación Fiscal (CSF) o documento análogo"
+            tooltip: "De conformidad con la Constancia de Situación Fiscal (CSF) o documento equivalente"
         },
         titleProviderContact: {
             label: "Datos de contacto del proveedor",
@@ -40,7 +40,7 @@ const partners = {
         },
         titleProviderLocation: {
             label: "Domicilio del proveedor",
-            tooltip: "De conformidad con la Constancia de Situación Fiscal (CSF) o documento análogo"
+            tooltip: "De conformidad con la Constancia de Situación Fiscal (CSF) o documento equivalente"
         },
         provider_name: {
             label: "Razón social o nombre del proveedor",
