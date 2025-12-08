@@ -223,7 +223,7 @@ export const InvoiceDialog = ({
     const [filterReferences, setFilterReferences] = useState<boolean>(false);
     const [lRefToValidateXml, setLRefToValidateXml] = useState<any[]>([]);
     const [lRefErrors, setLRefErrors] = useState<any[]>([]);
-    const [crpPending, setCrpPending] = useState<any>(false);
+    const [crpPending, setCrpPending] = useState<any>({});
 
     //const para el boton de scroll al final
     const [elementRef, setElementRef] = useState<HTMLDivElement | null>(null);
@@ -479,9 +479,11 @@ export const InvoiceDialog = ({
                 showToast
             });
         }
-        if (!oCrpPending?.authorized) {
-            setErrorMessage('El proveedor ' + oProvider?.name + ' ' + oCrpPending?.reason );
-            setResultUpload('error');
+        if (oCrpPending) {
+            if (!oCrpPending?.authorized) {
+                setErrorMessage('El proveedor ' + oProvider?.name + ' ' + oCrpPending?.reason );
+                setResultUpload('error');
+            }
         }
         setFormErrors((prev: any) => ({ ...prev, provider: false }));
         if (!oProvider || !oProvider.id) {
@@ -1425,7 +1427,7 @@ export const InvoiceDialog = ({
                                     label: t('uploadDialog.reference.label'),
                                     tooltip: t('uploadDialog.reference.tooltip'),
                                     value: dialogMode == 'create' ? oReference : oDps?.reference ? oDps.reference : 'Sin referencia',
-                                    disabled: !lReferences || lReferences.length == 0 || dialogMode === 'view' || dialogMode === 'review' || crpPending,
+                                    disabled: !lReferences || lReferences.length == 0 || dialogMode === 'view' || dialogMode === 'review' || !crpPending?.authorized,
                                     mdCol: dialogMode == 'create' ? 4 : 6,
                                     type: dialogMode == 'create' ? 'multiselect' : 'text',
                                     onChange: (value) => handleSelectReference(value),
