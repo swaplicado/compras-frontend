@@ -471,20 +471,20 @@ export const InvoiceDialog = ({
         setOProvider(oProvider);
         
         let oCrpPending = null;
-        if (oProvider) {
-            oCrpPending = await getCrpPending({
-                params: { route: constants.ROUTE_GET_CRP_PENDING_BY_PARTNER, provider_id: oProvider.id },
-                errorMessage: '',
-                setCrpPending,
-                showToast
-            });
-        }
-        if (oCrpPending) {
-            if (!oCrpPending?.authorized) {
-                setErrorMessage('El proveedor ' + oProvider?.name + ' ' + oCrpPending?.reason );
-                setResultUpload('error');
-            }
-        }
+        // if (oProvider) {
+        //     oCrpPending = await getCrpPending({
+        //         params: { route: constants.ROUTE_GET_CRP_PENDING_BY_PARTNER, provider_id: oProvider.id },
+        //         errorMessage: '',
+        //         setCrpPending,
+        //         showToast
+        //     });
+        // }
+        // if (oCrpPending) {
+        //     if (!oCrpPending?.authorized) {
+        //         setErrorMessage('El proveedor ' + oProvider?.name + ' ' + oCrpPending?.reason );
+        //         setResultUpload('error');
+        //     }
+        // }
         setFormErrors((prev: any) => ({ ...prev, provider: false }));
         if (!oProvider || !oProvider.id) {
             setLReferences([]);
@@ -1427,7 +1427,7 @@ export const InvoiceDialog = ({
                                     label: t('uploadDialog.reference.label'),
                                     tooltip: t('uploadDialog.reference.tooltip'),
                                     value: dialogMode == 'create' ? oReference : oDps?.reference ? oDps.reference : 'Sin referencia',
-                                    disabled: !lReferences || lReferences.length == 0 || dialogMode === 'view' || dialogMode === 'review' || !crpPending?.authorized,
+                                    disabled: !lReferences || lReferences.length == 0 || dialogMode === 'view' || dialogMode === 'review',
                                     mdCol: dialogMode == 'create' ? 4 : 6,
                                     type: dialogMode == 'create' ? 'multiselect' : 'text',
                                     onChange: (value) => handleSelectReference(value),

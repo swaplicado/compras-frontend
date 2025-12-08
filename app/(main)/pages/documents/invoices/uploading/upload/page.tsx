@@ -96,14 +96,14 @@ const Upload = () => {
                 ></i>
             </h3>
             {limitDate && !oValidUser.isInternalUser && (
-                <h6 className="ml-3 text-700 font-medium" style={{ color: moment(actualDate).isAfter(limitDate) ? 'red' : 'black' }}>
+                <h6 className="ml-3 text-700 font-medium text-right" style={{ color: moment(actualDate).isAfter(limitDate) ? 'red' : 'black' }}>
                     {moment(actualDate).isBefore(limitDate) ? t('dpsDateLimitText') : t('dpsDateAfterLimitText')} {DateFormatter(limitDate)}
-                    { !crpPending?.authorized && (
+                    { !crpPending?.authorized ? (
                         <p style={{color: "red"}}>
                             {crpPending?.reason}
                         </p>
                         
-                    )}
+                    ) : ''}
                 </h6>
             )}
         </div>
@@ -124,11 +124,11 @@ const Upload = () => {
             disabledBtn = moment(actualDate).isAfter(limitDate);
         }
 
-        if (!disabledBtn && !oValidUser.isInternalUser) {
-            if (!crpPending?.authorized) {
-                disabledBtn = true;
-            }
-        }
+        // if (!disabledBtn && !oValidUser.isInternalUser) {
+        //     if (!crpPending?.authorized) {
+        //         disabledBtn = true;
+        //     }
+        // }
 
         return disabledBtn;
     }
