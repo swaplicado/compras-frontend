@@ -1,10 +1,10 @@
 const oc = {
-    titleAuthOc: "Autorización de ordenes de compra",
-    titleAuthorizedOc: "Ordenes de compra autorizadas",
+    titleAuthOc: "Autorizaciones de OC pendientes para mí",
+    titleAuthorizedOc: "OC autorizadas",
     titleAuthorizedOcTooltip: "Ordenes de compra autorizadas",
-    titleInProcessOc: "Ordenes de compra en proceso de autorización",
+    titleInProcessOc: "OC en autorización",
     titleInProcessOcTooltip: "Ordenes de compra en proceso de autorización",
-    titleRejectedOc: "Ordenes de compra rechazadas",
+    titleRejectedOc: "OC rechazadas en la autorización",
     titleRejectedOcTooltip: "Ordenes de compra rechazadas",
     datatable: {
         columns: {

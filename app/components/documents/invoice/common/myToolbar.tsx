@@ -7,8 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { Calendar } from 'primereact/calendar';
 import { addLocale } from 'primereact/api';
 import { Checkbox } from 'primereact/checkbox';
-import moment from 'moment';
-import { Nullable } from 'primereact/ts-helpers';
+import constants from '@/app/constants/constants';
 
 interface myToolbarPropps {
     isMobile: boolean;
@@ -35,6 +34,9 @@ interface myToolbarPropps {
     handleFilterProvider?: () => void;
     filterProvider?: boolean;
     withBtnLast3Months?: boolean;
+    withActivoFijoFilter?: boolean;
+    handleFilterActivoFijo?: (value: any) => void;
+    activoFijoFilterValue?: any;
 }
 
 export const MyToolbar = ({
@@ -61,56 +63,59 @@ export const MyToolbar = ({
     filterProvider = false,
     setDateFilterMode,
     dateFilterMode = 'single',
-    withBtnLast3Months = false
+    withBtnLast3Months = false,
+    withActivoFijoFilter = false,
+    handleFilterActivoFijo,
+    activoFijoFilterValue
 }: myToolbarPropps) => {
     const { t } = useTranslation('invoices');
     const { t: tCommon } = useTranslation('common');
     const [key, setKey] = useState(0);
 
+    addLocale('es', tCommon('calendar', { returnObjects: true }) as any);
+
+    const handleCalendarChange = (e: any) => {
+        if (dateFilterMode === 'range') {
+            setTimeout(() => {
+                setDateFilterMode?.('single');
+                setDpsDateFilter?.(e.value && e.value[0] ? e.value[0] : null);
+                setKey(prev => prev + 1); // Forzar re-render
+            }, 0);
+        } else {
+            setDpsDateFilter?.(e.value);
+        }
+    };
+
+    const lastThreeMonths = () => {
+        setDateFilterMode?.('range');
+        const today = new Date();
+        const months = [];
+        
+        for (let i = 0; i < 3; i++) {
+            const date = new Date(today.getFullYear(), today.getMonth() - i, 1);
+            months.push(date);
+        }
+        months.sort((a, b) => a.getTime() - b.getTime());
+        setDpsDateFilter?.([months[0], months[2]]);
+        setKey(prev => prev + 1); // Forzar re-render
+    }
+
+    const buttonBarTemplate = () => {
+        return (
+            withBtnLast3Months ?
+            <div className="flex align-items-center gap-2">
+                <Button
+                    label={tCommon('last3Months')}
+                    severity="secondary"
+                    text
+                    size="small"
+                    onClick={() => { lastThreeMonths() }}
+                />
+            </div>
+            : null
+        );
+    }
     const renderBigScreen = () => {
-        addLocale('es', tCommon('calendar', { returnObjects: true }) as any);
-
-        const handleCalendarChange = (e: any) => {
-            if (dateFilterMode === 'range') {
-                setTimeout(() => {
-                    setDateFilterMode?.('single');
-                    setDpsDateFilter?.(e.value && e.value[0] ? e.value[0] : null);
-                    setKey(prev => prev + 1); // Forzar re-render
-                }, 0);
-            } else {
-                setDpsDateFilter?.(e.value);
-            }
-        };
-
-        const lastThreeMonths = () => {
-            setDateFilterMode?.('range');
-            const today = new Date();
-            const months = [];
-            
-            for (let i = 0; i < 3; i++) {
-                const date = new Date(today.getFullYear(), today.getMonth() - i, 1);
-                months.push(date);
-            }
-            months.sort((a, b) => a.getTime() - b.getTime());
-            setDpsDateFilter?.([months[0], months[2]]);
-            setKey(prev => prev + 1); // Forzar re-render
-        }
-
-        const buttonBarTemplate = () => {
-            return (
-                withBtnLast3Months ?
-                <div className="flex align-items-center gap-2">
-                    <Button
-                        label={tCommon('last3Months')}
-                        severity="secondary"
-                        text
-                        size="small"
-                        onClick={() => { lastThreeMonths() }}
-                    />
-                </div>
-                : null
-            );
-        }
 
         return (
             <div className="border-bottom-1 surface-border surface-card shadow-1 transition-all transition-duration-300 w-full shadow-4 p-3" style={{ borderRadius: '3rem' }}>
@@ -118,6 +123,7 @@ export const MyToolbar = ({
                     <div className="flex align-items-center gap-2 flex-wrap">
                         {withBtnCreate && (
                             <Button
+                                size='small'
                                 icon="pi pi-plus"
                                 label={!isMobile ? ( textBtnCreate ? textBtnCreate : t('btnOpenDialogUpload')) : ''}
                                 rounded
@@ -131,6 +137,7 @@ export const MyToolbar = ({
 
                         {withBtnSendAuth && (
                             <Button
+                                size='small'
                                 icon="pi pi-send"
                                 label={!isMobile ? 'Enviar autorizar' : ''}
                                 rounded
@@ -142,6 +149,7 @@ export const MyToolbar = ({
 
                         {withBtnSendToUpoload && (
                             <Button
+                                size='small'
                                 icon="pi pi-reply"
                                 label={!isMobile ? 'Enviar a cargar' : ''}
                                 rounded
@@ -192,6 +200,18 @@ export const MyToolbar = ({
                         </div>
                     )}
 
+                    {withActivoFijoFilter && (
+                        <div className="flex align-items-center gap-2 flex-nowrap">
+                            <label htmlFor="">Tipo:</label>
+                            <Dropdown
+                                value={activoFijoFilterValue}
+                                onChange={(e) => handleFilterActivoFijo?.(e.value)}
+                                options={constants.USE_CFDI_ACTIVO_FIJO_FILTER_OPTIONS}
+                                className="w-full"
+                            />
+                        </div>
+                    )}
+
                     <ReloadButton />
                 </div>
             </div>
@@ -230,6 +250,31 @@ export const MyToolbar = ({
                             <i className="pi pi-search" />
                             <InputText className="w-full" value={globalFilterValue1} onChange={onGlobalFilterChange1} placeholder={tCommon('placeholderSearch')} />
                         </span>
+                    </div>
+                )}
+                {withActivoFijoFilter && (
+                    <div className="flex align-items-center gap-2 flex-nowrap">
+                        <label htmlFor="">Activo fijo</label>
+                        <Dropdown
+                            value={activoFijoFilterValue}
+                            onChange={(e) => handleFilterActivoFijo?.(e.value)}
+                            options={constants.USE_CFDI_ACTIVO_FIJO_FILTER_OPTIONS}
+                        />
+                    </div>
+                )}
+
+                {withMounthFilter && (
+                    <div className="flex align-items-center gap-2 flex-wrap">
+                        <Calendar 
+                            key={key}
+                            value={dpsDateFilter || null} 
+                            onChange={ (e: any) => handleCalendarChange(e)}
+                            selectionMode={dateFilterMode}
+                            view="month" 
+                            dateFormat={ dateFilterMode == 'single' ? "MM/yy" : "M/yy"} 
+                            locale="es"
+                            footerTemplate={buttonBarTemplate}
+                        />
                     </div>
                 )}
             </>

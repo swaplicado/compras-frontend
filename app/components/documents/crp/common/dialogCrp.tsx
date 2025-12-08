@@ -141,6 +141,20 @@ export const DialogCrp = ({
     )
 
     //****Funciones****/
+    const handleSelectPayment = (value: any) => {
+        const noDocument = value?.some((item: any) => item.id == 0);
+        if (noDocument) {
+            value = [{
+                id: 0,
+                name: 'Sin referencia',
+                functional_area__id: '',
+                functional_area__name: ''
+            }];
+        }
+
+        setOCrp?.((prev: any) => ({ ...prev, oPay: value }));
+    }
+
     //Para formatear el input del componente Calendar
     const inputCalendarRef = useRef<HTMLInputElement>(null);
     useEffect(() => {
@@ -259,7 +273,8 @@ export const DialogCrp = ({
                                                 mdCol={6}
                                                 type={(dialogMode == 'create' || dialogMode == 'edit') ? 'multiselect' : 'text'}
                                                 onChange={(value) => {
-                                                    setOCrp?.((prev: any) => ({ ...prev, oPay: value }));
+                                                    // setOCrp?.((prev: any) => ({ ...prev, oPay: value }));
+                                                    handleSelectPayment(value);
                                                 }}
                                                 options={lPaymentsExec}
                                                 placeholder={'Selecciona pago'}

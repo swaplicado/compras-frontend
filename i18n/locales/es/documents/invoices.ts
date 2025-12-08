@@ -3,9 +3,10 @@ import { Tooltip } from "chart.js";
 const invoices = {
     titleAllInvoices: "Todas las facturas",
     titleAllInvoicesTooltip: "Pantalla para ver todas las facturas",
-    titleUpload: "Carga de facturas",
-    titleAccepted: "Facturas aceptadas",
-    titleAcceptanceRejected: "Facturas rechazadas en aceptación",
+    titleUpload: "Cargar y revisar facturas",
+    titleUploadProvider: "Cargar facturas",
+    titleAccepted: "Facturas revisadas",
+    titleAcceptanceRejected: "Facturas rechazadas en la revisión",
     titleAuthorizationRejected: "Facturas rechazadas en autorización",
     titleUploadTooltip: "Pantalla para cargar las facturas",
     titleAcceptedTooltip: "Pantalla para ver las facturas aceptadas",
@@ -14,7 +15,7 @@ const invoices = {
 
     titleAuthorized: 'Facturas autorizadas',
     titleInAuthorization: 'Facturas en autorización',
-    titleAuthorizedRejected: 'Facturas rechazadas',
+    titleAuthorizedRejected: 'Facturas rechazadas en la autorización',
     titleAuthorizedTooltip: 'Pantalla para revisar las facturas autorizadas',
     titleInAuthorizationTooltip: 'Pantalla para revisar las facturas en proceso de autorización',
     titleAuthorizedRejectedTooltip: 'Pantalla para revisar las facturas rechazadas',
@@ -296,6 +297,14 @@ const invoices = {
             label: "Sem.:",
             placeholder: "Sem.",
             tooltip: "Número de semana de la factura.",
+        },
+        is_advance: {
+            label: "Es anticipo",
+            tooltip: "Indica si la factura es un anticipo.",
+        },
+        advance_application: {
+            label: "Aplicación anticipo",
+            tooltip: "Indica como vas a aplicar tu anticipo"
         }
     },
     errors: {
@@ -360,6 +369,7 @@ const invoices = {
             date: "Fecha",
             payday: "Fecha pago",
             payment_percentage: "% pago",
+            useCfdi: "Tipo"
         },
         currentPageReportTemplate: "Mostrando {first} a {last} de {totalRecords} registros",
         emptyMessage: "Sin datos para mostrar.",   

@@ -1,7 +1,13 @@
 const crp = {
-    titleUpload: "Carga de comprobantes de recepción de pagos",
-    titleAccepted: "Comprobantes de recepción de pagos aceptados",
-    titleRejected: "Comprobantes de recepción de pagos rechazados",
+    titleUpload: "Cargar y revisar CRP",
+    titleUploadprovider: "Cargar CRP",
+    titleAccepted: "CRP revisados",
+    titleRejected: "CRP rechazados en la revisión",
+    titleAllAuth: "CRP en autorización",
+    titleAuthorized: "CRP autorizados",
+    titleRejectedAuth: "CRP rechazados en la autorización",
+    titleMyAuth: "Autorizaciones de CRP pendientes para mí",
+
     textBtnCreate: "Cargar CRP",
     datatable: {
         columns: {

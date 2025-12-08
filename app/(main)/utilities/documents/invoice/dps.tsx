@@ -93,7 +93,11 @@ export const getDps = async ( props: getDpsProps  ) => {
                     created_by: data[i].created_by,
                     notes_manual_payment_date: data[i].notes_manual_payment_date,
                     week: data[i].number_week_revision,
-                    payments: data[i].payments
+                    payments: data[i].payments,
+                    is_advance: data[i].is_advance,
+                    advance_application: data[i].advance_application_name,
+                    authz_acceptance_id: data[i].authz_acceptance_id ? data[i].authz_acceptance_id : data[i].authz_acceptance,
+                    authz_authorization_id: data[i].authz_authorization_id ? data[i].authz_authorization_id : data[i].authz_authorization
                 });
             }
             props.setLDps(dps);
@@ -106,3 +110,68 @@ export const getDps = async ( props: getDpsProps  ) => {
         return false;
     }
 };
+
+interface getlAdvanceProps {
+    params: any;
+    errorMessage: string;
+    setLAdvance: React.Dispatch<React.SetStateAction<any[]>>;
+    showToast?: (type: 'success' | 'info' | 'warn' | 'error', message: string, summaryText?: string) => void;
+}
+
+export const getlAdvance = async ( props: getlAdvanceProps) => {
+    try {
+        if (!props) {
+            return;
+        }
+
+        const response = await axios.get(constants.API_AXIOS_GET, {
+            params: props.params
+        });
+
+        if (response.status === 200) {
+            const data = response.data.data || [];
+            let advance: any[] = [];
+            for (let i = 0; i < data.length; i++) {
+                advance.push({
+                    id: data[i].id,
+                    code: data[i].code,
+                    name: data[i].name
+                });
+            }
+            props.setLAdvance(advance);
+        } else {
+            throw new Error(`${props.errorMessage}: ${response.statusText}`);
+        }
+
+    } catch (error: any) {
+        props.showToast?.('error', error.response?.data?.error || props.errorMessage, props.errorMessage);
+    }
+}
+
+interface getCrpPending {
+    params: any;
+    errorMessage: string;
+    setCrpPending: React.Dispatch<React.SetStateAction<any>>;
+    showToast?: (type: 'success' | 'info' | 'warn' | 'error', message: string, summaryText?: string) => void;
+}
+
+export const getCrpPending = async (props: getCrpPending) => {
+    try {
+        if (!props) {
+            return;
+        }
+        const response = await axios.get(constants.API_AXIOS_GET, {
+            params: props.params
+        });
+        if (response.status === 200) {
+            const data = response.data.data || [];
+            props.setCrpPending(data);
+            return data;
+        } else {
+            throw new Error(`${props.errorMessage}: ${response.statusText}`);
+        }
+    } catch (error: any) {
+        props.showToast?.('error', error.response?.data?.error || props.errorMessage, props.errorMessage);
+        return null;
+    }
+}

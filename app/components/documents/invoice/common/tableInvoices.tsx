@@ -16,6 +16,7 @@ import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { Nullable } from 'primereact/ts-helpers';
 import { HistoryAuth } from '@/app/components/documents/invoice/historyAuth';
 import { ProgressSpinner } from 'primereact/progressspinner';
+import { Tooltip } from 'primereact/tooltip';
 
 interface columnsProps {
     acceptance: {
@@ -61,6 +62,7 @@ interface TableInvoicesProps {
     SendToUpoload?: () => void;
     withBtnLast3Months?: boolean;
     withHistoryAuth?: boolean;
+    disabledUpload?: boolean;
 }
 
 export const TableInvoices = ({
@@ -104,7 +106,8 @@ export const TableInvoices = ({
     withBtnSendToUpoload,
     SendToUpoload,
     withBtnLast3Months = true,
-    withHistoryAuth = false
+    withHistoryAuth = false,
+    disabledUpload = false
 }: TableInvoicesProps) => {
     // const [lDps, setLDps] = useState<any[]>([]);
     const [filters, setFilters] = useState<DataTableFilterMeta>({});
@@ -121,6 +124,7 @@ export const TableInvoices = ({
         { field: 'priority', order: -1 as -1 }, // 1 = ascendente, -1 = descendente
         { field: 'date', order: -1 as -1 }
     ]);
+    const [activoFijoFilterValue, setActivoFijoFilterValue] = useState<string>('all');
 
     const getlCompanies = async () => {
         try {
@@ -277,7 +281,8 @@ export const TableInvoices = ({
             date: {
                 operator: FilterOperator.AND,
                 constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }]
-            }
+            },
+            useCfdi: { value: null, matchMode: FilterMatchMode.IN }
         });
         setGlobalFilterValue('');
     };
@@ -313,7 +318,67 @@ export const TableInvoices = ({
         setFilters(_filters);
     };
 
+    const handleUseCfdiFilterChange = (value: any) => {
+        const lCfdis = constants.USE_CFDI_ACTIVO_FIJO;
+        const filteredData = lDps.filter(item => !lCfdis.includes(item.useCfdi));
+        let notlCfdis: any[] = [];
+        if (filteredData.length > 1) {
+            notlCfdis = filteredData.map(item => item.useCfdi);
+        } else {
+            notlCfdis = [''];
+        }
+
+        let _filters = { ...filters };
+
+        setActivoFijoFilterValue(value);
+        
+        if (value == 'all') {
+            (_filters['useCfdi'] as any).value = null;
+        } else if (value == 'yes') {
+            (_filters['useCfdi'] as any).value = lCfdis;
+            (_filters['useCfdi'] as any).matchMode = FilterMatchMode.IN;
+        } else if (value == 'no') {
+            (_filters['useCfdi'] as any).value = notlCfdis;
+            (_filters['useCfdi'] as any).matchMode = FilterMatchMode.IN;
+        }
+        
+        setFilters(_filters);
+    };
+
     //*********** TEMPLATES DE TABLA ***********
+    const useCfdiTemplate = (rowData: any) => {
+        const lCfdis = constants.USE_CFDI_ACTIVO_FIJO;
+
+        const renderActivoFijo = (
+            <div className="flex align-items-center justify-content-center">
+                <Tooltip target=".custom-target-icon" />
+                <span 
+                    className="custom-target-icon bg-blue-400 border-circle w-2rem h-2rem flex align-items-center justify-content-center text-white-alpha-90"
+                    data-pr-tooltip={'Activo fijo'}
+                    data-pr-position="right"
+                    data-pr-my="left center-2"
+                >
+                    AF
+                </span>
+            </div>
+        );
+        const renderGasto = (
+            <div className="flex align-items-center justify-content-center">
+                <Tooltip target=".custom-target-icon" />
+                <span 
+                    className="custom-target-icon bg-yellow-500 border-circle w-2rem h-2rem flex align-items-center justify-content-center text-white-alpha-90"
+                    data-pr-tooltip={'Gasto'}
+                    data-pr-position="right"
+                    data-pr-my="left center-2"
+                >
+                    G
+                </span>
+            </div>
+        );
+
+        return lCfdis.includes(rowData.useCfdi) ? renderActivoFijo : renderGasto;
+    }
+
     const companyFilterTemplate = () => {
         return (
             <Dropdown 
@@ -602,7 +667,7 @@ export const TableInvoices = ({
             <ConfirmDialog />
             <MyToolbar 
                 isMobile={isMobile}
-                disabledUpload={false}
+                disabledUpload={disabledUpload}
                 setDialogMode={setDialogMode}
                 setDialogVisible={setDialogVisible}
                 globalFilterValue1={globalFilterValue}
@@ -621,6 +686,9 @@ export const TableInvoices = ({
                 setDateFilterMode={setDateFilterMode}
                 dateFilterMode={dateFilterMode}
                 withBtnLast3Months={withBtnLast3Months}
+                withActivoFijoFilter={true}
+                handleFilterActivoFijo={handleUseCfdiFilterChange}
+                activoFijoFilterValue={activoFijoFilterValue}
             />
             <br />
             <DataTable
@@ -663,7 +731,6 @@ export const TableInvoices = ({
                 <Column field="dateFormated" header="dateFormated" hidden />
                 <Column field="notes" header="notes" hidden />
                 <Column field="authz_acceptance_notes" header="authz_acceptance_notes" hidden />
-                <Column field="useCfdi" header="useCfdi" hidden />
                 <Column field="payment_method" header="payment_method" hidden />
                 <Column field="actors_of_action" header="actors_of_action" hidden />
                 <Column field="authz_authorization_code" header="authz_authorization_code" hidden />
@@ -677,6 +744,10 @@ export const TableInvoices = ({
                 <Column field="created_by" header="created_by" hidden />
                 <Column field="notes_manual_payment_date" header="notes_manual_payment_date" hidden />
                 <Column field="week" header="week" hidden />
+                <Column field="is_advance" header="is_advance" hidden />
+                <Column field="advance_application" header="advance_application" hidden />
+                <Column field="authz_acceptance" header="authz_acceptance" hidden />
+                <Column field="authz_authorization" header="authz_authorization" hidden />
                 <Column field="priority" header="Prioridad" body={priorityTemplate} footer="Prioridad" sortable />
                 <Column field="company" header={t('invoicesTable.columns.company')} footer={t('invoicesTable.columns.company')} sortable filter showFilterMatchModes={false} filterElement={companyFilterTemplate} filterApply={<></>} filterClear={<></>} />
                 <Column
@@ -699,6 +770,7 @@ export const TableInvoices = ({
                 <Column field="currencyCode" header={t('invoicesTable.columns.currencyCode')} footer={t('invoicesTable.columns.currencyCode')} sortable />
                 <Column field="payday" header={t('invoicesTable.columns.payday')} footer={t('invoicesTable.columns.payday')} body={payDayBodyTemplate} sortable />
                 <Column field="payment_percentage" header={t('invoicesTable.columns.payment_percentage')} footer={t('invoicesTable.columns.payment_percentage')} />
+                <Column field="useCfdi" header={t('invoicesTable.columns.useCfdi')} footer={t('invoicesTable.columns.useCfdi')} body={useCfdiTemplate} />
                 <Column field="acceptance" header={t('invoicesTable.columns.acceptance')} footer={t('invoicesTable.columns.acceptance')} body={statusAcceptanceDpsBodyTemplate} sortable hidden={ columnsProps?.acceptance.hidden } />
                 <Column field="actors_of_action" header={'Usuario en turno'} footer={'Usuario en turno'} body={actorsOfActionBody} sortable hidden={ columnsProps?.actors_of_action.hidden } />
                 <Column field="authorization" header={t('invoicesTable.columns.authorization')} footer={t('invoicesTable.columns.authorization')} body={statusAuthDpsBodyTemplate} sortable hidden={ columnsProps?.authorization.hidden } />

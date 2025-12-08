@@ -50,6 +50,7 @@ const UploadNC = () => {
     const [lCompanies, setLCompanies] = useState<any[]>([]);
     const [lProviders, setLProviders] = useState<any[]>([]);
     const [lAreas, setLAreas] = useState<any[]>([]);
+    const [lGlobalAreas, setLGlobalAreas] = useState<any[]>([]);
     const [lInvoices, setLInvoices] = useState<any[]>([]);
     const [loadingInvoices, setLoadingInvoices] = useState<boolean>(false);
     const [lPaymentsExec, setLPaymentsExec] = useState<any[]>([]);
@@ -325,6 +326,10 @@ const UploadNC = () => {
                 uuid: oNc.uuid
             }
 
+            if (documents[0].id == 0) {
+                documents = [];
+            }
+
             formData.append('documents', JSON.stringify(documents));
             formData.append('company', oNc.company.id);
             formData.append('user_id', oUser.oUser.id);
@@ -415,11 +420,23 @@ const UploadNC = () => {
                 errorMessage: '',
                 showToast: showToast
             });
-            // await getlAreas({
-            //     setLAreas,
-            //     showToast,
-            //     company_id: oNc?.company.external_id
-            // });
+            setLInvoices((prev: any) => [{ 
+                id: 0,
+                name: 'Sin referencia',
+                folio: '',
+                date: '',
+                amount: 0,
+                amountNc: 0,
+                currency__code: '',
+                functional_area__id: '',
+                functional_area__name: ''
+             }
+             , ...prev]);
+            await getlAreas({
+                setLAreas: setLGlobalAreas,
+                showToast,
+                company_id: oNc?.company.external_id
+            });
             setLoadingInvoices(false);
         }
         if (oNc?.company && oNc?.partner) {
@@ -436,12 +453,16 @@ const UploadNC = () => {
     useEffect(() => {
         if (oNc?.invoices) {
             let areas: any[] = [];
-            for (let i = 0; i < oNc.invoices.length; i++) {
-                if (!areas.find((item: any) => item.id == oNc.invoices[i].functional_area__id)) {
-                    areas.push({
-                        id: oNc.invoices[i].functional_area__id,
-                        name: oNc.invoices[i].functional_area__name
-                    })
+            if (oNc?.invoices[0]?.id == 0) {
+                areas = lGlobalAreas;
+            } else {
+                for (let i = 0; i < oNc.invoices.length; i++) {
+                    if (!areas.find((item: any) => item.id == oNc.invoices[i].functional_area__id)) {
+                        areas.push({
+                            id: oNc.invoices[i].functional_area__id,
+                            name: oNc.invoices[i].functional_area__name
+                        })
+                    }
                 }
             }
             setLAreas(areas);
@@ -525,7 +546,7 @@ const UploadNC = () => {
             }}
         >
             <h3 className="m-0 text-900 font-medium">
-                {t('titleUpload')}
+                { oUser?.isInternalUser ? t('titleUpload') : t('titleUploadProvider')}
                 &nbsp;&nbsp;
                 <Tooltip target=".custom-target-icon" />
                 <i

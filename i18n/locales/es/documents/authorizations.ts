@@ -1,6 +1,6 @@
 const authorizations = {
-    titleMyAuth: 'Facturas por autorizar',
-    titleAllAuth: 'Autorización de facturas',
+    titleMyAuth: 'Autorizaciones de facturas pendientes para mí',
+    titleAllAuth: 'Autorizaciones de facturas en las que participo',
     titleMyAuthTooltip: 'Pantalla para autorizar mis facturas en turno',
     titleAllAuthTooltip: 'Pantalla para consultar flujo de autorización de facturas',
     flowAuthorization: {

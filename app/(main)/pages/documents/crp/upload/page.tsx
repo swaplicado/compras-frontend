@@ -73,6 +73,7 @@ const ConsultPaymentProgramded = () => {
     const [showManual, setShowManual] = useState <boolean>(false);
     const isMobile = useIsMobile();
     const [lFiscalRegimes, setLFiscalRegimes] = useState<any[]>([]);
+    const [lGlobalAreas, setLGlobalAreas] = useState<any[]>([]);
 
     const columnsProps = {
         company: { hidden: false },
@@ -143,11 +144,18 @@ const ConsultPaymentProgramded = () => {
                     oCompany,
                     oProvider
                 });
-                // await getlAreas({
-                //     setLAreas,
-                //     showToast,
-                //     company_id: oCompany.external_id
-                // });
+                setLPaymentsExec((prev: any) => [{ 
+                    id: 0,
+                    name: 'Sin referencia',
+                    functional_area__id: '',
+                    functional_area__name: ''
+                 }
+                 , ...prev]);
+                await getlAreas({
+                    setLAreas: setLGlobalAreas,
+                    showToast,
+                    company_id: oCompany.external_id
+                });
                 setLoadinglPaymentsExec(false);
             }
             fetch();
@@ -227,6 +235,10 @@ const ConsultPaymentProgramded = () => {
             oCrp?.oPay.forEach((o: any) => {
                 payments.push(o.id)
             });
+
+            if (payments[0] == 0) {
+                payments = [];
+            }
 
             formData.append('route', route);
             formData.append('payments', JSON.stringify(payments));
@@ -346,12 +358,16 @@ const ConsultPaymentProgramded = () => {
     useEffect(() =>  {
         if (oCrp?.oPay) {
             let areas: any[] = [];
-            for (let i = 0; i < oCrp.oPay.length; i++) {
-                if (!areas.find((item: any) => item.id == oCrp.oPay[i].functional_area__id)) {
-                    areas.push({
-                        id: oCrp.oPay[i].functional_area__id,
-                        name: oCrp.oPay[i].functional_area__name
-                    })
+            if (oCrp.oPay[0].id == 0) {
+                areas = lGlobalAreas;
+            } else {
+                for (let i = 0; i < oCrp.oPay.length; i++) {
+                    if (!areas.find((item: any) => item.id == oCrp.oPay[i].functional_area__id)) {
+                        areas.push({
+                            id: oCrp.oPay[i].functional_area__id,
+                            name: oCrp.oPay[i].functional_area__name
+                        })
+                    }
                 }
             }
             setLAreas(areas);
@@ -372,7 +388,7 @@ const ConsultPaymentProgramded = () => {
             }}
         >
             <h3 className="m-0 text-900 font-medium">
-                {t('titleUpload')}
+                { oUser?.isInternalUser ? t('titleUpload') : t('titleUploadprovider') }
                 &nbsp;&nbsp;
                 <Tooltip target=".custom-target-icon" />
                 <i

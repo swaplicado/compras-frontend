@@ -169,7 +169,22 @@ export const DialogNc = ({
         if (value.length == 1) {
             value[0].amount = 0;
         }
-        
+
+        const noDocument = value?.some((item: any) => item.id == 0);
+        if (noDocument) {
+            value = [{
+                id: 0,
+                name: 'Sin referencia',
+                folio: '',
+                date: '',
+                amount: 0,
+                amountNc: 0,
+                currency__code: '',
+                functional_area__id: '',
+                functional_area__name: ''
+            }];
+        }
+
         setONc?.((prev: any) => ({ ...prev, invoices: value }));
     }
 
@@ -310,7 +325,7 @@ export const DialogNc = ({
                                             errors={formErrors}
                                             errorMessage={'Selecciona facturas'}
                                         />
-                                        {oNc?.invoices && (oNc?.invoices?.length > 1 || dialogMode == 'view') && (
+                                        {oNc?.invoices && ((oNc?.invoices?.length > 1 || dialogMode == 'view') || (oNc?.invoices[0]?.id == 0))  && (
                                             <RenderField
                                                 label={t('dialog.fields.lAreas.label')}
                                                 tooltip={t('dialog.fields.lAreas.tooltip')}
