@@ -21,6 +21,7 @@ import esNc from './locales/es/documents/nc';
 import esOc from './locales/es/documents/oc';
 import esPartners from './locales/es/partners/partners';
 import esBulkInvoiceUpload from './locales/es/documents/bulkInvoiceUpload';
+import esPrepay from './locales/es/documents/prepay';
 
 i18n
   .use(initReactI18next)
@@ -47,7 +48,8 @@ i18n
         nc: esNc,
         oc: esOc,
         partners: esPartners,
-        bulkInvoiceUpload: esBulkInvoiceUpload
+        bulkInvoiceUpload: esBulkInvoiceUpload,
+        prepay: esPrepay
       }
     },
     lng: "es",
