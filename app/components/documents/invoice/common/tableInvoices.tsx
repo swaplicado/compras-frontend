@@ -62,6 +62,7 @@ interface TableInvoicesProps {
     SendToUpoload?: () => void;
     withBtnLast3Months?: boolean;
     withHistoryAuth?: boolean;
+    disabledUpload?: boolean;
 }
 
 export const TableInvoices = ({
@@ -105,7 +106,8 @@ export const TableInvoices = ({
     withBtnSendToUpoload,
     SendToUpoload,
     withBtnLast3Months = true,
-    withHistoryAuth = false
+    withHistoryAuth = false,
+    disabledUpload = false
 }: TableInvoicesProps) => {
     // const [lDps, setLDps] = useState<any[]>([]);
     const [filters, setFilters] = useState<DataTableFilterMeta>({});
@@ -665,7 +667,7 @@ export const TableInvoices = ({
             <ConfirmDialog />
             <MyToolbar 
                 isMobile={isMobile}
-                disabledUpload={false}
+                disabledUpload={disabledUpload}
                 setDialogMode={setDialogMode}
                 setDialogVisible={setDialogVisible}
                 globalFilterValue1={globalFilterValue}
@@ -742,6 +744,10 @@ export const TableInvoices = ({
                 <Column field="created_by" header="created_by" hidden />
                 <Column field="notes_manual_payment_date" header="notes_manual_payment_date" hidden />
                 <Column field="week" header="week" hidden />
+                <Column field="is_advance" header="is_advance" hidden />
+                <Column field="advance_application" header="advance_application" hidden />
+                <Column field="authz_acceptance" header="authz_acceptance" hidden />
+                <Column field="authz_authorization" header="authz_authorization" hidden />
                 <Column field="priority" header="Prioridad" body={priorityTemplate} footer="Prioridad" sortable />
                 <Column field="company" header={t('invoicesTable.columns.company')} footer={t('invoicesTable.columns.company')} sortable filter showFilterMatchModes={false} filterElement={companyFilterTemplate} filterApply={<></>} filterClear={<></>} />
                 <Column

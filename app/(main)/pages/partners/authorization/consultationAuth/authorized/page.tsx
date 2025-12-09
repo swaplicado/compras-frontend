@@ -15,8 +15,7 @@ import { TableReception } from '@/app/components/partners/reception/tableRecepti
 import { DataTable, DataTableFilterMeta, DataTableRowClickEvent } from 'primereact/datatable';
 import DateFormatter from '@/app/components/commons/formatDate';
 import { DialogReception } from '@/app/components/partners/reception/dialogReception';
-import { getlPartners, getlFilesPartners, downloadFiles } from '@/app/(main)/utilities/partners/partnersUtils';
-import { RenderInfoButton } from "@/app/components/commons/instructionsButton";
+import { getlPartnersAuth, getlFilesPartners, downloadFiles } from '@/app/(main)/utilities/partners/partnersUtils';
 
 const RejectedPartners = () => {
     const [lPartners, setPartners] = useState<any[]>([]);
@@ -27,8 +26,6 @@ const RejectedPartners = () => {
     const { t: tCommon } = useTranslation('common');
     const [userFunctionalAreas, setUserFunctionalAreas] = useState<any>(null);
     const [oUser, setOUser] = useState<any>(null);
-    const [showInfo, setShowInfo] = useState<boolean>(false);
-    const [showManual, setShowManual] = useState<boolean>(false);
     
     //constantes para el dialog
     const [visible, setDialogVisible] = useState(false);
@@ -76,9 +73,8 @@ const RejectedPartners = () => {
             company: data.company,
             area: data.functional_area,
             authz_acceptance_notes: data.authz_acceptance_notes,
-            company_external_id: data.company_external_id,
-            fiscal_id: data.fiscal_id,
-            authz_authorization_notes: data.authz_authorization_notes
+            authz_authorization_notes: data.authz_authorization_notes,
+            company_external_id: data.company_external_id
         })
     }
 
@@ -144,12 +140,12 @@ const RejectedPartners = () => {
                 }}
             >
                 <h3 className="m-0 text-900 font-medium">
-                    {t('titleAccepted')}
+                    {t('titleAuthorized')}
                     &nbsp;&nbsp;
                     <Tooltip target=".custom-target-icon" />
                     <i
                         className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                        data-pr-tooltip={t('titleAccepted')}
+                        data-pr-tooltip={t('titleAuthorized')}
                         data-pr-position="right"
                         data-pr-my="left center-2"
                         style={{ fontSize: '1rem', cursor: 'pointer' }}
@@ -163,62 +159,9 @@ const RejectedPartners = () => {
             showing == 'body' && (
                 <div className="flex flex-column md:flex-row justify-content-between gap-2">
                     <Button label={tCommon('btnClose')} icon="bx bx-x" onClick={() => setDialogVisible(false)} severity="secondary" disabled={loading} />
-                    <Button label={'Enviar a autorizar'} icon="bx bx-like" onClick={() => handleFlowAuthorization()} autoFocus disabled={loading} severity="success" />
                 </div>
             )
         )
-    }
-
-    const handleFlowAuthorization = async () => {
-        try {
-            setLoading(true);
-            
-            const route = constants.ROUTE_POST_START_AUTHORIZATION;
-            const response = await axios.post(constants.API_AXIOS_POST, {
-                route,
-                jsonData: {
-                    id_external_system: 1,
-                    id_company: oPartner.company_external_id, //company id del dps id_company
-                    id_flow_model: constants.FLOW_AUTH_PARTNER,
-                    resource: {
-                        code: oPartner.fiscal_id,
-                        name: oPartner.provider_name, //proveedor
-                        content: {},
-                        external_id: oPartner.id,
-                        resource_type: constants.RESOURCE_TYPE_PROVIDER
-                    },
-                    deadline: null,
-                    sent_by: oUser.oUser.external_id, //external user id
-                    id_actor_type: 2,
-                    stakeholders: [{
-                        external_user_id: oUser.oUser.external_id,
-                        id_actor_type: 2
-                    }],
-                    notes: oPartner.authz_authorization_notes
-                }
-            });
-
-            if (response.status == 200) {
-                
-                setSuccessMessage('Registro de proveedor enviado a autorizar');
-                setShowing('animationSuccess');
-
-                await getlPartners({
-                    userFunctionalAreas: userFunctionalAreas,
-                    authz_acceptance_id: constants.REVIEW_ACCEPT_ID,
-                    authz_authorization_id: constants.REVIEW_PENDING_ID,
-                    setPartners,
-                    showToast
-                });
-            } else {
-                throw new Error('');
-            }
-        } catch (error: any) {
-            setErrorMessage(error.response?.data?.error || 'Error al enviar enviar el registro a autorizar, consulta la pantalla de aceptados');
-            setShowing('animationError');
-        } finally {
-            setLoading(false);
-        }
     }
 
 //*******INIT*******
@@ -235,10 +178,11 @@ const RejectedPartners = () => {
     useEffect(() => {
         const fetch = async () => {
             setLoading(true);
-            await getlPartners({
-                userFunctionalAreas: userFunctionalAreas,
-                authz_acceptance_id: constants.REVIEW_ACCEPT_ID,
-                authz_authorization_id: constants.REVIEW_PENDING_ID,
+            await getlPartnersAuth({
+                type: 2,
+                user_id: oUser.oUser.external_id,
+                resource_type: constants.RESOURCE_TYPE_PROVIDER,
+                authz_authorization: 9,
                 setPartners,
                 showToast
             });
@@ -249,38 +193,12 @@ const RejectedPartners = () => {
         }
     }, [userFunctionalAreas])
 
-    const getObjectIntruction = () => {
-        const sendAuthInstructions = JSON.parse(JSON.stringify(t(`sendAuthInstructions`, { returnObjects: true })));
-
-        let instructions: any[] = [];
-        instructions.push(sendAuthInstructions);
-
-        if (!instructions || Object.keys(instructions).length === 0) {
-            return null;
-        }
-
-        return instructions;
-    }
-
     return (
         <div className="grid">
             <div className="col-12">
                 {loading && loaderScreen()}
                 <Toast ref={toast} />
                 <Card header={headerCard} pt={{ content: { className: 'p-0' } }}>
-                    <RenderInfoButton
-                        instructions={getObjectIntruction()}
-                        showInfo={showInfo}
-                        setShowInfo={setShowInfo}
-                        showManual={showManual}
-                        setShowManual={setShowManual}
-                        btnShowInstructionsText={"Mostrar instrucciones"}
-                        btnHideInstructionsText={"Ocultar instrucciones"}
-                        dialogManualBtnLabelText={"Videos de ayuda"}
-                        dialogManualBtnTooltipText={"Videos de ayuda"}
-                        dialogManualHeaderText={"Videos de ayuda"}
-                        lVideos={[]}
-                    />
                     <DialogReception 
                         headerTitle={'Revisión registro de proveedor'}
                         visible={visible}
@@ -301,6 +219,8 @@ const RejectedPartners = () => {
                         withShowFiles={withShowFiles}
                         loadingFiles={loadingFiles}
                         lFiles={lFiles}
+                        withNotesAuth={oUser?.oUser.groups.includes(constants.ROLES.CONTADOR_ID)}
+                        disabledNotesAuth={!(oUser?.oUser.groups.includes(constants.ROLES.CONTADOR_ID))}
                     />
                     <TableReception
                         lPartners={lPartners}
@@ -313,10 +233,10 @@ const RejectedPartners = () => {
                         downloadFiles={downloadFilesPartner}
                         columnProps={{
                             authz_acceptance: {
-                                hidden: false
+                                hidden: true
                             },
                             authz_authorization: {
-                                hidden: true
+                                hidden: false
                             }
                         }}
                     />

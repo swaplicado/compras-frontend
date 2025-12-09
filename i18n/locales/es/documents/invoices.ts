@@ -3,9 +3,10 @@ import { Tooltip } from "chart.js";
 const invoices = {
     titleAllInvoices: "Todas las facturas",
     titleAllInvoicesTooltip: "Pantalla para ver todas las facturas",
-    titleUpload: "Carga de facturas",
-    titleAccepted: "Facturas aceptadas",
-    titleAcceptanceRejected: "Facturas rechazadas en aceptación",
+    titleUpload: "Cargar y revisar facturas",
+    titleUploadProvider: "Cargar facturas",
+    titleAccepted: "Facturas revisadas",
+    titleAcceptanceRejected: "Facturas rechazadas en la revisión",
     titleAuthorizationRejected: "Facturas rechazadas en autorización",
     titleUploadTooltip: "Pantalla para cargar las facturas",
     titleAcceptedTooltip: "Pantalla para ver las facturas aceptadas",
@@ -14,7 +15,7 @@ const invoices = {
 
     titleAuthorized: 'Facturas autorizadas',
     titleInAuthorization: 'Facturas en autorización',
-    titleAuthorizedRejected: 'Facturas rechazadas',
+    titleAuthorizedRejected: 'Facturas rechazadas en la autorización',
     titleAuthorizedTooltip: 'Pantalla para revisar las facturas autorizadas',
     titleInAuthorizationTooltip: 'Pantalla para revisar las facturas en proceso de autorización',
     titleAuthorizedRejectedTooltip: 'Pantalla para revisar las facturas rechazadas',
@@ -255,7 +256,7 @@ const invoices = {
         },
         files: {
             label: "Archivos de factura: *",
-            placeholderMultiple: "Suelte los archivos aquí para comenzar a cargarlos",
+            placeholderMultiple: "Suelta aquí los archivos para comenzar a cargarlos",
             placeholderSingle: "Suelte el archivo aquí para comenzar a cargarlo",
             helperTextFiles: "Selecciona los archivos de la factura.",
             helperTextPdf: "Debe cargar la representación impresa en PDF del comprobante.",
@@ -296,6 +297,14 @@ const invoices = {
             label: "Sem.:",
             placeholder: "Sem.",
             tooltip: "Número de semana de la factura.",
+        },
+        is_advance: {
+            label: "Es anticipo",
+            tooltip: "Indica si la factura es un anticipo.",
+        },
+        advance_application: {
+            label: "Aplicación anticipo",
+            tooltip: "Indica como vas a aplicar tu anticipo"
         }
     },
     errors: {

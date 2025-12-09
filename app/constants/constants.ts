@@ -55,6 +55,9 @@ const constants = {
     ROUTE_GET_OC_JSON: '/transactions/documents/get-json-doc/', //doc_id
     ROUTE_GET_PAYMENT_DAYS: '/transactions/payment-days/',
     ROUTE_GET_PARTNER_PAYMENT_DAY: '/transactions/partner-payment-day/',
+    ROUTE_GET_ADVANCE_APPLICATION: '/transactions/advance-application-list',
+    ROUTE_GET_CRP_PENDING_BY_PARTNER: '/transactions/partners/can-upload-for-payment/',
+
     ROUTE_COMPARE_FILES: '/pages/compareFiles/',
 
     // ROUTE_POST_VALIDATE_XML: '/transactions/documents/validate-xml/',
@@ -207,7 +210,18 @@ const constants = {
         { label: 'Todos', value: 'all' },
         { label: 'Gastos', value: 'no' },
         { label: 'Activo fijo', value: 'yes' }
-    ]
+    ],
+
+    //codigos de aceptación de facturas
+    INVOICE_ACCEPTANCE_PENDING: 1,
+    INVOICE_ACCEPTANCE_PROCESSING: 2,
+    INVOICE_ACCEPTANCE_REJECTED: 8,
+    INVOICE_ACCEPTANCE_ACCEPTED: 9,
+    //codigos de autorización de facturas
+    INVOICE_AUTH_PENDING: 1,
+    INVOICE_AUTH_PROCESSING: 2,
+    INVOICE_AUTH_REJECTED: 8,
+    INVOICE_AUTH_ACCEPTED: 9
 }
 
 export default constants;

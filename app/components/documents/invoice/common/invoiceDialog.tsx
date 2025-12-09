@@ -30,6 +30,7 @@ import { Checkbox } from 'primereact/checkbox';
 import { MultiSelect } from 'primereact/multiselect';
 import { btnScroll } from '@/app/(main)/utilities/commons/useScrollDetection';
 import { useIntersectionObserver } from 'primereact/hooks';
+import { getCrpPending } from '@/app/(main)/utilities/documents/invoice/dps';
 
 interface InvoiceDialogProps {
     visible: boolean;
@@ -79,6 +80,7 @@ interface InvoiceDialogProps {
     partnerPaymentDay?: string;
     loadingPartnerPaymentDay?: boolean;
     withEditPaymentDay?: boolean;
+    lAdvance?: any[];
 }
 
 interface renderFieldProps {
@@ -145,13 +147,15 @@ export const InvoiceDialog = ({
     getPayDay,
     partnerPaymentDay,
     loadingPartnerPaymentDay,
-    withEditPaymentDay = false
+    withEditPaymentDay = false,
+    lAdvance = []
 }: InvoiceDialogProps) => {
     const [oCompany, setOCompany] = useState<any>(null);
     const [oProvider, setOProvider] = useState<any>(null);
     const [oReference, setOReference] = useState<any[]>([]);
     const [oArea, setOArea] = useState<any>(null);
     const fileUploadRef = useRef<FileUpload>(null);
+    const extraFileUploadRef = useRef<FileUpload>(null);
     const fileEditAcceptRef = useRef<FileUpload>(null);
     const xmlUploadRef = useRef<FileUpload>(null);
     const [xmlValidateErrors, setXmlValidateErrors] = useState({
@@ -219,12 +223,15 @@ export const InvoiceDialog = ({
     const [filterReferences, setFilterReferences] = useState<boolean>(false);
     const [lRefToValidateXml, setLRefToValidateXml] = useState<any[]>([]);
     const [lRefErrors, setLRefErrors] = useState<any[]>([]);
+    const [crpPending, setCrpPending] = useState<any>({});
 
     //const para el boton de scroll al final
     const [elementRef, setElementRef] = useState<HTMLDivElement | null>(null);
     const visibleElement = useIntersectionObserver({ current: elementRef });
     const dialogContentRef = useRef<HTMLDivElement>(null);
     const btnToScroll = btnScroll(dialogContentRef, visibleElement);
+    const [isAdvance, setIsAdvance] = useState<boolean>(false);
+    const [oAdvance, setOAdvance] = useState<any>(null);
 
     const renderField = (props: renderFieldProps) => (
         <>
@@ -462,6 +469,22 @@ export const InvoiceDialog = ({
         setOReference([]);
         setOArea(null);
         setOProvider(oProvider);
+        
+        let oCrpPending = null;
+        // if (oProvider) {
+        //     oCrpPending = await getCrpPending({
+        //         params: { route: constants.ROUTE_GET_CRP_PENDING_BY_PARTNER, provider_id: oProvider.id },
+        //         errorMessage: '',
+        //         setCrpPending,
+        //         showToast
+        //     });
+        // }
+        // if (oCrpPending) {
+        //     if (!oCrpPending?.authorized) {
+        //         setErrorMessage('El proveedor ' + oProvider?.name + ' ' + oCrpPending?.reason );
+        //         setResultUpload('error');
+        //     }
+        // }
         setFormErrors((prev: any) => ({ ...prev, provider: false }));
         if (!oProvider || !oProvider.id) {
             setLReferences([]);
@@ -679,7 +702,9 @@ export const InvoiceDialog = ({
                 issuer_tax_regime: oDps.oIssuer_tax_regime ? oDps.oIssuer_tax_regime.id : '',
                 receiver_tax_regime: oDps.oReceiver_tax_regime ? oDps.oReceiver_tax_regime.id : '',
                 uuid: oDps.uuid || '',
-                functional_area: area_id
+                functional_area: area_id,
+                is_advance: isAdvance,
+                advance_application: oAdvance
             };
 
             formData.append('document', JSON.stringify(document));
@@ -704,6 +729,49 @@ export const InvoiceDialog = ({
             setLoading?.(false);
         }
     };
+
+    const handleUploadExtraFiles = async () => {
+        try {
+            setLoading?.(true);
+            const formData = new FormData();
+            const route = '/transactions/documents/' + oDps.id_dps + '/update-files/';
+            const files = extraFileUploadRef.current?.getFiles() || [];
+
+            if (files.length == 0) {
+                showToast?.('info', 'No hay archivos para cargar', 'info');
+                return;
+            }
+
+            files.forEach((file: string | Blob) => {
+                formData.append('files', file);
+            });
+            formData.append('route', route);
+            formData.append('only_add', 'true');
+            formData.append('user_id', userId.toString());
+
+            let files_ids = lFilesNames.map((file: any) => file.id);
+            formData.append('file_ids', JSON.stringify(files_ids));
+            
+            const response = await axios.post(constants.API_AXIOS_PATCH, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+
+            if (response.status === 200 || response.status === 201) {
+                console.log('response: ', response);
+                
+                setSuccessMessage(response.data.data.success);
+                setResultUpload('success');
+            } else {
+                throw new Error('Error al cargar los archivos');
+            }
+        } catch (error: any) {
+            console.error('Error al subir archivos:', error);
+            setErrorMessage(error.response?.data?.error);
+            setResultUpload('error');
+        } finally {
+            setLoading?.(false);
+        }
+    }
 
     const getlUrlFilesDps = async () => {
         try {
@@ -851,6 +919,10 @@ export const InvoiceDialog = ({
         if (dialogMode == 'review' && !oDps.payday && oDps.provider_id) {
             getPayDay?.();
         }
+
+        if (oDps?.authz_authorization_id == constants.INVOICE_AUTH_ACCEPTED) {
+            getlFilesNames();
+        }
     }, [visible]);
 
     useEffect(() => {
@@ -931,6 +1003,9 @@ export const InvoiceDialog = ({
                     {btnToScroll}
                     <div className="flex flex-column md:flex-row justify-content-between gap-2">
                         <Button label={tCommon('btnClose')} icon="bx bx-x" onClick={onHide} severity="secondary" disabled={loading} />
+                        { oDps?.authz_authorization_id == constants.INVOICE_AUTH_ACCEPTED && (
+                            <Button label={'Cargar archivos adicionales'} icon="bx bx-upload" onClick={handleUploadExtraFiles} disabled={loading} />
+                        )}
                     </div>
                 </>
             )
@@ -1410,6 +1485,8 @@ export const InvoiceDialog = ({
                                     errorMessage: t('uploadDialog.areas.helperText')
                                 })}
 
+                            
+
                             {lRefToValidateXml && lRefToValidateXml[0]?.id != 0 && lRefToValidateXml?.length > 1 && dialogMode == 'create' && (
                                 <div className={`field col-12 md:col-6`}>
                                     <div className="formgrid grid">
@@ -1438,6 +1515,42 @@ export const InvoiceDialog = ({
                                         </div>
                                     </div>
                                 </div>
+                            )}
+                            <div className="field col-12 md:col-2 align-content-center">
+                                <div className="col pt-2">
+                                    <Checkbox
+                                        inputId="is_advance"
+                                        name="is_advance"
+                                        value="is_advance"
+                                        onChange={(e: any) => {
+                                            setIsAdvance(e.checked);
+                                            !e.checked ? setOAdvance(null) : '';
+                                        }}
+                                        checked={ dialogMode == 'create' ? isAdvance : oDps?.is_advance }
+                                        disabled={dialogMode != 'create'}
+                                        tooltip={t('uploadDialog.is_advance.tooltip')}
+                                    />
+                                    <label htmlFor="is_advance" className="ml-2">
+                                        {t('uploadDialog.is_advance.label')}
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            { (isAdvance || oDps?.is_advance) && (
+                                renderField({
+                                    label: t('uploadDialog.advance_application.label'),
+                                    tooltip: t('uploadDialog.advance_application.tooltip'),
+                                    value: dialogMode == 'create' ? oAdvance : oDps?.advance_application,
+                                    disabled: dialogMode != 'create' || !isAdvance,
+                                    mdCol: 4,
+                                    type: dialogMode == 'create' ? 'dropdown' : 'text',
+                                    onChange: (value) => setOAdvance(value),
+                                    options: lAdvance,
+                                    placeholder: '',
+                                    errorKey: '',
+                                    errors: formErrors,
+                                    errorMessage: ''
+                                })
                             )}
 
                             { lRefToValidateXml && lRefToValidateXml[0]?.id != 0 && dialogMode != 'create' && (
@@ -1739,6 +1852,48 @@ export const InvoiceDialog = ({
                                     </div>
                                 )}
                             </>
+                        )}
+
+                        { oDps?.authz_authorization_id == constants.INVOICE_AUTH_ACCEPTED && (
+                            <div className="field col-12 md:col-12">
+                                <div className="formgrid grid">
+                                    <div className="col">
+                                        <label>Archivos adicionales</label>
+                                        &nbsp;
+                                        <Tooltip target=".custom-target-icon" />
+                                        <i
+                                            className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
+                                            data-pr-tooltip={t('uploadDialog.files.tooltip')}
+                                            data-pr-position="right"
+                                            data-pr-my="left center-2"
+                                            style={{ fontSize: '1rem', cursor: 'pointer' }}
+                                        ></i>
+                                        <CustomFileUpload
+                                            fileUploadRef={extraFileUploadRef}
+                                            totalSize={totalSize}
+                                            setTotalSize={setTotalSize}
+                                            errors={{}}
+                                            setErrors={setFilesErrros}
+                                            message={message}
+                                            multiple={true}
+                                            allowedExtensions={constants.allowedExtensions}
+                                            allowedExtensionsNames={constants.allowedExtensionsNames}
+                                            maxFilesSize={constants.maxFilesSize}
+                                            maxFileSizeForHuman={constants.maxFileSizeForHuman}
+                                            maxUnitFileSize={constants.maxUnitFile}
+                                            errorMessages={{
+                                                invalidFileType: t('uploadDialog.files.invalidFileType'),
+                                                invalidAllFilesSize: t('uploadDialog.files.invalidAllFilesSize'),
+                                                invalidFileSize: t('uploadDialog.files.invalidFileSize'),
+                                                invalidFileSizeMessageSummary: t('uploadDialog.files.invalidFileSizeMessageSummary'),
+                                                helperTextFiles: t('uploadDialog.files.helperTextFiles'),
+                                                helperTextPdf: t('uploadDialog.files.helperTextPdf'),
+                                                helperTextXml: t('uploadDialog.files.helperTextXml')
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
                         )}
 
                         {withHistoryAuth &&
