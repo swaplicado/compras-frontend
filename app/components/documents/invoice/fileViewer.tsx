@@ -209,11 +209,12 @@ export const CustomFileViewer: React.FC<FileViewerProps> = ({
     
                 case 'xls':
                 case 'xlsx':
-                    return (
-                        <div className="flex justify-content-center align-items-center" style={{ height: '100px' }}>
-                            <div className="flex flex-column gap-2 align-items-center">
-                                <h3>{t('noPreview')}</h3>
-                            </div>
+                    const officeViewerUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(objectUrl)}`;
+                    return objectUrl ? (
+                        <iframe src={officeViewerUrl} style={{ height: `${pdfHeight}`, border: 'none', width: `${pdfWidht}` }} title={`File Viewer: ${currentFile?.name}`} className="w-full border-1 border-gray-200" onLoad={() => setIsLoading(false)} />
+                    ) : (
+                        <div className="flex justify-content-center align-items-center" style={{ height: '200px' }}>
+                            <h3>{t('noFile')}</h3>
                         </div>
                     );
     
