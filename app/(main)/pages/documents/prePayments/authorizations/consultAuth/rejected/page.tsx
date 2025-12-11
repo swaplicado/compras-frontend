@@ -113,7 +113,7 @@ const AcceptedPrepayment = () => {
             hidden: false
         },
         delete: {
-            hidden: true
+            hidden: false
         },
     }
 
@@ -403,45 +403,6 @@ const AcceptedPrepayment = () => {
             setLoading(false);
         }
     }
-
-    const accept = async () => {
-            await handleFlowAuthorization();
-        }
-    
-        const reject = () => {
-            
-        }
-    
-        const sendToAuth = async () => {
-            try {                
-                if (!oPrepay) {
-                    showToast('info', 'Selecciona un renglón');
-                    return;
-                }
-    
-                const id_dps = oPrepay.id;
-                const folio = oPrepay.folio;
-                confirmDialog({
-                    message: '¿Quieres enviar a autorizar: ' + folio + '?',
-                    header: 'Confirma envío de autorización',
-                    icon: 'pi pi-info-circle',
-                    acceptClassName: 'p-button-primary',
-                    acceptLabel: 'Si',
-                    rejectLabel: 'No',
-                    accept: () => accept(),
-                    reject: () => reject()
-                });
-            } catch (error: any) {
-                
-            }
-        }
-
-    useEffect(() => {
-            if (flowAuthDialogVisible) {
-                sendToAuth();
-                setFlowAuthDialogVisible(false);
-            }
-        }, [flowAuthDialogVisible])
 
     useEffect(() => {
         if (oPrepay?.references) {
@@ -778,6 +739,69 @@ const AcceptedPrepayment = () => {
         return instructions;
     }
 
+    const accept = async (id_dps: any) => {
+        try {
+            setLoading(true);
+            const route = '/transactions/documents/'+id_dps+'/delete-document/'
+            const response = await axios.post(constants.API_AXIOS_DELETE, {
+                params: {
+                    route: route
+                }
+            });
+
+            if (response.status == 200) {
+                await getLPrepayments();
+            } else {
+                throw new Error(`Error al eliminar la nota de crédito: ${response.statusText}`);
+            }
+        } catch (error: any) {
+            showToast?.('error', error.response?.data?.error || 'Error al eliminar la nota de crédito', 'Error al eliminar la nota de crédito');
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const reject = (id_dps: any) => {
+        
+    }
+
+    const deleteDps = async (rowData: any) => {
+        try {
+            const id_dps = rowData.id;
+            const folio = rowData.folio;
+            confirmDialog({
+                message: '¿Quieres eliminar esta nota de crédito: ' + folio + '?',
+                header: 'Confirma eliminación',
+                icon: 'pi pi-info-circle',
+                acceptClassName: 'p-button-danger',
+                acceptLabel: 'Si',
+                rejectLabel: 'No',
+                accept: () => accept(id_dps),
+                reject: () => reject(id_dps)
+            });
+        } catch (error: any) {
+            
+        }
+    }
+
+    const deleteBodyTemplate = (rowData: any) => {
+        return (
+            <div className="flex align-items-center justify-content-center">
+                <Button
+                    label={tCommon('btnDelete')}
+                    icon="bx bx-trash bx-sm"
+                    severity='danger'
+                    className="p-button-rounded"
+                    onClick={() => deleteDps(rowData)}
+                    tooltip={''}
+                    tooltipOptions={{ position: 'top' }}
+                    size="small"
+                    disabled={loading}
+                />
+            </div>
+        );
+    };
+
     return (
         <div className="grid">
             <div className="col-12">
@@ -862,6 +886,7 @@ const AcceptedPrepayment = () => {
                         setDialogVisible={setDialogVisible}
                         setDialogMode={setDialogMode}
                         fileBodyTemplate={fileBodyTemplate}
+                        deleteBodyTemplate={deleteBodyTemplate}
                     />
                 </Card>
             </div>

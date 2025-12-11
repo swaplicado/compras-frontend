@@ -330,17 +330,17 @@ export const DialogPrepay = ({
                 const data = response.data.data || [];
 
                 let lRefs: any[] = [];
-                if (oUser?.isInternalUser) {
-                    lRefs.push({
-                        id: 0,
-                        name: t('dialog.fields.reference.withOutReferenceOption'),
-                        is_covered: 0,
-                        functional_area_id: null,
-                        amount: 0,
-                        date: null,
-                        currency_code: ""
-                    });
-                }
+                // if (oUser?.isInternalUser) {
+                //     lRefs.push({
+                //         id: 0,
+                //         name: t('dialog.fields.reference.withOutReferenceOption'),
+                //         is_covered: 0,
+                //         functional_area_id: null,
+                //         amount: 0,
+                //         date: null,
+                //         currency_code: ""
+                //     });
+                // }
 
                 for (const item of data) {
                     lRefs.push({
