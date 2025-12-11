@@ -104,6 +104,8 @@ const constants = {
     maxFileSizeForHuman: '25 MB',
     allowedExtensions: ['application/pdf', 'text/xml', 'image/png', 'image/jpg', 'image/jpeg', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
     allowedExtensionsNames: 'application/pdf, text/xml, image/png, image/jpg, image/jpeg, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    allowedExtensionsPrepay: ['application/pdf', 'text/xml', 'image/png', 'image/jpg', 'image/jpeg'],
+    allowedExtensionsNamesPrepay: 'application/pdf, text/xml, image/png, image/jpg, image/jpeg',
     maxUnitFile: 5 * 1024 * 1024,
     maxUnitFileForHuman: '5 MB',
 
@@ -136,6 +138,7 @@ const constants = {
     DOC_TYPE_OC: 21,
     DOC_TYPE_CRP: 51,
     DOC_TYPE_NC: 46,
+    DOC_TYPE_PP: 52,
 
     //Clase de transacciòn
     TRANSACTION_CLASS_COMPRAS: 1,
@@ -158,6 +161,7 @@ const constants = {
     RESOURCE_TYPE_CRP: 16,
     RESOURCE_TYPE_NC: 6,
     RESOURCE_TYPE_OC: 3,
+    RESOURCE_TYPE_PP: 12,
 
     //estatus de pagos
     PAYMENT_STATUS_NEW_ID: 1,
@@ -177,6 +181,7 @@ const constants = {
     FLOW_AUTH_PARTNER: 17,
     FLOW_AUTH_CRP: 17,
     FLOW_AUTH_NC: 17,
+    FLOW_AUTH_PP: 1,
 
     //Calendar
     MONTHS_BACK_LIMIT: 6,

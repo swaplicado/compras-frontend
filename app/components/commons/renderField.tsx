@@ -5,12 +5,13 @@ import { InputTextarea } from 'primereact/inputtextarea';
 import { InputText } from 'primereact/inputtext';
 import { InputNumber } from 'primereact/inputnumber';
 import { ProgressSpinner } from 'primereact/progressspinner';
-import { Calendar } from 'primereact/calendar';
+import { Calendar, CalendarDateTemplateEvent } from 'primereact/calendar';
 import DateFormatter from '@/app/components/commons/formatDate';
 import { MultiSelect } from 'primereact/multiselect';
 import { addLocale } from 'primereact/api';
 import { useTranslation } from 'react-i18next';
 import { Checkbox } from "primereact/checkbox";
+import moment from 'moment';
 
 interface renderFieldProps {
     label: string;
@@ -33,11 +34,25 @@ interface renderFieldProps {
     checkboxKey?: string | number;
     passthrough?: any;
     textAreaRows?: number;
+    withDateTemplate?: boolean;
+    lDaysToPay?: any[];
 }
 
 export const RenderField = (props: renderFieldProps) => {
     const { t: tCommon } = useTranslation('common');
     addLocale('es', tCommon('calendar', { returnObjects: true }) as any);
+
+    const dateTemplate = (date: number, oCalendarDate: CalendarDateTemplateEvent) => {
+        const { day, month, year, otherMonth, today, selectable } = oCalendarDate;
+        const momentDate = moment({ year, month, day: day });
+
+        if (props.lDaysToPay?.includes(momentDate.weekday())) {
+            return <div className="w-full bg-primary text-center">{date}</div>;
+        }
+
+        return date;
+    };
+
     return (
         <>
             {props.type == 'dropdown' && (
@@ -146,6 +161,7 @@ export const RenderField = (props: renderFieldProps) => {
                                     readOnly={props.readonly} 
                                     disabled={props.disabled} 
                                     maxLength={50} 
+                                    min={0}
                                     minFractionDigits={2} 
                                     maxFractionDigits={2} 
                                     inputClassName="text-right" 
@@ -221,6 +237,7 @@ export const RenderField = (props: renderFieldProps) => {
                                     }
                                 }}
                                 pt={props.passthrough}
+                                dateTemplate={(e) => props.withDateTemplate ? dateTemplate(e.day, e) : e.day}
                             />
                             {props.errors[props.errorKey] && <small className="p-error">{props.errorMessage}</small>}
                             </div>
@@ -232,7 +249,7 @@ export const RenderField = (props: renderFieldProps) => {
             {props.type == 'checkbox' && (
                 <div className={`mb-2 col-12 md:col-${props.mdCol}`}>
                     <div className="">
-                        <div >
+                        <div className="flex align-items-start">
                             <Checkbox
                                 inputId={`is_checkbox_${props.checkboxKey}`}
                                 name={`is_checkbox_${props.checkboxKey}`}
@@ -244,7 +261,7 @@ export const RenderField = (props: renderFieldProps) => {
                                 disabled={props.disabled}
                                 pt={props.passthrough}
                             />
-                            <label htmlFor={`is_checkbox_${props.checkboxKey}`} className="ml-2">
+                            <label htmlFor={`is_checkbox_${props.checkboxKey}`} className="ml-2 flex-1">
                                 {props.label}
                             </label>
                         </div>

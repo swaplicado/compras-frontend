@@ -183,6 +183,54 @@
                             "to": "/pages/partners/accountState"
                         }
                     ]
+                },
+                {
+                    "label": "Proformas",
+                    "icon": "",
+                    "items": [
+                        {
+                            "label": "Recepción de proformas",
+                            "icon": "",
+                            "items": [
+                                {
+                                    "label": "Cargar",
+                                    "icon": "pi pi-upload",
+                                    "to": "/pages/documents/prePayments/upload"
+                                },
+                                {
+                                    "label": "Revisadas",
+                                    "icon": "pi pi-check-square",
+                                    "to": "/pages/documents/prePayments/accepted"
+                                },
+                                {
+                                    "label": "Rechazadas",
+                                    "icon": "pi pi-times-circle",
+                                    "to": "/pages/documents/prePayments/rejected"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "Monitorear autorizaciones",
+                            "icon": "",
+                            "items": [
+                                {
+                                    "label": "En autorización",
+                                    "icon": "pi pi-clock",
+                                    "to": "/pages/documents/prePayments/authorizations/consultAuth/inAuthorization"
+                                },
+                                {
+                                    "label": "Autorizadas",
+                                    "icon": "pi pi-check-circle",
+                                    "to": "/pages/documents/prePayments/authorizations/consultAuth/authorized"
+                                },
+                                {
+                                    "label": "Rechazadas",
+                                    "icon": "pi pi-times-circle",
+                                    "to": "/pages/documents/prePayments/authorizations/consultAuth/rejected"
+                                }
+                            ]
+                        }
+                    ]
                 }
             ]
         }

@@ -85,6 +85,12 @@ export const CustomFileViewer: React.FC<FileViewerProps> = ({
             } else {
                 return;
             }
+        } else if (currentFile.extension == 'xls' || currentFile.extension == 'xlsx') {
+            if (currentFile.url != '#') {
+                setObjectUrl(currentFile.url);
+            } else {
+                return;
+            }
         }
     }, [currentFile]);
 
