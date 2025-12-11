@@ -642,7 +642,7 @@ const AcceptedPrepayment = () => {
             area: data.functional_area_name,
             authz_acceptance_notes: data.authz_acceptance_notes,
             authz_authorization_notes: data.authz_authorization_notes,
-            payment_date: DateFormatter(data.payment_date),
+            payment_date: data.payment_date ? DateFormatter(data.payment_date) : '',
             payment_percentage: data.payment_percentage,
             payment_amount: data.payment_amount,
             description: data.notes,

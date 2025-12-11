@@ -430,7 +430,7 @@ export const DialogPrepay = ({
                 setEditableBodyFields?.(false);
             }
         }
-    }, [oPrepayObj?.partner])
+    }, [oPrepayObj?.partner, oPrepayObj?.references])
 
     // Efecto para mantener selectArea sincronizado cuando cambian references
     useEffect(() => {
