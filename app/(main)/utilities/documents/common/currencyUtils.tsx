@@ -23,7 +23,7 @@ export const FormateadorMonetario = (valor: number | string) => {
       const numero = typeof valor === 'string' ? parseFloat(valor) : valor;
       
       // Validar que sea un número válido
-      if (isNaN(numero)) return 'Valor inválido';
+      if (isNaN(numero)) return '';
       
       // Formatear a 2 decimales
       return numero.toLocaleString('es-MX', {

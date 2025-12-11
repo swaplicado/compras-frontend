@@ -13,6 +13,8 @@ interface tableEtyProps {
 }
 
 export const TableEty = ({ lEtys }: tableEtyProps) => {
+    console.log('lEtys: ', lEtys);
+    
     const { t } = useTranslation('oc');
     const { t: tCommon } = useTranslation('common');
     const [visible, setVisible] = useState<boolean>(false);
@@ -104,7 +106,11 @@ export const TableEty = ({ lEtys }: tableEtyProps) => {
                         </tr>
                         <tr>
                             <td className="font-bold">Precio un. anterior</td>
-                            <td>{ FormateadorMonetario(oItemH?.priceUnitary) + ' ' + oItemH?.currencySymbol }</td>
+                            <td>
+                                { oItemH?.priceUnitary && oItemH?.currencySymbol (
+                                    FormateadorMonetario(oItemH?.priceUnitary) + ' ' + oItemH?.currencySymbol 
+                                )}
+                            </td>
                         </tr>
                         <tr>
                             <td className="font-bold">% Variación</td>

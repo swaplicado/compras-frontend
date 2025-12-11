@@ -241,12 +241,13 @@ export const TableCrp = ({
                 <Column field="oPartner" header="oPartner" hidden />
                 <Column field="authz_acceptance_notes" header="authz_acceptance_notes" hidden />
                 <Column field="authz_authorization_notes" header="authz_authorization_notes" hidden />
-                <Column field="company" header={t('datatable.columns.company')} hidden={ columnsProps?.company.hidden } />
-                <Column field="date" header={t('datatable.columns.date')} body={appDateBodyTemplate} hidden={ columnsProps?.date.hidden } />
-                <Column field="folio" header={t('datatable.columns.folio')} hidden={ columnsProps?.folio.hidden } />
-                <Column field="uuid" header={t('datatable.columns.uuid')} hidden={ columnsProps?.uuid.hidden } />
-                <Column field="authz_acceptance_name" header={'Aceptación'} body={statusAcceptanceDpsBodyTemplate} hidden={ columnsProps?.authz_acceptance_name.hidden } />
-                <Column field="authz_authorization_name" header={'Autorización'} body={statusAuthDpsBodyTemplate} hidden={ columnsProps?.authz_authorization_name.hidden } />
+                <Column field="company" header={t('datatable.columns.company')} footer={t('datatable.columns.company')} hidden={ columnsProps?.company.hidden } />
+                <Column field="provider_full_name" header="Proveedor" footer="Proveedor" />
+                <Column field="date" header={t('datatable.columns.date')} footer={t('datatable.columns.date')} body={appDateBodyTemplate} hidden={ columnsProps?.date.hidden } />
+                <Column field="folio" header={t('datatable.columns.folio')} footer={t('datatable.columns.folio')} hidden={ columnsProps?.folio.hidden } />
+                <Column field="uuid" header={t('datatable.columns.uuid')} hidden />
+                <Column field="authz_acceptance_name" header={'Aceptación'} footer={'Aceptación'} body={statusAcceptanceDpsBodyTemplate} hidden={ columnsProps?.authz_acceptance_name.hidden } />
+                <Column field="authz_authorization_name" header={'Autorización'} footer={'Autorización'} body={statusAuthDpsBodyTemplate} hidden={ columnsProps?.authz_authorization_name.hidden } />
                 <Column field="id" header={t('datatable.columns.files')} footer={t('datatable.columns.files')} body={fileBodyTemplate} />
                 <Column field="id_dps" header={'Eliminar'} footer={'Eliminar'} body={deleteBodyTemplate} hidden={ columnsProps?.delete.hidden } />
             </DataTable>

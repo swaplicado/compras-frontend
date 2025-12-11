@@ -87,6 +87,7 @@ export const getCRP = async (props: getCRPProps) => {
                     notes: data[i].notes,
                     number: data[i].number,
                     oProvider: oProvider,
+                    provider_full_name: data[i].partner.full_name,
                     payment_amount: data[i].payment_amount,
                     payment_date: DateFormatter(data[i].payment_date),
                     reference: reference,
@@ -138,7 +139,7 @@ export const getPaymentsExec = async ({
             for (let i = 0; i < data.length; i++) {
                 payments.push({
                     id: data[i].id,
-                    name: data[i].folio + ' ' + data[i].amount + ' ' +data[i].currency__code + ' ' + DateFormatter(data[i].exec_date_n),
+                    name: 'Folio: ' + data[i].folio + ' Pago: ' + data[i].amount + ' ' +data[i].currency__code + ' Fecha: ' + DateFormatter(data[i].exec_date_n),
                     functional_area__id: data[i].functional_area__id,
                     functional_area__name: data[i].functional_area__name
                     // folio: data[i].folio,
