@@ -130,14 +130,22 @@ const AcceptedPrepayment = () => {
     const getLPrepayments = async () => {
         let params: any = {};
         if (oUser.isInternalUser) {
-            const route = constants.ROUTE_GET_DPS_AUTHORIZATION;
+            // const route = constants.ROUTE_GET_DPS_AUTHORIZATION;
+            // params = {
+            //     route: route,
+            //     type: 1,
+            //     user_id: oUser.oUser.external_id,
+            //     id_actor_type: 2,
+            //     document_type: constants.RESOURCE_TYPE_PP,
+            //     authz_authorization: constants.REVIEW_PROCESS_ID
+            // };
+            const route = constants.ROUTE_GET_DPS_AUTHORIZATIONS_BY_FUNCTIONAL_AREA;
             params = {
                 route: route,
-                type: 1,
+                functional_area: oUser.oUser.functional_areas,
+                document_type: constants.DOC_TYPE_PP,
                 user_id: oUser.oUser.external_id,
-                id_actor_type: 2,
-                document_type: constants.RESOURCE_TYPE_PP,
-                authz_authorization: constants.REVIEW_PROCESS_ID
+                auth_status: constants.REVIEW_PROCESS_ID,
             };
         }
         if (oUser.isProvider) {
