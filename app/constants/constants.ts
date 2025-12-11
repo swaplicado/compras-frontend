@@ -181,7 +181,7 @@ const constants = {
     FLOW_AUTH_PARTNER: 17,
     FLOW_AUTH_CRP: 17,
     FLOW_AUTH_NC: 17,
-    FLOW_AUTH_PP: 1,
+    FLOW_AUTH_PP: 17,
 
     //Calendar
     MONTHS_BACK_LIMIT: 6,
@@ -195,7 +195,7 @@ const constants = {
 
     //Tipos de referencia
     REFERENCE_TYPE_OC: 22,
-    REFERENCE_TYPE_TICKET: 61,
+    REFERENCE_TYPE_TICKET: 91,
 
     //Processing type para facturas
     PROCESSING_TYPE_INVOICE_FLETE: 11,
