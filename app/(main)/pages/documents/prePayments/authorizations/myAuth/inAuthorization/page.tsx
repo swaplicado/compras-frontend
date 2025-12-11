@@ -328,12 +328,12 @@ const AcceptedPrepayment = () => {
             }}
         >
             <h3 className="m-0 text-900 font-medium">
-                {t('titleUpload')}
+                {t('titleAuthNc')}
                 &nbsp;&nbsp;
                 <Tooltip target=".custom-target-icon" />
                 <i
                     className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                    data-pr-tooltip={t('titleUploadTooltip')}
+                    data-pr-tooltip={t('titleAuthNc')}
                     data-pr-position="right"
                     data-pr-my="left center-2"
                     style={{ fontSize: '1rem', cursor: 'pointer' }}

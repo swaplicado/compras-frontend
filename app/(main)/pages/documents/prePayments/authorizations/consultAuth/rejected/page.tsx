@@ -140,6 +140,17 @@ const AcceptedPrepayment = () => {
                 authz_authorization: constants.REVIEW_REJECT_ID
             };
         }
+        if (oUser.isProvider) {
+            const route = constants.ROUTE_GET_DPS_BY_PARTNER_ID
+            params = {
+                route: route,
+                partner_id: oUser.oProvider.id,
+                transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
+                document_type: constants.DOC_TYPE_PP,
+                authz_acceptance: constants.REVIEW_ACCEPT_ID,
+                authz_authorization: constants.REVIEW_REJECT_ID,
+            };
+        }
 
         await getNc({
             params: params,
@@ -513,12 +524,12 @@ const AcceptedPrepayment = () => {
             }}
         >
             <h3 className="m-0 text-900 font-medium">
-                {t('titleUpload')}
+                {t('titleRejectedNc')}
                 &nbsp;&nbsp;
                 <Tooltip target=".custom-target-icon" />
                 <i
                     className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                    data-pr-tooltip={t('titleUploadTooltip')}
+                    data-pr-tooltip={t('titleRejectedNcTooltip')}
                     data-pr-position="right"
                     data-pr-my="left center-2"
                     style={{ fontSize: '1rem', cursor: 'pointer' }}
