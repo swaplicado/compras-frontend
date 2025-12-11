@@ -27,8 +27,9 @@ import { getlUrlFilesDps } from '@/app/(main)/utilities/documents/common/filesUt
 import { RenderInfoButton } from "@/app/components/commons/instructionsButton";
 import { getLDaysToPay } from '@/app/(main)/utilities/documents/common/daysToPayUtils';
 import DateFormatter from '@/app/components/commons/formatDate';
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 
-const UploadPrepayment = () => {
+const AcceptedPrepayment = () => {
     const [startDate, setStartDate] = useState<string>('');
     const [endDate, setEndtDate] = useState<string>('');
     const [lNc, setLNc] = useState<any[]>([]);
@@ -43,6 +44,8 @@ const UploadPrepayment = () => {
     const [showInfo, setShowInfo] = useState<boolean>(false);
     const [showManual, setShowManual] = useState<boolean>(false);
     const [lDaysToPay, setLDaysToPay] = useState<Array<any>>([]);
+    const [withBtnSendAuth, setWithBtnSendAuth] = useState<boolean>(false);
+    const [flowAuthDialogVisible, setFlowAuthDialogVisible] = useState<boolean>(false);
 
     //constantes para el dialog
     const [visible, setDialogVisible] = useState<boolean>(false);
@@ -101,13 +104,13 @@ const UploadPrepayment = () => {
 
     const columnsProps = {
         authz_acceptance_name: {
-            hidden: false
+            hidden: true
         },
         actors_of_action: {
             hidden: true
         },
         authz_authorization_name: {
-            hidden: true
+            hidden: false
         },
         delete: {
             hidden: true
@@ -127,29 +130,14 @@ const UploadPrepayment = () => {
     const getLPrepayments = async () => {
         let params: any = {};
         if (oUser.isInternalUser) {
-            const route = constants.ROUTE_GET_DPS_BY_AREA_ID
+            const route = constants.ROUTE_GET_DPS_AUTHORIZATION;
             params = {
                 route: route,
-                functional_area: userFunctionalAreas,
-                transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
-                document_type: constants.DOC_TYPE_PP,
-                authz_acceptance: constants.REVIEW_PENDING_ID,
-                start_date: startDate,
-                end_date: endDate,
-                user_id: oUser.id
-            };
-        }
-
-        if (oUser.isProvider) {
-            const route = constants.ROUTE_GET_DPS_BY_PARTNER_ID
-            params = {
-                route: route,
-                partner_id: oUser.oProvider.id,
-                transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
-                document_type: constants.DOC_TYPE_PP,
-                authz_acceptance: constants.REVIEW_PENDING_ID,
-                start_date: startDate,
-                end_date: endDate,
+                type: 1,
+                user_id: oUser.oUser.external_id,
+                id_actor_type: 2,
+                document_type: constants.RESOURCE_TYPE_PP,
+                authz_authorization: constants.REVIEW_ACCEPT_ID
             };
         }
 
@@ -206,7 +194,7 @@ const UploadPrepayment = () => {
             }
         }
 
-        if (type == 'review') {
+        if (type = 'review') {
             newErrors = {
                 payment_date: oPrepay.payment_amount ? (oPrepay.payment_amount > 0 ? !oPrepay.payment_date : false) : false,
                 notes: !oPrepay.description,
@@ -317,10 +305,10 @@ const UploadPrepayment = () => {
                     showToast('info', 'Ingresa un comentario de rechazo del CRP');
                     return;
                 }
-            } else {
-                if (!validate('review')) {
-                    return;
-                }
+            }
+
+            if (!validate('review')) {
+                return;
             }
 
             const date = oPrepay.payment_date ? DateFormatter(oPrepay.payment_date, 'YYYY-MM-DD') : '';
@@ -373,6 +361,87 @@ const UploadPrepayment = () => {
             setLoading(false);
         }
     };
+
+    const handleFlowAuthorization = async () => {
+        try {
+            setLoading(true);
+            
+            const route = constants.ROUTE_POST_START_AUTHORIZATION;
+            const response = await axios.post(constants.API_AXIOS_POST, {
+                route,
+                jsonData: {
+                    id_external_system: 1,
+                    id_company: oPrepay.company_external_id,
+                    id_flow_model: constants.FLOW_AUTH_NC,
+                    resource: {
+                        code: oPrepay.folio,
+                        name: oPrepay.partner_full_name,
+                        content: {},
+                        external_id: oPrepay.id,
+                        resource_type: constants.RESOURCE_TYPE_NC
+                    },
+                    deadline: null,
+                    sent_by: oUser.oUser.external_id, //external user id
+                    id_actor_type: 2,
+                    stakeholders: [{
+                        external_user_id: oUser.oUser.external_id,
+                        id_actor_type: 2
+                    }],
+                    notes: ''
+                }
+            });
+
+            if (response.status == 200) {
+                showToast('success', 'Registro enviado a autorizar', 'Realizado');
+                await getLPrepayments();
+            } else {
+                throw new Error('');
+            }
+        } catch (error: any) {
+            showToast('error', error.response?.data?.error || 'Error al enviar el registro a autorizar');
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const accept = async () => {
+            await handleFlowAuthorization();
+        }
+    
+        const reject = () => {
+            
+        }
+    
+        const sendToAuth = async () => {
+            try {                
+                if (!oPrepay) {
+                    showToast('info', 'Selecciona un renglón');
+                    return;
+                }
+    
+                const id_dps = oPrepay.id;
+                const folio = oPrepay.folio;
+                confirmDialog({
+                    message: '¿Quieres enviar a autorizar: ' + folio + '?',
+                    header: 'Confirma envío de autorización',
+                    icon: 'pi pi-info-circle',
+                    acceptClassName: 'p-button-primary',
+                    acceptLabel: 'Si',
+                    rejectLabel: 'No',
+                    accept: () => accept(),
+                    reject: () => reject()
+                });
+            } catch (error: any) {
+                
+            }
+        }
+
+    useEffect(() => {
+            if (flowAuthDialogVisible) {
+                sendToAuth();
+                setFlowAuthDialogVisible(false);
+            }
+        }, [flowAuthDialogVisible])
 
     useEffect(() => {
         if (oPrepay?.references) {
@@ -430,13 +499,13 @@ const UploadPrepayment = () => {
                     jsonData: {
                         id_external_system: 1,
                         id_company: oPrepay.company_external_id,
-                        id_flow_model: constants.FLOW_AUTH_PP,
+                        id_flow_model: constants.FLOW_AUTH_NC,
                         resource: {
                             code: oPrepay.folio,
                             name: oPrepay.partner_full_name,
                             content: {},
                             external_id: oPrepay.id,
-                            resource_type: constants.RESOURCE_TYPE_PP
+                            resource_type: constants.RESOURCE_TYPE_NC
                         },
                         deadline: null,
                         sent_by: oUser.oUser.external_id, //external user id
@@ -579,12 +648,7 @@ const UploadPrepayment = () => {
     }, [lInvoicesToReview])
 
     const handleDoubleClick = async (e: DataTableRowClickEvent) => {
-        if (oUser.isInternalUser) {
-            setIsReview(true);
-        } else {
-            setIsReview(false);
-        }
-
+        setIsReview(false);
         setLoadingFiles(true);
         setDialogMode('view');
         setIsXmlValid(true);
@@ -659,6 +723,11 @@ const UploadPrepayment = () => {
     useEffect(() => {
         const init = async () => {
             setLoading(true);
+            if (oUser.isInternalUser) {
+                setWithBtnSendAuth(true);
+            } else {
+                setWithBtnSendAuth(false);
+            }
             await getlCompanies({
                 setLCompanies,
                 setLCompaniesFilter,
@@ -714,7 +783,8 @@ const UploadPrepayment = () => {
                 {loading && loaderScreen()}
                 <Toast ref={toast} />
                 <Card header={headerCard} pt={{ content: { className: 'p-0' } }}>
-                    <RenderInfoButton
+                    <ConfirmDialog />
+                    {/* <RenderInfoButton
                         instructions={getObjectIntruction()}
                         showInfo={showInfo}
                         setShowInfo={setShowInfo}
@@ -726,7 +796,7 @@ const UploadPrepayment = () => {
                         dialogManualBtnTooltipText={"Videos de ayuda"}
                         dialogManualHeaderText={"Videos de ayuda"}
                         lVideos={[]}
-                    />
+                    /> */}
                     <DialogPrepay
                         visible={visible}
                         onHide={() => setDialogVisible(false)}
@@ -772,6 +842,7 @@ const UploadPrepayment = () => {
                         editableBodyFields={editableBodyFields}
                         setEditableBodyFields={setEditableBodyFields}
                         lDaysToPay={lDaysToPay}
+                        showAuthComments={true}
                     />
                     <TablePrepayments
                         lNc={lNc}
@@ -785,7 +856,6 @@ const UploadPrepayment = () => {
                         dateFilter={dateFilter}
                         setDateFilter={setDateFilter}
                         showToast={showToast}
-                        withBtnCreate={true}
                         selectedRow={oPrepay}
                         setSelectedRow={setOPrepay}
                         setDialogVisible={setDialogVisible}
@@ -798,4 +868,4 @@ const UploadPrepayment = () => {
     )
 }
 
-export default UploadPrepayment;
+export default AcceptedPrepayment;

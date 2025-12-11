@@ -17,6 +17,9 @@ import { btnScroll } from '@/app/(main)/utilities/commons/useScrollDetection';
 import { useIntersectionObserver } from 'primereact/hooks';
 import { Divider } from 'primereact/divider';
 import { FieldsEditAcceptance } from '@/app/components/documents/invoice/fieldsEditAcceptance';
+import { findCurrency, findFiscalRegime, findPaymentMethod, findUseCfdi } from '@/app/(main)/utilities/files/catFinder';
+import { SelectButton } from 'primereact/selectbutton';
+import { InputNumber } from 'primereact/inputnumber';
 
 interface DialogPrepay {
     visible: boolean;
@@ -68,6 +71,7 @@ interface DialogPrepay {
     setLFilesToEdit: React.Dispatch<React.SetStateAction<any>>;
     showAuthComments?: boolean;
     isInAuth?: boolean;
+    lDaysToPay?: any[];
 }
 
 export const DialogPrepay = ({
@@ -118,6 +122,7 @@ export const DialogPrepay = ({
     setLFilesToEdit,
     showAuthComments,
     isInAuth,
+    lDaysToPay = []
 }: DialogPrepay) => {
     const { t } = useTranslation('prepay');
     const { t: tCommon } = useTranslation('common');
@@ -131,6 +136,8 @@ export const DialogPrepay = ({
     const [fileErrors, setFilesErrros] = useState({
         files: false,
     });
+    const [percentOption, setPercentOption] = useState<string | undefined>();
+    const lPercentOptions = ['Todo', 'Parcial', 'Nada'];
 
     // estados para referencias y areas
     const [oSelectedReference, setSelectedReference] = useState<any>(null);
@@ -184,29 +191,37 @@ export const DialogPrepay = ({
         return isNaN(parsed.getTime()) ? null : parsed;
     };
 
-    // const dateToDMonthY = (date, includeTime = false) => {
-    //     // Revisar si date es null o indefinido o vacío
-    //     if (!date || date == undefined || date == "") {
-    //         return '';
-    //     }
-
-    //     // Configurar moment en español
-    //     moment.locale('es');
-
-    //     const d = moment(date);
-
-    //     if (includeTime) {
-    //         // Formato: DD MMM YYYY HH:mm (MMM = mes en 3 caracteres)
-    //         const formattedTime = d.format('DD MMM YYYY HH:mm');
-    //         return formattedTime;
-    //     } else {
-    //         // Formato: DD MMM YYYY (MMM = mes en 3 caracteres)
-    //         const formattedTime = d.format('DD MMM YYYY');
-    //         return formattedTime;
-    //     }
-    // };
+    const setNextTusday = () => {
+        const nextTuesday = new Date();
+        const daysUntilTuesday = (2 - nextTuesday.getDay() + 7) % 7 || 7;
+        nextTuesday.setDate(nextTuesday.getDate() + daysUntilTuesday);
+        return nextTuesday;
+    }
 
     //Para formatear el input del componente Calendar
+    useEffect(() => {
+        if (oSelectedReference?.currency_code) {
+            const oCurrency = findCurrency(lCurrencies, oSelectedReference.currency_code, 'code');
+            setOPrepayFn?.((prev: any) => ({
+                ...prev,
+                oCurrency: {
+                    id: oCurrency.id,
+                    name: oCurrency.name
+                }
+            }))
+        }
+        
+    }, [oSelectedReference?.currency_code]);
+
+    const inputCalendarRefToSelectReference = useRef<HTMLInputElement>(null);
+    useEffect(() => {
+        setTimeout(() => {
+            if (inputCalendarRefToSelectReference.current && oSelectedReference?.date) {
+                inputCalendarRefToSelectReference.current.value = DateFormatter(oSelectedReference?.date);
+            }
+        }, 100);
+    }, [oSelectedReference?.date]);
+
     const inputCalendarRef = useRef<HTMLInputElement>(null);
     useEffect(() => {
         setTimeout(() => {
@@ -215,6 +230,81 @@ export const DialogPrepay = ({
             }
         }, 100);
     }, [oPrepayObj?.date]);
+
+    const inputCalendarRefPaymentDate = useRef<HTMLInputElement>(null);
+    useEffect(() => {
+        setTimeout(() => {
+            if (inputCalendarRefPaymentDate.current && oPrepayObj?.payment_date) {
+                inputCalendarRefPaymentDate.current.value = DateFormatter(oPrepayObj?.payment_date);
+            }
+        }, 100);
+    }, [oPrepayObj?.payment_date]);
+
+    const calcAmountPercentage = async (originEvent: string, value: number) => {
+        if (originEvent == 'amount') {
+            if (value > oPrepayObj?.amount) {
+                value = oPrepayObj?.amount;
+            }
+            const paymentPercentage = (value * 100) / oPrepayObj?.amount;
+            setOPrepayFn?.((prev: any) => ({
+                ...prev,
+                payment_percentage: Math.min(paymentPercentage, 100),
+                payment_amount: value,
+            }));
+        }
+
+        if (originEvent == 'percentage') {
+            if (value > 100) {
+                value = 100;
+            }
+            
+            const paymentAmount = (oPrepayObj?.amount * value) / 100;
+            
+            setOPrepayFn?.((prev: any) => ({
+                ...prev,
+                payment_amount: paymentAmount.toString(),
+                payment_percentage: value,
+            }));
+        }
+    };
+
+    useEffect(() => {
+        if (percentOption == 'Todo') {
+            setOPrepayFn?.((prev: any) => ({ ...prev, payment_percentage: 100 }));
+            calcAmountPercentage('percentage', 100);
+        } else if (percentOption == 'Nada') {
+            setOPrepayFn?.((prev: any) => ({ ...prev, payment_percentage: 0 }));
+            setOPrepayFn?.((prev: any) => ({ ...prev, payment_date: '' }));
+            calcAmountPercentage('percentage', 0);
+        }
+    }, [percentOption]);
+
+    useEffect(() => {
+        if (oPrepayObj?.payment_percentage > 100) {
+            setOPrepayFn?.((prev: any) => ({ ...prev, payment_percentage: 100 }));
+        }
+
+        if (oPrepayObj?.payment_percentage == 100) {
+            setPercentOption(lPercentOptions[0]);
+        } else if (oPrepayObj?.payment_percentage == 0 || !(oPrepayObj?.payment_percentage > 0)) {
+            setPercentOption(lPercentOptions[2]);
+            setOPrepayFn?.((prev: any) => ({ ...prev, payment_date: '' }));
+            setErrors?.((prev: any) => ({ ...prev, payment_date: false }));
+        } else {
+            setPercentOption(lPercentOptions[1]);
+        }
+    }, [oPrepayObj?.payment_percentage]);
+
+    // Inicializar payment_amount cuando se abre el diálogo
+    useEffect(() => {
+        if (visible && oPrepayObj?.amount && oPrepayObj?.payment_percentage && !oPrepayObj?.payment_amount) {
+            const paymentAmount = (oPrepayObj.amount * oPrepayObj.payment_percentage) / 100;
+            setOPrepayFn?.((prev: any) => ({
+                ...prev,
+                payment_amount: paymentAmount.toString()
+            }));
+        }
+    }, [visible, oPrepayObj?.amount, oPrepayObj?.payment_percentage]);
 
     // Obtener referencias (misma lógica que en dialog/getlReferences)
     const getlReferences = async (company_id = '', partner_id = '', filtered = true) => {
@@ -225,7 +315,6 @@ export const DialogPrepay = ({
             }
             setLoadingReferences(true);
             const route = constants.ROUTE_GET_REFERENCES;
-            console.log("peticion:", route);
             const response = await axios.get(constants.API_AXIOS_GET, {
                 params: {
                     route: route,
@@ -253,7 +342,6 @@ export const DialogPrepay = ({
                     });
                 }
 
-                console.log("la data:", data);
                 for (const item of data) {
                     lRefs.push({
                         id: item.id,
@@ -316,13 +404,26 @@ export const DialogPrepay = ({
                 }
                 setOPrepayFn?.((prev: any) => ({ ...prev, partner: oProvider }));
             }
+
+            if (dialogMode == 'create') {
+                setOPrepayFn?.((prev: any) => ({
+                    ...prev,
+                    date: new Date()
+                }));
+            }
+            if (isInReview && !oPrepayObj.payment_date) {
+                const nextTusday = setNextTusday();
+                setOPrepayFn?.((prev: any) => ({
+                    ...prev,
+                    payment_date: nextTusday
+                }));
+            }
         }
     }, [visible]);
 
     useEffect(() => {
         if (dialogMode == 'create') {
             if (oPrepayObj?.partner && oPrepayObj?.references !== undefined) {
-                console.log("references", oPrepayObj?.references);
                 setEditableBodyFields?.(true);
             }
             else {
@@ -336,8 +437,6 @@ export const DialogPrepay = ({
         if (oPrepayObj?.references) {
             if ((dialogMode == 'edit' || dialogMode == 'view')) {
                 setSelectedReference(oPrepayObj?.references[0]);
-                console.log("referencias", oPrepayObj?.references);
-                console.log("referencia", oPrepayObj?.references[0]);
             }
             let areas: any[] = [];
             if (oPrepayObj?.references[0]?.id == 0) {
@@ -347,8 +446,8 @@ export const DialogPrepay = ({
                 for (let i = 0; i < oPrepayObj.references.length; i++) {
                     if (!areas.find((item: any) => item.id == oPrepayObj.references[i].functional_area__id)) {
                         areas.push({
-                            id: oPrepayObj.references[i].functional_area__id,
-                            name: oPrepayObj.references[i].functional_area__name
+                            id: oPrepayObj.references?.[i]?.functional_area__id,
+                            name: oPrepayObj.references?.[i]?.functional_area__name
                         })
                     }
                 }
@@ -358,7 +457,6 @@ export const DialogPrepay = ({
 
     const handleSelectReferenceLocal = (value: any) => {
         setSelectedReference(value);
-        console.log('referencia:', value);
         setErrors((prev: any) => ({ ...prev, references: false }));
         // sincronizar con el objeto principal
         setOPrepayFn?.((prev: any) => ({ ...prev, references: [value] }));
@@ -450,19 +548,21 @@ export const DialogPrepay = ({
                                         errorMessage={'Selecciona proveedor'}
                                     />
                                 )}
-                                {loadingReferences == true ? (
-                                    <ProgressSpinner style={{ width: '50px', height: '50px' }} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />
-                                ) : (
-                                    renderDropdownField(
-                                        t('dialog.fields.reference.label'),
-                                        t('dialog.fields.reference.tooltip'),
-                                        oSelectedReference,
-                                        lReferences,
-                                        lReferences.length > 0 ? t('dialog.fields.reference.placeholder') : t('dialog.fields.reference.placeholderEmpty'),
-                                        'reference',
-                                        t('dialog.fields.reference.helperText'),
-                                        (value) => handleSelectReferenceLocal(value),
-                                        !lReferences || lReferences.length == 0 || dialogMode === 'view'
+                                { dialogMode == 'create' && (
+                                    loadingReferences == true ? (
+                                        <ProgressSpinner style={{ width: '50px', height: '50px' }} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />
+                                    ) : (
+                                        renderDropdownField(
+                                            t('dialog.fields.reference.label'),
+                                            t('dialog.fields.reference.tooltip'),
+                                            oSelectedReference,
+                                            lReferences,
+                                            lReferences.length > 0 ? t('dialog.fields.reference.placeholder') : t('dialog.fields.reference.placeholderEmpty'),
+                                            'reference',
+                                            t('dialog.fields.reference.helperText'),
+                                            (value) => handleSelectReferenceLocal(value),
+                                            !lReferences || lReferences.length == 0
+                                        )
                                     )
                                 )}
                                 {(oSelectedReference?.id == 0 || oSelectedReference?.id == '0') && (
@@ -494,7 +594,7 @@ export const DialogPrepay = ({
                                     tooltip={t('dialog.fields.folio.tooltip')}
                                     value={dialogMode == 'create' ? oSelectedReference?.name : oSelectedReference?.reference}
                                     disabled={true}
-                                    mdCol={6}
+                                    mdCol={3}
                                     type={'text'}
                                     options={[]}
                                     placeholder={t('dialog.fields.folio.placeholder')}
@@ -507,9 +607,9 @@ export const DialogPrepay = ({
                                     tooltip={t('dialog.fields.date.tooltip')}
                                     value={dialogMode == 'create' ? toDate(oSelectedReference?.date) : DateFormatter(oSelectedReference?.date)}
                                     disabled={true}
-                                    mdCol={6}
+                                    mdCol={3}
                                     type={editableBodyFields ? 'calendar' : 'text'}
-                                    inputRef={inputCalendarRef}
+                                    inputRef={inputCalendarRefToSelectReference}
                                     options={[]}
                                     placeholder={t('dialog.fields.date.placeholder')}
                                     errorKey={'date'}
@@ -521,7 +621,7 @@ export const DialogPrepay = ({
                                     tooltip={t('dialog.fields.amount.tooltip')}
                                     value={oSelectedReference?.amount}
                                     disabled={true}
-                                    mdCol={4}
+                                    mdCol={3}
                                     type={'number'}
                                     onChange={(value) => {
                                         setOPrepayFn?.((prev: any) => ({ ...prev, amount: value }));
@@ -536,9 +636,9 @@ export const DialogPrepay = ({
                                 <RenderField
                                     label={t('dialog.fields.currency.label')}
                                     tooltip={t('dialog.fields.currency.tooltip')}
-                                    value={dialogMode == 'create' ? oSelectedReference?.currency_code : oSelectedReference?.currency?.code }
+                                    value={dialogMode == 'create' ? oSelectedReference?.currency_code : (oSelectedReference?.currency?.code ? oSelectedReference?.currency?.code : oSelectedReference?.currency_code) }
                                     disabled={true}
-                                    mdCol={4}
+                                    mdCol={3}
                                     type={'text'}
                                     placeholder={t('dialog.fields.currency.placeholder')}
                                     errorKey={'currency'}
@@ -550,14 +650,14 @@ export const DialogPrepay = ({
                                 {/* División, título: Datos de la proforma */}
                                 <div className={`field col-12 md:col-12 text-center`}>
                                     <Divider className='m-0' />
-                                    <h6>DATOS DEL PAGO POR PROFORMA:</h6>
+                                    <h6>DATOS PROFORMA:</h6>
                                 </div>
                                 <RenderField
                                     label={t('dialog.fields.folio.label')}
                                     tooltip={t('dialog.fields.folio.tooltip')}
                                     value={oPrepayObj?.folio}
                                     disabled={!editableBodyFields}
-                                    mdCol={6}
+                                    mdCol={3}
                                     type={'text'}
                                     onChange={(value) => {
                                         setOPrepayFn?.((prev: any) => ({ ...prev, folio: value }));
@@ -574,7 +674,7 @@ export const DialogPrepay = ({
                                     tooltip={t('dialog.fields.date.tooltip')}
                                     value={editableBodyFields ? oPrepayObj?.date : oPrepayObj?.dateFormatted}
                                     disabled={!editableBodyFields}
-                                    mdCol={6}
+                                    mdCol={3}
                                     type={editableBodyFields ? 'calendar' : 'text'}
                                     inputRef={inputCalendarRef}
                                     onChange={(value) => {
@@ -592,7 +692,7 @@ export const DialogPrepay = ({
                                     tooltip={t('dialog.fields.amount.tooltip')}
                                     value={oPrepayObj?.amount}
                                     disabled={!editableBodyFields}
-                                    mdCol={4}
+                                    mdCol={3}
                                     type={'number'}
                                     onChange={(value) => {
                                         setOPrepayFn?.((prev: any) => ({ ...prev, amount: value }));
@@ -609,7 +709,7 @@ export const DialogPrepay = ({
                                     tooltip={t('dialog.fields.currency.tooltip')}
                                     value={editableBodyFields ? oPrepayObj?.oCurrency : oPrepayObj?.currency_code}
                                     disabled={!editableBodyFields}
-                                    mdCol={4}
+                                    mdCol={3}
                                     type={editableBodyFields ? 'dropdown' : 'text'}
                                     onChange={(value) => {
                                         setOPrepayFn?.((prev: any) => ({ ...prev, oCurrency: value }));
@@ -621,90 +721,268 @@ export const DialogPrepay = ({
                                     errors={formErrors}
                                     errorMessage={'Selecciona moneda'}
                                 />
-                                <RenderField
-                                    label={t('dialog.fields.exchange_rate.label')}
-                                    tooltip={t('dialog.fields.exchange_rate.tooltip')}
-                                    value={oPrepayObj?.exchange_rate}
-                                    disabled={!editableBodyFields}
-                                    mdCol={4}
-                                    type={'number'}
-                                    onChange={(value) => {
-                                        setOPrepayFn?.((prev: any) => ({ ...prev, exchange_rate: value }));
-                                        setFormErrors?.((prev: any) => ({ ...prev, exchange_rate: false }));
-                                    }}
-                                    options={[]}
-                                    placeholder={t('dialog.fields.exchange_rate.placeholder')}
-                                    errorKey={'exchange_rate'}
-                                    errors={formErrors}
-                                    errorMessage={'Ingresa tipo de cambio'}
-                                />
 
                                 {(dialogMode == 'create') && (
-                                    <div className="field col-12 md:col-12">
+                                    <>
+                                        <Divider />
+                                        <div className="field col-12 md:col-12">
+                                            <div className="formgrid grid">
+                                                <div className="col">
+                                                    <label>Archivos proforma</label>
+                                                    &nbsp;
+                                                    <Tooltip target=".custom-target-icon" />
+                                                    <i
+                                                        className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
+                                                        data-pr-tooltip={t('dialog.files.tooltip')}
+                                                        data-pr-position="right"
+                                                        data-pr-my="left center-2"
+                                                        style={{ fontSize: '1rem', cursor: 'pointer' }}
+                                                    ></i>
+                                                    <CustomFileUpload
+                                                        fileUploadRef={fileUploadRef}
+                                                        totalSize={totalSize}
+                                                        setTotalSize={setTotalSize}
+                                                        errors={formErrors}
+                                                        setErrors={setFormErrors}
+                                                        message={message}
+                                                        multiple={true}
+                                                        allowedExtensions={constants.allowedExtensionsPrepay}
+                                                        allowedExtensionsNames={constants.allowedExtensionsNamesPrepay}
+                                                        maxFilesSize={constants.maxFilesSize}
+                                                        maxFileSizeForHuman={constants.maxFileSizeForHuman}
+                                                        maxUnitFileSize={constants.maxUnitFile}
+                                                        errorMessages={{
+                                                            invalidFileType: t('dialog.files.invalidFileType'),
+                                                            invalidAllFilesSize: t('dialog.files.invalidAllFilesSize'),
+                                                            invalidFileSize: t('dialog.files.invalidFileSize'),
+                                                            invalidFileSizeMessageSummary: t('dialog.files.invalidFileSizeMessageSummary'),
+                                                            helperTextFiles: t('dialog.files.helperTextFiles'),
+                                                            helperTextPdf: t('dialog.files.helperTextPdf'),
+                                                            helperTextXml: ''
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                        )}
+                        {withFooter && (dialogMode == 'view' || dialogMode == 'edit') && (
+                            <>
+                                <Divider />
+                                <RenderField
+                                    label={'Descripción de la proforma:'}
+                                    tooltip={''}
+                                    value={oPrepayObj?.description}
+                                    disabled={!isInReview}
+                                    mdCol={12}
+                                    type={'textArea'}
+                                    onChange={(value) => {
+                                        setOPrepayFn?.((prev: any) => ({ ...prev, description: value }));
+                                        setFormErrors?.((prev: any) => ({ ...prev, notes: false }));
+                                    }}
+                                    options={[]}
+                                    placeholder={''}
+                                    errorKey={'notes'}
+                                    errors={formErrors}
+                                    errorMessage={'Ingresa descripción de la proforma'}
+                                    labelClass={'font-bold opacity-100 text-blue-600'}
+                                />
+                                <div className={`field col-12 md:col-12 text-center`}>
+                                    <Divider className='m-0' />
+                                    <h6>DATOS PAGO:</h6>
+                                </div>
+                                <div className="p-fluid formgrid grid">
+                                    <div className="field col-12 md:col-4">
                                         <div className="formgrid grid">
                                             <div className="col">
-                                                <label>Archivos</label>
+                                                <label>% de pago</label>
                                                 &nbsp;
                                                 <Tooltip target=".custom-target-icon" />
                                                 <i
                                                     className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                                                    data-pr-tooltip={t('dialog.files.tooltip')}
+                                                    data-pr-tooltip={t('uploadDialog.percentOption.tooltip')}
                                                     data-pr-position="right"
                                                     data-pr-my="left center-2"
                                                     style={{ fontSize: '1rem', cursor: 'pointer' }}
                                                 ></i>
-                                                <CustomFileUpload
-                                                    fileUploadRef={fileUploadRef}
-                                                    totalSize={totalSize}
-                                                    setTotalSize={setTotalSize}
-                                                    errors={formErrors}
-                                                    setErrors={setFormErrors}
-                                                    message={message}
-                                                    multiple={true}
-                                                    allowedExtensions={constants.allowedExtensionsPrepay}
-                                                    allowedExtensionsNames={constants.allowedExtensionsNamesPrepay}
-                                                    maxFilesSize={constants.maxFilesSize}
-                                                    maxFileSizeForHuman={constants.maxFileSizeForHuman}
-                                                    maxUnitFileSize={constants.maxUnitFile}
-                                                    errorMessages={{
-                                                        invalidFileType: t('dialog.files.invalidFileType'),
-                                                        invalidAllFilesSize: t('dialog.files.invalidAllFilesSize'),
-                                                        invalidFileSize: t('dialog.files.invalidFileSize'),
-                                                        invalidFileSizeMessageSummary: t('dialog.files.invalidFileSizeMessageSummary'),
-                                                        helperTextFiles: t('dialog.files.helperTextFiles'),
-                                                        helperTextPdf: t('dialog.files.helperTextPdf'),
-                                                        helperTextXml: ''
-                                                    }}
-                                                />
+                                                <SelectButton value={percentOption} disabled={!isInReview} onChange={(e) => setPercentOption(e.value)} options={lPercentOptions} style={{ height: '2rem', marginTop: '5px' }} />
                                             </div>
                                         </div>
                                     </div>
-                                )}
-
-                                {(dialogMode == 'view' || dialogMode == 'edit') && (
-                                    <>
-                                        <Divider />
+                                    <div className="field col-12 md:col-2">
+                                        <div className="formgrid grid">
+                                            <div className="col">
+                                                <label>% de pago</label>
+                                                &nbsp;
+                                                <Tooltip target=".custom-target-icon" />
+                                                <i
+                                                    className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
+                                                    data-pr-tooltip={t('uploadDialog.percentOption.tooltip')}
+                                                    data-pr-position="right"
+                                                    data-pr-my="left center-2"
+                                                    style={{ fontSize: '1rem', cursor: 'pointer' }}
+                                                ></i>
+                                                <div className="p-inputgroup flex-1">
+                                                    <span className="p-inputgroup-addon">%</span>
+                                                    <InputNumber
+                                                        placeholder="Porcentaje"
+                                                        disabled={!isInReview}
+                                                        value={oPrepayObj?.payment_percentage}
+                                                        onChange={(e: any) => {
+                                                            // setOPrepayFn?.((prev: any) => ({ ...prev, payment_percentage: e.value }));
+                                                            calcAmountPercentage('percentage', e.value);
+                                                            setFormErrors?.((prev: any) => ({ ...prev, payment_percentage: false }));
+                                                        }}
+                                                        min={0}
+                                                        max={100}
+                                                        maxFractionDigits={2}
+                                                        inputClassName="text-right"
+                                                    />
+                                                </div>
+                                                {formErrors['payment_percentage'] && <small className="p-error">Ingresa % pago</small>}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <RenderField
+                                        label={'Monto pago'}
+                                        tooltip={'Monto pago'}
+                                        value={oPrepayObj?.payment_amount}
+                                        disabled={!isInReview}
+                                        mdCol={2}
+                                        type={'number'}
+                                        onChange={(value) => {
+                                            // setOPrepayFn?.((prev: any) => ({ ...prev, payment_amount: value }));
+                                            // setFormErrors?.((prev: any) => ({ ...prev, payment_amount: false }));
+                                            calcAmountPercentage('amount', value);
+                                        }}
+                                        options={[]}
+                                        placeholder={''}
+                                        errorKey={'payment_amount'}
+                                        errors={formErrors}
+                                        errorMessage={''}
+                                    />
+                                    <div className='flex md:align-items-center col-4'>
                                         <RenderField
-                                            label={t('dialog.fields.authz_acceptance_notes.label')}
-                                            tooltip={t('dialog.fields.authz_acceptance_notes.tooltip')}
-                                            value={oPrepayObj?.authz_acceptance_notes}
+                                            label={'Pagar en pesos mexicanos'}
+                                            tooltip={''}
+                                            value={oPrepayObj?.pay_in_local_currency}
                                             disabled={!isInReview}
                                             mdCol={12}
-                                            type={'textArea'}
+                                            type={'checkbox'}
                                             onChange={(value) => {
-                                                setOPrepayFn?.((prev: any) => ({ ...prev, authz_acceptance_notes: value }));
-                                                setFormErrors?.((prev: any) => ({ ...prev, authz_acceptance_notes: false }));
+                                                setOPrepayFn?.((prev: any) => ({ ...prev, pay_in_local_currency: value }));
+                                                setFormErrors?.((prev: any) => ({ ...prev, pay_in_local_currency: false }));
                                             }}
                                             options={[]}
-                                            placeholder={t('dialog.fields.authz_acceptance_notes.placeholder')}
-                                            errorKey={'authz_acceptance_notes'}
-                                            errors={formErrors}
-                                            errorMessage={'Ingrese comentario para rechazar'}
-                                            labelClass={'font-bold opacity-100 text-blue-600'}
+                                            placeholder={''}
+                                            errorKey={''}
+                                            errors={[]}
+                                            errorMessage={''}
+                                            checkboxKey={'pay_in_local_currency'}
                                         />
-                                    </>
-                                )}
 
+                                    </div>
+                                    <div className='flex md:align-items-center col-2'>
+                                        <RenderField
+                                            label={'Editar fecha pago'}
+                                            tooltip={''}
+                                            value={oPrepayObj?.payment_date_edit}
+                                            disabled={!isInReview}
+                                            mdCol={12}
+                                            type={'checkbox'}
+                                            onChange={(value) => {
+                                                setOPrepayFn?.((prev: any) => ({ ...prev, payment_date_edit: value }));
+                                                setFormErrors?.((prev: any) => ({ ...prev, payment_date_edit: false }));
+                                            }}
+                                            options={[]}
+                                            placeholder={''}
+                                            errorKey={''}
+                                            errors={[]}
+                                            errorMessage={''}
+                                            checkboxKey={'payment_date_edit'}
+                                        />
+                                    </div>
+                                    <RenderField
+                                        label={'Fecha pago'}
+                                        tooltip={'Fecha pago'}
+                                        value={oPrepayObj?.payment_date}
+                                        disabled={!isInReview || !oPrepayObj?.payment_date_edit}
+                                        mdCol={3}
+                                        type={isInReview ? 'calendar' : 'text'}
+                                        inputRef={inputCalendarRefPaymentDate}
+                                        onChange={(value) => {
+                                            setOPrepayFn?.((prev: any) => ({ ...prev, payment_date: value }));
+                                            setFormErrors?.((prev: any) => ({ ...prev, payment_date: false }));
+                                        }}
+                                        options={[]}
+                                        placeholder={''}
+                                        errorKey={'payment_date'}
+                                        errors={formErrors}
+                                        errorMessage={'Selecciona fecha'}
+                                        withDateTemplate={true}
+                                        lDaysToPay={lDaysToPay}
+                                    />
+                                    <div className='flex md:align-items-center col-3'>
+                                        <RenderField
+                                            label={'¿Proforma urgente?'}
+                                            tooltip={''}
+                                            value={oPrepayObj?.is_urgent}
+                                            disabled={!isInReview}
+                                            mdCol={12}
+                                            type={'checkbox'}
+                                            onChange={(value) => {
+                                                setOPrepayFn?.((prev: any) => ({ ...prev, is_urgent: value }));
+                                                setFormErrors?.((prev: any) => ({ ...prev, is_urgent: false }));
+                                            }}
+                                            options={[]}
+                                            placeholder={''}
+                                            errorKey={''}
+                                            errors={[]}
+                                            errorMessage={''}
+                                            checkboxKey={'is_urgent'}
+                                        />
+                                    </div>
+                                    <RenderField
+                                        label={'Instrucciones de pago'}
+                                        tooltip={''}
+                                        value={oPrepayObj?.payment_instructions}
+                                        disabled={!isInReview}
+                                        mdCol={12}
+                                        type={'textArea'}
+                                        onChange={(value) => {
+                                            setOPrepayFn?.((prev: any) => ({ ...prev, payment_instructions: value }));
+                                            setFormErrors?.((prev: any) => ({ ...prev, payment_instructions: false }));
+                                        }}
+                                        options={[]}
+                                        placeholder={''}
+                                        errorKey={''}
+                                        errors={formErrors}
+                                        errorMessage={''}
+                                        labelClass={'font-bold opacity-100 text-blue-600'}
+                                    />
+                                </div>
+                                
+                                <Divider />
+                                <RenderField
+                                    label={t('dialog.fields.authz_acceptance_notes.label')}
+                                    tooltip={t('dialog.fields.authz_acceptance_notes.tooltip')}
+                                    value={oPrepayObj?.authz_acceptance_notes}
+                                    disabled={!isInReview}
+                                    mdCol={12}
+                                    type={'textArea'}
+                                    onChange={(value) => {
+                                        setOPrepayFn?.((prev: any) => ({ ...prev, authz_acceptance_notes: value }));
+                                        setFormErrors?.((prev: any) => ({ ...prev, authz_acceptance_notes: false }));
+                                    }}
+                                    options={[]}
+                                    placeholder={t('dialog.fields.authz_acceptance_notes.placeholder')}
+                                    errorKey={'authz_acceptance_notes'}
+                                    errors={formErrors}
+                                    errorMessage={'Ingrese comentario para rechazar'}
+                                    labelClass={'font-bold opacity-100 text-blue-600'}
+                                />
                                 {showAuthComments && (
                                     <>
                                         <Divider />
@@ -728,10 +1006,6 @@ export const DialogPrepay = ({
                                         />
                                     </>
                                 )}
-                            </div>
-                        )}
-                        {withFooter && (dialogMode == 'view' || dialogMode == 'edit') && (
-                            <>
                                 {!loadingFiles && (
                                     <CustomFileViewer lFiles={lFiles} />
                                 )}

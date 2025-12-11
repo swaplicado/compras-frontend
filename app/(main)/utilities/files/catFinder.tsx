@@ -32,14 +32,28 @@ export const findFiscalRegimeById = ( lFiscalRegimes: any[], regime_id: number |
     }
 }
 
-export const findCurrency = ( lCurrencies: any[], currency_id: number | string) => {
+export const findCurrency = ( lCurrencies: any[], currency_id: number | string, findBy: string = 'id') => {
     try {
         const oCurrency = lCurrencies.map((item: any) => {
-            if (item.id == currency_id) {
-                return item;
-            } else {
-                return null;
+            if (findBy == 'code') {
+                if (item.name == currency_id) {
+                    return item;
+                } else {
+                    return null;
+                }
             }
+            if (findBy == 'id') {
+                if (item.id == currency_id) {
+                    return item;
+                } else {
+                    return null;
+                }
+            }
+            // if (item.id == currency_id) {
+            //     return item;
+            // } else {
+            //     return null;
+            // }
         }).filter(Boolean)[0];
 
         return oCurrency || '';

@@ -27,6 +27,7 @@ import { getlUrlFilesDps } from '@/app/(main)/utilities/documents/common/filesUt
 import { RenderInfoButton } from "@/app/components/commons/instructionsButton";
 import { getLDaysToPay } from '@/app/(main)/utilities/documents/common/daysToPayUtils';
 import DateFormatter from '@/app/components/commons/formatDate';
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 
 const UploadPrepayment = () => {
     const [startDate, setStartDate] = useState<string>('');
@@ -110,7 +111,7 @@ const UploadPrepayment = () => {
             hidden: true
         },
         delete: {
-            hidden: true
+            hidden: false
         },
     }
 
@@ -133,7 +134,7 @@ const UploadPrepayment = () => {
                 functional_area: userFunctionalAreas,
                 transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
                 document_type: constants.DOC_TYPE_PP,
-                authz_acceptance: constants.REVIEW_PENDING_ID,
+                authz_acceptance: constants.REVIEW_REJECT_ID,
                 start_date: startDate,
                 end_date: endDate,
                 user_id: oUser.id
@@ -147,7 +148,7 @@ const UploadPrepayment = () => {
                 partner_id: oUser.oProvider.id,
                 transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
                 document_type: constants.DOC_TYPE_PP,
-                authz_acceptance: constants.REVIEW_PENDING_ID,
+                authz_acceptance: constants.REVIEW_REJECT_ID,
                 start_date: startDate,
                 end_date: endDate,
             };
@@ -206,7 +207,7 @@ const UploadPrepayment = () => {
             }
         }
 
-        if (type == 'review') {
+        if (type = 'review') {
             newErrors = {
                 payment_date: oPrepay.payment_amount ? (oPrepay.payment_amount > 0 ? !oPrepay.payment_date : false) : false,
                 notes: !oPrepay.description,
@@ -317,10 +318,10 @@ const UploadPrepayment = () => {
                     showToast('info', 'Ingresa un comentario de rechazo del CRP');
                     return;
                 }
-            } else {
-                if (!validate('review')) {
-                    return;
-                }
+            }
+
+            if (!validate('review')) {
+                return;
             }
 
             const date = oPrepay.payment_date ? DateFormatter(oPrepay.payment_date, 'YYYY-MM-DD') : '';
@@ -430,13 +431,13 @@ const UploadPrepayment = () => {
                     jsonData: {
                         id_external_system: 1,
                         id_company: oPrepay.company_external_id,
-                        id_flow_model: constants.FLOW_AUTH_PP,
+                        id_flow_model: constants.FLOW_AUTH_NC,
                         resource: {
                             code: oPrepay.folio,
                             name: oPrepay.partner_full_name,
                             content: {},
                             external_id: oPrepay.id,
-                            resource_type: constants.RESOURCE_TYPE_PP
+                            resource_type: constants.RESOURCE_TYPE_NC
                         },
                         deadline: null,
                         sent_by: oUser.oUser.external_id, //external user id
@@ -708,13 +709,77 @@ const UploadPrepayment = () => {
         return instructions;
     }
 
+    const accept = async (id_dps: any) => {
+        try {
+            setLoading(true);
+            const route = '/transactions/documents/'+id_dps+'/delete-document/'
+            const response = await axios.post(constants.API_AXIOS_DELETE, {
+                params: {
+                    route: route
+                }
+            });
+
+            if (response.status == 200) {
+                await getLPrepayments();
+            } else {
+                throw new Error(`Error al eliminar la nota de crédito: ${response.statusText}`);
+            }
+        } catch (error: any) {
+            showToast?.('error', error.response?.data?.error || 'Error al eliminar la nota de crédito', 'Error al eliminar la nota de crédito');
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const reject = (id_dps: any) => {
+        
+    }
+
+    const deleteDps = async (rowData: any) => {
+        try {
+            const id_dps = rowData.id;
+            const folio = rowData.folio;
+            confirmDialog({
+                message: '¿Quieres eliminar esta nota de crédito: ' + folio + '?',
+                header: 'Confirma eliminación',
+                icon: 'pi pi-info-circle',
+                acceptClassName: 'p-button-danger',
+                acceptLabel: 'Si',
+                rejectLabel: 'No',
+                accept: () => accept(id_dps),
+                reject: () => reject(id_dps)
+            });
+        } catch (error: any) {
+            
+        }
+    }
+
+    const deleteBodyTemplate = (rowData: any) => {
+        return (
+            <div className="flex align-items-center justify-content-center">
+                <Button
+                    label={tCommon('btnDelete')}
+                    icon="bx bx-trash bx-sm"
+                    severity='danger'
+                    className="p-button-rounded"
+                    onClick={() => deleteDps(rowData)}
+                    tooltip={''}
+                    tooltipOptions={{ position: 'top' }}
+                    size="small"
+                    disabled={loading}
+                />
+            </div>
+        );
+    };
+
     return (
         <div className="grid">
             <div className="col-12">
                 {loading && loaderScreen()}
                 <Toast ref={toast} />
                 <Card header={headerCard} pt={{ content: { className: 'p-0' } }}>
-                    <RenderInfoButton
+                    <ConfirmDialog />
+                    {/* <RenderInfoButton
                         instructions={getObjectIntruction()}
                         showInfo={showInfo}
                         setShowInfo={setShowInfo}
@@ -726,7 +791,7 @@ const UploadPrepayment = () => {
                         dialogManualBtnTooltipText={"Videos de ayuda"}
                         dialogManualHeaderText={"Videos de ayuda"}
                         lVideos={[]}
-                    />
+                    /> */}
                     <DialogPrepay
                         visible={visible}
                         onHide={() => setDialogVisible(false)}
@@ -785,12 +850,13 @@ const UploadPrepayment = () => {
                         dateFilter={dateFilter}
                         setDateFilter={setDateFilter}
                         showToast={showToast}
-                        withBtnCreate={true}
+                        withBtnCreate={false}
                         selectedRow={oPrepay}
                         setSelectedRow={setOPrepay}
                         setDialogVisible={setDialogVisible}
                         setDialogMode={setDialogMode}
                         fileBodyTemplate={fileBodyTemplate}
+                        deleteBodyTemplate={deleteBodyTemplate}
                     />
                 </Card>
             </div>

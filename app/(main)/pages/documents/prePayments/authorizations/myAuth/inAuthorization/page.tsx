@@ -27,8 +27,9 @@ import { getlUrlFilesDps } from '@/app/(main)/utilities/documents/common/filesUt
 import { RenderInfoButton } from "@/app/components/commons/instructionsButton";
 import { getLDaysToPay } from '@/app/(main)/utilities/documents/common/daysToPayUtils';
 import DateFormatter from '@/app/components/commons/formatDate';
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 
-const UploadPrepayment = () => {
+const AcceptedPrepayment = () => {
     const [startDate, setStartDate] = useState<string>('');
     const [endDate, setEndtDate] = useState<string>('');
     const [lNc, setLNc] = useState<any[]>([]);
@@ -43,6 +44,8 @@ const UploadPrepayment = () => {
     const [showInfo, setShowInfo] = useState<boolean>(false);
     const [showManual, setShowManual] = useState<boolean>(false);
     const [lDaysToPay, setLDaysToPay] = useState<Array<any>>([]);
+    const [withBtnSendAuth, setWithBtnSendAuth] = useState<boolean>(false);
+    const [flowAuthDialogVisible, setFlowAuthDialogVisible] = useState<boolean>(false);
 
     //constantes para el dialog
     const [visible, setDialogVisible] = useState<boolean>(false);
@@ -101,13 +104,13 @@ const UploadPrepayment = () => {
 
     const columnsProps = {
         authz_acceptance_name: {
-            hidden: false
+            hidden: true
         },
         actors_of_action: {
             hidden: true
         },
         authz_authorization_name: {
-            hidden: true
+            hidden: false
         },
         delete: {
             hidden: true
@@ -127,29 +130,14 @@ const UploadPrepayment = () => {
     const getLPrepayments = async () => {
         let params: any = {};
         if (oUser.isInternalUser) {
-            const route = constants.ROUTE_GET_DPS_BY_AREA_ID
+            const route = constants.ROUTE_GET_DPS_AUTHORIZATION;
             params = {
                 route: route,
-                functional_area: userFunctionalAreas,
-                transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
-                document_type: constants.DOC_TYPE_PP,
-                authz_acceptance: constants.REVIEW_PENDING_ID,
-                start_date: startDate,
-                end_date: endDate,
-                user_id: oUser.id
-            };
-        }
-
-        if (oUser.isProvider) {
-            const route = constants.ROUTE_GET_DPS_BY_PARTNER_ID
-            params = {
-                route: route,
-                partner_id: oUser.oProvider.id,
-                transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
-                document_type: constants.DOC_TYPE_PP,
-                authz_acceptance: constants.REVIEW_PENDING_ID,
-                start_date: startDate,
-                end_date: endDate,
+                type: 1,
+                user_id: oUser.oUser.external_id,
+                id_actor_type: 2,
+                document_type: constants.RESOURCE_TYPE_PP,
+                authz_authorization: constants.REVIEW_PROCESS_ID
             };
         }
 
@@ -206,7 +194,7 @@ const UploadPrepayment = () => {
             }
         }
 
-        if (type == 'review') {
+        if (type = 'review') {
             newErrors = {
                 payment_date: oPrepay.payment_amount ? (oPrepay.payment_amount > 0 ? !oPrepay.payment_date : false) : false,
                 notes: !oPrepay.description,
@@ -307,73 +295,6 @@ const UploadPrepayment = () => {
         }
     }
 
-    const handleReview = async (reviewOption: string) => {
-        try {
-            setLoading(true);
-
-            if (reviewOption == constants.REVIEW_REJECT) {
-                if (!oPrepay.authz_acceptance_notes.trim()) {
-                    setFormErrors((prev: any) => ({ ...prev, authz_acceptance_notes: true }));
-                    showToast('info', 'Ingresa un comentario de rechazo del CRP');
-                    return;
-                }
-            } else {
-                if (!validate('review')) {
-                    return;
-                }
-            }
-
-            const date = oPrepay.payment_date ? DateFormatter(oPrepay.payment_date, 'YYYY-MM-DD') : '';
-            
-            const route = '/transactions/documents/' + oPrepay.id + '/set-authz/';
-
-            const response = await axios.post(constants.API_AXIOS_PATCH, {
-                route,
-                jsonData: {
-                    authz_code: reviewOption,
-                    authz_acceptance_notes: oPrepay.authz_acceptance_notes,
-                    payment_date: date,
-                    payment_percentage: oPrepay.payment_percentage,
-                    payment_amount: oPrepay.payment_amount,
-                    notes: oPrepay.description,
-                    user_id: oUser.oUser.id,
-                    payment_definition: oPrepay.payment_definition,
-                    is_payment_loc: oPrepay.pay_in_local_currency ? oPrepay.pay_in_local_currency : false,
-                    payment_notes: oPrepay.payment_instructions,
-                    priority: oPrepay.is_urgent ? oPrepay.is_urgent : false,
-                    is_manual_payment_date: oPrepay.payment_date_edit ? oPrepay.payment_date_edit : false,
-                    notes_manual_payment_date: ''
-                }
-            });
-
-            if (response.status === 200 || response.status === 201) {
-                if (reviewOption == constants.REVIEW_ACCEPT) {
-                    setSuccessTitle(t('dialog.animationSuccess.reviewAcceptedTitle'));
-                    setSuccessMessage(t('dialog.animationSuccess.reviewAcceptedText'));
-                } else {
-                    setSuccessTitle(t('dialog.animationSuccess.reviewRejectedTitle'));
-                    setSuccessMessage(t('dialog.animationSuccess.reviewRejectedText'));
-                }
-                setShowing('animationSuccess');
-                await getLPrepayments();
-            } else {
-                throw new Error(t('uploadDialog.errors.updateStatusError'));
-            }
-        } catch (error: any) {
-            console.error('Error al actualizar estado:', error);
-            if (reviewOption == constants.REVIEW_ACCEPT) {
-                setErrorTitle(t('dialog.animationError.reviewAcceptedTitle'));
-                setErrorMessage(error.response?.data?.error || t('dialog.animationError.reviewAcceptedText'));
-            } else {
-                setErrorTitle(t('dialog.animationError.reviewRejectedTitle'));
-                setErrorMessage(error.response?.data?.error || t('dialog.animationError.reviewRejectedText'));
-            }
-            setShowing('animationError');
-        } finally {
-            setLoading(false);
-        }
-    };
-
     useEffect(() => {
         if (oPrepay?.references) {
             let areas: any[] = [];
@@ -392,82 +313,6 @@ const UploadPrepayment = () => {
             setLAreas(areas);
         }
     }, [oPrepay?.references])
-
-    const handleAcceptAndSendToAuth = async () => {
-        let responseAccept: any;
-        let responseAuth: any;
-        try {
-            if (!validate('review')) {
-                return;
-            }
-            setLoading(true);
-
-            const date = oPrepay.payment_date ? DateFormatter(oPrepay.payment_date, 'YYYY-MM-DD') : '';
-            const routeAccept = '/transactions/documents/' + oPrepay.id + '/set-authz/';
-            responseAccept = await axios.post(constants.API_AXIOS_PATCH, {
-                route: routeAccept,
-                jsonData: {
-                    authz_code: constants.REVIEW_ACCEPT,
-                    authz_acceptance_notes: oPrepay.authz_acceptance_notes,
-                    payment_date: date,
-                    payment_percentage: oPrepay.payment_percentage,
-                    payment_amount: oPrepay.payment_amount,
-                    notes: oPrepay.description,
-                    user_id: oUser.oUser.id,
-                    payment_definition: oPrepay.payment_definition,
-                    is_payment_loc: oPrepay.pay_in_local_currency ? oPrepay.pay_in_local_currency : false,
-                    payment_notes: oPrepay.payment_instructions,
-                    priority: oPrepay.is_urgent ? oPrepay.is_urgent : false,
-                    is_manual_payment_date: oPrepay.payment_date_edit ? oPrepay.payment_date_edit : false,
-                    notes_manual_payment_date: ''
-                }
-            });
-
-            if (responseAccept.status === 200 || responseAccept.status === 201) {
-                const route = constants.ROUTE_POST_START_AUTHORIZATION;
-                responseAuth = await axios.post(constants.API_AXIOS_POST, {
-                    route,
-                    jsonData: {
-                        id_external_system: 1,
-                        id_company: oPrepay.company_external_id,
-                        id_flow_model: constants.FLOW_AUTH_PP,
-                        resource: {
-                            code: oPrepay.folio,
-                            name: oPrepay.partner_full_name,
-                            content: {},
-                            external_id: oPrepay.id,
-                            resource_type: constants.RESOURCE_TYPE_PP
-                        },
-                        deadline: null,
-                        sent_by: oUser.oUser.external_id, //external user id
-                        id_actor_type: 2,
-                        stakeholders: [{
-                            external_user_id: oUser.oUser.external_id,
-                            id_actor_type: 2
-                        }],
-                        notes: ''
-                    }
-                });
-
-                if (responseAuth.status == 200) {
-                    setSuccessTitle(t('dialog.animationSuccess.acceptAndSendToAuthTitle'));
-                    setSuccessMessage(t('dialog.animationSuccess.acceptAndSendToAuthText'));
-                    setShowing('animationSuccess');
-                    await getLPrepayments();
-                } else {
-                    throw new Error('');
-                }
-            } else {
-                throw new Error(t('dialog.animationError.reviewAcceptedTitle'));
-            }
-        } catch (error: any) {
-            setErrorTitle(t('dialog.animationError.sendToAuthTitle'));
-            setErrorMessage(error.response?.data?.error || t('dialog.animationError.sendToAuthText'));
-            setShowing('animationError');
-        } finally {
-            setLoading(false);
-        }
-    }
 
     //*******OTROS*******
     const headerCard = (
@@ -497,6 +342,82 @@ const UploadPrepayment = () => {
         </div>
     );
 
+    const handleAuth = async () => {
+        try {
+            setLoading(true);
+            const route = constants.ROUTE_POST_AUTHORIZE_RESOURCE;
+            const response = await axios.post(constants.API_AXIOS_PATCH, {
+                route,
+                jsonData: {
+                    id_external_system: 1,
+                    id_company: oPrepay.company_external_id,
+                    id_resource_type: constants.RESOURCE_TYPE_PP,
+                    external_resource_id: oPrepay.id,
+                    external_user_id: oUser.oUser.external_id,
+                    id_actor_type: 2,
+                    notes: oPrepay.authz_authorization_notes || ''
+                }
+            });
+
+            if (response.status === 200 || response.status === 201) {
+                setSuccessTitle(t('dialog.animationSuccess.authorizedTitle'));
+                setSuccessMessage(t('dialog.animationSuccess.authorizedText'));
+                setShowing('animationSuccess');
+                await getLPrepayments();
+            } else {
+                throw new Error('Error al autorizar el registro');
+            }
+        } catch (error: any) {
+            setErrorTitle(t('dialog.animationError.authorizedTitle'));
+            setErrorMessage(error.response?.data?.error || t('dialog.animationError.authorizedText'));
+            setShowing('animationError');
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const handleReject = async () => {
+        try {
+            if (!oPrepay.authz_authorization_notes) {
+                setFormErrors((prev: any) => ({
+                    ...prev,
+                    authz_authorization_notes: true
+                }));
+                return;
+            }
+
+            setLoading(true);
+            const route = constants.ROUTE_POST_REJECT_RESOURCE;
+            const response = await axios.post(constants.API_AXIOS_PATCH, {
+                route,
+                jsonData: {
+                    id_company: oPrepay.company_external_id,
+                    id_external_system: 1,
+                    id_resource_type: constants.RESOURCE_TYPE_PP,
+                    external_resource_id: oPrepay.id,
+                    external_user_id: oUser.oUser.external_id,
+                    id_actor_type: 2,
+                    notes: oPrepay.authz_authorization_notes || ''
+                }
+            });
+
+            if (response.status === 200 || response.status === 201) {
+                setSuccessTitle(t('dialog.animationSuccess.rejectedTitle'));
+                setSuccessMessage(t('dialog.animationSuccess.rejectedText'));
+                setShowing('animationSuccess');
+                await getLPrepayments();
+            } else {
+                throw new Error('Error al rechazar el registro');
+            }
+        } catch (error: any) {
+            setErrorTitle(t('dialog.animationError.rejectedTitle'));
+            setErrorMessage(error.response?.data?.error || t('dialog.animationError.rejectedText'));
+            setShowing('animationError');
+        } finally {
+            setLoading(false);
+        }
+    }
+
     const dialogFooterContent = () => {
         return (
             <>
@@ -509,13 +430,8 @@ const UploadPrepayment = () => {
                 {showing == 'body' && dialogMode == 'view' && (
                     <div className="flex flex-column md:flex-row justify-content-between gap-2">
                         <Button label={tCommon('btnClose')} icon="bx bx-x" onClick={() => setDialogVisible(false)} severity="secondary" disabled={loading} />
-                        {isInReview && (
-                            <>
-                                <Button label={tCommon('btnReject')} icon="bx bx-dislike" onClick={() => handleReview(constants.REVIEW_REJECT)} autoFocus disabled={loading} severity="danger" />
-                                <Button label={tCommon('btnAccept')} icon="bx bx-like" onClick={() => handleReview(constants.REVIEW_ACCEPT)} autoFocus disabled={loading} severity="success" />
-                                <Button label={tCommon('btnAcceptAndSend')} icon="bx bx-paper-plane" onClick={() => handleAcceptAndSendToAuth()} autoFocus disabled={loading} severity="success" />
-                            </>
-                        )}
+                        <Button label={tCommon('btnReject')} icon="bx bx-dislike" onClick={() => handleReject()} autoFocus disabled={loading} severity="danger" />
+                        <Button label={tCommon('btnAccept')} icon="bx bx-like" onClick={() => handleAuth()} autoFocus disabled={loading} severity="success" />
                     </div>
                 )}
             </>
@@ -579,11 +495,7 @@ const UploadPrepayment = () => {
     }, [lInvoicesToReview])
 
     const handleDoubleClick = async (e: DataTableRowClickEvent) => {
-        if (oUser.isInternalUser) {
-            setIsReview(true);
-        } else {
-            setIsReview(false);
-        }
+        setIsReview(false);
 
         setLoadingFiles(true);
         setDialogMode('view');
@@ -659,6 +571,11 @@ const UploadPrepayment = () => {
     useEffect(() => {
         const init = async () => {
             setLoading(true);
+            if (oUser.isInternalUser) {
+                setWithBtnSendAuth(true);
+            } else {
+                setWithBtnSendAuth(false);
+            }
             await getlCompanies({
                 setLCompanies,
                 setLCompaniesFilter,
@@ -714,7 +631,8 @@ const UploadPrepayment = () => {
                 {loading && loaderScreen()}
                 <Toast ref={toast} />
                 <Card header={headerCard} pt={{ content: { className: 'p-0' } }}>
-                    <RenderInfoButton
+                    <ConfirmDialog />
+                    {/* <RenderInfoButton
                         instructions={getObjectIntruction()}
                         showInfo={showInfo}
                         setShowInfo={setShowInfo}
@@ -726,7 +644,7 @@ const UploadPrepayment = () => {
                         dialogManualBtnTooltipText={"Videos de ayuda"}
                         dialogManualHeaderText={"Videos de ayuda"}
                         lVideos={[]}
-                    />
+                    /> */}
                     <DialogPrepay
                         visible={visible}
                         onHide={() => setDialogVisible(false)}
@@ -772,6 +690,8 @@ const UploadPrepayment = () => {
                         editableBodyFields={editableBodyFields}
                         setEditableBodyFields={setEditableBodyFields}
                         lDaysToPay={lDaysToPay}
+                        showAuthComments={true}
+                        isInAuth={true}
                     />
                     <TablePrepayments
                         lNc={lNc}
@@ -785,7 +705,6 @@ const UploadPrepayment = () => {
                         dateFilter={dateFilter}
                         setDateFilter={setDateFilter}
                         showToast={showToast}
-                        withBtnCreate={true}
                         selectedRow={oPrepay}
                         setSelectedRow={setOPrepay}
                         setDialogVisible={setDialogVisible}
@@ -798,4 +717,4 @@ const UploadPrepayment = () => {
     )
 }
 
-export default UploadPrepayment;
+export default AcceptedPrepayment;
