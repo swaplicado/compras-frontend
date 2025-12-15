@@ -181,7 +181,7 @@ const constants = {
     FLOW_AUTH_PARTNER: 17,
     FLOW_AUTH_CRP: 17,
     FLOW_AUTH_NC: 17,
-    FLOW_AUTH_PP: 17,
+    FLOW_AUTH_PP: 1,
 
     //Calendar
     MONTHS_BACK_LIMIT: 6,
