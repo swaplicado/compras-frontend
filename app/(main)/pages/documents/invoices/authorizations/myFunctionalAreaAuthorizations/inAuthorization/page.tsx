@@ -523,7 +523,7 @@ const Upload = () => {
             return;
         }
 
-        setCanCancellFlowAuth(e.data.created_by == userId);
+        setCanCancellFlowAuth(oValidUser.isInternalUser);
         // setCanCancellFlowAuth(true);
         setSelectedRow(e.data);
         setDialogMode('review');
