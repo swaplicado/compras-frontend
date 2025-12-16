@@ -455,14 +455,18 @@ export const TableInvoices = ({
         
         return (
             <div className="">
-                <div className='flex align-items-center justify-content-center'>
-                <span className={`status-dps-badge status-${rowData.authorization}`}>{rowData.authorization}</span>
-                    <Button 
-                        type="button" 
-                        icon="bx bx-list-ol" 
-                        label="" 
-                        onClick={(e) => { overlayhistoryAuth.current?.toggle(e); getHistory(rowData, setHistory, setLoadingHistory, overlayhistoryAuth); }} 
-                    />
+                <div className='flex align-items-between justify-content-between'>
+                    <div>
+                        <span className={`status-dps-badge status-${rowData.authorization}`}>{rowData.authorization}</span>
+                    </div>
+                    <div>
+                        <Button 
+                            type="button" 
+                            icon="bx bx-list-ol" 
+                            label="" 
+                            onClick={(e) => { overlayhistoryAuth.current?.toggle(e); getHistory(rowData, setHistory, setLoadingHistory, overlayhistoryAuth); }} 
+                        />
+                    </div>
                 </div>
                 <OverlayPanel ref={overlayhistoryAuth} showCloseIcon closeOnEscape dismissable={false}>
                     {loadingHistory ? (
@@ -582,12 +586,22 @@ export const TableInvoices = ({
         
         return (
             <div className="">
-                <Button 
-                    type="button" 
-                    icon="bx bxs-wallet" 
-                    label="" 
-                    onClick={(e) => overlayPayment.current?.toggle(e)} 
-                />
+                <div className='flex align-items-between justify-content-between'>
+                    <div>
+                        <span className='px-2 py-1 border-round'>
+                            {payments[payments.length - 1].status}
+                        </span>
+                    </div>
+                    <div>
+                        <Button 
+                            type="button" 
+                            icon="bx bxs-wallet" 
+                            label="" 
+                            onClick={(e) => overlayPayment.current?.toggle(e)} 
+                            className=''
+                        />
+                    </div>
+                </div>
                 <OverlayPanel ref={overlayPayment} showCloseIcon closeOnEscape dismissable={false}>
                     <DataTable value={payments} emptyMessage={'Sin datos para mostrar.'}>
                         <Column field="folio" header="Folio" />
@@ -604,7 +618,17 @@ export const TableInvoices = ({
     };
     
     const paymentsBodyTemplate = (rowData: any) => {
-        return <PaymentsOverlay payments={rowData.payments} folio={rowData.folio} />;
+        return (
+            rowData.payments.length > 0 ? (
+                <PaymentsOverlay payments={rowData.payments} folio={rowData.folio} />
+            ) : (
+                <div>
+                    <span className='flex justify-content-center'>
+                        {'N/D'}
+                    </span>
+                </div>
+            )
+        );
     };
 
     //Init

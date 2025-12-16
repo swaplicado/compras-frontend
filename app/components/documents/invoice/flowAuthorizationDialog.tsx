@@ -75,7 +75,7 @@ export const FlowAuthorizationDialog = ({
             } else if( oDps.acceptance != 'ok' && !ommitAcceptance ) {
                 showToast('info', 'La factura debe estar aceptada');
                 onHide();
-            } else if( oDps.authorization != 'pendiente' ) {
+            } else if( oDps.authorization != 'pendiente' && oDps.authz_authorization_name != 'pendiente' ) {
                 showToast('info', 'La factura ya fue enviada a autorización');
                 onHide();
             } else {
@@ -103,7 +103,7 @@ export const FlowAuthorizationDialog = ({
         try {
             setLoading(true);
             if (withAcceptance) {
-                await handleAcceptance?.();  
+                await handleAcceptance?.();
             }
             
             const route = constants.ROUTE_POST_START_AUTHORIZATION;
@@ -115,9 +115,9 @@ export const FlowAuthorizationDialog = ({
                     id_flow_model: flowAuth?.id || '',
                     resource: {
                         code: oDps.folio ? oDps.folio : oDps.hiddenFolio , //folio
-                        name: oDps.provider_name, //proveedor
+                        name: oDps.provider_name ? oDps.provider_name : oDps.partner_full_name, //proveedor
                         content: {},
-                        external_id: oDps.id_dps,
+                        external_id: oDps.id_dps ? oDps.id_dps : oDps.id,
                         resource_type: constants.RESOURCE_TYPE_PUR_INVOICE
                     },
                     deadline: null,
@@ -137,7 +137,7 @@ export const FlowAuthorizationDialog = ({
                 setResultSendFlowAuth('success');
 
                 if (!withAcceptance) {
-                    await getDps?.(getDpsParams);
+                    await getDps?.( getDpsParams ? getDpsParams : null );
                 }
             } else {
                 throw new Error('');

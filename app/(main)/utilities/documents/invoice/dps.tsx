@@ -94,6 +94,7 @@ export const getDps = async ( props: getDpsProps  ) => {
                     notes_manual_payment_date: data[i].notes_manual_payment_date,
                     week: data[i].number_week_revision,
                     payments: data[i].payments,
+                    payments_status: data[i].payments ? data[i].payments[data[i].payments.length - 1] : 'N/D',
                     is_advance: data[i].is_advance,
                     advance_application: data[i].advance_application_name,
                     authz_acceptance_id: data[i].authz_acceptance_id ? data[i].authz_acceptance_id : data[i].authz_acceptance,
