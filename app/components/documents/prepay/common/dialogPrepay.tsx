@@ -72,6 +72,7 @@ interface DialogPrepay {
     showAuthComments?: boolean;
     isInAuth?: boolean;
     lDaysToPay?: any[];
+    setShowing?: React.Dispatch<React.SetStateAction<any>>;
 }
 
 export const DialogPrepay = ({
@@ -122,7 +123,8 @@ export const DialogPrepay = ({
     setLFilesToEdit,
     showAuthComments,
     isInAuth,
-    lDaysToPay = []
+    lDaysToPay = [],
+    setShowing
 }: DialogPrepay) => {
     const { t } = useTranslation('prepay');
     const { t: tCommon } = useTranslation('common');
@@ -269,13 +271,15 @@ export const DialogPrepay = ({
     };
 
     useEffect(() => {
-        if (percentOption == 'Todo') {
-            setOPrepayFn?.((prev: any) => ({ ...prev, payment_percentage: 100 }));
-            calcAmountPercentage('percentage', 100);
-        } else if (percentOption == 'Nada') {
-            setOPrepayFn?.((prev: any) => ({ ...prev, payment_percentage: 0 }));
-            setOPrepayFn?.((prev: any) => ({ ...prev, payment_date: '' }));
-            calcAmountPercentage('percentage', 0);
+        if (oPrepay) {
+            if (percentOption == 'Todo') {
+                setOPrepayFn?.((prev: any) => ({ ...prev, payment_percentage: 100 }));
+                calcAmountPercentage('percentage', 100);
+            } else if (percentOption == 'Nada') {
+                setOPrepayFn?.((prev: any) => ({ ...prev, payment_percentage: 0 }));
+                setOPrepayFn?.((prev: any) => ({ ...prev, payment_date: '' }));
+                calcAmountPercentage('percentage', 0);
+            }
         }
     }, [percentOption]);
 
@@ -396,6 +400,7 @@ export const DialogPrepay = ({
         }
 
         if (visible) {
+            setShowing?.('body');
             if (oUser.isProvider) {
                 const oProvider = {
                     id: oUser.oProvider.id,
@@ -411,7 +416,7 @@ export const DialogPrepay = ({
                     date: new Date()
                 }));
             }
-            if (isInReview && !oPrepayObj.payment_date) {
+            if (isInReview && oPrepayObj && !oPrepayObj.payment_date) {
                 const nextTusday = setNextTusday();
                 setOPrepayFn?.((prev: any) => ({
                     ...prev,

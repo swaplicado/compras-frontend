@@ -27,6 +27,8 @@ import { getlUrlFilesDps } from '@/app/(main)/utilities/documents/common/filesUt
 import { RenderInfoButton } from "@/app/components/commons/instructionsButton";
 import { getLDaysToPay } from '@/app/(main)/utilities/documents/common/daysToPayUtils';
 import DateFormatter from '@/app/components/commons/formatDate';
+import { getFlowAuthorizations } from '@/app/(main)/utilities/documents/common/flowUtils';
+import { FlowAuthorizationDialog } from '@/app/components/documents/invoice/flowAuthorizationDialog';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 
 const AcceptedPrepayment = () => {
@@ -45,6 +47,7 @@ const AcceptedPrepayment = () => {
     const [showManual, setShowManual] = useState<boolean>(false);
     const [lDaysToPay, setLDaysToPay] = useState<Array<any>>([]);
     const [withBtnSendAuth, setWithBtnSendAuth] = useState<boolean>(false);
+    const [lFlowAuthorization, setLFlowAuthorization] = useState<Array<any>>([]);
     const [flowAuthDialogVisible, setFlowAuthDialogVisible] = useState<boolean>(false);
 
     //constantes para el dialog
@@ -453,12 +456,12 @@ const AcceptedPrepayment = () => {
             }
         }
 
-    useEffect(() => {
-            if (flowAuthDialogVisible) {
-                sendToAuth();
-                setFlowAuthDialogVisible(false);
-            }
-        }, [flowAuthDialogVisible])
+    // useEffect(() => {
+    //         if (flowAuthDialogVisible) {
+    //             // sendToAuth();
+    //             setFlowAuthDialogVisible(false);
+    //         }
+    //     }, [flowAuthDialogVisible])
 
     useEffect(() => {
         if (oPrepay?.references) {
@@ -635,7 +638,8 @@ const AcceptedPrepayment = () => {
             if (oPrepay && oPrepay.id === e.data.id) {
                 setOPrepay(null);
             } else {
-                setOPrepay(e.data);
+                // setOPrepay(e.data);
+                configNcData(e.data);
             }
         }
     };
@@ -654,7 +658,10 @@ const AcceptedPrepayment = () => {
             description: data.notes,
             pay_in_local_currency: data.is_payment_loc,
             payment_instructions: data.payment_notes,
-            is_urgent: data.priority ? (data.priority == 1 ? true : false) : false
+            is_urgent: data.priority ? (data.priority == 1 ? true : false) : false,
+            provider_name: data.partner_full_name,
+            id_dps: data.id,
+            authorization: 'pendiente',
         });
     }
 
@@ -763,6 +770,11 @@ const AcceptedPrepayment = () => {
                 setLFiscalRegimes,
                 showToast,
             });
+            await getFlowAuthorizations({
+                setLFlowAuthorization,
+                showToast,
+                userExternalId: oUser?.oUser?.external_id
+            });
             await getLPrepayments();
             await getLDaysToPay({
                 setLDaysToPay,
@@ -861,6 +873,21 @@ const AcceptedPrepayment = () => {
                         setEditableBodyFields={setEditableBodyFields}
                         lDaysToPay={lDaysToPay}
                     />
+                    { oUser?.isInternalUser && (
+                        <FlowAuthorizationDialog 
+                            lFlowAuthorization={lFlowAuthorization}
+                            oDps={oPrepay}
+                            visible={flowAuthDialogVisible}
+                            onHide={() => setFlowAuthDialogVisible(false)}
+                            isMobile={isMobile}
+                            oValidUser={oUser.isInternalUser}
+                            getDps={getLPrepayments}
+                            // getDpsParams={getDpsParams}
+                            showToast={showToast}
+                            userExternalId={oUser.oUser.external_id}
+                            ommitAcceptance={true}
+                        />
+                    )}
                     <TablePrepayments
                         lNc={lNc}
                         setLNc={setLNc}

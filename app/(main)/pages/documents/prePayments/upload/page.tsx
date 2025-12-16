@@ -26,6 +26,8 @@ import { getlFiscalRegime } from '@/app/(main)/utilities/documents/common/fiscal
 import { getlUrlFilesDps } from '@/app/(main)/utilities/documents/common/filesUtils';
 import { RenderInfoButton } from "@/app/components/commons/instructionsButton";
 import { getLDaysToPay } from '@/app/(main)/utilities/documents/common/daysToPayUtils';
+import { getFlowAuthorizations } from '@/app/(main)/utilities/documents/common/flowUtils';
+import { FlowAuthorizationDialog } from '@/app/components/documents/invoice/flowAuthorizationDialog';
 import DateFormatter from '@/app/components/commons/formatDate';
 
 const UploadPrepayment = () => {
@@ -43,6 +45,9 @@ const UploadPrepayment = () => {
     const [showInfo, setShowInfo] = useState<boolean>(false);
     const [showManual, setShowManual] = useState<boolean>(false);
     const [lDaysToPay, setLDaysToPay] = useState<Array<any>>([]);
+    const [lFlowAuthorization, setLFlowAuthorization] = useState<Array<any>>([]);
+    const [flowAuthDialogVisible, setFlowAuthDialogVisible] = useState<boolean>(false);
+    const [isSendAuth, setIsSendAuth] = useState<boolean>(false);
 
     //constantes para el dialog
     const [visible, setDialogVisible] = useState<boolean>(false);
@@ -162,7 +167,9 @@ const UploadPrepayment = () => {
     }
 
     const clean = () => {
-        setOPrepay(null);
+        if (!isSendAuth) {
+            setOPrepay(null);
+        }
         setShowing('body');
         setFormErrors({
             company: false,
@@ -393,19 +400,20 @@ const UploadPrepayment = () => {
         }
     }, [oPrepay?.references])
 
-    const handleAcceptAndSendToAuth = async () => {
-        let responseAccept: any;
-        let responseAuth: any;
+    const handleAcceptance = async () => {
         try {
+            setLoading(true);
+
             if (!validate('review')) {
                 return;
             }
-            setLoading(true);
 
             const date = oPrepay.payment_date ? DateFormatter(oPrepay.payment_date, 'YYYY-MM-DD') : '';
-            const routeAccept = '/transactions/documents/' + oPrepay.id + '/set-authz/';
-            responseAccept = await axios.post(constants.API_AXIOS_PATCH, {
-                route: routeAccept,
+            
+            const route = '/transactions/documents/' + oPrepay.id + '/set-authz/';
+
+            const response = await axios.post(constants.API_AXIOS_PATCH, {
+                route,
                 jsonData: {
                     authz_code: constants.REVIEW_ACCEPT,
                     authz_acceptance_notes: oPrepay.authz_acceptance_notes,
@@ -423,43 +431,34 @@ const UploadPrepayment = () => {
                 }
             });
 
-            if (responseAccept.status === 200 || responseAccept.status === 201) {
-                const route = constants.ROUTE_POST_START_AUTHORIZATION;
-                responseAuth = await axios.post(constants.API_AXIOS_POST, {
-                    route,
-                    jsonData: {
-                        id_external_system: 1,
-                        id_company: oPrepay.company_external_id,
-                        id_flow_model: constants.FLOW_AUTH_PP,
-                        resource: {
-                            code: oPrepay.folio,
-                            name: oPrepay.partner_full_name,
-                            content: {},
-                            external_id: oPrepay.id,
-                            resource_type: constants.RESOURCE_TYPE_PP
-                        },
-                        deadline: null,
-                        sent_by: oUser.oUser.external_id, //external user id
-                        id_actor_type: 2,
-                        stakeholders: [{
-                            external_user_id: oUser.oUser.external_id,
-                            id_actor_type: 2
-                        }],
-                        notes: ''
-                    }
-                });
-
-                if (responseAuth.status == 200) {
-                    setSuccessTitle(t('dialog.animationSuccess.acceptAndSendToAuthTitle'));
-                    setSuccessMessage(t('dialog.animationSuccess.acceptAndSendToAuthText'));
-                    setShowing('animationSuccess');
-                    await getLPrepayments();
-                } else {
-                    throw new Error('');
-                }
+            if (response.status === 200 || response.status === 201) {
+                setSuccessTitle(t('dialog.animationSuccess.reviewAcceptedTitle'));
+                setSuccessMessage(t('dialog.animationSuccess.reviewAcceptedText'));
+                setShowing('animationSuccess');
+                await getLPrepayments();
             } else {
-                throw new Error(t('dialog.animationError.reviewAcceptedTitle'));
+                throw new Error(t('uploadDialog.errors.updateStatusError'));
             }
+        } catch (error: any) {
+            console.error('Error al actualizar estado:', error);
+            setErrorTitle(t('dialog.animationError.reviewAcceptedTitle'));
+            setErrorMessage(error.response?.data?.error || t('dialog.animationError.reviewAcceptedText'));
+            setShowing('animationError');
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const handleAcceptAndSendToAuth = async () => {
+        try {
+            setIsSendAuth(true);
+            if (!validate('review')) {
+                return;
+            }
+            setDialogVisible(false);
+            setTimeout(() => {
+                setFlowAuthDialogVisible(true);
+            }, 100);
         } catch (error: any) {
             setErrorTitle(t('dialog.animationError.sendToAuthTitle'));
             setErrorMessage(error.response?.data?.error || t('dialog.animationError.sendToAuthText'));
@@ -555,8 +554,6 @@ const UploadPrepayment = () => {
     };
 
     const configNcData = (data: any) => {
-        console.log('data: ', data);
-        
         setOPrepay({
             ...data,
             company: data.company_full_name,
@@ -570,7 +567,10 @@ const UploadPrepayment = () => {
             description: data.notes,
             pay_in_local_currency: data.is_payment_loc,
             payment_instructions: data.payment_notes,
-            is_urgent: data.priority ? (data.priority == 1 ? true : false) : false
+            is_urgent: data.priority ? (data.priority == 1 ? true : false) : false,
+            provider_name: data.partner_full_name,
+            id_dps: data.id,
+            authorization: 'pendiente'
         });
     }
 
@@ -581,6 +581,7 @@ const UploadPrepayment = () => {
     }, [lInvoicesToReview])
 
     const handleDoubleClick = async (e: DataTableRowClickEvent) => {
+        setIsSendAuth(false);
         if (oUser.isInternalUser) {
             setIsReview(true);
         } else {
@@ -678,6 +679,11 @@ const UploadPrepayment = () => {
                 setLFiscalRegimes,
                 showToast,
             });
+            await getFlowAuthorizations({
+                setLFlowAuthorization,
+                showToast,
+                userExternalId: oUser?.oUser?.external_id
+            });
             await getLPrepayments();
             await getLDaysToPay({
                 setLDaysToPay,
@@ -774,7 +780,25 @@ const UploadPrepayment = () => {
                         editableBodyFields={editableBodyFields}
                         setEditableBodyFields={setEditableBodyFields}
                         lDaysToPay={lDaysToPay}
+                        setShowing={setShowing}
                     />
+                    { oUser?.isInternalUser && (
+                        <FlowAuthorizationDialog 
+                            lFlowAuthorization={lFlowAuthorization}
+                            oDps={oPrepay}
+                            visible={flowAuthDialogVisible}
+                            onHide={() => setFlowAuthDialogVisible(false)}
+                            isMobile={isMobile}
+                            oValidUser={oUser.isInternalUser}
+                            getDps={getLPrepayments}
+                            // getDpsParams={getDpsParams}
+                            showToast={showToast}
+                            userExternalId={oUser.oUser.external_id}
+                            ommitAcceptance={true}
+                            withAcceptance={true}
+                            handleAcceptance={handleAcceptance}
+                        />
+                    )}
                     <TablePrepayments
                         lNc={lNc}
                         setLNc={setLNc}
