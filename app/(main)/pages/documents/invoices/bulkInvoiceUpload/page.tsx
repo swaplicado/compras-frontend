@@ -816,7 +816,7 @@ const BulkInvoiceUpload = () => {
                                                 value={lDps[index]?.notes || ''}
                                                 disabled={isEditable(index)}
                                                 mdCol={12}
-                                                textAreaRows={1}
+                                                textAreaRows={3}
                                                 type={'textArea'}
                                                 onChange={(value) => { 
                                                     setLDps((prev) => {
