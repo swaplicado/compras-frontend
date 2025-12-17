@@ -149,7 +149,8 @@ export const ValidateXml = ( {
                             partner_id: data.data.partner_id,
                             partner_name: data.data.partner_name,
                             company_partner_id: data.data.company_partner_id,
-                            company_partner_name: data.data.company_partner_name
+                            company_partner_name: data.data.company_partner_name,
+                            notes: data.data.concepts_string
                         }));
                         await getReferences?.(data.data.partner_id, data.data.company_partner_id);
                     }
