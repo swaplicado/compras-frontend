@@ -747,7 +747,7 @@ const BulkInvoiceUpload = () => {
                                                         <h6 className='mb-1'>Fecha:</h6>
                                                     </div>
                                                     <div className=" col-12 md:col-4">
-                                                        { lDps[index]?.payment_date ? DateFormatter(lDps[index].payment_date) : '' }
+                                                        { lDps[index]?.date ? DateFormatter(lDps[index].date) : '' }
                                                     </div>
                                                     <div className=" col-12 md:col-2">
                                                         <h6 className='mb-1'>Total:</h6>

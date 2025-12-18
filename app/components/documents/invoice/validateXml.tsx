@@ -131,6 +131,7 @@ export const ValidateXml = ( {
                             ...prev,    
                             serie: data.data.serie,
                             folio: data.data.serie ? (data.data.serie + '-' + data.data.folio) : data.data.folio,
+                            date: data.data.xml_date,
                             oPaymentMethod: oPaymentMethod,
                             payment_method: payment_method,
                             provider_rfc: data.data.rfc_issuer,
