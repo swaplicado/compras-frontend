@@ -502,6 +502,7 @@ const BulkInvoiceUpload = () => {
                     amount: lDps[i].amount,
                     exchange_rate: lDps[i].exchange_rate ? lDps[i].exchange_rate : 0,
                     payment_method: lDps[i].oPaymentMethod?.id || '',
+                    payment_way: lDps[i].payment_way || '',
                     fiscal_use: lDps[i].oUseCfdi?.id || '',
                     issuer_tax_regime: lDps[i].oIssuer_tax_regime ? lDps[i].oIssuer_tax_regime.id : '',
                     receiver_tax_regime: lDps[i].oReceiver_tax_regime ? lDps[i].oReceiver_tax_regime.id : '',
