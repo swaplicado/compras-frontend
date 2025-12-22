@@ -265,7 +265,7 @@ export const getlPartnersAuth = async ({
                     first_name: data[i].first_name,
                     last_name: data[i].last_name,
                     full_name: data[i].full_name,
-                    trade_name: data[i].full_name,
+                    trade_name: data[i].trade_name,
                     phone: data[i].phone,
                     email: data[i].email,
                     authz_acceptance_notes: data[i].authz_acceptance_notes,

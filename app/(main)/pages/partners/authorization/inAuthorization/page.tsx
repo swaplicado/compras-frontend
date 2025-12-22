@@ -64,7 +64,7 @@ const RejectedPartners = () => {
             entity_type: data.entity_type,
             fiscal_regime: data.fiscal_regime,
             name: data.first_name,
-            lastname: data.last_name,
+            last_name: data.last_name,
             phone: data.phone,
             email: data.email,
             street: data.partner_address_partner_applying[0].street,
