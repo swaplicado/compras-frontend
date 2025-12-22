@@ -122,7 +122,8 @@ export const ValidateXml = ( {
                             oCurrency: oCurrency,
                             currency: currency,
                             exchange_rate: data.data.exchange_rate ? data.data.exchange_rate : 1,
-                            uuid: data.data.uuid
+                            uuid: data.data.uuid,
+                            payment_way: data.data.payment_way
                         }
                         setODps(oDps);
                     }

@@ -698,6 +698,7 @@ export const InvoiceDialog = ({
                 amount: oDps.amount,
                 exchange_rate: oDps.exchange_rate ? oDps.exchange_rate : 0,
                 payment_method: oDps.oPaymentMethod?.id || '',
+                payment_way: oDps.payment_way,
                 fiscal_use: oDps.oUseCfdi?.id || '',
                 issuer_tax_regime: oDps.oIssuer_tax_regime ? oDps.oIssuer_tax_regime.id : '',
                 receiver_tax_regime: oDps.oReceiver_tax_regime ? oDps.oReceiver_tax_regime.id : '',

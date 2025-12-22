@@ -432,7 +432,7 @@ export const FieldsDps = ({
                         value: oDps?.folio,
                         onChange: (value) => setODps((prev: any) => ({ ...prev, folio: value })),
                         disabled: mode == 'view',
-                        mdCol: 3,
+                        mdCol: 2,
                         type: 'text',
                         placeholder: '',
                         errorKey: ''
@@ -453,12 +453,24 @@ export const FieldsDps = ({
                         tooltip: t('uploadDialog.payment_method.tooltipReview'),
                         value: mode == 'view' ? oDps?.payment_method : oDps?.oPaymentMethod,
                         disabled: mode == 'view',
-                        mdCol: 6,
+                        mdCol: 5,
                         type: mode == 'view' ? 'text' : 'dropdown',
                         placeholder: '',
                         errorKey: '',
                         lOptions: lPaymentMethod,
                         onChange: (value) => setODps((prev: any) => ({ ...prev, payment_method: value.name, oPaymentMethod: value }))
+                    })}
+                    {renderField({
+                        label: 'Forma pago',
+                        tooltip: 'Forma pago',
+                        value: oDps?.payment_way,
+                        disabled: mode == 'view',
+                        mdCol: 2,
+                        type: 'text',
+                        placeholder: '',
+                        errorKey: '',
+                        lOptions: [],
+                        onChange: (value) => setODps((prev: any) => ({ ...prev, payment_way: value}))
                     })}
                     {renderField({
                         label: t('uploadDialog.rfc_issuer.label'),
