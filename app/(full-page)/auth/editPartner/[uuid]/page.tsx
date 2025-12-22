@@ -232,7 +232,7 @@ const RegisterProvider = () => {
             entity_type: !oProvider.entity_type,
             fiscal_regime: !oProvider.fiscal_regime,
             name: oProvider.name.trim() == '',
-            lastname: oProvider.lastname.trim() == '',
+            lastname: oProvider.last_name.trim() == '',
             phone: oProvider.phone.trim() == '',
             email: oProvider.email.trim() == '',
             street: oProvider.street.trim() == '',
@@ -346,7 +346,7 @@ const RegisterProvider = () => {
                     entity_type: data.entity_type_obj,
                     fiscal_regime: lFiscalRegimes.find((item) => item.id ==  data.fiscal_regime_obj.id),
                     name: data.first_name,
-                    lastname: data.last_name,
+                    last_name: data.last_name,
                     phone: data.phone,
                     email: data.email,
                     street: data.partner_address_partner_applying[0].street,
@@ -372,7 +372,6 @@ const RegisterProvider = () => {
             await getlCompanies();
             await getlCountries();
             await getlFiscalRegime();
-            setLoading(false);
         }
 
         fetch();
@@ -392,7 +391,9 @@ const RegisterProvider = () => {
 
     useEffect(() => {
         const fetch = async () => {
+            setLoading(true);
             await getOProvider();
+            setLoading(false);
         }
         if (lFiscalRegimes.length > 0 && lCompanies.length > 0) {
             fetch();

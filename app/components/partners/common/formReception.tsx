@@ -222,7 +222,7 @@ export const FormReceptionPartner = ({
                 mdCol={6}
                 type={'text'}
                 onChange={(value) => {
-                    setOProvider((prev: any) => ({ ...prev, lastname: value }));
+                    setOProvider((prev: any) => ({ ...prev, last_name: value }));
                     setFormErrors((prev: any) => ({ ...prev, lastname: false }));
                 }}
                 options={[]}
