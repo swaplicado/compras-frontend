@@ -92,6 +92,11 @@
                     "icon": "",
                     "items": [
                         {
+                            "label": "Todos los pagos",
+                            "icon": "bx bx-list-ul bx-sm",
+                            "to": "/pages/documents/payments/allPayments"
+                        },
+                        {
                             "label": "Programados",
                             "icon": "pi pi-calendar",
                             "to": "/pages/documents/payments/programed"
