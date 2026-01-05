@@ -1,4 +1,5 @@
 const prepay = {
+    titleAll: "Todas las proformas",
     titleUpload: "Cargar y revisar proformas",
     titleUploadTooltip: "Cargar y revisar proformas",
     titleUploadProvider: "Cargar proformas",

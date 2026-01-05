@@ -1,4 +1,5 @@
 const nc = {
+    titleAll: "Todas las NC",
     titleUpload: "Cargar y revisar NC",
     titleUploadProvider: "Cargar NC",
     titleUploadTooltip: "Carga de notas de crédito",

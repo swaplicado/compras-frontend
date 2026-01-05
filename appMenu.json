@@ -108,6 +108,11 @@
                     "icon": "",
                     "items": [
                         {
+                            "label": "Todos los CRP",
+                            "icon": "bx bx-list-ul bx-sm",
+                            "to": "/pages/documents/crp/allCrp"
+                        },
+                        {
                             "label": "Recepción de CRP",
                             "icon": "",
                             "items": [
@@ -166,6 +171,11 @@
                     "label": "Notas de crédito",
                     "icon": "",
                     "items": [
+                        {
+                            "label": "Todas las NC",
+                            "icon": "bx bx-list-ul bx-sm",
+                            "to": "/pages/documents/nc/allNc"
+                        },
                         {
                             "label": "Recepción de NC",
                             "icon": "",
@@ -263,6 +273,11 @@
                     "label": "Proformas",
                     "icon": "",
                     "items": [
+                        {
+                            "label": "Todas las proformas",
+                            "icon": "bx bx-list-ul bx-sm",
+                            "to": "/pages/documents/prePayments/allPrePayments"
+                        },
                         {
                             "label": "Recepción de proformas",
                             "icon": "",
