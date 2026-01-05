@@ -549,6 +549,12 @@ export const InvoiceDialog = ({
             }
 
             if (reviewOption == constants.REVIEW_ACCEPT) {
+                if (oDps.lReferences.length < 1 && !oDps.notes.trim()) {
+                    setReviewErrors?.((prev: any) => ({ ...prev, notes: true }));
+                    showToast?.('info', 'Ingresa descripción de la factura');
+                    return;
+                }
+
                 if (!oDps.payday && oDps.payment_percentage > 0) {
                     setReviewErrors?.((prev: any) => ({ ...prev, payday: true }));
                     showToast?.('info', 'Ingresa una fecha de pago de la factura');

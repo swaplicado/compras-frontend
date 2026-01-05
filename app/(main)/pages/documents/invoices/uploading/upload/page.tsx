@@ -61,7 +61,8 @@ const Upload = () => {
     const [reviewErrors, setReviewErrors] = useState({
             rejectComments: false,
             payday: false,
-            payment_percentage: false
+            payment_percentage: false,
+            notes: false
         });
     const [withMounthFilter, setWithMounthFilter] = useState<boolean>(false);
     const [lDaysToPay, setLDaysToPay] = useState<any[]>([]);
@@ -568,6 +569,12 @@ const Upload = () => {
 
     const handleReviewAndSendAuth = async () => {
         try {
+            if (selectedRow.lReferences.length < 1 && !selectedRow.notes.trim()) {
+                setReviewErrors?.((prev: any) => ({ ...prev, notes: true }));
+                showToast?.('info', 'Ingresa descripción de la factura');
+                return;
+            }
+
             if (!selectedRow.payday && selectedRow.payment_percentage > 0) {
                 setReviewErrors((prev) => ({ ...prev, payday: true }));
                 showToast?.('info', 'Ingresa una fecha de pago de la factura');

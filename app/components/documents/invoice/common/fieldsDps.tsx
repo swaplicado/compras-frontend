@@ -564,12 +564,14 @@ export const FieldsDps = ({
                         label: t('uploadDialog.aceptNotes.label'),
                         tooltip: t('uploadDialog.aceptNotes.tooltip'),
                         value: oDps?.notes,
-                        onChange: (value) => setODps((prev: any) => ({ ...prev, notes: value })),
+                        onChange: (value) => {setODps((prev: any) => ({ ...prev, notes: value })); setErrors?.((prev: any) => ({ ...prev, notes: false }));},
                         disabled: footerMode == 'view',
                         mdCol: 12,
                         type: 'textArea',
                         placeholder: '',
-                        errorKey: '',
+                        errors: errors,
+                        errorKey: 'notes',
+                        errorMessage: 'Ingresa la descripción',
                         labelClass: 'opacity-100 text-blue-600'
                     })}
                     <div className="p-fluid formgrid grid">
