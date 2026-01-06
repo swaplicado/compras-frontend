@@ -185,7 +185,8 @@ export const InvoiceDialog = ({
         area: false,
         files: false,
         includePdf: false,
-        includeXml: false
+        includeXml: false,
+        folio: false
     });
     const [dpsErrors, setDpsErrors] = useState({
         folio: false,
@@ -400,14 +401,15 @@ export const InvoiceDialog = ({
             files: (fileUploadRef.current?.getFiles().length || 0) === 0,
             includePdf: fileUploadRef.current?.getFiles().length || 0 > 0 ? !fileUploadRef.current?.getFiles().some((file: { type: string }) => file.type === 'application/pdf') : false,
             includeXml: false,
-            xmlValidateFile: xmlUploadRef.current?.getFiles().length === 0
+            xmlValidateFile: xmlUploadRef.current?.getFiles().length === 0,
+            folio: oDps.folio?.trim() == '',
         };
         setFormErrors(newFormErrors);
 
         const newDpsErros = {};
         if (!isXmlValid && oProvider?.country != constants.COUNTRIES.MEXICO_ID) {
             const newDpsErros = {
-                folio: false,
+                folio: oDps.folio?.trim() == '',
                 date: oDps.date == '',
                 payment_method: false,
                 provider_rfc: oDps.provider_rfc?.trim() === '',
@@ -422,7 +424,7 @@ export const InvoiceDialog = ({
             setDpsErrors(newDpsErros);
         } else {
             const newDpsErros = {
-                folio: false,
+                folio: oDps.folio?.trim() == '',
                 date: false,
                 payment_method: false,
                 provider_rfc: false,
@@ -850,7 +852,8 @@ export const InvoiceDialog = ({
             area: false,
             files: false,
             includePdf: false,
-            includeXml: false
+            includeXml: false,
+            folio: false,
         });
         setDpsErrors({
             folio: false,

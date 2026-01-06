@@ -233,7 +233,9 @@ export const FieldsDps = ({
                             <Tooltip target=".custom-target-icon" />
                             <i className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge" data-pr-tooltip={props.tooltip} data-pr-position="right" data-pr-my="left center-2" style={{ fontSize: '1rem', cursor: 'pointer' }}></i>
                             <div>
-                                <InputText value={props.value || ''} className={`w-full`} disabled={props.disabled} onChange={(e) => props.onChange?.(e.target.value)} />
+                                <InputText value={props.value || ''} className={`w-full ${props.errors?.[props.errorKey] ? 'p-invalid' : ''}`} disabled={props.disabled} onChange={(e) => props.onChange?.(e.target.value)} />
+                                {props.errors?.[props.errorKey] && <small className="p-error">{props.errorMessage}</small>}
+                                <small className="p-error">{props.errors?.[props.errorKey]}</small>
                             </div>
                         </div>
                     </div>
@@ -435,7 +437,9 @@ export const FieldsDps = ({
                         mdCol: 2,
                         type: 'text',
                         placeholder: '',
-                        errorKey: ''
+                        errorKey: 'folio',
+                        errors: errors,
+                        errorMessage: 'Ingresa folio'
                     })}
                     {renderField({
                         label: t('uploadDialog.xml_date.label'),
