@@ -25,6 +25,7 @@ interface FlowAuthorizationDialogProps {
     ommitAcceptance?: boolean;
     withAcceptance?: boolean;
     handleAcceptance?: () => Promise<any>;
+    resource_type?: string | number;
 }
 
 export const FlowAuthorizationDialog = ({
@@ -40,7 +41,8 @@ export const FlowAuthorizationDialog = ({
     userExternalId,
     ommitAcceptance = false,
     withAcceptance = false,
-    handleAcceptance
+    handleAcceptance,
+    resource_type = constants.RESOURCE_TYPE_PUR_INVOICE
 }: FlowAuthorizationDialogProps ) => {
     const [loading, setLoading] = useState(false);
     const [flowAuth, setFlowAuth] = useState<any>(null);
@@ -118,7 +120,7 @@ export const FlowAuthorizationDialog = ({
                         name: oDps.provider_name ? oDps.provider_name : oDps.partner_full_name, //proveedor
                         content: {},
                         external_id: oDps.id_dps ? oDps.id_dps : oDps.id,
-                        resource_type: constants.RESOURCE_TYPE_PUR_INVOICE
+                        resource_type: resource_type
                     },
                     deadline: null,
                     sent_by: userExternalId, //external user id

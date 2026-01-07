@@ -797,6 +797,7 @@ const UploadPrepayment = () => {
                             ommitAcceptance={true}
                             withAcceptance={true}
                             handleAcceptance={handleAcceptance}
+                            resource_type={constants.RESOURCE_TYPE_PP}
                         />
                     )}
                     <TablePrepayments

@@ -886,6 +886,7 @@ const AcceptedPrepayment = () => {
                             showToast={showToast}
                             userExternalId={oUser.oUser.external_id}
                             ommitAcceptance={true}
+                            resource_type={constants.RESOURCE_TYPE_PP}
                         />
                     )}
                     <TablePrepayments
