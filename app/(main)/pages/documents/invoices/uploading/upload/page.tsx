@@ -71,6 +71,7 @@ const Upload = () => {
     const [withEditPaymentDay, setWithEditPaymentDay] = useState<boolean>(true);
     const [lAdvance, setLAdvance] = useState<Array<any>>([]);
     const [crpPending, setCrpPending] = useState<any>(false);
+    const [lastPayDayOfYear, setLastPayDayOfYear] = useState<Array<any>>([]);
 
     const headerCard = (
         <div
@@ -538,6 +539,61 @@ const Upload = () => {
             setLoadingPartnerPaymentDay(false);
         }
     }
+
+    const getLastPayDayOfYear = async () => {
+        try {
+            const route = constants.ROUTE_GET_LAST_DAY_PAYMENT;
+            const response = await axios.get(constants.API_AXIOS_GET, {
+                params: {
+                    route: route,
+                }
+            });
+
+            const dates = [];
+            if (response.status === 200) {
+                const startDate = moment(response.data.data.last_payment_date);
+                const endDate = moment(response.data.data.last_payment_date).endOf('year');
+                
+                // Iterar desde la fecha inicial hasta la final
+                let currentDate = moment(startDate);
+                
+                while (currentDate.isSameOrBefore(endDate, 'day')) {
+                    dates.push(currentDate.toDate());
+                    currentDate = currentDate.clone().add(1, 'day');
+                }
+            } else {
+                throw new Error(`${t('errors.getPayDayError')}: ${response.statusText}`);
+            }
+
+            try {
+                const response2 = await axios.get(constants.API_AXIOS_GET, {
+                    params: {
+                        route: route,
+                        year: moment().year() + 1
+                    }
+                });
+
+                if (response2.status === 200) {
+                    const startDate = moment(response.data.data.last_payment_date);
+                    const endDate = moment(response.data.data.last_payment_date).endOf('year');
+                    
+                    // Iterar desde la fecha inicial hasta la final
+                    let currentDate = moment(startDate);
+                    
+                    while (currentDate.isSameOrBefore(endDate, 'day')) {
+                        dates.push(currentDate.toDate());
+                        currentDate = currentDate.clone().add(1, 'day');
+                    }
+                }
+            } catch (error: any) {
+                
+            }
+
+            setLastPayDayOfYear(dates);
+        } catch (error: any) {
+            showToast('error', error.response?.data?.error || t('errors.getPayDayError'), t('errors.getPayDayError'));
+        }
+    }
  
     const handleAcceptance = async () => {
         const date = selectedRow.payday ? DateFormatter(selectedRow.payday, 'YYYY-MM-DD') : '';
@@ -742,6 +798,7 @@ const Upload = () => {
             await getlPaymentMethod();
             await getlUseCfdi();
             await getLDaysToPay();
+            await getLastPayDayOfYear();
             await getlAdvance({
                 params: {
                     route: constants.ROUTE_GET_ADVANCE_APPLICATION
@@ -804,6 +861,7 @@ const Upload = () => {
                         loadingPartnerPaymentDay={loadingPartnerPaymentDay}
                         withEditPaymentDay={withEditPaymentDay}
                         lAdvance={lAdvance}
+                        lastPayDayOfYear={lastPayDayOfYear}
                     />
                     { oValidUser.isInternalUser && (
                         <FlowAuthorizationDialog 

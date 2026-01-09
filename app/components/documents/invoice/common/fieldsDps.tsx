@@ -32,6 +32,7 @@ interface FieldsDpsProps {
     loadingPartnerPaymentDay?: boolean;
     partnerPaymentDay?: any;
     withEditPaymentDay?: boolean;
+    lastPayDayOfYear?: any[];
 }
 
 interface renderFieldProps {
@@ -67,7 +68,8 @@ export const FieldsDps = ({
     lDaysToPay, 
     loadingPartnerPaymentDay,
     partnerPaymentDay,
-    withEditPaymentDay = false
+    withEditPaymentDay = false,
+    lastPayDayOfYear = []
 }: FieldsDpsProps) => {
     const { t } = useTranslation('invoices');
     const { t: tCommon } = useTranslation('common');
@@ -731,6 +733,7 @@ export const FieldsDps = ({
                                                             className={`w-full ${errors?.payday ? 'p-invalid' : ''} `}
                                                             minDate={minDate}
                                                             dateTemplate={(e) => dateTemplate(e.day, e)}
+                                                            disabledDates={lastPayDayOfYear}
                                                         />
                                                         {errors?.payday && <small className="p-error">{t('uploadDialog.payDay.helperText')}</small>}
                                                     </div>

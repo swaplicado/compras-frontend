@@ -57,6 +57,7 @@ const constants = {
     ROUTE_GET_PARTNER_PAYMENT_DAY: '/transactions/partner-payment-day/',
     ROUTE_GET_ADVANCE_APPLICATION: '/transactions/advance-application-list',
     ROUTE_GET_CRP_PENDING_BY_PARTNER: '/transactions/partners/can-upload-for-payment/',
+    ROUTE_GET_LAST_DAY_PAYMENT: '/transactions/last-day-payment',
 
     ROUTE_COMPARE_FILES: '/pages/compareFiles/',
 

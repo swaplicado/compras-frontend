@@ -81,6 +81,7 @@ interface InvoiceDialogProps {
     loadingPartnerPaymentDay?: boolean;
     withEditPaymentDay?: boolean;
     lAdvance?: any[];
+    lastPayDayOfYear?: any[];
 }
 
 interface renderFieldProps {
@@ -148,7 +149,8 @@ export const InvoiceDialog = ({
     partnerPaymentDay,
     loadingPartnerPaymentDay,
     withEditPaymentDay = false,
-    lAdvance = []
+    lAdvance = [],
+    lastPayDayOfYear = []
 }: InvoiceDialogProps) => {
     const [oCompany, setOCompany] = useState<any>(null);
     const [oProvider, setOProvider] = useState<any>(null);
@@ -1686,6 +1688,7 @@ export const InvoiceDialog = ({
                                 loadingPartnerPaymentDay={loadingPartnerPaymentDay}
                                 partnerPaymentDay={partnerPaymentDay}
                                 withEditPaymentDay={withEditPaymentDay}
+                                lastPayDayOfYear={lastPayDayOfYear}
                             />
                         )}
                         {(dialogMode == 'create' || dialogMode == 'edit') && (isXmlValid || (oProvider ? oProvider.country != constants.COUNTRIES.MEXICO_ID : false)) && (
