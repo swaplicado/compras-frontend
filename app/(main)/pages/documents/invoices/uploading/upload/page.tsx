@@ -217,7 +217,9 @@ const Upload = () => {
                         name: item.reference,
                         is_covered: item.is_covered,
                         functional_area_id: item.functional_area_id,
-                        amount: item.amount
+                        amount: item.amount,
+                        concepts: item.concepts,
+                        cost_profit_center: item.cost_profit_center
                     });
                 }
 
@@ -251,7 +253,8 @@ const Upload = () => {
                     lProviders.push({
                         id: item.id,
                         name: item.full_name,
-                        country: item.country
+                        country: item.country,
+                        credit_days: item.credit_days
                     });
                 }
 
@@ -736,6 +739,14 @@ const Upload = () => {
         setDialogVisible(true);
     };
 
+    const handlePassToReview = async (e: any) => {
+        setDialogVisible(false);
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        setSelectedRow(e);
+        setDialogMode('review');
+        setDialogVisible(true);
+    };
+
     useEffect(() => {
         const fetchReferences = async () => {
             setLoading(true);
@@ -829,6 +840,7 @@ const Upload = () => {
                         onHide={() => setDialogVisible(false)}
                         oDps={selectedRow}
                         setODps={setSelectedRow}
+                        setDialogMode={setDialogMode}
                         getDpsParams={getDpsParams}
                         getDps={getDps}
                         errors={''}
@@ -862,6 +874,7 @@ const Upload = () => {
                         withEditPaymentDay={withEditPaymentDay}
                         lAdvance={lAdvance}
                         lastPayDayOfYear={lastPayDayOfYear}
+                        handlePassToReview={handlePassToReview}
                     />
                     { oValidUser.isInternalUser && (
                         <FlowAuthorizationDialog 

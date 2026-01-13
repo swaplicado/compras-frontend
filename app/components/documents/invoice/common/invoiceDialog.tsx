@@ -35,6 +35,8 @@ import { getCrpPending } from '@/app/(main)/utilities/documents/invoice/dps';
 interface InvoiceDialogProps {
     visible: boolean;
     onHide: () => void;
+    setDialogVisible?: React.Dispatch<React.SetStateAction<any>>;
+    setDialogMode?: React.Dispatch<React.SetStateAction<any>>;
     oDps: any;
     setODps: React.Dispatch<React.SetStateAction<any>>;
     getDpsParams?: any;
@@ -82,6 +84,7 @@ interface InvoiceDialogProps {
     withEditPaymentDay?: boolean;
     lAdvance?: any[];
     lastPayDayOfYear?: any[];
+    handlePassToReview?: (e: any) => Promise<any>;
 }
 
 interface renderFieldProps {
@@ -104,6 +107,8 @@ interface renderFieldProps {
 export const InvoiceDialog = ({
     visible,
     onHide,
+    setDialogVisible,
+    setDialogMode,
     oDps,
     setODps,
     getDpsParams,
@@ -150,7 +155,8 @@ export const InvoiceDialog = ({
     loadingPartnerPaymentDay,
     withEditPaymentDay = false,
     lAdvance = [],
-    lastPayDayOfYear = []
+    lastPayDayOfYear = [],
+    handlePassToReview
 }: InvoiceDialogProps) => {
     const [oCompany, setOCompany] = useState<any>(null);
     const [oProvider, setOProvider] = useState<any>(null);
@@ -448,6 +454,13 @@ export const InvoiceDialog = ({
         };
         setFilesErrros(newFileErrors);
 
+        if (newFileErrors.files) {
+            showToast?.('info', t('uploadDialog.files.helperTextFiles'));
+        }
+        if (newFileErrors.includePdf) {
+            showToast?.('info', t('uploadDialog.files.helperTextPdf'));
+        }
+
         return !Object.values(newFormErrors).some(Boolean) && !Object.values(newDpsErros).some(Boolean) && !Object.values(newFileErrors).some(Boolean);
     };
 
@@ -741,6 +754,177 @@ export const InvoiceDialog = ({
         }
     };
 
+    const handleSubmitAndReview = async () => {
+        try {
+            if (!validate()) return;
+            if (!validateLRefErros) return;
+
+            setLoading?.(true);
+
+            let lRef = lRefToValidateXml;
+            if (lRefToValidateXml.length == 1 && lRefToValidateXml[0].id != 0) {
+                lRef[0].amount = oDps.amount;
+            }
+
+            if (lRefToValidateXml[0].id == 0) {
+                lRef = [];
+            }
+
+            let reference = '';
+            for (let i = 0; i < lRef.length; i++) {
+                reference += lRef[i].reference
+                if (i < lRef.length - 1) {
+                    reference += ', ';
+                }
+                let concepts = lReferences.find((item: any) => item.id == lRef[i].id).concepts;
+                let cost_profit_center = lReferences.find((item: any) => item.id == lRef[i].id).cost_profit_center;
+                lRef[i].concepts = concepts ? concepts.split(';').map((concept: any) => concept.trim() + ';\n').join('') : "N/D";
+                lRef[i].cost_profit_center = cost_profit_center ? cost_profit_center.split(';').map((concept: any) => concept.trim() + ';\n').join('') : "N/D";
+            }
+
+            let myDps = oDps;
+            myDps.lReferences = lRef;
+            myDps.reference = reference;
+            myDps.area_id = oArea?.id;
+            myDps.company = oCompany.name;
+            myDps.company_external_id = oCompany.external_id;
+            myDps.provider_name = oProvider?.name;
+            myDps.provider_id = oProvider?.id;
+            myDps.functional_area = oArea?.name;
+            myDps.is_advance = isAdvance;
+            myDps.advance_application = oAdvance;
+            myDps.acceptance = "pendiente";
+            myDps.authorization = "pendiente";
+            myDps.authz_acceptance_id = 1;
+            myDps.authz_acceptance_notes = "";
+            myDps.authz_authorization_code = "P";
+            myDps.authz_authorization_id = 1;
+            myDps.authz_authorization_notes = "";
+            myDps.payment_percentage = "100.00";
+            myDps.issuer_tax_regime = oDps.oIssuer_tax_regime.code;
+            myDps.payment_method = oDps.oPaymentMethod.id;
+            myDps.receiver_tax_regime = oDps.oReceiver_tax_regime.code;
+            myDps.currency = oDps.oCurrency.id;
+            myDps.currencyCode = oDps.oCurrency.name;
+            myDps.useCfdi = oDps.oUseCfdi.id;
+            myDps.oPartner = oProvider;
+            myDps.is_advance = isAdvance;
+            myDps.advance_application = oAdvance?.name;
+
+            try {
+                const formData = new FormData();
+                const files = fileUploadRef.current?.getFiles() || [];
+                
+                let xmlFiles: any[] = [];
+                let xmlBaseName: any;
+                let xmlName: any;
+
+                if (oProvider.country == constants.COUNTRIES.MEXICO_ID) {
+                    xmlFiles = xmlUploadRef.current?.getFiles() || [];
+                    xmlBaseName = xmlFiles[0].name.replace(/\.[^/.]+$/, '');
+                    xmlName = xmlFiles[0].name;
+                    const hasSameFile = files.some((file) => file.name === xmlName);
+        
+                    if (hasSameFile) {
+                        showToast?.('error', t('uploadDialog.files.hasSameFile', { xmlName }));
+                        return;
+                    }
+        
+                    const hasMatchingPDF = files.some((file) => {
+                        const isPDF = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+                        const fileBaseName = file.name.replace(/\.[^/.]+$/, '');
+                        return isPDF && fileBaseName === xmlBaseName;
+                    });
+        
+                    if (!hasMatchingPDF) {
+                        showToast?.('error', t('uploadDialog.files.hasMatchingPDF', { xmlBaseName }));
+                        return;
+                    }
+                }
+
+                files.forEach((file: string | Blob) => {
+                    formData.append('files', file);
+                });
+
+                xmlFiles.forEach((file: string | Blob) => {
+                    formData.append('files', file);
+                });
+
+                const route = constants.ROUTE_POST_DOCUMENT_TRANSACTION;
+
+                let lRef = lRefToValidateXml;
+                if (lRefToValidateXml.length == 1 && lRefToValidateXml[0].id != 0) {
+                    lRef[0].amount = oDps.amount;
+                }
+
+                if (lRefToValidateXml[0].id == 0) {
+                    lRef = [];
+                }
+
+                // formData.append('ref_id', ref_id);
+                formData.append('references', JSON.stringify(lRef));
+                formData.append('area_id', oArea?.id || '');
+                formData.append('route', route);
+                formData.append('company', oCompany?.id || '');
+                formData.append('user_id', userId.toString());
+                formData.append('is_internal_user', oValidUser.isInternalUser ? 'True' : 'False');
+
+                const splitFolio = oDps.folio.split('-');
+                const serie = splitFolio.length > 1 ? splitFolio[0] : '';
+                const number = splitFolio.length > 1 ? splitFolio.slice(1).join('-') : splitFolio[0];
+
+                const area_id = lRefToValidateXml[0].id == 0 ? oArea?.id : lRefToValidateXml[0].functional_area_id;
+
+                let document = {
+                    transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
+                    document_type: constants.DOC_TYPE_INVOICE,
+                    partner: oProvider?.id || '',
+                    series: serie,
+                    number: number,
+                    date: oDps.date ? moment(oDps.date).format('YYYY-MM-DD') : moment(new Date).format('YYYY-MM-DD'),
+                    currency: oDps.oCurrency?.id || '',
+                    amount: oDps.amount,
+                    exchange_rate: oDps.exchange_rate ? oDps.exchange_rate : 0,
+                    payment_method: oDps.oPaymentMethod?.id || '',
+                    payment_way: oDps.payment_way || '',
+                    fiscal_use: oDps.oUseCfdi?.id || '',
+                    issuer_tax_regime: oDps.oIssuer_tax_regime ? oDps.oIssuer_tax_regime.id : '',
+                    receiver_tax_regime: oDps.oReceiver_tax_regime ? oDps.oReceiver_tax_regime.id : '',
+                    uuid: oDps.uuid || '',
+                    functional_area: area_id,
+                    is_advance: isAdvance,
+                    advance_application: oAdvance?.id
+                };
+
+                formData.append('document', JSON.stringify(document));
+
+                const response = await axios.post(constants.API_AXIOS_POST, formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
+
+                if (response.status === 200 || response.status === 201) {
+                    
+                    myDps.id_dps = response.data.data.document_id;
+                    getDps?.(getDpsParams);
+                } else {
+                    throw new Error(t('uploadDialog.errors.uploadError'));
+                }
+
+                handlePassToReview?.(myDps);
+
+            } catch (error: any) {
+                console.error('Error al subir archivos:', error);
+                setErrorMessage(error.response?.data?.error || t('uploadDialog.errors.uploadError'));
+                setResultUpload('error');
+            } finally {
+                setLoading?.(false);
+            }
+        } catch (error: any) {
+            console.log(error);
+            showToast?.('error', error.message, t('uploadDialog.errors.uploadError'));
+        }
+    }
+
     const handleUploadExtraFiles = async () => {
         try {
             setLoading?.(true);
@@ -949,6 +1133,8 @@ export const InvoiceDialog = ({
     useEffect(() => {
         if (dialogMode == 'create') {
             if (oProvider?.country != constants.COUNTRIES.MEXICO_ID) {
+                setIsAdvance(false);
+                setOAdvance(null);
                 const oIssuer_tax_regime = findFiscalRegimeById(lFiscalRegimes, 0);
                 const oReceiver_tax_regime = findFiscalRegimeById(lFiscalRegimes, oCompany ? oCompany.fiscal_regime_id : '');
                 const oUseCfdi = findUseCfdi(lUseCfdi, 'S01');
@@ -995,6 +1181,16 @@ export const InvoiceDialog = ({
                     disabled={loading || (oProvider ? (oProvider.country == constants.COUNTRIES.MEXICO_ID ? !isXmlValid : false) : true)}
                     className="order-0 md:order-1"
                 />
+                {  oValidUser.isInternalUser && (
+                    <Button
+                        label={'Guardar y revisar'}
+                        icon="pi pi-upload"
+                        onClick={handleSubmitAndReview}
+                        autoFocus
+                        disabled={loading || (oProvider ? (oProvider.country == constants.COUNTRIES.MEXICO_ID ? !isXmlValid : false) : true)}
+                        className="order-0 md:order-1"
+                    />
+                )}
             </div>
         </>
     );
