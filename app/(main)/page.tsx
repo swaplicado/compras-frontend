@@ -6,8 +6,11 @@ import Cookies from 'js-cookie';
 import constants from '@/app/constants/constants';
 import axios from 'axios';
 import moment from 'moment';
+import 'moment/locale/es';
 
 const Dashboard = () => {
+    moment.locale('es');
+
     const [loading, setLoading] = useState(false);
     const [oPanelData, setOPanelData] = useState({
         n_documents: 0,
@@ -45,7 +48,6 @@ const Dashboard = () => {
             });
 
             if (response.status === 200) {
-                console.log(response.data);
                 const data = response.data.data || [];
                 setOPanelData(data);
                 return true;
@@ -106,30 +108,15 @@ const Dashboard = () => {
                         <div className="w-2rem h-2rem flex align-items-center justify-content-center bg-primary-100 border-round mr-3">
                             <i className="pi pi-folder text-primary-500 text-xl"></i>
                         </div>
-                        <h3 className="text-900 font-medium m-0 text-base">Documentos</h3>
+                        <h3 className="text-900 font-medium m-0 text-base">Facturas</h3>
                     </div>
                     <div className="grid">
-                        {oPanelData.n_documents > -1 ? (
-                            <div className="col-12 lg:col-6 xl:col-3">
-                                <div onClick={() => redirectToMenu('/pages/documents/invoices/uploading/accepted')} className="card mb-0" style={{ paddingBottom: '0.5rem' }}>
-                                    <div className="flex justify-content-between mb-3">
-                                        <div>
-                                            <span className="block text-500 font-medium mb-3">Facturas del mes</span>
-                                            <div className="text-900 font-medium text-xl">{oPanelData.n_documents}</div>
-                                        </div>
-                                        <div className="flex align-items-center justify-content-center bg-blue-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
-                                            <i className="pi pi-file text-blue-500 text-xl" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        ) : ''}
                         {oPanelData.n_invoice_pending_accept > -1 ? (
                             <div className="col-12 lg:col-6 xl:col-3">
                                 <div onClick={() => redirectToMenu('/pages/documents/invoices/uploading/upload')} className="card mb-0" style={{ paddingBottom: '0.5rem' }}>
                                     <div className="flex justify-content-between mb-3">
                                         <div>
-                                            <span className="block text-500 font-medium mb-3">Facturas por aceptar</span>
+                                            <span className="block text-500 font-medium mb-3">Facturas por revisar</span>
                                             <div className="text-900 font-medium text-xl">{oPanelData.n_invoice_pending_accept}</div>
                                         </div>
                                         <div className="flex align-items-center justify-content-center bg-blue-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
@@ -141,11 +128,11 @@ const Dashboard = () => {
                         ) : ''}
                         {oPanelData.n_invoice_pending_auth > -1 ? (
                             <div className="col-12 lg:col-6 xl:col-3">
-                                <div onClick={() => redirectToMenu('/pages/documents/invoices/authorizations/myFlowAuthorizations/inAuthorization')} className="card mb-0" 
+                                <div onClick={() => redirectToMenu('/pages/documents/invoices/authorizations/myFunctionalAreaAuthorizations/inAuthorization')} className="card mb-0" 
                                 style={{ paddingBottom: '0.5rem' }}>
                                     <div className="flex justify-content-between mb-3">
                                         <div>
-                                            <span className="block text-500 font-medium mb-3">Facturas por autorizar</span>
+                                            <span className="block text-500 font-medium mb-3">Facturas en autorización</span>
                                             <div className="text-900 font-medium text-xl">{oPanelData.n_invoice_pending_auth}</div>
                                         </div>
                                         <div className="flex align-items-center justify-content-center bg-blue-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
@@ -173,7 +160,7 @@ const Dashboard = () => {
                                 <div onClick={() => redirectToMenu('/pages/documents/nc/upload')} className="card mb-0" style={{ paddingBottom: '0.5rem' }}>
                                     <div className="flex justify-content-between mb-3">
                                         <div>
-                                            <span className="block text-500 font-medium mb-3">NC por aceptar</span>
+                                            <span className="block text-500 font-medium mb-3">NC por revisar de {moment().format('MMMM')}</span>
                                             <div className="text-900 font-medium text-xl">{oPanelData.n_cn_pending_accept}</div>
                                         </div>
                                         <div className="flex align-items-center justify-content-center bg-blue-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
@@ -216,7 +203,7 @@ const Dashboard = () => {
                                 <div onClick={() => redirectToMenu('/pages/documents/payments/executed')} className="card mb-0" style={{ paddingBottom: '0.5rem' }}>
                                     <div className="flex justify-content-between mb-3">
                                         <div>
-                                            <span className="block text-500 font-medium mb-3">Pagos por comprobar</span>
+                                            <span className="block text-500 font-medium mb-3">Pagos por comprobar de {moment().format('MMMM')}</span>
                                             <div className="text-900 font-medium text-xl">{oPanelData.n_payment_pending_check}</div>
                                         </div>
                                         <div className="flex align-items-center justify-content-center bg-blue-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
@@ -244,7 +231,7 @@ const Dashboard = () => {
                                 <div onClick={() => redirectToMenu('/pages/documents/crp/upload')} className="card mb-0" style={{ paddingBottom: '0.5rem' }}>
                                     <div className="flex justify-content-between mb-3">
                                         <div>
-                                            <span className="block text-500 font-medium mb-3">CRP por aceptar</span>
+                                            <span className="block text-500 font-medium mb-3">CRP por revisar de {moment().format('MMMM')}</span>
                                             <div className="text-900 font-medium text-xl">{oPanelData.n_crp_pending_accept}</div>
                                         </div>
                                         <div className="flex align-items-center justify-content-center bg-blue-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
@@ -256,10 +243,10 @@ const Dashboard = () => {
                         ) : ''}
                         {oPanelData.n_crp_pending_auth > -1 ? (
                             <div className="col-12 lg:col-6 xl:col-3">
-                                <div onClick={() => redirectToMenu('/pages/documents/crp/accepted')} className="card mb-0" style={{ paddingBottom: '0.5rem' }}>
+                                <div onClick={() => redirectToMenu('/pages/documents/crp/authorizations/consultationAuth/inProcess')} className="card mb-0" style={{ paddingBottom: '0.5rem' }}>
                                     <div className="flex justify-content-between mb-3">
                                         <div>
-                                            <span className="block text-500 font-medium mb-3">CRP por autorizar</span>
+                                            <span className="block text-500 font-medium mb-3">CRP en autorización de {moment().format('MMMM')}</span>
                                             <div className="text-900 font-medium text-xl">{oPanelData.n_crp_pending_auth}</div>
                                         </div>
                                         <div className="flex align-items-center justify-content-center bg-blue-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
@@ -287,7 +274,7 @@ const Dashboard = () => {
                                 <div onClick={() => redirectToMenu('/pages/partners/reception')} className="card mb-0" style={{ paddingBottom: '0.5rem' }}>
                                     <div className="flex justify-content-between mb-3">
                                         <div>
-                                            <span className="block text-500 font-medium mb-3">Proveedores por aceptar</span>
+                                            <span className="block text-500 font-medium mb-3">Proveedores por revisar</span>
                                             <div className="text-900 font-medium text-xl">{oPanelData.n_provider_pending_accept}</div>
                                         </div>
                                         <div className="flex align-items-center justify-content-center bg-blue-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
@@ -299,10 +286,10 @@ const Dashboard = () => {
                         ) : ''}
                         {oPanelData.n_provider_pending_auth > -1 ? (
                             <div className="col-12 lg:col-6 xl:col-3">
-                                <div onClick={() => redirectToMenu('/pages/partners/authorization/inAuthorization')} className="card mb-0" style={{ paddingBottom: '0.5rem' }}>
+                                <div onClick={() => redirectToMenu('/pages/partners/authorization/consultationAuth/inAuthorization')} className="card mb-0" style={{ paddingBottom: '0.5rem' }}>
                                     <div className="flex justify-content-between mb-3">
                                         <div>
-                                            <span className="block text-500 font-medium mb-3">Proveedores por autorizar</span>
+                                            <span className="block text-500 font-medium mb-3">Proveedores en autorización</span>
                                             <div className="text-900 font-medium text-xl">{oPanelData.n_provider_pending_auth}</div>
                                         </div>
                                         <div className="flex align-items-center justify-content-center bg-blue-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
