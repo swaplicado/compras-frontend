@@ -27,6 +27,8 @@ import DateFormatter from '@/app/components/commons/formatDate';
 import { getlUrlFilesDps } from '@/app/(main)/utilities/documents/common/filesUtils';
 import invoices from "@/i18n/locales/es/documents/invoices";
 import { RenderInfoButton } from "@/app/components/commons/instructionsButton";
+import { useContext } from 'react';
+import { LayoutContext } from '@/layout/context/layoutcontext';
 
 const AuthInProcessNC = () => {
     const [startDate, setStartDate] = useState<string>('');
@@ -42,6 +44,8 @@ const AuthInProcessNC = () => {
     const [lCompaniesFilter, setLCompaniesFilter] = useState<any[]>([]);
     const [showInfo, setShowInfo] = useState<boolean>(false);
     const [showManual, setShowManual] = useState<boolean>(false);
+
+    const { dateToWork, setDateToWork } = useContext(LayoutContext);
 
     //constantes para el dialog
     const [visible, setDialogVisible] = useState<boolean>(false);
@@ -374,7 +378,7 @@ const AuthInProcessNC = () => {
             const oUser = await getOUser();
             setUserFunctionalAreas(user_functional_areas);
             setOUser(oUser);
-            setDateFilter(new Date);
+            // setDateFilter(dateToWork);   
         }
         fetch();
     }, [])
@@ -423,10 +427,10 @@ const AuthInProcessNC = () => {
             await getLNc();
             setLoading(false);
         }
-        if (userFunctionalAreas && startDate && endDate) {
+        if (userFunctionalAreas) {
             init();
         }
-    }, [userFunctionalAreas, oUser, startDate, endDate])
+    }, [userFunctionalAreas, oUser])
 
     const getObjectIntruction = () => {
         const viewInstructions = JSON.parse(JSON.stringify(t(`dialog.viewInstructions`, { returnObjects: true })));
@@ -513,7 +517,7 @@ const AuthInProcessNC = () => {
                         withSearch={true}
                         handleRowClick={handleRowClick}
                         handleDoubleClick={handleDoubleClick}
-                        withMounthFilter={true}
+                        withMounthFilter={false}
                         dateFilter={dateFilter}
                         setDateFilter={setDateFilter}
                         showToast={showToast}

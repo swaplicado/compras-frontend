@@ -28,6 +28,8 @@ import { RenderInfoButton } from "@/app/components/commons/instructionsButton";
 import { getLDaysToPay } from '@/app/(main)/utilities/documents/common/daysToPayUtils';
 import DateFormatter from '@/app/components/commons/formatDate';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
+import { useContext } from 'react';
+import { LayoutContext } from '@/layout/context/layoutcontext';
 
 const UploadPrepayment = () => {
     const [startDate, setStartDate] = useState<string>('');
@@ -44,6 +46,8 @@ const UploadPrepayment = () => {
     const [showInfo, setShowInfo] = useState<boolean>(false);
     const [showManual, setShowManual] = useState<boolean>(false);
     const [lDaysToPay, setLDaysToPay] = useState<Array<any>>([]);
+
+    const { dateToWork, setDateToWork } = useContext(LayoutContext);
 
     //constantes para el dialog
     const [visible, setDialogVisible] = useState<boolean>(false);
@@ -645,7 +649,7 @@ const UploadPrepayment = () => {
             const oUser = await getOUser();
             setUserFunctionalAreas(user_functional_areas);
             setOUser(oUser);
-            setDateFilter(new Date);
+            setDateFilter(dateToWork);
         }
         fetch();
     }, [])

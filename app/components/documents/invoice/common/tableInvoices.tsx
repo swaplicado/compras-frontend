@@ -17,6 +17,8 @@ import { Nullable } from 'primereact/ts-helpers';
 import { HistoryAuth } from '@/app/components/documents/invoice/historyAuth';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { Tooltip } from 'primereact/tooltip';
+import { useContext } from 'react';
+import { LayoutContext } from '@/layout/context/layoutcontext';
 
 interface columnsProps {
     acceptance: {
@@ -125,6 +127,8 @@ export const TableInvoices = ({
         { field: 'date', order: -1 as -1 }
     ]);
     const [activoFijoFilterValue, setActivoFijoFilterValue] = useState<string>('all');
+
+    const { dateToWork, setDateToWork } = useContext(LayoutContext);
 
     const getlCompanies = async () => {
         try {
@@ -637,7 +641,7 @@ export const TableInvoices = ({
             setLoading(true);
 
             initFilters();
-            setDpsDateFilter(new Date);
+            setDpsDateFilter(dateToWork);
             await getlCompanies();
 
             // setLoading(false);

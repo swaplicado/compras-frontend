@@ -28,6 +28,8 @@ import { getlUrlFilesDps, getlFilesNames } from '@/app/(main)/utilities/document
 import invoices from "@/i18n/locales/es/documents/invoices";
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { RenderInfoButton } from "@/app/components/commons/instructionsButton";
+import { useContext } from 'react';
+import { LayoutContext } from '@/layout/context/layoutcontext';
 
 const RejectedNC = () => {
     const [startDate, setStartDate] = useState<string>('');
@@ -43,6 +45,8 @@ const RejectedNC = () => {
     const [lCompaniesFilter, setLCompaniesFilter] = useState<any[]>([]);
     const [showInfo, setShowInfo] = useState<boolean>(false);
     const [showManual, setShowManual] = useState<boolean>(false);
+
+    const { dateToWork, setDateToWork } = useContext(LayoutContext);
 
     //constantes para el dialog
     const [visible, setDialogVisible] = useState<boolean>(false);
@@ -485,7 +489,7 @@ const RejectedNC = () => {
             const oUser = await getOUser();
             setUserFunctionalAreas(user_functional_areas);
             setOUser(oUser);
-            setDateFilter(new Date);
+            setDateFilter(dateToWork);
         }
         fetch();
     }, [])

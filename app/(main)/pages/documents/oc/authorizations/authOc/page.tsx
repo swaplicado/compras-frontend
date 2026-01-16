@@ -28,6 +28,8 @@ import { getlUrlFilesDps } from '@/app/(main)/utilities/documents/common/filesUt
 import { RenderInfoButton } from "@/app/components/commons/instructionsButton";
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { getHistoryAuth } from '@/app/(main)/utilities/documents/common/historyAuth';
+import { useContext } from 'react';
+import { LayoutContext } from '@/layout/context/layoutcontext';
 
 const AuthOC = () => {
     const [startDate, setStartDate] = useState<string>('');
@@ -44,6 +46,8 @@ const AuthOC = () => {
     const [showInfo, setShowInfo] = useState<boolean>(false);
     const [showManual, setShowManual] = useState<boolean>(false);
     const [isUserAuth, setIsUserAuth] = useState(false);
+
+    const { dateToWork, setDateToWork } = useContext(LayoutContext);
 
     //constantes para el dialog
     const [visible, setDialogVisible] = useState<boolean>(false);
@@ -456,7 +460,7 @@ const AuthOC = () => {
             const oUser = await getOUser();
             setUserFunctionalAreas(user_functional_areas);
             setOUser(oUser);
-            setDateFilter(new Date);
+            setDateFilter(dateToWork);
         }
         fetch();
     }, [])

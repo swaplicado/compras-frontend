@@ -18,6 +18,8 @@ import { Button } from "primereact/button";
 import { getExtensionFileByName } from '@/app/(main)/utilities/files/fileValidator';
 import axios from 'axios';
 import DateFormatter from '@/app/components/commons/formatDate';
+import { useContext } from 'react';
+import { LayoutContext } from '@/layout/context/layoutcontext';
 
 interface FileInfo {
     url: string;
@@ -37,6 +39,8 @@ const ConsultPaymentExecuted = () => {
     const [userFunctionalAreas, setUserFunctionalAreas] = useState<any>(null);
     const [oUser, setOUser] = useState<any>(null);
     const [dateFilter, setDateFilter] = useState<any>(null);
+
+    const { dateToWork, setDateToWork } = useContext(LayoutContext);
 
     //constantes para el dialog
     const [visible, setDialogVisible] = useState(false);
@@ -247,7 +251,7 @@ const ConsultPaymentExecuted = () => {
             const oUser = await getOUser();
             setUserFunctionalAreas(user_functional_areas);
             setOUser(oUser);
-            setDateFilter(new Date);
+            setDateFilter(dateToWork);
         }
         fetch();
     }, [])

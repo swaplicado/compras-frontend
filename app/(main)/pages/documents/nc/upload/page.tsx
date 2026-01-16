@@ -27,6 +27,8 @@ import DateFormatter from '@/app/components/commons/formatDate';
 import { getlUrlFilesDps } from '@/app/(main)/utilities/documents/common/filesUtils';
 import invoices from "@/i18n/locales/es/documents/invoices";
 import { RenderInfoButton } from "@/app/components/commons/instructionsButton";
+import { useContext } from 'react';
+import { LayoutContext } from '@/layout/context/layoutcontext';
 
 const UploadNC = () => {
     const [startDate, setStartDate] = useState<string>('');
@@ -42,6 +44,8 @@ const UploadNC = () => {
     const [lCompaniesFilter, setLCompaniesFilter] = useState<any[]>([]);
     const [showInfo, setShowInfo] = useState<boolean>(false);
     const [showManual, setShowManual] = useState<boolean>(false);
+
+    const { dateToWork, setDateToWork } = useContext(LayoutContext);
 
     //constantes para el dialog
     const [visible, setDialogVisible] = useState<boolean>(false);
@@ -698,7 +702,7 @@ const UploadNC = () => {
             const oUser = await getOUser();
             setUserFunctionalAreas(user_functional_areas);
             setOUser(oUser);
-            setDateFilter(new Date);
+            setDateFilter(dateToWork);
         }
         fetch();
     }, [])

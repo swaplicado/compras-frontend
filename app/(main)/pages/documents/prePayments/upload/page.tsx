@@ -29,6 +29,8 @@ import { getLDaysToPay } from '@/app/(main)/utilities/documents/common/daysToPay
 import { getFlowAuthorizations } from '@/app/(main)/utilities/documents/common/flowUtils';
 import { FlowAuthorizationDialog } from '@/app/components/documents/invoice/flowAuthorizationDialog';
 import DateFormatter from '@/app/components/commons/formatDate';
+import { useContext } from 'react';
+import { LayoutContext } from '@/layout/context/layoutcontext';
 
 const UploadPrepayment = () => {
     const [startDate, setStartDate] = useState<string>('');
@@ -48,6 +50,8 @@ const UploadPrepayment = () => {
     const [lFlowAuthorization, setLFlowAuthorization] = useState<Array<any>>([]);
     const [flowAuthDialogVisible, setFlowAuthDialogVisible] = useState<boolean>(false);
     const [isSendAuth, setIsSendAuth] = useState<boolean>(false);
+
+    const { dateToWork, setDateToWork } = useContext(LayoutContext);
 
     //constantes para el dialog
     const [visible, setDialogVisible] = useState<boolean>(false);
@@ -647,7 +651,7 @@ const UploadPrepayment = () => {
             const oUser = await getOUser();
             setUserFunctionalAreas(user_functional_areas);
             setOUser(oUser);
-            setDateFilter(new Date);
+            setDateFilter(dateToWork);
         }
         fetch();
     }, [])

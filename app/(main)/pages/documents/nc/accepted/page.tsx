@@ -28,6 +28,8 @@ import { getlUrlFilesDps } from '@/app/(main)/utilities/documents/common/filesUt
 import invoices from "@/i18n/locales/es/documents/invoices";
 import { RenderInfoButton } from "@/app/components/commons/instructionsButton";
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
+import { useContext } from 'react';
+import { LayoutContext } from '@/layout/context/layoutcontext';
 
 const AcceptedNC = () => {
     const [startDate, setStartDate] = useState<string>('');
@@ -44,6 +46,8 @@ const AcceptedNC = () => {
     const [showInfo, setShowInfo] = useState<boolean>(false);
     const [showManual, setShowManual] = useState<boolean>(false);
     const [withBtnSendAuth, setWithBtnSendAuth] = useState<boolean>(false);
+
+    const { dateToWork, setDateToWork } = useContext(LayoutContext);
 
     //constantes para el dialog
     const [visible, setDialogVisible] = useState<boolean>(false);
@@ -475,7 +479,7 @@ const AcceptedNC = () => {
             const oUser = await getOUser();
             setUserFunctionalAreas(user_functional_areas);
             setOUser(oUser);
-            setDateFilter(new Date);
+            setDateFilter(dateToWork);
         }
         fetch();
     }, [])

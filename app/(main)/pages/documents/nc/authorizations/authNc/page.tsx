@@ -28,6 +28,8 @@ import { getlUrlFilesDps } from '@/app/(main)/utilities/documents/common/filesUt
 import invoices from "@/i18n/locales/es/documents/invoices";
 import { RenderInfoButton } from "@/app/components/commons/instructionsButton";
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
+import { useContext } from 'react';
+import { LayoutContext } from '@/layout/context/layoutcontext';
 
 const AuthNC = () => {
     const [startDate, setStartDate] = useState<string>('');
@@ -44,6 +46,8 @@ const AuthNC = () => {
     const [showInfo, setShowInfo] = useState<boolean>(false);
     const [showManual, setShowManual] = useState<boolean>(false);
     const [isUserAuth, setIsUserAuth] = useState(false);
+
+    const { dateToWork, setDateToWork } = useContext(LayoutContext);
 
     //constantes para el dialog
     const [visible, setDialogVisible] = useState<boolean>(false);
@@ -483,7 +487,7 @@ const AuthNC = () => {
             const oUser = await getOUser();
             setUserFunctionalAreas(user_functional_areas);
             setOUser(oUser);
-            setDateFilter(new Date);
+            // setDateFilter(dateToWork);
         }
         fetch();
     }, [])
@@ -518,10 +522,10 @@ const AuthNC = () => {
             await getLNc();
             setLoading(false);
         }
-        if (userFunctionalAreas && startDate && endDate) {
+        if (userFunctionalAreas) {
             init();
         }
-    }, [userFunctionalAreas, oUser, startDate, endDate])
+    }, [userFunctionalAreas, oUser])
 
     useEffect(() => {
         validateUserAuth();
@@ -613,7 +617,7 @@ const AuthNC = () => {
                         withSearch={true}
                         handleRowClick={handleRowClick}
                         handleDoubleClick={handleDoubleClick}
-                        withMounthFilter={true}
+                        withMounthFilter={false}
                         dateFilter={dateFilter}
                         setDateFilter={setDateFilter}
                         showToast={showToast}

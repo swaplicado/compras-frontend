@@ -28,6 +28,9 @@ import { RenderInfoButton } from "@/app/components/commons/instructionsButton";
 import { getLDaysToPay } from '@/app/(main)/utilities/documents/common/daysToPayUtils';
 import DateFormatter from '@/app/components/commons/formatDate';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
+import { useContext } from 'react';
+import { LayoutContext } from '@/layout/context/layoutcontext';
+import { start } from "node:repl";
 
 const AcceptedPrepayment = () => {
     const [startDate, setStartDate] = useState<string>('');
@@ -46,6 +49,8 @@ const AcceptedPrepayment = () => {
     const [lDaysToPay, setLDaysToPay] = useState<Array<any>>([]);
     const [withBtnSendAuth, setWithBtnSendAuth] = useState<boolean>(false);
     const [flowAuthDialogVisible, setFlowAuthDialogVisible] = useState<boolean>(false);
+
+    const { dateToWork, setDateToWork } = useContext(LayoutContext);
 
     //constantes para el dialog
     const [visible, setDialogVisible] = useState<boolean>(false);
@@ -146,6 +151,8 @@ const AcceptedPrepayment = () => {
                 document_type: constants.DOC_TYPE_PP,
                 user_id: oUser.oUser.external_id,
                 auth_status: constants.REVIEW_ACCEPT_ID,
+                start_date: startDate,
+                end_date: endDate
             };
         }
         if (oUser.isProvider) {
@@ -157,6 +164,8 @@ const AcceptedPrepayment = () => {
                 document_type: constants.DOC_TYPE_PP,
                 authz_acceptance: constants.REVIEW_ACCEPT_ID,
                 authz_authorization: constants.REVIEW_ACCEPT_ID,
+                start_date: startDate,
+                end_date: endDate
             };
         }
 
@@ -727,7 +736,7 @@ const AcceptedPrepayment = () => {
             const oUser = await getOUser();
             setUserFunctionalAreas(user_functional_areas);
             setOUser(oUser);
-            setDateFilter(new Date);
+            setDateFilter(dateToWork);
         }
         fetch();
     }, [])

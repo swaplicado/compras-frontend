@@ -19,6 +19,8 @@ import { useIsMobile } from '@/app/components/commons/screenMobile';
 import { Button } from "primereact/button";
 import { getExtensionFileByName } from '@/app/(main)/utilities/files/fileValidator';
 import DateFormatter from '@/app/components/commons/formatDate';
+import { useContext } from 'react';
+import { LayoutContext } from '@/layout/context/layoutcontext';
 
 interface FileInfo {
     url: string;
@@ -40,6 +42,8 @@ const ConsultPaymentProgramded = () => {
     const [dateFilter, setDateFilter] = useState<any>(null);
     const [historyAuth, setHistoryAuth] = useState<any[]>([]);
     const [loadingHistoryAuth, setLoadingHistoryAuth] = useState<boolean>(false);
+
+    const { dateToWork, setDateToWork } = useContext(LayoutContext);
 
     //constantes para el dialog
     const [visible, setDialogVisible] = useState(false);
@@ -212,7 +216,7 @@ const ConsultPaymentProgramded = () => {
             const oUser = await getOUser();
             setUserFunctionalAreas(user_functional_areas);
             setOUser(oUser);
-            setDateFilter(new Date);
+            setDateFilter(dateToWork);
         }
         fetch();
     }, [])

@@ -45,6 +45,8 @@ export interface LayoutContextProps {
     setLayoutState: Dispatch<SetStateAction<LayoutState>>;
     onMenuToggle: () => void;
     showProfileSidebar: () => void;
+    dateToWork: Date;
+    setDateToWork: Dispatch<SetStateAction<Date>>;
 }
 
 export interface MenuContextProps {

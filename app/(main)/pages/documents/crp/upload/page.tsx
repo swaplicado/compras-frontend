@@ -25,6 +25,8 @@ import { getlUrlFilesDps } from "@/app/(main)/utilities/documents/common/filesUt
 import { downloadFiles } from '@/app/(main)/utilities/documents/common/filesUtils';
 import { RenderInfoButton } from "@/app/components/commons/instructionsButton";
 import { getlFiscalRegime } from '@/app/(main)/utilities/documents/common/fiscalRegimeUtils';
+import { useContext } from 'react';
+import { LayoutContext } from '@/layout/context/layoutcontext';
 
 const ConsultPaymentProgramded = () => {
     const [startDate, setStartDate] = useState<string>('');
@@ -38,6 +40,8 @@ const ConsultPaymentProgramded = () => {
     const [oUser, setOUser] = useState<any>(null);
     const [dateFilter, setDateFilter] = useState<any>(null);
     const [lCompaniesFilter, setLCompaniesFilter] = useState<any[]>([]);
+
+    const { dateToWork, setDateToWork } = useContext(LayoutContext);
 
     //constantes para el dialog
     const [visible, setDialogVisible] = useState(false);
@@ -358,7 +362,7 @@ const ConsultPaymentProgramded = () => {
     useEffect(() =>  {
         if (oCrp?.oPay) {
             let areas: any[] = [];
-            if (oCrp.oPay[0].id == 0) {
+            if (oCrp?.oPay[0]?.id == 0) {
                 areas = lGlobalAreas;
             } else {
                 for (let i = 0; i < oCrp.oPay.length; i++) {
@@ -526,7 +530,7 @@ const ConsultPaymentProgramded = () => {
             const oUser = await getOUser();
             setUserFunctionalAreas(user_functional_areas);
             setOUser(oUser);
-            setDateFilter(new Date);
+            setDateFilter(dateToWork);
         }
         fetch();
     }, [])
