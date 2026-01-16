@@ -102,6 +102,7 @@ interface renderFieldProps {
     errorMessage?: string;
     renderLeftItem?: { item: React.ReactNode; mdCol: number };
     renderRightItem?: { item: React.ReactNode; mdCol: number };
+    mySyle?: any;
 }
 
 export const InvoiceDialog = ({
@@ -357,7 +358,7 @@ export const InvoiceDialog = ({
                             <Tooltip target=".custom-target-icon" />
                             <i className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge" data-pr-tooltip={props.tooltip} data-pr-position="right" data-pr-my="left center-2" style={{ fontSize: '1rem', cursor: 'pointer' }}></i>
                             <div>
-                                <InputText value={props.value || ''} readOnly className={`w-full`} disabled={props.disabled} />
+                                <InputText value={props.value || ''} readOnly className={`w-full`} disabled={props.disabled} style={props.mySyle} />
                                 {props.errors[props.errorKey] && <small className="p-error">a</small>}
                             </div>
                         </div>
@@ -1634,7 +1635,8 @@ export const InvoiceDialog = ({
                                 renderField({
                                     label: t('uploadDialog.reference.label'),
                                     tooltip: t('uploadDialog.reference.tooltip'),
-                                    value: dialogMode == 'create' ? oReference : oDps?.reference ? oDps.reference : 'Sin referencia',
+                                    value: dialogMode == 'create' ? oReference : oDps?.reference ? oDps.reference : t('uploadDialog.invoiceWithOutOc'),
+                                    mySyle: (dialogMode == 'review' || dialogMode == 'view') ? (oDps?.reference ? '' : { borderColor: 'red', borderWidth: '2px', fontWeight: 'bold', color: 'black' }) : '',
                                     disabled: !lReferences || lReferences.length == 0 || dialogMode === 'view' || dialogMode === 'review',
                                     mdCol: dialogMode == 'create' ? 4 : 6,
                                     type: dialogMode == 'create' ? 'multiselect' : 'text',
@@ -2033,8 +2035,7 @@ export const InvoiceDialog = ({
 
                         {(dialogMode == 'view' || dialogMode == 'review' || dialogMode == 'authorization') &&
                             (!loadingUrlsFiles ? (
-                                // Estos son datos de prueba, falta funcion para cargar datos reales (en proceso)
-                                <CustomFileViewer lFiles={lUrlFiles} withBtnCompare={true} urlCompare={constants.ROUTE_COMPARE_FILES + oDps?.id_dps}/>
+                                <CustomFileViewer lFiles={lUrlFiles} withBtnCompare={true} urlCompare={constants.ROUTE_COMPARE_FILES + oDps?.id_dps + '/' + (oDps?.reference ? 1 : 0)}/>
                             ) : (
                                 <div className="flex justify-content-center">
                                     <ProgressSpinner style={{ width: '50px', height: '50px' }} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />

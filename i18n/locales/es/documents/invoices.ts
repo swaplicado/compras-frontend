@@ -305,7 +305,9 @@ const invoices = {
         advance_application: {
             label: "Aplicación anticipo",
             tooltip: "Indica como vas a aplicar tu anticipo"
-        }
+        },
+        invoiceWithOutOc: "No se seleccionó una OC",
+        titleInvoiceWithOutOc: "No seleccionó una orden de compra para esta factura"
     },
     errors: {
         getInvoicesError: "Error al obtener las facturas. Por favor, intenta nuevamente más tarde.",
