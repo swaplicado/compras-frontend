@@ -387,12 +387,12 @@ const ConsultPaymentProgramded = () => {
         fetch();
     }, [])
 
-    useEffect(() => {
-        if (dateFilter) {
-            setStartDate(moment(dateFilter).startOf('month').format('YYYY-MM-DD'));
-            setEndtDate(moment(dateFilter).endOf('month').format('YYYY-MM-DD'));
-        }
-    }, [dateFilter])
+    // useEffect(() => {
+    //     if (dateFilter) {
+    //         setStartDate(moment(dateFilter).startOf('month').format('YYYY-MM-DD'));
+    //         setEndtDate(moment(dateFilter).endOf('month').format('YYYY-MM-DD'));
+    //     }
+    // }, [dateFilter])
 
     useEffect(() => {
         const init = async () => {
@@ -413,10 +413,10 @@ const ConsultPaymentProgramded = () => {
             await getLCrp();
             setLoading(false);
         }
-        if (userFunctionalAreas && startDate && endDate) {
+        if (userFunctionalAreas) {
             init();
         }
-    }, [userFunctionalAreas, oUser, startDate, endDate])
+    }, [userFunctionalAreas, oUser])
 
     return (
         <div className="grid">
@@ -479,9 +479,9 @@ const ConsultPaymentProgramded = () => {
                         withSearch={true}
                         handleRowClick={handleRowClick}
                         handleDoubleClick={handleDoubleClick}
-                        withMounthFilter={true}
-                        dateFilter={dateFilter}
-                        setDateFilter={setDateFilter}
+                        withMounthFilter={false}
+                        // dateFilter={dateFilter}
+                        // setDateFilter={setDateFilter}
                         showToast={showToast}
                         withBtnCreate={false}
                         setDialogVisible={setDialogVisible}
