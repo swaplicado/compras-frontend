@@ -889,6 +889,7 @@ const Upload = () => {
                         lAdvance={lAdvance}
                         lastPayDayOfYear={lastPayDayOfYear}
                         handlePassToReview={handlePassToReview}
+                        withEditExpiredDate={true}
                     />
                     { oValidUser.isInternalUser && (
                         <FlowAuthorizationDialog 

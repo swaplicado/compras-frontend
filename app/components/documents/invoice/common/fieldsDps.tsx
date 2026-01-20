@@ -33,6 +33,7 @@ interface FieldsDpsProps {
     partnerPaymentDay?: any;
     withEditPaymentDay?: boolean;
     lastPayDayOfYear?: any[];
+    withEditExpiredDate?: boolean
 }
 
 interface renderFieldProps {
@@ -69,7 +70,8 @@ export const FieldsDps = ({
     loadingPartnerPaymentDay,
     partnerPaymentDay,
     withEditPaymentDay = false,
-    lastPayDayOfYear = []
+    lastPayDayOfYear = [],
+    withEditExpiredDate = false
 }: FieldsDpsProps) => {
     const { t } = useTranslation('invoices');
     const { t: tCommon } = useTranslation('common');
@@ -125,6 +127,15 @@ export const FieldsDps = ({
             }
         }, 100);
     }, [oDps?.payday]);
+
+    const inputExpiredDate = useRef<HTMLInputElement>(null);
+    useEffect(() => {
+        setTimeout(() => {
+            if (inputExpiredDate.current && oDps?.expired_date) {
+                inputExpiredDate.current.value = DateFormatter(oDps?.expired_date);
+            }
+        }, 100);
+    }, [oDps?.expired_date]);
 
     useEffect(() => {
         if (oDps?.payment_amount > oDps?.amount) {
@@ -787,6 +798,78 @@ export const FieldsDps = ({
                             </div>
                         </div>
 
+                        { (withEditExpiredDate || oDps?.expired_date) && (
+                            <div className="field col-12 md:col-6">
+                                <div className="formgrid grid">
+                                    { withEditExpiredDate && (
+                                        <div className="field col-12 md:col-5 align-content-center">
+                                            <div className="formgrid grid">
+                                                <div className="col">
+                                                    <Checkbox
+                                                        inputId="is_edit_expired_date"
+                                                        name="is_edit_expired_date"
+                                                        value="is_edit_expired_date"
+                                                        onChange={(e: any) => {
+                                                            setODps((prev: any) => ({ ...prev, is_edit_expired_date: e.checked }));
+                                                            if (!e.checked) {
+                                                                setODps((prev: any) => ({ ...prev, expired_date: null }))
+                                                            }
+                                                        }}
+                                                        checked={oDps?.is_edit_expired_date}
+                                                        disabled={footerMode == 'view'}
+                                                    />
+                                                    <label htmlFor="is_edit_expired_date" className="ml-2">
+                                                        {t('uploadDialog.expiredDate.checkBoxLabel')}
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                    <div className="field col-12 md:col-7">
+                                        <div className="formgrid grid">
+                                            <div className="col">
+                                                <label data-pr-tooltip="">{t('uploadDialog.expiredDate.label')}</label>
+                                                &nbsp;
+                                                <Tooltip target=".custom-target-icon" />
+                                                <i
+                                                    className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
+                                                    data-pr-tooltip={t('uploadDialog.expiredDate.tooltip')}
+                                                    data-pr-position="right"
+                                                    data-pr-my="left center-2"
+                                                    style={{ fontSize: '1rem', cursor: 'pointer' }}
+                                                ></i>
+                                                <div>
+                                                    <Calendar
+                                                        value={oDps?.expired_date}
+                                                        placeholder={''}
+                                                        onChange={(e) => {
+                                                            setODps((prev: any) => ({ ...prev, expired_date: e.value }))
+                                                        }}
+                                                        showIcon
+                                                        locale="es"
+                                                        inputRef={inputExpiredDate}
+                                                        disabled={!oDps?.is_edit_expired_date}
+                                                        onSelect={() => {
+                                                            if (inputExpiredDate.current && oDps?.expired_date) {
+                                                                inputExpiredDate.current.value = DateFormatter(oDps?.expired_date);
+                                                            }
+                                                        }}
+                                                        onBlur={() => {
+                                                            if (inputExpiredDate.current && oDps?.expired_date) {
+                                                                inputExpiredDate.current.value = DateFormatter(oDps?.expired_date);
+                                                            }
+                                                        }}
+                                                        className={`w-full ${errors?.expired_date ? 'p-invalid' : ''} `}
+                                                        minDate={minDate}
+                                                    />
+                                                    {errors?.expired_date && <small className="p-error"></small>}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                         {(oDps?.is_edit_payment_date || oDps?.notes_manual_payment_date) &&
                             renderField({
                                 label: t('uploadDialog.notes_manual_payment_date.label'),
