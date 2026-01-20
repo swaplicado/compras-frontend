@@ -237,6 +237,9 @@ const RejectedPartners = () => {
                             },
                             authz_authorization: {
                                 hidden: false
+                            },
+                            openPartner: {
+                                hidden: false
                             }
                         }}
                     />

@@ -113,6 +113,11 @@ export const DialogPayment = ({
             getHistoryAuth?.();
         }
 
+        if (!visible) {
+            setOPayment(null);
+            setLEntries([]);
+        }
+
     }, [visible]);
 
     return (

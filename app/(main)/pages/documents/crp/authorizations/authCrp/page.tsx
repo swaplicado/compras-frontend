@@ -85,7 +85,8 @@ const ConsultPaymentProgramded = () => {
         date: { hidden: false },
         authz_acceptance_name: { hidden: true },
         authz_authorization_name: { hidden: false },
-        delete: { hidden: true }
+        delete: { hidden: true },
+        openCrp: { hidden: false }
     }
 
 //*******FUNCIONES*******
@@ -275,6 +276,44 @@ const ConsultPaymentProgramded = () => {
         });
         setLoadingFiles(false);
         setLoadinglPaymentsExec(false);
+    };
+
+    const openCrp = async (data: any) => {
+        setLoadingFiles(true);
+        setLoadinglPaymentsExec(true);
+        configCrpToView(data);
+        setIsXmlValid(true);
+        setDialogMode('view');
+        setDialogVisible(true);
+        await getlUrlFilesDps({
+            setLFiles,
+            showToast,
+            document_id: data.id
+        });
+        await getPaymentsExecDetails({
+            setLPaymentsExecDetails,
+            showToast,
+            document_id: data.id
+        });
+        setLoadingFiles(false);
+        setLoadinglPaymentsExec(false);
+    };
+
+    const openBodyTemplate = (rowData: any) => {
+        return (
+            <div className="flex align-items-center justify-content-center">
+                <Button
+                    label={'Abrir'}
+                    icon=""
+                    className="p-button-rounded"
+                    onClick={() => openCrp(rowData)}
+                    tooltip={''}
+                    tooltipOptions={{ position: 'top' }}
+                    size="small"
+                    disabled={loading}
+                />
+            </div>
+        );
     };
 
     const download = async (rowData: any) => {
@@ -491,6 +530,7 @@ const ConsultPaymentProgramded = () => {
                         setDialogVisible={setDialogVisible}
                         setDialogMode={setDialogMode}
                         fileBodyTemplate={fileBodyTemplate}
+                        openBodyTemplate={openBodyTemplate}
                     />
                 </Card>
             </div>

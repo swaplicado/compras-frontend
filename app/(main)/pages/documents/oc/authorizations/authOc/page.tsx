@@ -112,6 +112,9 @@ const AuthOC = () => {
         },
         delete: {
             hidden: true
+        },
+        openOc: {
+            hidden: false
         }
     }
 
@@ -412,6 +415,59 @@ const AuthOC = () => {
         setLoadingFiles(false);
     };
 
+    const openOc = async (data: any) => {
+        if (oUser.isInternalUser) {
+            setIsReview(false);
+        } else {
+            setIsReview(false);
+        }
+
+        setLoadingFiles(true);
+        setDialogMode('view');
+        setIsXmlValid(true);
+        setWithFooter(true);
+        configOcData(data);
+        setDialogVisible(true);
+        setLoadingHistoryAuth(true);
+        await getJsonOc({
+            doc_id: data.id,
+            setJsonOc: setJsonOc,
+            errorMessage: '',
+            showToast: showToast
+        })
+        await getlUrlFilesDps({
+            setLFiles,
+            showToast,
+            document_id: data.id
+        });
+        await getHistoryAuth({
+            setHistoryAuth: setLHistoryAuth,
+            external_id: data.id,
+            resource_type: constants.RESOURCE_TYPE_OC,
+            id_company: data.company_external_id,
+            showToast: showToast
+        });
+        setLoadingHistoryAuth(false);
+        setLoadingFiles(false);
+    };
+
+    const openOcBodyTemplate = (rowData: any) => {
+        return (
+            <div className="flex align-items-center justify-content-center">
+                <Button
+                    label={'Abrir'}
+                    icon=""
+                    className="p-button-rounded"
+                    onClick={() => openOc(rowData)}
+                    tooltip={''}
+                    tooltipOptions={{ position: 'top' }}
+                    size="small"
+                    disabled={loading}
+                />
+            </div>
+        );
+    };
+
     useEffect(() =>  {
         if (jsonOc) {
             setOOc((prev: any) => ({
@@ -602,6 +658,7 @@ const AuthOC = () => {
                         setDialogVisible={setDialogVisible}
                         setDialogMode={setDialogMode}
                         fileBodyTemplate={fileBodyTemplate}
+                        openOcBodyTemplate={openOcBodyTemplate}
                     />
                 </Card>
             </div>

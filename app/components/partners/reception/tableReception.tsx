@@ -16,6 +16,9 @@ interface columnProps {
     },
     authz_authorization: {
         hidden: boolean
+    },
+    openPartner: {
+        hidden: boolean
     }
 }
 
@@ -29,6 +32,7 @@ interface TableReceptionProps {
     loading: boolean;
     downloadFiles: (data: any) => void;
     columnProps: columnProps
+    openPartnerBodyTemplate?: (rowData: any) => any;
 }
 
 export const TableReception = ({
@@ -40,7 +44,8 @@ export const TableReception = ({
     setSelectedRow,
     loading,
     downloadFiles,
-    columnProps
+    columnProps,
+    openPartnerBodyTemplate
 }: TableReceptionProps) => {
     const [filters, setFilters] = useState<DataTableFilterMeta>({});
     const [tableLoading, setTableLoading] = useState(true);
@@ -210,6 +215,7 @@ export const TableReception = ({
                 <Column field="authz_acceptance" header="Aceptación" body={statusAcceptanceDpsBodyTemplate} hidden={columnProps.authz_acceptance.hidden}/>
                 <Column field="authz_authorization" header="Autorización" body={statusAuthDpsBodyTemplate} hidden={columnProps.authz_authorization.hidden}/>
                 <Column field="id" header='Archivos' footer='Archivos' body={fileBodyTemplate} />
+                <Column field="id" header={''} footer={''} body={openPartnerBodyTemplate} hidden={ columnProps?.openPartner.hidden } />
             </DataTable>
         </>
     );

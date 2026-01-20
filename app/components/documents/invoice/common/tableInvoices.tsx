@@ -65,6 +65,8 @@ interface TableInvoicesProps {
     withBtnLast3Months?: boolean;
     withHistoryAuth?: boolean;
     disabledUpload?: boolean;
+    openDps?: (data: any) => void;
+    showBtnOpenDps?: boolean;
 }
 
 export const TableInvoices = ({
@@ -109,7 +111,9 @@ export const TableInvoices = ({
     SendToUpoload,
     withBtnLast3Months = true,
     withHistoryAuth = false,
-    disabledUpload = false
+    disabledUpload = false,
+    openDps,
+    showBtnOpenDps = false
 }: TableInvoicesProps) => {
     // const [lDps, setLDps] = useState<any[]>([]);
     const [filters, setFilters] = useState<DataTableFilterMeta>({});
@@ -532,6 +536,23 @@ export const TableInvoices = ({
         );
     };
 
+    const openBodyTemplate = (rowData: any) => {
+        return (
+            <div className="flex align-items-center justify-content-center">
+                <Button
+                    label={'Abrir'}
+                    // icon="bx bx-show-alt bx-sm"
+                    className="p-button-rounded"
+                    onClick={() => openDps?.(rowData)}
+                    tooltip={''}
+                    tooltipOptions={{ position: 'top' }}
+                    size="small"
+                    disabled={loading}
+                />
+            </div>
+        );
+    };
+
     const priorityTemplate = (rowData: any) => {
         return (
             <div className="flex justify-content-center align-items-center">
@@ -806,6 +827,7 @@ export const TableInvoices = ({
                 <Column field="payments" header="Pagos" footer="Pagos" hidden={ columnsProps?.payments.hidden } body={paymentsBodyTemplate} />
                 <Column field="files" header={t('invoicesTable.columns.files')} footer={t('invoicesTable.columns.files')} body={fileBodyTemplate} />
                 <Column field="id_dps" header={'Eliminar'} footer={'Eliminar'} body={deleteBodyTemplate} hidden={ columnsProps?.delete.hidden } />
+                <Column field="id_dps" header={''} footer={''} body={openBodyTemplate} hidden={ !showBtnOpenDps }/>
             </DataTable>
         </>
     );

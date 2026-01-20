@@ -65,7 +65,8 @@ const ConsultPaymentProgramded = () => {
         exec_date_n: { hidden: true },
         amount: { hidden: false },
         payment_way: { hidden: true },
-        payment_status: { hidden: false }
+        payment_status: { hidden: false },
+        openPayment: { hidden: false }
     }
 
 //*******FUNCIONES*******
@@ -247,6 +248,30 @@ const ConsultPaymentProgramded = () => {
         setDialogVisible(true);
     };
 
+    const openPayment = (data: any) => {
+        setORow(data);
+        setOPayment(data);
+        setDialogMode('view');
+        setDialogVisible(true);
+    };
+
+    const openBodyTemplate = (rowData: any) => {
+        return (
+            <div className="flex align-items-center justify-content-center">
+                <Button
+                    label={'Abrir'}
+                    icon=""
+                    className="p-button-rounded"
+                    onClick={() => openPayment(rowData)}
+                    tooltip={''}
+                    tooltipOptions={{ position: 'top' }}
+                    size="small"
+                    disabled={loading}
+                />
+            </div>
+        );
+    };
+
 //*******INIT*******
     useEffect(() => {
         const fetch = async () => {
@@ -309,6 +334,7 @@ const ConsultPaymentProgramded = () => {
                         handleDoubleClick={handleDoubleClick}
                         setDateFilter={setDateFilter}
                         dateFilter={dateFilter}
+                        openBodyTemplate={openBodyTemplate}
                     />
                 </Card>
             </div>

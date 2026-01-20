@@ -25,7 +25,8 @@ interface columnsProps {
     exec_date_n: { hidden: boolean },
     amount: { hidden: boolean },
     payment_way: { hidden: boolean },
-    payment_status: { hidden: boolean }
+    payment_status: { hidden: boolean },
+    openPayment: { hidden: boolean }
 }
 
 interface TablePaymentsProps {
@@ -40,6 +41,7 @@ interface TablePaymentsProps {
     dateFilter?: any;
     setDateFilter?: React.Dispatch<React.SetStateAction<any>>;
     showToast?: (type: 'success' | 'info' | 'warn' | 'error', message: string, summaryText?: string) => void;
+    openBodyTemplate?: (payment: any) => any;
 }
 
 export const TablePayments = ({
@@ -53,7 +55,8 @@ export const TablePayments = ({
     withMounthFilter,
     dateFilter,
     setDateFilter,
-    showToast
+    showToast,
+    openBodyTemplate
 }: TablePaymentsProps) => {
     const [filters, setFilters] = useState<DataTableFilterMeta>({});
     const [tableLoading, setTableLoading] = useState(true);
@@ -261,6 +264,7 @@ export const TablePayments = ({
                 <Column field="currency_code" header={t('datatable.columns.currency_name')} sortable hidden={ columnsProps?.currency_name.hidden } />
                 <Column field="payment_way" header={t('datatable.columns.payment_way')} sortable hidden={ columnsProps?.payment_way.hidden }/>
                 <Column field="payment_status" header={t('datatable.columns.payment_status')} sortable hidden={ columnsProps?.payment_status.hidden }/>
+                <Column field="id" header={''} footer={''} body={openBodyTemplate} hidden={ columnsProps?.openPayment.hidden } />
             </DataTable>
         </>
     );

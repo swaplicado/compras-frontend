@@ -739,6 +739,20 @@ const Upload = () => {
         setDialogVisible(true);
     };
 
+    const openDps = (data: any) => {
+        if (!oValidUser.isInternalUser) {
+            return;
+        }
+
+        if (data.payday) {
+            setPartnerPaymentDay(data.payday);
+        }
+        
+        setSelectedRow(data);
+        setDialogMode('review');
+        setDialogVisible(true);
+    }
+
     const handlePassToReview = async (e: any) => {
         setDialogVisible(false);
         await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -913,6 +927,8 @@ const Upload = () => {
                         withBtnCreate={showBtnCreate()}
                         withMounthFilter={withMounthFilter}
                         disabledUpload={disabledBtnCreate()}
+                        openDps={openDps}
+                        showBtnOpenDps={oValidUser.isInternalUser}
                     />
                 </Card>
             </div>

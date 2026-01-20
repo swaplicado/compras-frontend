@@ -120,6 +120,39 @@ const ReceptionPartners = () => {
         setLoadingFiles(false);
     };
 
+    const openPartner = async (data: any) => {
+        setShowing('body');
+        configOPartner(data);
+        setFormErrors({
+            authz_acceptance_notes: false
+        })
+        setDialogVisible(true);
+        setLoadingFiles(true);
+        await getlFilesPartners({
+            applying_id: data.id,
+            setLFiles,
+            showToast
+        })
+        setLoadingFiles(false);
+    };
+
+    const openPartnerBodyTemplate = (rowData: any) => {
+        return (
+            <div className="flex align-items-center justify-content-center">
+                <Button
+                    label={'Abrir'}
+                    icon=""
+                    className="p-button-rounded"
+                    onClick={() => openPartner(rowData)}
+                    tooltip={''}
+                    tooltipOptions={{ position: 'top' }}
+                    size="small"
+                    disabled={loading}
+                />
+            </div>
+        );
+    };
+
     const handleFlowAuthorization = async () => {
         try {
             setLoading(true);
@@ -401,8 +434,12 @@ const ReceptionPartners = () => {
                             },
                             authz_authorization: {
                                 hidden: true
+                            },
+                            openPartner: {
+                                hidden: false
                             }
                         }}
+                        openPartnerBodyTemplate={openPartnerBodyTemplate}
                     />
                 </Card>
             </div>

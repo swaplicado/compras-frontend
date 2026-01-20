@@ -83,7 +83,8 @@ const ConsultPaymentProgramded = () => {
         date: { hidden: false },
         authz_acceptance_name: { hidden: false },
         authz_authorization_name: { hidden: true },
-        delete: { hidden: false }
+        delete: { hidden: false },
+        openCrp: { hidden: false }
     }
 
 //*******FUNCIONES*******
@@ -317,6 +318,38 @@ const ConsultPaymentProgramded = () => {
         setLoadingFileNames(false);
         setLoadingFiles(false);
         setLoadinglPaymentsExec(false);
+    }
+    
+    const openCrp = async (data: any) => {
+        setLoadingFiles(true);
+        setLoadingFileNames(true);
+        setLoadinglPaymentsExec(true);
+        setIsXmlValid(true);
+        configCrpToView(data);
+        setDialogMode('edit');
+        setDialogVisible(true);
+        const oCompany = data.oCompany;
+        const oProvider = data.oProvider;
+        await getlUrlFilesDps({
+            setLFiles,
+            showToast,
+            document_id: data.id
+        });
+        await getPaymentsPlusDoc({
+            setLPaymentsExec,
+            setLPaymentsCrp,
+            partner_id: oProvider.id,
+            company_id: oCompany.id,
+            document_id: data.id
+        })
+        await getlFilesNames({
+            document_id: data.id,
+            setLFilesNames: setLFilesNames,
+            showToast: showToast,
+        });
+        setLoadingFileNames(false);
+        setLoadingFiles(false);
+        setLoadinglPaymentsExec(false);
     };
 
     useEffect(() => {
@@ -412,6 +445,23 @@ const ConsultPaymentProgramded = () => {
                     severity='danger'
                     className="p-button-rounded"
                     onClick={() => deleteDps(rowData)}
+                    tooltip={''}
+                    tooltipOptions={{ position: 'top' }}
+                    size="small"
+                    disabled={loading}
+                />
+            </div>
+        );
+    };
+
+    const openBodyTemplate = (rowData: any) => {
+        return (
+            <div className="flex align-items-center justify-content-center">
+                <Button
+                    label={'Abrir'}
+                    icon=""
+                    className="p-button-rounded"
+                    onClick={() => openCrp(rowData)}
                     tooltip={''}
                     tooltipOptions={{ position: 'top' }}
                     size="small"
@@ -520,6 +570,7 @@ const ConsultPaymentProgramded = () => {
                         setDialogMode={setDialogMode}
                         fileBodyTemplate={fileBodyTemplate}
                         deleteBodyTemplate={deleteBodyTemplate}
+                        openBodyTemplate={openBodyTemplate}
                     />
                 </Card>
             </div>

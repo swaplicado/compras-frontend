@@ -117,6 +117,9 @@ const AcceptedNC = () => {
         delete: {
             hidden: true
         },
+        openNc: {
+            hidden: false
+        }
     }
 
 //*******FUNCIONES*******
@@ -433,6 +436,50 @@ const AcceptedNC = () => {
         setLoadingFiles(false);
     };
 
+    const openNc = async (data: any) => {
+        if (oUser.isInternalUser) {
+            setIsReview(false);
+        } else {
+            setIsReview(false);
+        }
+
+        setLoadingFiles(true);
+        setDialogMode('view');
+        setIsXmlValid(true);
+        setWithFooter(true);
+        configNcData(data);
+        setDialogVisible(true);
+        await getInvoicesToReview({
+            doc_id: data.id,
+            setlInvoicesToReview: setlInvoicesToReview,
+            errorMessage: t('dialog.errors.getLInvoicesToReview'),
+            showToast: showToast
+        });
+        await getlUrlFilesDps({
+            setLFiles,
+            showToast,
+            document_id: data.id
+        });
+        setLoadingFiles(false);
+    };
+
+    const openNcBodyTemplate = (rowData: any) => {
+        return (
+            <div className="flex align-items-center justify-content-center">
+                <Button
+                    label={'Abrir'}
+                    icon=""
+                    className="p-button-rounded"
+                    onClick={() => openNc(rowData)}
+                    tooltip={''}
+                    tooltipOptions={{ position: 'top' }}
+                    size="small"
+                    disabled={loading}
+                />
+            </div>
+        );
+    };
+
     const download = async (rowData: any) => {
         try {
             setLoading(true);
@@ -622,6 +669,7 @@ const AcceptedNC = () => {
                         fileBodyTemplate={fileBodyTemplate}
                         withBtnSendAuth={withBtnSendAuth}
                         setFlowAuthDialogVisible={setFlowAuthDialogVisible}
+                        openNcBodyTemplate={openNcBodyTemplate}
                     />
                 </Card>
             </div>

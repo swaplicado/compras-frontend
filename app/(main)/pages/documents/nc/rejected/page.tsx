@@ -112,6 +112,9 @@ const RejectedNC = () => {
         delete: {
             hidden: false
         },
+        openNc: {
+            hidden: false
+        }
     }
 
 //*******FUNCIONES*******
@@ -387,6 +390,34 @@ const RejectedNC = () => {
         setLoadingFiles(false);
     };
 
+    const openNc = async (data: any) => {
+        setLoadingFiles(true);
+        setLoadingFileNames(true);
+        setDialogMode('edit');
+        setIsXmlValid(true);
+        setWithFooter(true);
+        configNcData(data);
+        setDialogVisible(true);
+        await getInvoicesToReview({
+            doc_id: data.id,
+            setlInvoicesToReview: setlInvoicesToReview,
+            errorMessage: t('dialog.errors.getLInvoicesToReview'),
+            showToast: showToast
+        });
+        await getlUrlFilesDps({
+            setLFiles,
+            showToast,
+            document_id: data.id
+        });
+        await getlFilesNames({
+            document_id: data.id,
+            setLFilesNames: setLFilesNames,
+            showToast: showToast,
+        });
+        setLoadingFileNames(false);
+        setLoadingFiles(false);
+    };
+
     const download = async (rowData: any) => {
         try {
             setLoading(true);
@@ -473,6 +504,23 @@ const RejectedNC = () => {
                     severity='danger'
                     className="p-button-rounded"
                     onClick={() => deleteDps(rowData)}
+                    tooltip={''}
+                    tooltipOptions={{ position: 'top' }}
+                    size="small"
+                    disabled={loading}
+                />
+            </div>
+        );
+    };
+
+    const openNcBodyTemplate = (rowData: any) => {
+        return (
+            <div className="flex align-items-center justify-content-center">
+                <Button
+                    label={'Abrir'}
+                    icon=""
+                    className="p-button-rounded"
+                    onClick={() => openNc(rowData)}
                     tooltip={''}
                     tooltipOptions={{ position: 'top' }}
                     size="small"
@@ -626,6 +674,7 @@ const RejectedNC = () => {
                         setDialogMode={setDialogMode}
                         fileBodyTemplate={fileBodyTemplate}
                         deleteBodyTemplate={deleteBodyTemplate}
+                        openNcBodyTemplate={openNcBodyTemplate}
                     />
                 </Card>
             </div>

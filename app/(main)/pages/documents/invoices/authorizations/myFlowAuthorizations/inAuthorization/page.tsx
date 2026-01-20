@@ -500,6 +500,16 @@ const Upload = () => {
         setDialogVisible(true);
     };
 
+    const openDps = (data: any) => {
+        if (!oValidUser.isInternalUser) {
+            return;
+        }
+
+        setSelectedRow(data);
+        setDialogMode('authorization');
+        setDialogVisible(true);
+    };
+
     useEffect(() => {
         if (selectedRow) {
             validateUserAuth();
@@ -634,6 +644,8 @@ const Upload = () => {
                                 hidden: true
                             }
                         }}
+                        openDps={openDps}
+                        showBtnOpenDps={oValidUser.isInternalUser}
                     />
                 </Card>
             </div>

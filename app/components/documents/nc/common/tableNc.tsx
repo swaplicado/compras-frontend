@@ -25,6 +25,9 @@ interface columnsProps {
     delete: {
         hidden: boolean
     },
+    openNc: {
+        hidden: boolean
+    }
 }
 
 interface TableNcProps {
@@ -48,6 +51,7 @@ interface TableNcProps {
     deleteBodyTemplate?: (rowData: any) => any;
     withBtnSendAuth?: boolean;
     setFlowAuthDialogVisible?: React.Dispatch<React.SetStateAction<boolean>>;
+    openNcBodyTemplate?: (rowData: any) => any;
 }
 
 export const TableNc = ({
@@ -71,6 +75,7 @@ export const TableNc = ({
     deleteBodyTemplate,
     withBtnSendAuth,
     setFlowAuthDialogVisible,
+    openNcBodyTemplate
 }: TableNcProps) => {
     const [filters, setFilters] = useState<DataTableFilterMeta>({});
     const [tableLoading, setTableLoading] = useState(true);
@@ -325,6 +330,7 @@ export const TableNc = ({
                 <Column field="authz_authorization_name" header={t('datatable.columns.authz_authorization_name')} footer={t('datatable.columns.authz_authorization_name')} body={statusAuthBodyTemplate} sortable hidden={ columnsProps?.authz_authorization_name.hidden } />
                 <Column field="id" header={t('datatable.columns.files')} footer={t('datatable.columns.files')} body={fileBodyTemplate} />
                 <Column field="id_dps" header={'Eliminar'} footer={'Eliminar'} body={deleteBodyTemplate} hidden={ columnsProps?.delete.hidden } />
+                <Column field="id_dps" header={''} footer={''} body={openNcBodyTemplate} hidden={ columnsProps?.openNc.hidden } />
             </DataTable>
         </>
     );

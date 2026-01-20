@@ -453,6 +453,16 @@ const Upload = () => {
         setDialogMode('review');
         setDialogVisible(true);
     };
+    
+    const openDps = (data: any) => {
+        if (!oValidUser.isInternalUser) {
+            return;
+        }
+
+        setSelectedRow(data);
+        setDialogMode('review');
+        setDialogVisible(true);
+    };
 
     useEffect(() => {
         const fetchReferences = async () => {
@@ -571,6 +581,8 @@ const Upload = () => {
                         // withBtnSendToUpoload={withBtnSendToUpoload}
                         // SendToUpoload={handleSendToUpload}
                         withHistoryAuth={true}
+                        openDps={openDps}
+                        showBtnOpenDps={oValidUser.isInternalUser}
                     />
                 </Card>
             </div>

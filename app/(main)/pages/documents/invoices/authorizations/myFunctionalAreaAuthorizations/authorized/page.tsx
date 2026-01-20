@@ -526,6 +526,16 @@ const Upload = () => {
         setDialogVisible(true);
     };
 
+    const openDps = (data: any) => {
+        if (!oValidUser.isInternalUser) {
+            return;
+        }
+
+        setSelectedRow(data);
+        setDialogMode('review');
+        setDialogVisible(true);
+    };
+
     useEffect(() => {
         const fetchReferences = async () => {
             setLoading(true);
@@ -662,6 +672,8 @@ const Upload = () => {
                         setFlowAuthDialogVisible={setFlowAuthDialogVisible}
                         withMounthFilter={true}
                         columnsProps = {columnsProps}
+                        openDps={openDps}
+                        showBtnOpenDps={oValidUser.isInternalUser}
                     />
                 </Card>
             </div>

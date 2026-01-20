@@ -121,6 +121,9 @@ const UploadPrepayment = () => {
         delete: {
             hidden: true
         },
+        openPrepay: {
+            hidden: false
+        }
     }
 
     //*******FUNCIONES*******
@@ -612,6 +615,51 @@ const UploadPrepayment = () => {
         setLoadingFiles(false);
     };
 
+    const openPrepay = async (data: any) => {
+        setIsSendAuth(false);
+        if (oUser.isInternalUser) {
+            setIsReview(true);
+        } else {
+            setIsReview(false);
+        }
+
+        setLoadingFiles(true);
+        setDialogMode('view');
+        setIsXmlValid(true);
+        setWithFooter(true);
+        configNcData(data);
+        setDialogVisible(true);
+        await getInvoicesToReview({
+            doc_id: data.id,
+            setlInvoicesToReview: setlInvoicesToReview,
+            errorMessage: t('dialog.errors.getLInvoicesToReview'),
+            showToast: showToast
+        });
+        await getlUrlFilesDps({
+            setLFiles,
+            showToast,
+            document_id: data.id
+        });
+        setLoadingFiles(false);
+    };
+
+    const openPrepayBodyTemplate = (rowData: any) => {
+        return (
+            <div className="flex align-items-center justify-content-center">
+                <Button
+                    label={'Abrir'}
+                    icon=""
+                    className="p-button-rounded"
+                    onClick={() => openPrepay(rowData)}
+                    tooltip={''}
+                    tooltipOptions={{ position: 'top' }}
+                    size="small"
+                    disabled={loading}
+                />
+            </div>
+        );
+    };
+
     const download = async (rowData: any) => {
         try {
             setLoading(true);
@@ -822,6 +870,7 @@ const UploadPrepayment = () => {
                         setDialogVisible={setDialogVisible}
                         setDialogMode={setDialogMode}
                         fileBodyTemplate={fileBodyTemplate}
+                        openPrepayBodyTemplate={openPrepayBodyTemplate}
                     />
                 </Card>
             </div>
