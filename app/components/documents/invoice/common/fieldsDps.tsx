@@ -131,11 +131,11 @@ export const FieldsDps = ({
     const inputExpiredDate = useRef<HTMLInputElement>(null);
     useEffect(() => {
         setTimeout(() => {
-            if (inputExpiredDate.current && oDps?.expired_date) {
-                inputExpiredDate.current.value = DateFormatter(oDps?.expired_date);
+            if (inputExpiredDate.current && oDps?.due_date) {
+                inputExpiredDate.current.value = DateFormatter(oDps?.due_date);
             }
         }, 100);
-    }, [oDps?.expired_date]);
+    }, [oDps?.due_date]);
 
     useEffect(() => {
         if (oDps?.payment_amount > oDps?.amount) {
@@ -798,7 +798,7 @@ export const FieldsDps = ({
                             </div>
                         </div>
 
-                        { (withEditExpiredDate || oDps?.expired_date) && (
+                        { (withEditExpiredDate || oDps?.due_date) && (
                             <div className="field col-12 md:col-6">
                                 <div className="formgrid grid">
                                     { withEditExpiredDate && (
@@ -806,19 +806,19 @@ export const FieldsDps = ({
                                             <div className="formgrid grid">
                                                 <div className="col">
                                                     <Checkbox
-                                                        inputId="is_edit_expired_date"
-                                                        name="is_edit_expired_date"
-                                                        value="is_edit_expired_date"
+                                                        inputId="is_edit_due_date"
+                                                        name="is_edit_due_date"
+                                                        value="is_edit_due_date"
                                                         onChange={(e: any) => {
-                                                            setODps((prev: any) => ({ ...prev, is_edit_expired_date: e.checked }));
+                                                            setODps((prev: any) => ({ ...prev, is_edit_due_date: e.checked }));
                                                             if (!e.checked) {
-                                                                setODps((prev: any) => ({ ...prev, expired_date: null }))
+                                                                setODps((prev: any) => ({ ...prev, due_date: null }))
                                                             }
                                                         }}
-                                                        checked={oDps?.is_edit_expired_date}
+                                                        checked={oDps?.is_edit_due_date}
                                                         disabled={footerMode == 'view'}
                                                     />
-                                                    <label htmlFor="is_edit_expired_date" className="ml-2">
+                                                    <label htmlFor="is_edit_due_date" className="ml-2">
                                                         {t('uploadDialog.expiredDate.checkBoxLabel')}
                                                     </label>
                                                 </div>
@@ -840,29 +840,29 @@ export const FieldsDps = ({
                                                 ></i>
                                                 <div>
                                                     <Calendar
-                                                        value={oDps?.expired_date}
+                                                        value={oDps?.due_date}
                                                         placeholder={''}
                                                         onChange={(e) => {
-                                                            setODps((prev: any) => ({ ...prev, expired_date: e.value }))
+                                                            setODps((prev: any) => ({ ...prev, due_date: e.value }))
                                                         }}
                                                         showIcon
                                                         locale="es"
                                                         inputRef={inputExpiredDate}
-                                                        disabled={!oDps?.is_edit_expired_date}
+                                                        disabled={!oDps?.is_edit_due_date}
                                                         onSelect={() => {
-                                                            if (inputExpiredDate.current && oDps?.expired_date) {
-                                                                inputExpiredDate.current.value = DateFormatter(oDps?.expired_date);
+                                                            if (inputExpiredDate.current && oDps?.due_date) {
+                                                                inputExpiredDate.current.value = DateFormatter(oDps?.due_date);
                                                             }
                                                         }}
                                                         onBlur={() => {
-                                                            if (inputExpiredDate.current && oDps?.expired_date) {
-                                                                inputExpiredDate.current.value = DateFormatter(oDps?.expired_date);
+                                                            if (inputExpiredDate.current && oDps?.due_date) {
+                                                                inputExpiredDate.current.value = DateFormatter(oDps?.due_date);
                                                             }
                                                         }}
-                                                        className={`w-full ${errors?.expired_date ? 'p-invalid' : ''} `}
+                                                        className={`w-full ${errors?.due_date ? 'p-invalid' : ''} `}
                                                         minDate={minDate}
                                                     />
-                                                    {errors?.expired_date && <small className="p-error"></small>}
+                                                    {errors?.due_date && <small className="p-error"></small>}
                                                 </div>
                                             </div>
                                         </div>

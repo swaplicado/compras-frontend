@@ -607,7 +607,7 @@ export const InvoiceDialog = ({
                     priority: oDps.priority ? oDps.priority : false,
                     is_manual_payment_date: oDps.is_edit_payment_date,
                     notes_manual_payment_date: oDps.notes_manual_payment_date,
-                    expired_date: oDps.expired_date ? moment(oDps.expired_date).format('YYYY-MM-DD') : ''
+                    due_date: oDps.due_date ? moment(oDps.due_date).format('YYYY-MM-DD') : ''
                 }
             });
 

@@ -100,7 +100,7 @@ export const getDps = async ( props: getDpsProps  ) => {
                     authz_acceptance_id: data[i].authz_acceptance_id ? data[i].authz_acceptance_id : data[i].authz_acceptance,
                     authz_authorization_id: data[i].authz_authorization_id ? data[i].authz_authorization_id : data[i].authz_authorization,
                     payment_way: data[i].payment_way,
-                    expired_date: data[i].expired_date,
+                    due_date: data[i].due_date,
                 });
             }
             props.setLDps(dps);
