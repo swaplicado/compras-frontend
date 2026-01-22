@@ -105,6 +105,16 @@
                             "label": "Operados",
                             "icon": "pi pi-money-bill",
                             "to": "/pages/documents/payments/executed"
+                        },
+                        {
+                            "label": "Operados por comprobar",
+                            "icon": "pi pi-hourglass",
+                            "to": "/pages/documents/payments/operatedByCheck"
+                        },
+                        {
+                            "label": "Operados comprobados",
+                            "icon": "pi pi-check-circle",
+                            "to": "/pages/documents/payments/operatedChecked"
                         }
                     ]
                 },

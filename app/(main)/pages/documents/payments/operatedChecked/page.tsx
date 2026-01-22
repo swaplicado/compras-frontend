@@ -8,9 +8,7 @@ import moment from 'moment';
 import { Toast } from 'primereact/toast';
 import { Card } from 'primereact/card';
 import loaderScreen from '@/app/components/commons/loaderScreen';
-import Cookies from 'js-cookie';
 import { DataTable, DataTableFilterMeta, DataTableRowClickEvent } from 'primereact/datatable';
-import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { Tooltip } from 'primereact/tooltip';
 import { TablePayments } from '@/app/components/documents/payments/common/tablePayments';
@@ -18,9 +16,11 @@ import { DialogPayment } from '@/app/components/documents/payments/common/dialog
 import { useIsMobile } from '@/app/components/commons/screenMobile';
 import { Button } from "primereact/button";
 import { getExtensionFileByName } from '@/app/(main)/utilities/files/fileValidator';
+import axios from 'axios';
 import DateFormatter from '@/app/components/commons/formatDate';
 import { useContext } from 'react';
 import { LayoutContext } from '@/layout/context/layoutcontext';
+import { getlUrlFilesDps } from "@/app/(main)/utilities/documents/common/filesUtils";
 
 interface FileInfo {
     url: string;
@@ -29,7 +29,7 @@ interface FileInfo {
     id?: string | number;
 }
 
-const ConsultPaymentProgramded = () => {
+const ConsultPaymentOperatedChecked = () => {
     const [startDate, setStartDate] = useState<string>('');
     const [endDate, setEndtDate] = useState<string>('');
     const [lPayments, setLPayments] = useState<any[]>([]);
@@ -40,8 +40,6 @@ const ConsultPaymentProgramded = () => {
     const [userFunctionalAreas, setUserFunctionalAreas] = useState<any>(null);
     const [oUser, setOUser] = useState<any>(null);
     const [dateFilter, setDateFilter] = useState<any>(null);
-    const [historyAuth, setHistoryAuth] = useState<any[]>([]);
-    const [loadingHistoryAuth, setLoadingHistoryAuth] = useState<boolean>(false);
 
     const { dateToWork, setDateToWork } = useContext(LayoutContext);
 
@@ -50,9 +48,12 @@ const ConsultPaymentProgramded = () => {
     const [oPayment, setOPayment] = useState<any>(null);
     const [dialogMode, setDialogMode] = useState<'view' | 'edit'>('view');
     const [lFiles, setLFiles] = useState<FileInfo[]>([]);
+    const [lFilesCrp, setLFilesCrp] = useState<any[]>([]);
+    const [oCrp, setOCrp] = useState<any>(null);
     const [loadingFiles, setLoadingFiles] = useState<boolean>(true);
-
     const isMobile = useIsMobile();
+    const [historyAuth, setHistoryAuth] = useState<any[]>([]);
+    const [loadingHistoryAuth, setLoadingHistoryAuth] = useState<boolean>(false);
 
     const columnsProps = {
         company_trade_name: { hidden: false },
@@ -61,14 +62,14 @@ const ConsultPaymentProgramded = () => {
         currency_name: { hidden: false },
         app_date: { hidden: true },
         req_date: { hidden: true },
-        sched_date_n: { hidden: false },
-        exec_date_n: { hidden: true },
+        sched_date_n: { hidden: true },
+        exec_date_n: { hidden: false },
         amount: { hidden: false },
         payment_way: { hidden: true },
-        payment_status: { hidden: false },
+        payment_status: { hidden: true },
         openPayment: { hidden: false },
         is_receipt_payment_req: { hidden: true },
-        crp: { hidden: true }
+        crp: { hidden: false }
     }
 
 //*******FUNCIONES*******
@@ -81,7 +82,7 @@ const ConsultPaymentProgramded = () => {
         });
     };
 
-    const getPaymentsProgramed = async () =>  {
+    const getPaymentsExecuted = async () =>  {
         setLoading(true);
         let params: any = {};
         if (oUser.isInternalUser) {
@@ -90,7 +91,8 @@ const ConsultPaymentProgramded = () => {
                 functional_area_id: userFunctionalAreas,
                 start_date: startDate,
                 end_date: endDate,
-                payment_status_id: constants.PAYMENT_STATUS_PROGRAMED_ID
+                payment_status_id: constants.PAYMENT_STATUS_COMP_ID,
+                is_receipt_payment_req: true
             }
         } else {
             params = {
@@ -98,7 +100,8 @@ const ConsultPaymentProgramded = () => {
                 partner_id: oUser.oProvider.id,
                 start_date: startDate,
                 end_date: endDate,
-                payment_status_id: constants.PAYMENT_STATUS_PROGRAMED_ID
+                payment_status_id: constants.PAYMENT_STATUS_COMP_ID,
+                is_receipt_payment_req: true
             }
         }
 
@@ -108,7 +111,6 @@ const ConsultPaymentProgramded = () => {
             setLPayments: setLPayments,
             showToast: showToast 
         });
-
         setLoading(false);
     }
 
@@ -182,6 +184,32 @@ const ConsultPaymentProgramded = () => {
         }
     }
 
+    const getCrp = async (data: any) => {
+        try {
+            if (!data.crp_id) {
+                return;
+            }
+            const route = constants.ROUTE_GET_INFO_DOC;
+            const response = await axios.get(constants.API_AXIOS_GET, {
+                params: {
+                    route: route,
+                    id_doc: data.crp_id
+                }
+            });
+
+            if (response.status == 200) {
+                const data = response.data.data || [];
+                setOCrp(data);
+            } else {
+                throw new Error(`Error al obtener el CRP: ${response.statusText}`);
+            }
+        } catch (error: any) {
+            showToast('error', error.response?.data?.error || 'Error al obtener el crp', 'Error al obtener el crp');
+        } finally {
+
+        }
+    }
+
 //*******OTROS*******
     const headerCard = (
         <div
@@ -196,12 +224,12 @@ const ConsultPaymentProgramded = () => {
             }}
         >
             <h3 className="m-0 text-900 font-medium">
-                {t('programed.title')}
+                {t('operatedChecked.title')}
                 &nbsp;&nbsp;
                 <Tooltip target=".custom-target-icon" />
                 <i
                     className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                    data-pr-tooltip={t('programed.titleTooltip')}
+                    data-pr-tooltip={t('operatedChecked.titleTooltip')}
                     data-pr-position="right"
                     data-pr-my="left center-2"
                     style={{ fontSize: '1rem', cursor: 'pointer' }}
@@ -238,23 +266,35 @@ const ConsultPaymentProgramded = () => {
         }
     };
 
-    const handleDoubleClick = (e: DataTableRowClickEvent) => {
+    const handleDoubleClick = async (e: DataTableRowClickEvent) => {
         // if (!oUser.isInternalUser) {
         //     e.originalEvent.preventDefault();
         //     return;
         // }
 
+        setDialogMode('view');
+        setDialogVisible(true);
         setORow(e.data);
         setOPayment(e.data);
-        setDialogMode('view');
-        setDialogVisible(true);
+        await getCrp(e.data);
+        await getlUrlFilesDps({
+            setLFiles: setLFilesCrp,
+            showToast,
+            document_id: e.data.id
+        });
     };
 
-    const openPayment = (data: any) => {
-        setORow(data);
-        setOPayment(data);
+    const openPayment = async (data: any) => {
         setDialogMode('view');
         setDialogVisible(true);
+        setORow(data);
+        setOPayment(data);
+        await getCrp(data);
+        await getlUrlFilesDps({
+            setLFiles: setLFilesCrp,
+            showToast,
+            document_id: data.id
+        });
     };
 
     const openBodyTemplate = (rowData: any) => {
@@ -295,7 +335,7 @@ const ConsultPaymentProgramded = () => {
 
     useEffect(() => {
         const init = async () => {
-            await getPaymentsProgramed();
+            await getPaymentsExecuted();
         }
         if (userFunctionalAreas && startDate && endDate) {
             init();
@@ -313,11 +353,11 @@ const ConsultPaymentProgramded = () => {
                         onHide={() => setDialogVisible(false)}
                         isMobile={isMobile}
                         footerContent={dialogFooterContent}
-                        headerTitle={t('programed.dialogTitle')}
+                        headerTitle={t('operatedChecked.title')}
                         oPayment={oPayment}
                         setOPayment={setOPayment}
                         dialogMode={dialogMode}
-                        dialogType={'programed'}
+                        dialogType={'executed'}
                         setLoading={setLoading}
                         lFiles={lFiles}
                         getlFiles={getlFiles}
@@ -327,6 +367,11 @@ const ConsultPaymentProgramded = () => {
                         // getHistoryAuth={getHistoryAuth}
                         loadingHistoryAuth={loadingHistoryAuth}
                         lHistoryAuth={historyAuth}
+                        withCrp={true}
+                        setOCrp={setOCrp}
+                        oCrp={oCrp}
+                        setLFilesCrp={setLFilesCrp}
+                        lFilesCrp={lFilesCrp}
                     />
                     <TablePayments 
                         lPayments={lPayments}
@@ -344,4 +389,4 @@ const ConsultPaymentProgramded = () => {
     )
 }
 
-export default ConsultPaymentProgramded;
+export default ConsultPaymentOperatedChecked;

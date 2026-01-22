@@ -66,7 +66,9 @@ const ConsultPaymentProgramded = () => {
         amount: { hidden: false },
         payment_way: { hidden: true },
         payment_status: { hidden: false },
-        openPayment: { hidden: false }
+        openPayment: { hidden: false },
+        is_receipt_payment_req: { hidden: true },
+        crp: { hidden: true }
     }
 
 //*******FUNCIONES*******

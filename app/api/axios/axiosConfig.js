@@ -24,7 +24,7 @@ switch(ENVIRONMENT){
 const createApiInstance = (baseURL) => {
     const api = axios.create({
         baseURL: baseURL || config.mainRoute,
-        timeout: 45000,
+        timeout: 130000,
     });
 
     api.interceptors.response.use(

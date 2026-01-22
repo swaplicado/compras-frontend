@@ -1,3 +1,5 @@
+import { title } from "process"
+
 const payments = {
     programed: {
         title: 'Pagos programados',
@@ -7,6 +9,14 @@ const payments = {
     executed: {
         title: 'Pagos operados',
         titleTooltip: 'Pantalla para consultar los pagos operados'
+    },
+    operatedByCheck: {
+        title: "Pagos operados por comprobar",
+        titleTooltip: 'Pantalla para consultar los pagos operados por comprobar'
+    },
+    operatedChecked: {
+        title: "Pagos operados comprobados",
+        titleTooltip: 'Pantalla para consultar los pagos operados comprobados'
     },
     dialog: {
         payment_status: 'Estatus',
@@ -65,7 +75,9 @@ const payments = {
             exec_date_n: 'F. ejecutado',
             amount: 'Monto',
             payment_way: 'Metodo de pago',
-            payment_status: 'Estatus'
+            payment_status: 'Estatus',
+            is_receipt_payment_req: "Requiere CRP",
+            crp_folio: "CRP"
         }
     }
 }
