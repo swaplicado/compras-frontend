@@ -28,6 +28,8 @@ import { getlUrlFilesDps } from '@/app/(main)/utilities/documents/common/filesUt
 import invoices from "@/i18n/locales/es/documents/invoices";
 import { RenderInfoButton } from "@/app/components/commons/instructionsButton";
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
+import { useContext } from 'react';
+import { LayoutContext } from '@/layout/context/layoutcontext';
 
 const AuthNC = () => {
     const [startDate, setStartDate] = useState<string>('');
@@ -44,6 +46,8 @@ const AuthNC = () => {
     const [showInfo, setShowInfo] = useState<boolean>(false);
     const [showManual, setShowManual] = useState<boolean>(false);
     const [isUserAuth, setIsUserAuth] = useState(false);
+
+    const { dateToWork, setDateToWork } = useContext(LayoutContext);
 
     //constantes para el dialog
     const [visible, setDialogVisible] = useState<boolean>(false);
@@ -112,6 +116,9 @@ const AuthNC = () => {
         delete: {
             hidden: true
         },
+        openNc: {
+            hidden: false
+        }
     }
 
 //*******FUNCIONES*******
@@ -444,6 +451,50 @@ const AuthNC = () => {
         setLoadingFiles(false);
     };
 
+    const openNc = async (data: any) => {
+        if (oUser.isInternalUser) {
+            setIsReview(false);
+        } else {
+            setIsReview(false);
+        }
+
+        setLoadingFiles(true);
+        setDialogMode('view');
+        setIsXmlValid(true);
+        setWithFooter(true);
+        configNcData(data);
+        setDialogVisible(true);
+        await getInvoicesToReview({
+            doc_id: data.id,
+            setlInvoicesToReview: setlInvoicesToReview,
+            errorMessage: t('dialog.errors.getLInvoicesToReview'),
+            showToast: showToast
+        });
+        await getlUrlFilesDps({
+            setLFiles,
+            showToast,
+            document_id: data.id
+        });
+        setLoadingFiles(false);
+    };
+
+    const openNcBodyTemplate = (rowData: any) => {
+        return (
+            <div className="flex align-items-center justify-content-center">
+                <Button
+                    label={'Abrir'}
+                    icon=""
+                    className="p-button-rounded"
+                    onClick={() => openNc(rowData)}
+                    tooltip={''}
+                    tooltipOptions={{ position: 'top' }}
+                    size="small"
+                    disabled={loading}
+                />
+            </div>
+        );
+    };
+
     const download = async (rowData: any) => {
         try {
             setLoading(true);
@@ -483,7 +534,7 @@ const AuthNC = () => {
             const oUser = await getOUser();
             setUserFunctionalAreas(user_functional_areas);
             setOUser(oUser);
-            setDateFilter(new Date);
+            // setDateFilter(dateToWork);
         }
         fetch();
     }, [])
@@ -518,10 +569,10 @@ const AuthNC = () => {
             await getLNc();
             setLoading(false);
         }
-        if (userFunctionalAreas && startDate && endDate) {
+        if (userFunctionalAreas) {
             init();
         }
-    }, [userFunctionalAreas, oUser, startDate, endDate])
+    }, [userFunctionalAreas, oUser])
 
     useEffect(() => {
         validateUserAuth();
@@ -613,7 +664,7 @@ const AuthNC = () => {
                         withSearch={true}
                         handleRowClick={handleRowClick}
                         handleDoubleClick={handleDoubleClick}
-                        withMounthFilter={true}
+                        withMounthFilter={false}
                         dateFilter={dateFilter}
                         setDateFilter={setDateFilter}
                         showToast={showToast}
@@ -623,6 +674,7 @@ const AuthNC = () => {
                         setDialogVisible={setDialogVisible}
                         setDialogMode={setDialogMode}
                         fileBodyTemplate={fileBodyTemplate}
+                        openNcBodyTemplate={openNcBodyTemplate}
                     />
                 </Card>
             </div>

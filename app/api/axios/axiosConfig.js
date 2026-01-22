@@ -24,13 +24,13 @@ switch(ENVIRONMENT){
 const createApiInstance = (baseURL) => {
     const api = axios.create({
         baseURL: baseURL || config.mainRoute,
-        timeout: 45000,
+        timeout: 130000,
     });
 
     api.interceptors.response.use(
         response => response,
         error => {
-          if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+          if (error.response && (error.response.status === 403)) {
             const cookieHeader = cookie.serialize('access_token', '', {
               httpOnly: true,
               secure: process.env.NODE_ENV === 'production',

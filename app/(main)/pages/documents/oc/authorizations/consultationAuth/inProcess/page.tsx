@@ -28,6 +28,8 @@ import { getlUrlFilesDps } from '@/app/(main)/utilities/documents/common/filesUt
 import { RenderInfoButton } from "@/app/components/commons/instructionsButton";
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { getHistoryAuth } from '@/app/(main)/utilities/documents/common/historyAuth';
+import { useContext } from 'react';
+import { LayoutContext } from '@/layout/context/layoutcontext';
 
 const AuthInProcessOC = () => {
     const [startDate, setStartDate] = useState<string>('');
@@ -44,6 +46,8 @@ const AuthInProcessOC = () => {
     const [showInfo, setShowInfo] = useState<boolean>(false);
     const [showManual, setShowManual] = useState<boolean>(false);
     const [isUserAuth, setIsUserAuth] = useState(false);
+
+    const { dateToWork, setDateToWork } = useContext(LayoutContext);
 
     //constantes para el dialog
     const [visible, setDialogVisible] = useState<boolean>(false);
@@ -108,6 +112,9 @@ const AuthInProcessOC = () => {
         },
         delete: {
             hidden: true
+        },
+        openOc: {
+            hidden: false
         }
     }
 
@@ -327,6 +334,59 @@ const AuthInProcessOC = () => {
         setLoadingFiles(false);
     };
 
+    const openOc = async (data: any) => {
+        if (oUser.isInternalUser) {
+            setIsReview(false);
+        } else {
+            setIsReview(false);
+        }
+
+        setLoadingFiles(true);
+        setDialogMode('view');
+        setIsXmlValid(true);
+        setWithFooter(true);
+        configOcData(data);
+        setDialogVisible(true);
+        setLoadingHistoryAuth(true);
+        await getJsonOc({
+            doc_id: data.id,
+            setJsonOc: setJsonOc,
+            errorMessage: '',
+            showToast: showToast
+        })
+        await getlUrlFilesDps({
+            setLFiles,
+            showToast,
+            document_id: data.id
+        });
+        await getHistoryAuth({
+            setHistoryAuth: setLHistoryAuth,
+            external_id: data.id,
+            resource_type: constants.RESOURCE_TYPE_OC,
+            id_company: data.company_external_id,
+            showToast: showToast
+        });
+        setLoadingHistoryAuth(false);
+        setLoadingFiles(false);
+    };
+
+    const openOcBodyTemplate = (rowData: any) => {
+        return (
+            <div className="flex align-items-center justify-content-center">
+                <Button
+                    label={'Abrir'}
+                    icon=""
+                    className="p-button-rounded"
+                    onClick={() => openOc(rowData)}
+                    tooltip={''}
+                    tooltipOptions={{ position: 'top' }}
+                    size="small"
+                    disabled={loading}
+                />
+            </div>
+        );
+    };
+
     useEffect(() =>  {
         if (jsonOc) {
             setOOc((prev: any) => ({
@@ -375,7 +435,7 @@ const AuthInProcessOC = () => {
             const oUser = await getOUser();
             setUserFunctionalAreas(user_functional_areas);
             setOUser(oUser);
-            setDateFilter(new Date);
+            // setDateFilter(dateToWork);
         }
         fetch();
     }, [])
@@ -410,10 +470,10 @@ const AuthInProcessOC = () => {
             await getLOc();
             setLoading(false);
         }
-        if (userFunctionalAreas && startDate && endDate) {
+        if (userFunctionalAreas) {
             init();
         }
-    }, [userFunctionalAreas, oUser, startDate, endDate])
+    }, [userFunctionalAreas, oUser])
 
     useEffect(() => {
         validateUserAuth();
@@ -507,7 +567,7 @@ const AuthInProcessOC = () => {
                         withSearch={true}
                         handleRowClick={handleRowClick}
                         handleDoubleClick={handleDoubleClick}
-                        withMounthFilter={true}
+                        withMounthFilter={false}
                         dateFilter={dateFilter}
                         setDateFilter={setDateFilter}
                         showToast={showToast}
@@ -517,6 +577,7 @@ const AuthInProcessOC = () => {
                         setDialogVisible={setDialogVisible}
                         setDialogMode={setDialogMode}
                         fileBodyTemplate={fileBodyTemplate}
+                        openOcBodyTemplate={openOcBodyTemplate}
                     />
                 </Card>
             </div>

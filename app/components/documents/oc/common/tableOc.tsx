@@ -18,6 +18,9 @@ interface columnsProps {
     },
     delete: {
         hidden: boolean;
+    },
+    openOc: {
+        hidden: boolean;
     }
 }
 
@@ -42,6 +45,7 @@ interface TableOcProps {
     deleteBodyTemplate?: (rowData: any) => any;
     withBtnSendAuth?: boolean;
     setFlowAuthDialogVisible?: React.Dispatch<React.SetStateAction<boolean>>;
+    openOcBodyTemplate?: (rowData: any) => any;
 }
 
 export const TableOc = ({
@@ -65,6 +69,7 @@ export const TableOc = ({
     deleteBodyTemplate,
     withBtnSendAuth,
     setFlowAuthDialogVisible,
+    openOcBodyTemplate
 }: TableOcProps) => {
     const [filters, setFilters] = useState<DataTableFilterMeta>({});
     const [tableLoading, setTableLoading] = useState(true);
@@ -321,6 +326,7 @@ export const TableOc = ({
                 <Column field="authz_authorization_name" header={t('datatable.columns.authz_authorization_name')} footer={t('datatable.columns.authz_authorization_name')} body={statusAuthBodyTemplate} sortable/>
                 <Column field="id" header={t('datatable.columns.files')} footer={t('datatable.columns.files')} body={fileBodyTemplate} />
                 <Column field="id_dps" header={'Eliminar'} footer={'Eliminar'} body={deleteBodyTemplate} hidden={ columnsProps?.delete.hidden }/>
+                <Column field="id_dps" header={''} footer={''} body={openOcBodyTemplate} hidden={ columnsProps?.openOc.hidden }/>
             </DataTable>
         </>
     );

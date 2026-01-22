@@ -32,6 +32,8 @@ interface FieldsDpsProps {
     loadingPartnerPaymentDay?: boolean;
     partnerPaymentDay?: any;
     withEditPaymentDay?: boolean;
+    lastPayDayOfYear?: any[];
+    withEditExpiredDate?: boolean
 }
 
 interface renderFieldProps {
@@ -67,7 +69,9 @@ export const FieldsDps = ({
     lDaysToPay, 
     loadingPartnerPaymentDay,
     partnerPaymentDay,
-    withEditPaymentDay = false
+    withEditPaymentDay = false,
+    lastPayDayOfYear = [],
+    withEditExpiredDate = false
 }: FieldsDpsProps) => {
     const { t } = useTranslation('invoices');
     const { t: tCommon } = useTranslation('common');
@@ -123,6 +127,15 @@ export const FieldsDps = ({
             }
         }, 100);
     }, [oDps?.payday]);
+
+    const inputExpiredDate = useRef<HTMLInputElement>(null);
+    useEffect(() => {
+        setTimeout(() => {
+            if (inputExpiredDate.current && oDps?.due_date) {
+                inputExpiredDate.current.value = DateFormatter(oDps?.due_date);
+            }
+        }, 100);
+    }, [oDps?.due_date]);
 
     useEffect(() => {
         if (oDps?.payment_amount > oDps?.amount) {
@@ -233,7 +246,9 @@ export const FieldsDps = ({
                             <Tooltip target=".custom-target-icon" />
                             <i className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge" data-pr-tooltip={props.tooltip} data-pr-position="right" data-pr-my="left center-2" style={{ fontSize: '1rem', cursor: 'pointer' }}></i>
                             <div>
-                                <InputText value={props.value || ''} className={`w-full`} disabled={props.disabled} onChange={(e) => props.onChange?.(e.target.value)} />
+                                <InputText value={props.value || ''} className={`w-full ${props.errors?.[props.errorKey] ? 'p-invalid' : ''}`} disabled={props.disabled} onChange={(e) => props.onChange?.(e.target.value)} />
+                                {props.errors?.[props.errorKey] && <small className="p-error">{props.errorMessage}</small>}
+                                <small className="p-error">{props.errors?.[props.errorKey]}</small>
                             </div>
                         </div>
                     </div>
@@ -432,10 +447,12 @@ export const FieldsDps = ({
                         value: oDps?.folio,
                         onChange: (value) => setODps((prev: any) => ({ ...prev, folio: value })),
                         disabled: mode == 'view',
-                        mdCol: 3,
+                        mdCol: 2,
                         type: 'text',
                         placeholder: '',
-                        errorKey: ''
+                        errorKey: 'folio',
+                        errors: errors,
+                        errorMessage: 'Ingresa folio'
                     })}
                     {renderField({
                         label: t('uploadDialog.xml_date.label'),
@@ -453,12 +470,24 @@ export const FieldsDps = ({
                         tooltip: t('uploadDialog.payment_method.tooltipReview'),
                         value: mode == 'view' ? oDps?.payment_method : oDps?.oPaymentMethod,
                         disabled: mode == 'view',
-                        mdCol: 6,
+                        mdCol: 5,
                         type: mode == 'view' ? 'text' : 'dropdown',
                         placeholder: '',
                         errorKey: '',
                         lOptions: lPaymentMethod,
                         onChange: (value) => setODps((prev: any) => ({ ...prev, payment_method: value.name, oPaymentMethod: value }))
+                    })}
+                    {renderField({
+                        label: 'Forma pago',
+                        tooltip: 'Forma pago',
+                        value: oDps?.payment_way,
+                        disabled: mode == 'view',
+                        mdCol: 2,
+                        type: 'text',
+                        placeholder: '',
+                        errorKey: '',
+                        lOptions: [],
+                        onChange: (value) => setODps((prev: any) => ({ ...prev, payment_way: value}))
                     })}
                     {renderField({
                         label: t('uploadDialog.rfc_issuer.label'),
@@ -552,12 +581,14 @@ export const FieldsDps = ({
                         label: t('uploadDialog.aceptNotes.label'),
                         tooltip: t('uploadDialog.aceptNotes.tooltip'),
                         value: oDps?.notes,
-                        onChange: (value) => setODps((prev: any) => ({ ...prev, notes: value })),
+                        onChange: (value) => {setODps((prev: any) => ({ ...prev, notes: value })); setErrors?.((prev: any) => ({ ...prev, notes: false }));},
                         disabled: footerMode == 'view',
                         mdCol: 12,
                         type: 'textArea',
                         placeholder: '',
-                        errorKey: '',
+                        errors: errors,
+                        errorKey: 'notes',
+                        errorMessage: 'Ingresa la descripción',
                         labelClass: 'opacity-100 text-blue-600'
                     })}
                     <div className="p-fluid formgrid grid">
@@ -713,6 +744,7 @@ export const FieldsDps = ({
                                                             className={`w-full ${errors?.payday ? 'p-invalid' : ''} `}
                                                             minDate={minDate}
                                                             dateTemplate={(e) => dateTemplate(e.day, e)}
+                                                            disabledDates={lastPayDayOfYear}
                                                         />
                                                         {errors?.payday && <small className="p-error">{t('uploadDialog.payDay.helperText')}</small>}
                                                     </div>
@@ -766,6 +798,78 @@ export const FieldsDps = ({
                             </div>
                         </div>
 
+                        { (withEditExpiredDate || oDps?.due_date) && (
+                            <div className="field col-12 md:col-6">
+                                <div className="formgrid grid">
+                                    { withEditExpiredDate && (
+                                        <div className="field col-12 md:col-5 align-content-center">
+                                            <div className="formgrid grid">
+                                                <div className="col">
+                                                    <Checkbox
+                                                        inputId="is_edit_due_date"
+                                                        name="is_edit_due_date"
+                                                        value="is_edit_due_date"
+                                                        onChange={(e: any) => {
+                                                            setODps((prev: any) => ({ ...prev, is_edit_due_date: e.checked }));
+                                                            if (!e.checked) {
+                                                                setODps((prev: any) => ({ ...prev, due_date: null }))
+                                                            }
+                                                        }}
+                                                        checked={oDps?.is_edit_due_date}
+                                                        disabled={footerMode == 'view'}
+                                                    />
+                                                    <label htmlFor="is_edit_due_date" className="ml-2">
+                                                        {t('uploadDialog.expiredDate.checkBoxLabel')}
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                    <div className="field col-12 md:col-7">
+                                        <div className="formgrid grid">
+                                            <div className="col">
+                                                <label data-pr-tooltip="">{t('uploadDialog.expiredDate.label')}</label>
+                                                &nbsp;
+                                                <Tooltip target=".custom-target-icon" />
+                                                <i
+                                                    className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
+                                                    data-pr-tooltip={t('uploadDialog.expiredDate.tooltip')}
+                                                    data-pr-position="right"
+                                                    data-pr-my="left center-2"
+                                                    style={{ fontSize: '1rem', cursor: 'pointer' }}
+                                                ></i>
+                                                <div>
+                                                    <Calendar
+                                                        value={oDps?.due_date}
+                                                        placeholder={''}
+                                                        onChange={(e) => {
+                                                            setODps((prev: any) => ({ ...prev, due_date: e.value }))
+                                                        }}
+                                                        showIcon
+                                                        locale="es"
+                                                        inputRef={inputExpiredDate}
+                                                        disabled={!oDps?.is_edit_due_date}
+                                                        onSelect={() => {
+                                                            if (inputExpiredDate.current && oDps?.due_date) {
+                                                                inputExpiredDate.current.value = DateFormatter(oDps?.due_date);
+                                                            }
+                                                        }}
+                                                        onBlur={() => {
+                                                            if (inputExpiredDate.current && oDps?.due_date) {
+                                                                inputExpiredDate.current.value = DateFormatter(oDps?.due_date);
+                                                            }
+                                                        }}
+                                                        className={`w-full ${errors?.due_date ? 'p-invalid' : ''} `}
+                                                        minDate={minDate}
+                                                    />
+                                                    {errors?.due_date && <small className="p-error"></small>}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                         {(oDps?.is_edit_payment_date || oDps?.notes_manual_payment_date) &&
                             renderField({
                                 label: t('uploadDialog.notes_manual_payment_date.label'),

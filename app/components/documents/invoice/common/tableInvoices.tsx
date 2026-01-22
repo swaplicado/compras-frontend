@@ -17,6 +17,8 @@ import { Nullable } from 'primereact/ts-helpers';
 import { HistoryAuth } from '@/app/components/documents/invoice/historyAuth';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { Tooltip } from 'primereact/tooltip';
+import { useContext } from 'react';
+import { LayoutContext } from '@/layout/context/layoutcontext';
 
 interface columnsProps {
     acceptance: {
@@ -63,6 +65,8 @@ interface TableInvoicesProps {
     withBtnLast3Months?: boolean;
     withHistoryAuth?: boolean;
     disabledUpload?: boolean;
+    openDps?: (data: any) => void;
+    showBtnOpenDps?: boolean;
 }
 
 export const TableInvoices = ({
@@ -107,7 +111,9 @@ export const TableInvoices = ({
     SendToUpoload,
     withBtnLast3Months = true,
     withHistoryAuth = false,
-    disabledUpload = false
+    disabledUpload = false,
+    openDps,
+    showBtnOpenDps = false
 }: TableInvoicesProps) => {
     // const [lDps, setLDps] = useState<any[]>([]);
     const [filters, setFilters] = useState<DataTableFilterMeta>({});
@@ -125,6 +131,8 @@ export const TableInvoices = ({
         { field: 'date', order: -1 as -1 }
     ]);
     const [activoFijoFilterValue, setActivoFijoFilterValue] = useState<string>('all');
+
+    const { dateToWork, setDateToWork } = useContext(LayoutContext);
 
     const getlCompanies = async () => {
         try {
@@ -528,6 +536,23 @@ export const TableInvoices = ({
         );
     };
 
+    const openBodyTemplate = (rowData: any) => {
+        return (
+            <div className="flex align-items-center justify-content-center">
+                <Button
+                    label={'Abrir'}
+                    // icon="bx bx-show-alt bx-sm"
+                    className="p-button-rounded"
+                    onClick={() => openDps?.(rowData)}
+                    tooltip={''}
+                    tooltipOptions={{ position: 'top' }}
+                    size="small"
+                    disabled={loading}
+                />
+            </div>
+        );
+    };
+
     const priorityTemplate = (rowData: any) => {
         return (
             <div className="flex justify-content-center align-items-center">
@@ -637,7 +662,7 @@ export const TableInvoices = ({
             setLoading(true);
 
             initFilters();
-            setDpsDateFilter(new Date);
+            setDpsDateFilter(dateToWork);
             await getlCompanies();
 
             // setLoading(false);
@@ -772,6 +797,8 @@ export const TableInvoices = ({
                 <Column field="advance_application" header="advance_application" hidden />
                 <Column field="authz_acceptance" header="authz_acceptance" hidden />
                 <Column field="authz_authorization" header="authz_authorization" hidden />
+                <Column field="payment_way" header="payment_way" hidden />
+                <Column field="due_date" header="due_date" hidden />
                 <Column field="priority" header="Prioridad" body={priorityTemplate} footer="Prioridad" sortable />
                 <Column field="company" header={t('invoicesTable.columns.company')} footer={t('invoicesTable.columns.company')} sortable filter showFilterMatchModes={false} filterElement={companyFilterTemplate} filterApply={<></>} filterClear={<></>} />
                 <Column
@@ -801,6 +828,7 @@ export const TableInvoices = ({
                 <Column field="payments" header="Pagos" footer="Pagos" hidden={ columnsProps?.payments.hidden } body={paymentsBodyTemplate} />
                 <Column field="files" header={t('invoicesTable.columns.files')} footer={t('invoicesTable.columns.files')} body={fileBodyTemplate} />
                 <Column field="id_dps" header={'Eliminar'} footer={'Eliminar'} body={deleteBodyTemplate} hidden={ columnsProps?.delete.hidden } />
+                <Column field="id_dps" header={''} footer={''} body={openBodyTemplate} hidden={ !showBtnOpenDps }/>
             </DataTable>
         </>
     );

@@ -22,6 +22,8 @@ export const LayoutProvider = ({ children }: ChildContainerProps) => {
         menuHoverActive: false
     });
 
+    const [dateToWork, setDateToWork] = useState<Date>(new Date());
+
     const onMenuToggle = () => {
         if (isOverlay()) {
             setLayoutState((prevLayoutState) => ({ ...prevLayoutState, overlayMenuActive: !prevLayoutState.overlayMenuActive }));
@@ -52,7 +54,9 @@ export const LayoutProvider = ({ children }: ChildContainerProps) => {
         layoutState,
         setLayoutState,
         onMenuToggle,
-        showProfileSidebar
+        showProfileSidebar,
+        dateToWork,
+        setDateToWork
     };
 
     return <LayoutContext.Provider value={value}>{children}</LayoutContext.Provider>;

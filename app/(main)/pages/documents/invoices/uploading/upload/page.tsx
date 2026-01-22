@@ -61,7 +61,8 @@ const Upload = () => {
     const [reviewErrors, setReviewErrors] = useState({
             rejectComments: false,
             payday: false,
-            payment_percentage: false
+            payment_percentage: false,
+            notes: false
         });
     const [withMounthFilter, setWithMounthFilter] = useState<boolean>(false);
     const [lDaysToPay, setLDaysToPay] = useState<any[]>([]);
@@ -70,6 +71,7 @@ const Upload = () => {
     const [withEditPaymentDay, setWithEditPaymentDay] = useState<boolean>(true);
     const [lAdvance, setLAdvance] = useState<Array<any>>([]);
     const [crpPending, setCrpPending] = useState<any>(false);
+    const [lastPayDayOfYear, setLastPayDayOfYear] = useState<Array<any>>([]);
 
     const headerCard = (
         <div
@@ -215,7 +217,9 @@ const Upload = () => {
                         name: item.reference,
                         is_covered: item.is_covered,
                         functional_area_id: item.functional_area_id,
-                        amount: item.amount
+                        amount: item.amount,
+                        concepts: item.concepts,
+                        cost_profit_center: item.cost_profit_center
                     });
                 }
 
@@ -249,7 +253,8 @@ const Upload = () => {
                     lProviders.push({
                         id: item.id,
                         name: item.full_name,
-                        country: item.country
+                        country: item.country,
+                        credit_days: item.credit_days
                     });
                 }
 
@@ -537,6 +542,61 @@ const Upload = () => {
             setLoadingPartnerPaymentDay(false);
         }
     }
+
+    const getLastPayDayOfYear = async () => {
+        try {
+            const route = constants.ROUTE_GET_LAST_DAY_PAYMENT;
+            const response = await axios.get(constants.API_AXIOS_GET, {
+                params: {
+                    route: route,
+                }
+            });
+
+            const dates = [];
+            if (response.status === 200) {
+                const startDate = moment(response.data.data.last_payment_date);
+                const endDate = moment(response.data.data.last_payment_date).endOf('year');
+                
+                // Iterar desde la fecha inicial hasta la final
+                let currentDate = moment(startDate);
+                
+                while (currentDate.isSameOrBefore(endDate, 'day')) {
+                    dates.push(currentDate.toDate());
+                    currentDate = currentDate.clone().add(1, 'day');
+                }
+            } else {
+                throw new Error(`${t('errors.getPayDayError')}: ${response.statusText}`);
+            }
+
+            try {
+                const response2 = await axios.get(constants.API_AXIOS_GET, {
+                    params: {
+                        route: route,
+                        year: moment().year() + 1
+                    }
+                });
+
+                if (response2.status === 200) {
+                    const startDate = moment(response.data.data.last_payment_date);
+                    const endDate = moment(response.data.data.last_payment_date).endOf('year');
+                    
+                    // Iterar desde la fecha inicial hasta la final
+                    let currentDate = moment(startDate);
+                    
+                    while (currentDate.isSameOrBefore(endDate, 'day')) {
+                        dates.push(currentDate.toDate());
+                        currentDate = currentDate.clone().add(1, 'day');
+                    }
+                }
+            } catch (error: any) {
+                
+            }
+
+            setLastPayDayOfYear(dates);
+        } catch (error: any) {
+            showToast('error', error.response?.data?.error || t('errors.getPayDayError'), t('errors.getPayDayError'));
+        }
+    }
  
     const handleAcceptance = async () => {
         const date = selectedRow.payday ? DateFormatter(selectedRow.payday, 'YYYY-MM-DD') : '';
@@ -568,6 +628,12 @@ const Upload = () => {
 
     const handleReviewAndSendAuth = async () => {
         try {
+            if (selectedRow.lReferences.length < 1 && !selectedRow.notes.trim()) {
+                setReviewErrors?.((prev: any) => ({ ...prev, notes: true }));
+                showToast?.('info', 'Ingresa descripción de la factura');
+                return;
+            }
+
             if (!selectedRow.payday && selectedRow.payment_percentage > 0) {
                 setReviewErrors((prev) => ({ ...prev, payday: true }));
                 showToast?.('info', 'Ingresa una fecha de pago de la factura');
@@ -673,6 +739,28 @@ const Upload = () => {
         setDialogVisible(true);
     };
 
+    const openDps = (data: any) => {
+        if (!oValidUser.isInternalUser) {
+            return;
+        }
+
+        if (data.payday) {
+            setPartnerPaymentDay(data.payday);
+        }
+        
+        setSelectedRow(data);
+        setDialogMode('review');
+        setDialogVisible(true);
+    }
+
+    const handlePassToReview = async (e: any) => {
+        setDialogVisible(false);
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        setSelectedRow(e);
+        setDialogMode('review');
+        setDialogVisible(true);
+    };
+
     useEffect(() => {
         const fetchReferences = async () => {
             setLoading(true);
@@ -735,6 +823,7 @@ const Upload = () => {
             await getlPaymentMethod();
             await getlUseCfdi();
             await getLDaysToPay();
+            await getLastPayDayOfYear();
             await getlAdvance({
                 params: {
                     route: constants.ROUTE_GET_ADVANCE_APPLICATION
@@ -765,6 +854,7 @@ const Upload = () => {
                         onHide={() => setDialogVisible(false)}
                         oDps={selectedRow}
                         setODps={setSelectedRow}
+                        setDialogMode={setDialogMode}
                         getDpsParams={getDpsParams}
                         getDps={getDps}
                         errors={''}
@@ -797,6 +887,9 @@ const Upload = () => {
                         loadingPartnerPaymentDay={loadingPartnerPaymentDay}
                         withEditPaymentDay={withEditPaymentDay}
                         lAdvance={lAdvance}
+                        lastPayDayOfYear={lastPayDayOfYear}
+                        handlePassToReview={handlePassToReview}
+                        withEditExpiredDate={true}
                     />
                     { oValidUser.isInternalUser && (
                         <FlowAuthorizationDialog 
@@ -835,6 +928,8 @@ const Upload = () => {
                         withBtnCreate={showBtnCreate()}
                         withMounthFilter={withMounthFilter}
                         disabledUpload={disabledBtnCreate()}
+                        openDps={openDps}
+                        showBtnOpenDps={oValidUser.isInternalUser}
                     />
                 </Card>
             </div>

@@ -6,12 +6,14 @@ import { getlUrlFilesDps } from '@/app/(main)/utilities/documents/common/filesUt
 import { useParams } from 'next/navigation';
 import loaderScreen from '@/app/components/commons/loaderScreen';
 import { Divider } from 'primereact/divider';
+import { useTranslation } from 'react-i18next';
 
 const CompareFiles = () => {
     const [lUrlFiles, setLFiles] = useState<any[]>([]);
-    const { doc, docName } = useParams();
+    const { doc, docName, withOc } = useParams();
     const [loading, setLoading] = useState(false);
     const [startIndex, setStartIndex] = useState(0);
+    const { t } = useTranslation('invoices');
 
     useEffect(() => {
         const fetchData = async () => {
@@ -39,6 +41,12 @@ const CompareFiles = () => {
             <div className="flex flex-column align-items-center justify-content-center">
                 {loading && loaderScreen()}
                 <h4 className='pt-3'>Factura: {docName}</h4>
+
+                { withOc == '0' && (
+                    <h4 className='pt-3'>{t('uploadDialog.titleInvoiceWithOutOc')}</h4>
+                )
+
+                }
                 <div className="field col-12 md:col-12">
                     <div className="formgrid grid">
                         <div className={`field col-12 md:col-6`}>

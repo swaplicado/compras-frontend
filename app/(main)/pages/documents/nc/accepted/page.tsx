@@ -28,6 +28,8 @@ import { getlUrlFilesDps } from '@/app/(main)/utilities/documents/common/filesUt
 import invoices from "@/i18n/locales/es/documents/invoices";
 import { RenderInfoButton } from "@/app/components/commons/instructionsButton";
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
+import { useContext } from 'react';
+import { LayoutContext } from '@/layout/context/layoutcontext';
 
 const AcceptedNC = () => {
     const [startDate, setStartDate] = useState<string>('');
@@ -44,6 +46,8 @@ const AcceptedNC = () => {
     const [showInfo, setShowInfo] = useState<boolean>(false);
     const [showManual, setShowManual] = useState<boolean>(false);
     const [withBtnSendAuth, setWithBtnSendAuth] = useState<boolean>(false);
+
+    const { dateToWork, setDateToWork } = useContext(LayoutContext);
 
     //constantes para el dialog
     const [visible, setDialogVisible] = useState<boolean>(false);
@@ -113,6 +117,9 @@ const AcceptedNC = () => {
         delete: {
             hidden: true
         },
+        openNc: {
+            hidden: false
+        }
     }
 
 //*******FUNCIONES*******
@@ -429,6 +436,50 @@ const AcceptedNC = () => {
         setLoadingFiles(false);
     };
 
+    const openNc = async (data: any) => {
+        if (oUser.isInternalUser) {
+            setIsReview(false);
+        } else {
+            setIsReview(false);
+        }
+
+        setLoadingFiles(true);
+        setDialogMode('view');
+        setIsXmlValid(true);
+        setWithFooter(true);
+        configNcData(data);
+        setDialogVisible(true);
+        await getInvoicesToReview({
+            doc_id: data.id,
+            setlInvoicesToReview: setlInvoicesToReview,
+            errorMessage: t('dialog.errors.getLInvoicesToReview'),
+            showToast: showToast
+        });
+        await getlUrlFilesDps({
+            setLFiles,
+            showToast,
+            document_id: data.id
+        });
+        setLoadingFiles(false);
+    };
+
+    const openNcBodyTemplate = (rowData: any) => {
+        return (
+            <div className="flex align-items-center justify-content-center">
+                <Button
+                    label={'Abrir'}
+                    icon=""
+                    className="p-button-rounded"
+                    onClick={() => openNc(rowData)}
+                    tooltip={''}
+                    tooltipOptions={{ position: 'top' }}
+                    size="small"
+                    disabled={loading}
+                />
+            </div>
+        );
+    };
+
     const download = async (rowData: any) => {
         try {
             setLoading(true);
@@ -475,7 +526,7 @@ const AcceptedNC = () => {
             const oUser = await getOUser();
             setUserFunctionalAreas(user_functional_areas);
             setOUser(oUser);
-            setDateFilter(new Date);
+            setDateFilter(dateToWork);
         }
         fetch();
     }, [])
@@ -618,6 +669,7 @@ const AcceptedNC = () => {
                         fileBodyTemplate={fileBodyTemplate}
                         withBtnSendAuth={withBtnSendAuth}
                         setFlowAuthDialogVisible={setFlowAuthDialogVisible}
+                        openNcBodyTemplate={openNcBodyTemplate}
                     />
                 </Card>
             </div>

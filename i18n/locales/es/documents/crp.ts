@@ -1,4 +1,5 @@
 const crp = {
+    titleAll: "Todos los CRP",
     titleUpload: "Cargar y revisar CRP",
     titleUploadprovider: "Cargar CRP",
     titleAccepted: "CRP revisados",

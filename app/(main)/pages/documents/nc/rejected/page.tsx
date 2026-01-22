@@ -28,6 +28,8 @@ import { getlUrlFilesDps, getlFilesNames } from '@/app/(main)/utilities/document
 import invoices from "@/i18n/locales/es/documents/invoices";
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { RenderInfoButton } from "@/app/components/commons/instructionsButton";
+import { useContext } from 'react';
+import { LayoutContext } from '@/layout/context/layoutcontext';
 
 const RejectedNC = () => {
     const [startDate, setStartDate] = useState<string>('');
@@ -43,6 +45,8 @@ const RejectedNC = () => {
     const [lCompaniesFilter, setLCompaniesFilter] = useState<any[]>([]);
     const [showInfo, setShowInfo] = useState<boolean>(false);
     const [showManual, setShowManual] = useState<boolean>(false);
+
+    const { dateToWork, setDateToWork } = useContext(LayoutContext);
 
     //constantes para el dialog
     const [visible, setDialogVisible] = useState<boolean>(false);
@@ -108,6 +112,9 @@ const RejectedNC = () => {
         delete: {
             hidden: false
         },
+        openNc: {
+            hidden: false
+        }
     }
 
 //*******FUNCIONES*******
@@ -383,6 +390,34 @@ const RejectedNC = () => {
         setLoadingFiles(false);
     };
 
+    const openNc = async (data: any) => {
+        setLoadingFiles(true);
+        setLoadingFileNames(true);
+        setDialogMode('edit');
+        setIsXmlValid(true);
+        setWithFooter(true);
+        configNcData(data);
+        setDialogVisible(true);
+        await getInvoicesToReview({
+            doc_id: data.id,
+            setlInvoicesToReview: setlInvoicesToReview,
+            errorMessage: t('dialog.errors.getLInvoicesToReview'),
+            showToast: showToast
+        });
+        await getlUrlFilesDps({
+            setLFiles,
+            showToast,
+            document_id: data.id
+        });
+        await getlFilesNames({
+            document_id: data.id,
+            setLFilesNames: setLFilesNames,
+            showToast: showToast,
+        });
+        setLoadingFileNames(false);
+        setLoadingFiles(false);
+    };
+
     const download = async (rowData: any) => {
         try {
             setLoading(true);
@@ -478,6 +513,23 @@ const RejectedNC = () => {
         );
     };
 
+    const openNcBodyTemplate = (rowData: any) => {
+        return (
+            <div className="flex align-items-center justify-content-center">
+                <Button
+                    label={'Abrir'}
+                    icon=""
+                    className="p-button-rounded"
+                    onClick={() => openNc(rowData)}
+                    tooltip={''}
+                    tooltipOptions={{ position: 'top' }}
+                    size="small"
+                    disabled={loading}
+                />
+            </div>
+        );
+    };
+
 //*******INIT*******
     useEffect(() => {
         const fetch = async () => {
@@ -485,7 +537,7 @@ const RejectedNC = () => {
             const oUser = await getOUser();
             setUserFunctionalAreas(user_functional_areas);
             setOUser(oUser);
-            setDateFilter(new Date);
+            setDateFilter(dateToWork);
         }
         fetch();
     }, [])
@@ -622,6 +674,7 @@ const RejectedNC = () => {
                         setDialogMode={setDialogMode}
                         fileBodyTemplate={fileBodyTemplate}
                         deleteBodyTemplate={deleteBodyTemplate}
+                        openNcBodyTemplate={openNcBodyTemplate}
                     />
                 </Card>
             </div>

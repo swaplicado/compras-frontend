@@ -8,9 +8,7 @@ import moment from 'moment';
 import { Toast } from 'primereact/toast';
 import { Card } from 'primereact/card';
 import loaderScreen from '@/app/components/commons/loaderScreen';
-import Cookies from 'js-cookie';
 import { DataTable, DataTableFilterMeta, DataTableRowClickEvent } from 'primereact/datatable';
-import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { Tooltip } from 'primereact/tooltip';
 import { TablePayments } from '@/app/components/documents/payments/common/tablePayments';
@@ -18,6 +16,7 @@ import { DialogPayment } from '@/app/components/documents/payments/common/dialog
 import { useIsMobile } from '@/app/components/commons/screenMobile';
 import { Button } from "primereact/button";
 import { getExtensionFileByName } from '@/app/(main)/utilities/files/fileValidator';
+import axios from 'axios';
 import DateFormatter from '@/app/components/commons/formatDate';
 import { useContext } from 'react';
 import { LayoutContext } from '@/layout/context/layoutcontext';
@@ -29,7 +28,7 @@ interface FileInfo {
     id?: string | number;
 }
 
-const ConsultPaymentProgramded = () => {
+const ConsultPaymentOperatedByCheck = () => {
     const [startDate, setStartDate] = useState<string>('');
     const [endDate, setEndtDate] = useState<string>('');
     const [lPayments, setLPayments] = useState<any[]>([]);
@@ -40,8 +39,6 @@ const ConsultPaymentProgramded = () => {
     const [userFunctionalAreas, setUserFunctionalAreas] = useState<any>(null);
     const [oUser, setOUser] = useState<any>(null);
     const [dateFilter, setDateFilter] = useState<any>(null);
-    const [historyAuth, setHistoryAuth] = useState<any[]>([]);
-    const [loadingHistoryAuth, setLoadingHistoryAuth] = useState<boolean>(false);
 
     const { dateToWork, setDateToWork } = useContext(LayoutContext);
 
@@ -51,8 +48,10 @@ const ConsultPaymentProgramded = () => {
     const [dialogMode, setDialogMode] = useState<'view' | 'edit'>('view');
     const [lFiles, setLFiles] = useState<FileInfo[]>([]);
     const [loadingFiles, setLoadingFiles] = useState<boolean>(true);
-
     const isMobile = useIsMobile();
+    const [historyAuth, setHistoryAuth] = useState<any[]>([]);
+    const [loadingHistoryAuth, setLoadingHistoryAuth] = useState<boolean>(false);
+    const [oCrp, setOCrp] = useState<any>(null);
 
     const columnsProps = {
         company_trade_name: { hidden: false },
@@ -61,11 +60,11 @@ const ConsultPaymentProgramded = () => {
         currency_name: { hidden: false },
         app_date: { hidden: true },
         req_date: { hidden: true },
-        sched_date_n: { hidden: false },
-        exec_date_n: { hidden: true },
+        sched_date_n: { hidden: true },
+        exec_date_n: { hidden: false },
         amount: { hidden: false },
         payment_way: { hidden: true },
-        payment_status: { hidden: false },
+        payment_status: { hidden: true },
         openPayment: { hidden: false },
         is_receipt_payment_req: { hidden: true },
         crp: { hidden: true }
@@ -81,7 +80,7 @@ const ConsultPaymentProgramded = () => {
         });
     };
 
-    const getPaymentsProgramed = async () =>  {
+    const getPaymentsExecuted = async () =>  {
         setLoading(true);
         let params: any = {};
         if (oUser.isInternalUser) {
@@ -90,7 +89,8 @@ const ConsultPaymentProgramded = () => {
                 functional_area_id: userFunctionalAreas,
                 start_date: startDate,
                 end_date: endDate,
-                payment_status_id: constants.PAYMENT_STATUS_PROGRAMED_ID
+                payment_status_id: constants.PAYMENT_STATUS_EXECUTED_ID,
+                is_receipt_payment_req: true
             }
         } else {
             params = {
@@ -98,7 +98,8 @@ const ConsultPaymentProgramded = () => {
                 partner_id: oUser.oProvider.id,
                 start_date: startDate,
                 end_date: endDate,
-                payment_status_id: constants.PAYMENT_STATUS_PROGRAMED_ID
+                payment_status_id: constants.PAYMENT_STATUS_EXECUTED_ID,
+                is_receipt_payment_req: true
             }
         }
 
@@ -108,7 +109,6 @@ const ConsultPaymentProgramded = () => {
             setLPayments: setLPayments,
             showToast: showToast 
         });
-
         setLoading(false);
     }
 
@@ -196,12 +196,12 @@ const ConsultPaymentProgramded = () => {
             }}
         >
             <h3 className="m-0 text-900 font-medium">
-                {t('programed.title')}
+                {t('operatedByCheck.title')}
                 &nbsp;&nbsp;
                 <Tooltip target=".custom-target-icon" />
                 <i
                     className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                    data-pr-tooltip={t('programed.titleTooltip')}
+                    data-pr-tooltip={t('operatedByCheck.titleTooltip')}
                     data-pr-position="right"
                     data-pr-my="left center-2"
                     style={{ fontSize: '1rem', cursor: 'pointer' }}
@@ -295,7 +295,7 @@ const ConsultPaymentProgramded = () => {
 
     useEffect(() => {
         const init = async () => {
-            await getPaymentsProgramed();
+            await getPaymentsExecuted();
         }
         if (userFunctionalAreas && startDate && endDate) {
             init();
@@ -313,11 +313,11 @@ const ConsultPaymentProgramded = () => {
                         onHide={() => setDialogVisible(false)}
                         isMobile={isMobile}
                         footerContent={dialogFooterContent}
-                        headerTitle={t('programed.dialogTitle')}
+                        headerTitle={t('operatedByCheck.title')}
                         oPayment={oPayment}
                         setOPayment={setOPayment}
                         dialogMode={dialogMode}
-                        dialogType={'programed'}
+                        dialogType={'executed'}
                         setLoading={setLoading}
                         lFiles={lFiles}
                         getlFiles={getlFiles}
@@ -344,4 +344,4 @@ const ConsultPaymentProgramded = () => {
     )
 }
 
-export default ConsultPaymentProgramded;
+export default ConsultPaymentOperatedByCheck;

@@ -28,6 +28,8 @@ import { RenderInfoButton } from "@/app/components/commons/instructionsButton";
 import { getLDaysToPay } from '@/app/(main)/utilities/documents/common/daysToPayUtils';
 import DateFormatter from '@/app/components/commons/formatDate';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
+import { useContext } from 'react';
+import { LayoutContext } from '@/layout/context/layoutcontext';
 
 const UploadPrepayment = () => {
     const [startDate, setStartDate] = useState<string>('');
@@ -44,6 +46,8 @@ const UploadPrepayment = () => {
     const [showInfo, setShowInfo] = useState<boolean>(false);
     const [showManual, setShowManual] = useState<boolean>(false);
     const [lDaysToPay, setLDaysToPay] = useState<Array<any>>([]);
+
+    const { dateToWork, setDateToWork } = useContext(LayoutContext);
 
     //constantes para el dialog
     const [visible, setDialogVisible] = useState<boolean>(false);
@@ -113,6 +117,9 @@ const UploadPrepayment = () => {
         delete: {
             hidden: false
         },
+        openPrepay: {
+            hidden: false
+        }
     }
 
     //*******FUNCIONES*******
@@ -606,6 +613,50 @@ const UploadPrepayment = () => {
         setLoadingFiles(false);
     };
 
+    const openPrepay = async (data: any) => {
+        if (oUser.isInternalUser) {
+            setIsReview(true);
+        } else {
+            setIsReview(false);
+        }
+
+        setLoadingFiles(true);
+        setDialogMode('view');
+        setIsXmlValid(true);
+        setWithFooter(true);
+        configNcData(data);
+        setDialogVisible(true);
+        await getInvoicesToReview({
+            doc_id: data.id,
+            setlInvoicesToReview: setlInvoicesToReview,
+            errorMessage: t('dialog.errors.getLInvoicesToReview'),
+            showToast: showToast
+        });
+        await getlUrlFilesDps({
+            setLFiles,
+            showToast,
+            document_id: data.id
+        });
+        setLoadingFiles(false);
+    };
+
+    const openPrepayBodyTemplate = (rowData: any) => {
+        return (
+            <div className="flex align-items-center justify-content-center">
+                <Button
+                    label={'Abrir'}
+                    icon=""
+                    className="p-button-rounded"
+                    onClick={() => openPrepay(rowData)}
+                    tooltip={''}
+                    tooltipOptions={{ position: 'top' }}
+                    size="small"
+                    disabled={loading}
+                />
+            </div>
+        );
+    };
+
     const download = async (rowData: any) => {
         try {
             setLoading(true);
@@ -645,7 +696,7 @@ const UploadPrepayment = () => {
             const oUser = await getOUser();
             setUserFunctionalAreas(user_functional_areas);
             setOUser(oUser);
-            setDateFilter(new Date);
+            setDateFilter(dateToWork);
         }
         fetch();
     }, [])
@@ -857,6 +908,7 @@ const UploadPrepayment = () => {
                         setDialogMode={setDialogMode}
                         fileBodyTemplate={fileBodyTemplate}
                         deleteBodyTemplate={deleteBodyTemplate}
+                        openPrepayBodyTemplate={openPrepayBodyTemplate}
                     />
                 </Card>
             </div>

@@ -305,6 +305,15 @@ const invoices = {
         advance_application: {
             label: "Aplicación anticipo",
             tooltip: "Indica como vas a aplicar tu anticipo"
+        },
+        invoiceWithOutOc: "No se seleccionó una OC",
+        titleInvoiceWithOutOc: "No seleccionó una orden de compra para esta factura",
+        expiredDate: {
+            label: "Fecha de expiración",
+            checkBoxLabel: "Factura con expiración",
+            placeholder: "Selecciona una fecha",
+            helperText: "Por favor selecciona una fecha de expiración.",
+            tooltip: "Esta es la fecha de expiración de la factura.",
         }
     },
     errors: {
@@ -378,7 +387,7 @@ const invoices = {
         buttonLabel: "Videos de ayuda",
         buttonTooltip: "Ver tutorial de inicio de sesión",
         dialogHeader: "Manual de Usuario",
-    }
+    },
 }
 
 export default invoices;

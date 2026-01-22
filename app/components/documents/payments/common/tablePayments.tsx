@@ -25,7 +25,10 @@ interface columnsProps {
     exec_date_n: { hidden: boolean },
     amount: { hidden: boolean },
     payment_way: { hidden: boolean },
-    payment_status: { hidden: boolean }
+    payment_status: { hidden: boolean },
+    openPayment: { hidden: boolean },
+    is_receipt_payment_req: { hidden: boolean },
+    crp: { hidden: boolean }
 }
 
 interface TablePaymentsProps {
@@ -40,6 +43,7 @@ interface TablePaymentsProps {
     dateFilter?: any;
     setDateFilter?: React.Dispatch<React.SetStateAction<any>>;
     showToast?: (type: 'success' | 'info' | 'warn' | 'error', message: string, summaryText?: string) => void;
+    openBodyTemplate?: (payment: any) => any;
 }
 
 export const TablePayments = ({
@@ -53,7 +57,8 @@ export const TablePayments = ({
     withMounthFilter,
     dateFilter,
     setDateFilter,
-    showToast
+    showToast,
+    openBodyTemplate
 }: TablePaymentsProps) => {
     const [filters, setFilters] = useState<DataTableFilterMeta>({});
     const [tableLoading, setTableLoading] = useState(true);
@@ -161,6 +166,45 @@ export const TablePayments = ({
         return formatCurrency(rowData.amount);
     };
 
+    const isReceiptPaymentReqBodyTemplate = (rowData: any) => {
+        if (rowData.is_receipt_payment_req) {
+            return (
+                <div className="flex justify-content-center align-items-center">
+                    <i className="bx bx-check bx-md text-green-500"></i>
+                </div>
+            )
+        } else {
+            return (
+                <div className="flex justify-content-center align-items-center">
+                    <i className="bx bx-x bx-md text-red-500"></i>
+                </div>
+            )
+        }
+    }
+
+    const crpFolioBodyTemplate = (rowData: any) => {
+        if (!rowData.is_receipt_payment_req) {
+            return (
+                <div className="flex justify-content-center align-items-center">
+                    N/A
+                </div>
+            )
+        } else {
+            if (rowData.crp_folio) {
+                return (
+                    <div className="flex justify-content-center align-items-center">
+                        {rowData.crp_folio}
+                    </div>
+                )
+            } else {
+                return (
+                    <div className="flex justify-content-center align-items-center">
+                        Pendiente
+                    </div>
+                )
+            }
+        }
+    }
 
 //*********** INIT ***********
     useEffect(() => {
@@ -213,7 +257,7 @@ export const TablePayments = ({
                 onRowDoubleClick={(e) => (handleDoubleClick?.(e))}
                 metaKeySelection={false}
                 sortField="benef_trade_name"
-                sortOrder={-1}
+                sortOrder={1}
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                 currentPageReportTemplate={tCommon('datatable.currentPageReportTemplate')}
                 resizableColumns
@@ -250,6 +294,7 @@ export const TablePayments = ({
                 <Column field="benef_account" header="benef_account" hidden />
                 <Column field="sched_at" header="sched_at" hidden />
                 <Column field="exec_at" header="exec_at" hidden />
+                <Column field="crp_id" header="crp_id" hidden />
                 <Column field="company_trade_name" header={t('datatable.columns.company_trade_name')} sortable hidden={ columnsProps?.company_trade_name.hidden } />
                 <Column field="folio" header={t('datatable.columns.folio')} sortable hidden={ columnsProps?.company_trade_name.hidden } />
                 <Column field="benef_trade_name" header={t('datatable.columns.benef_trade_name')} sortable hidden={ columnsProps?.benef_trade_name.hidden } />
@@ -261,6 +306,9 @@ export const TablePayments = ({
                 <Column field="currency_code" header={t('datatable.columns.currency_name')} sortable hidden={ columnsProps?.currency_name.hidden } />
                 <Column field="payment_way" header={t('datatable.columns.payment_way')} sortable hidden={ columnsProps?.payment_way.hidden }/>
                 <Column field="payment_status" header={t('datatable.columns.payment_status')} sortable hidden={ columnsProps?.payment_status.hidden }/>
+                <Column field="is_receipt_payment_req" header={t('datatable.columns.is_receipt_payment_req')} body={isReceiptPaymentReqBodyTemplate} sortable hidden={ columnsProps?.is_receipt_payment_req.hidden } />
+                <Column field="crp_folio" header={t('datatable.columns.crp_folio')} body={crpFolioBodyTemplate}  sortable hidden={ columnsProps?.crp.hidden } />
+                <Column field="id" header={''} footer={''} body={openBodyTemplate} hidden={ columnsProps?.openPayment.hidden } />
             </DataTable>
         </>
     );

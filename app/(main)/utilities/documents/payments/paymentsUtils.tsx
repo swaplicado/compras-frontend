@@ -80,6 +80,9 @@ export const getPayments = async ( props: getPaymentsProps  ) => {
                     currency_code: data[i].currency.code,
                     currency_name: data[i].currency.name,
                     payment_status: data[i].payment_status,
+                    is_receipt_payment_req: data[i].is_receipt_payment_req,
+                    crp_id: data[i].crp_id,
+                    crp_folio: data[i].crp_folio
                 });
             }
             props.setLPayments(payments);

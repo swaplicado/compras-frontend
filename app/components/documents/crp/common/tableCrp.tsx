@@ -17,7 +17,8 @@ interface columnsProps {
     uuid: { hidden: boolean },
     authz_acceptance_name: { hidden: boolean },
     authz_authorization_name: { hidden: boolean },
-    delete: { hidden: boolean }
+    delete: { hidden: boolean },
+    openCrp: { hidden: boolean }
 }
 
 interface TableCrpProps {
@@ -39,6 +40,7 @@ interface TableCrpProps {
     setDialogMode?: React.Dispatch<React.SetStateAction<any>>;
     fileBodyTemplate?: (rowData: any) => any;
     deleteBodyTemplate?: (rowData: any) => any;
+    openBodyTemplate?: (rowData: any) => any;
     withBtnSendAuth?: boolean;
     setFlowAuthDialogVisible?: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -62,6 +64,7 @@ export const TableCrp = ({
     setDialogMode,
     fileBodyTemplate,
     deleteBodyTemplate,
+    openBodyTemplate,
     withBtnSendAuth = false,
     setFlowAuthDialogVisible
 }: TableCrpProps) => {
@@ -250,6 +253,7 @@ export const TableCrp = ({
                 <Column field="authz_authorization_name" header={'Autorización'} footer={'Autorización'} body={statusAuthDpsBodyTemplate} hidden={ columnsProps?.authz_authorization_name.hidden } />
                 <Column field="id" header={t('datatable.columns.files')} footer={t('datatable.columns.files')} body={fileBodyTemplate} />
                 <Column field="id_dps" header={'Eliminar'} footer={'Eliminar'} body={deleteBodyTemplate} hidden={ columnsProps?.delete.hidden } />
+                <Column field="id_dps" header={''} footer={''} body={openBodyTemplate} hidden={ columnsProps?.openCrp.hidden } />
             </DataTable>
         </>
     );

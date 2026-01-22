@@ -25,6 +25,7 @@ interface FlowAuthorizationDialogProps {
     ommitAcceptance?: boolean;
     withAcceptance?: boolean;
     handleAcceptance?: () => Promise<any>;
+    resource_type?: string | number;
 }
 
 export const FlowAuthorizationDialog = ({
@@ -40,7 +41,8 @@ export const FlowAuthorizationDialog = ({
     userExternalId,
     ommitAcceptance = false,
     withAcceptance = false,
-    handleAcceptance
+    handleAcceptance,
+    resource_type = constants.RESOURCE_TYPE_PUR_INVOICE
 }: FlowAuthorizationDialogProps ) => {
     const [loading, setLoading] = useState(false);
     const [flowAuth, setFlowAuth] = useState<any>(null);
@@ -50,8 +52,10 @@ export const FlowAuthorizationDialog = ({
     const [shouldShowDialog, setShouldShowDialog] = useState(false);
     const { t } = useTranslation('authorizations');
     const { t: tCommon } = useTranslation('common');
-    const successTitle = t('flowAuthorization.animationSuccess.title');
-    const errorTitle = t('flowAuthorization.animationError.title');
+    // const successTitle = t('flowAuthorization.animationSuccess.title');
+    // const errorTitle = t('flowAuthorization.animationError.title');
+    const [successTitle, setSuccessTitle] = useState(t('flowAuthorization.animationSuccess.title'));
+    const [errorTitle, setErrorTitle] = useState(t('flowAuthorization.animationError.title'));
     const [comments, setComments] = useState('');
     
     const [errors, setErrors] = useState({
@@ -118,7 +122,7 @@ export const FlowAuthorizationDialog = ({
                         name: oDps.provider_name ? oDps.provider_name : oDps.partner_full_name, //proveedor
                         content: {},
                         external_id: oDps.id_dps ? oDps.id_dps : oDps.id,
-                        resource_type: constants.RESOURCE_TYPE_PUR_INVOICE
+                        resource_type: resource_type
                     },
                     deadline: null,
                     sent_by: userExternalId, //external user id
@@ -132,9 +136,46 @@ export const FlowAuthorizationDialog = ({
             });
 
             if (response.status == 200) {
-                
-                setSuccessMessage(t('flowAuthorization.animationSuccess.text'));
-                setResultSendFlowAuth('success');
+                try {
+                    if (resource_type == constants.RESOURCE_TYPE_PUR_INVOICE) {
+                        const route = constants.ROUTE_POST_AUTHORIZE_RESOURCE;
+                        const response = await axios.post(constants.API_AXIOS_PATCH, {
+                            route,
+                            jsonData: {
+                                id_external_system: 1,
+                                id_company: oDps.company_external_id,
+                                id_resource_type: resource_type,
+                                external_resource_id: oDps.id_dps,
+                                external_user_id: userExternalId,
+                                id_actor_type: 2,
+                                // notes: oDps.authz_authorization_notes
+                                notes: oDps.auth_notes || ''
+                            }
+                        });
+            
+                        if (response.status === 200) {
+                            if (getDps) {
+                                await getDps(getDpsParams);
+                            }
+                            setSuccessTitle('Factura autorizada')
+                            setSuccessMessage('Factura autorizada' + ' para la semana: ' + response.data.data?.extra?.week_number);
+                        } else {
+                            throw new Error(`Factura autorizada: ${response.statusText}`);
+                        }
+                    }
+
+                } catch (error: any) {
+                    // setErrorMessage(error.response?.data?.error || 'Factura autorizada');
+                    setSuccessMessage(t('flowAuthorization.animationSuccess.text'));
+                } finally {
+                    if (resource_type == constants.RESOURCE_TYPE_PP) {
+                        setSuccessTitle('Proforma enviada a autorizar');
+                        setSuccessMessage('');
+                    }
+
+                    setLoading?.(false);
+                    setResultSendFlowAuth('success');
+                }
 
                 if (!withAcceptance) {
                     await getDps?.( getDpsParams ? getDpsParams : null );

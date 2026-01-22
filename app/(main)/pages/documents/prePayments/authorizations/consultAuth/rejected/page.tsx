@@ -28,6 +28,8 @@ import { RenderInfoButton } from "@/app/components/commons/instructionsButton";
 import { getLDaysToPay } from '@/app/(main)/utilities/documents/common/daysToPayUtils';
 import DateFormatter from '@/app/components/commons/formatDate';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
+import { useContext } from 'react';
+import { LayoutContext } from '@/layout/context/layoutcontext';
 
 const AcceptedPrepayment = () => {
     const [startDate, setStartDate] = useState<string>('');
@@ -46,6 +48,8 @@ const AcceptedPrepayment = () => {
     const [lDaysToPay, setLDaysToPay] = useState<Array<any>>([]);
     const [withBtnSendAuth, setWithBtnSendAuth] = useState<boolean>(false);
     const [flowAuthDialogVisible, setFlowAuthDialogVisible] = useState<boolean>(false);
+
+    const { dateToWork, setDateToWork } = useContext(LayoutContext);
 
     //constantes para el dialog
     const [visible, setDialogVisible] = useState<boolean>(false);
@@ -115,6 +119,9 @@ const AcceptedPrepayment = () => {
         delete: {
             hidden: false
         },
+        openPrepay: {
+            hidden: false
+        }
     }
 
     //*******FUNCIONES*******
@@ -146,6 +153,8 @@ const AcceptedPrepayment = () => {
                 document_type: constants.DOC_TYPE_PP,
                 user_id: oUser.oUser.external_id,
                 auth_status: constants.REVIEW_REJECT_ID,
+                start_date: startDate,
+                end_date: endDate
             };
         }
         if (oUser.isProvider) {
@@ -157,6 +166,8 @@ const AcceptedPrepayment = () => {
                 document_type: constants.DOC_TYPE_PP,
                 authz_acceptance: constants.REVIEW_ACCEPT_ID,
                 authz_authorization: constants.REVIEW_REJECT_ID,
+                start_date: startDate,
+                end_date: endDate
             };
         }
 
@@ -650,6 +661,46 @@ const AcceptedPrepayment = () => {
         setLoadingFiles(false);
     };
 
+    const openPrepay = async (data: any) => {
+        setIsReview(false);
+
+        setLoadingFiles(true);
+        setDialogMode('view');
+        setIsXmlValid(true);
+        setWithFooter(true);
+        configNcData(data);
+        setDialogVisible(true);
+        await getInvoicesToReview({
+            doc_id: data.id,
+            setlInvoicesToReview: setlInvoicesToReview,
+            errorMessage: t('dialog.errors.getLInvoicesToReview'),
+            showToast: showToast
+        });
+        await getlUrlFilesDps({
+            setLFiles,
+            showToast,
+            document_id: data.id
+        });
+        setLoadingFiles(false);
+    };
+
+    const openPrepayBodyTemplate = (rowData: any) => {
+        return (
+            <div className="flex align-items-center justify-content-center">
+                <Button
+                    label={'Abrir'}
+                    icon=""
+                    className="p-button-rounded"
+                    onClick={() => openPrepay(rowData)}
+                    tooltip={''}
+                    tooltipOptions={{ position: 'top' }}
+                    size="small"
+                    disabled={loading}
+                />
+            </div>
+        );
+    };
+
     const download = async (rowData: any) => {
         try {
             setLoading(true);
@@ -689,7 +740,7 @@ const AcceptedPrepayment = () => {
             const oUser = await getOUser();
             setUserFunctionalAreas(user_functional_areas);
             setOUser(oUser);
-            setDateFilter(new Date);
+            setDateFilter(dateToWork);
         }
         fetch();
     }, [])
@@ -906,6 +957,7 @@ const AcceptedPrepayment = () => {
                         setDialogMode={setDialogMode}
                         fileBodyTemplate={fileBodyTemplate}
                         deleteBodyTemplate={deleteBodyTemplate}
+                        openPrepayBodyTemplate={openPrepayBodyTemplate}
                     />
                 </Card>
             </div>

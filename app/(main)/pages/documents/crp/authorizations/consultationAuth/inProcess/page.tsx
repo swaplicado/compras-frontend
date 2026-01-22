@@ -25,6 +25,8 @@ import { getlUrlFilesDps } from "@/app/(main)/utilities/documents/common/filesUt
 import { downloadFiles } from '@/app/(main)/utilities/documents/common/filesUtils';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { getlFiscalRegime } from '@/app/(main)/utilities/documents/common/fiscalRegimeUtils';
+import { useContext } from 'react';
+import { LayoutContext } from '@/layout/context/layoutcontext';
 
 const ConsultPaymentProgramded = () => {
     const [startDate, setStartDate] = useState<string>('');
@@ -39,6 +41,8 @@ const ConsultPaymentProgramded = () => {
     const [dateFilter, setDateFilter] = useState<any>(null);
     const [lCompaniesFilter, setLCompaniesFilter] = useState<any[]>([]);
     const [lFiscalRegimes, setLFiscalRegimes] = useState<any[]>([]);
+
+    const { dateToWork, setDateToWork } = useContext(LayoutContext);
 
     //constantes para el dialog
     const [visible, setDialogVisible] = useState(false);
@@ -81,7 +85,8 @@ const ConsultPaymentProgramded = () => {
         date: { hidden: false },
         authz_acceptance_name: { hidden: true },
         authz_authorization_name: { hidden: false },
-        delete: { hidden: true }
+        delete: { hidden: true },
+        openCrp: { hidden: false }
     }
 
 //*******FUNCIONES*******
@@ -280,6 +285,44 @@ const ConsultPaymentProgramded = () => {
         setLoadinglPaymentsExec(false);
     };
 
+    const openCrp = async (data: any) => {
+        setLoadingFiles(true);
+        setLoadinglPaymentsExec(true);
+        configCrpToView(data);
+        setIsXmlValid(true);
+        setDialogMode('view');
+        setDialogVisible(true);
+        await getlUrlFilesDps({
+            setLFiles,
+            showToast,
+            document_id: data.id
+        });
+        await getPaymentsExecDetails({
+            setLPaymentsExecDetails,
+            showToast,
+            document_id: data.id
+        });
+        setLoadingFiles(false);
+        setLoadinglPaymentsExec(false);
+    };
+
+    const openBodyTemplate = (rowData: any) => {
+        return (
+            <div className="flex align-items-center justify-content-center">
+                <Button
+                    label={'Abrir'}
+                    icon=""
+                    className="p-button-rounded"
+                    onClick={() => openCrp(rowData)}
+                    tooltip={''}
+                    tooltipOptions={{ position: 'top' }}
+                    size="small"
+                    disabled={loading}
+                />
+            </div>
+        );
+    };
+
     const download = async (rowData: any) => {
         try {
             setLoading(true);
@@ -319,7 +362,7 @@ const ConsultPaymentProgramded = () => {
             const oUser = await getOUser();
             setUserFunctionalAreas(user_functional_areas);
             setOUser(oUser);
-            setDateFilter(new Date);
+            setDateFilter(dateToWork);
         }
         fetch();
     }, [])
@@ -350,10 +393,10 @@ const ConsultPaymentProgramded = () => {
             await getLCrp();
             setLoading(false);
         }
-        if (userFunctionalAreas && startDate && endDate) {
+        if (userFunctionalAreas) {
             init();
         }
-    }, [userFunctionalAreas, oUser, startDate, endDate])
+    }, [userFunctionalAreas, oUser])
 
     return (
         <div className="grid">
@@ -417,14 +460,15 @@ const ConsultPaymentProgramded = () => {
                         withSearch={true}
                         handleRowClick={handleRowClick}
                         handleDoubleClick={handleDoubleClick}
-                        withMounthFilter={true}
-                        dateFilter={dateFilter}
-                        setDateFilter={setDateFilter}
+                        withMounthFilter={false}
+                        // dateFilter={dateFilter}
+                        // setDateFilter={setDateFilter}
                         showToast={showToast}
                         withBtnCreate={false}
                         setDialogVisible={setDialogVisible}
                         setDialogMode={setDialogMode}
                         fileBodyTemplate={fileBodyTemplate}
+                        openBodyTemplate={openBodyTemplate}
                     />
                 </Card>
             </div>

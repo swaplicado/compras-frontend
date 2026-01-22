@@ -525,6 +525,16 @@ const Upload = () => {
         setDialogVisible(true);
     };
 
+    const openDps = (data: any) => {
+        if (!oValidUser.isInternalUser) {
+            return;
+        }
+
+        setSelectedRow(data);
+        setDialogMode('review');
+        setDialogVisible(true);
+    };
+
     useEffect(() => {
         const fetchReferences = async () => {
             setLoading(true);
@@ -656,6 +666,8 @@ const Upload = () => {
                         withBtnSendAuth={ oValidUser.isInternalUser }
                         withBtnSendToUpoload={withBtnSendToUpoload}
                         SendToUpoload={handleSendToUpload}
+                        openDps={openDps}
+                        showBtnOpenDps={oValidUser.isInternalUser}
                     />
                 </Card>
             </div>

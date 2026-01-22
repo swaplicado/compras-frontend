@@ -122,7 +122,8 @@ export const ValidateXml = ( {
                             oCurrency: oCurrency,
                             currency: currency,
                             exchange_rate: data.data.exchange_rate ? data.data.exchange_rate : 1,
-                            uuid: data.data.uuid
+                            uuid: data.data.uuid,
+                            payment_way: data.data.payment_way
                         }
                         setODps(oDps);
                     }
@@ -151,7 +152,8 @@ export const ValidateXml = ( {
                             partner_name: data.data.partner_name,
                             company_partner_id: data.data.company_partner_id,
                             company_partner_name: data.data.company_partner_name,
-                            notes: data.data.concepts_string
+                            notes: data.data.concepts_string,
+                            payment_way: data.data.payment_way
                         }));
                         await getReferences?.(data.data.partner_id, data.data.company_partner_id);
                     }
@@ -174,20 +176,6 @@ export const ValidateXml = ( {
 
     const hanldeRemoveFile = () => {
         setIsXmlValid?.(false);
-        setODps({
-            serie: "",
-            folio: "",
-            date: "",
-            payment_method: "",
-            provider_rfc: "",
-            issuer_tax_regime: "",
-            company_rfc: "",
-            receiver_tax_regime: "",
-            useCfdi: "",
-            amount: "",
-            currency: "",
-            exchange_rate: "",
-        })
         if (type != constants.XML_TYPE_FLETE) {
             setODps({
                 serie: "",
@@ -208,27 +196,30 @@ export const ValidateXml = ( {
         if (type == constants.XML_TYPE_FLETE) {
             setODps((prev: any) => ({ 
                 ...prev,
-                serie: "",
-                folio: "",
-                oPaymentMethod: "",
-                payment_method: "",
-                provider_rfc: "",
-                oIssuer_tax_regime: "",
-                issuer_tax_regime: "",
-                company_rfc: "",
-                oReceiver_tax_regime: "",
-                receiver_tax_regime: "",
-                oUseCfdi: "",
-                useCfdi: "",
                 amount: "",
-                oCurrency: "",
+                company_partner_id: "",
+                company_partner_name: "",
+                company_rfc: "",
                 currency: "",
+                date: "",
                 exchange_rate: "",
-                uuid: "",
+                folio: "",
+                issuer_tax_regime: "",
+                notes: "",
+                oCurrency: "",
+                oIssuer_tax_regime: "",
+                oPaymentMethod: "",
+                oReceiver_tax_regime: "",
+                oUseCfdi: "",
                 partner_id: "",
                 partner_name: "",
-                company_partner_id: "",
-                company_partner_name: ""
+                payment_method: "",
+                payment_way: "",
+                provider_rfc: "",
+                receiver_tax_regime: "",
+                serie: "",
+                useCfdi: "",
+                uuid: ""
             }))
 
             setReferences?.([]);

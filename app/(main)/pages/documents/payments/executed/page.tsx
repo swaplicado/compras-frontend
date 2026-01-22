@@ -18,6 +18,9 @@ import { Button } from "primereact/button";
 import { getExtensionFileByName } from '@/app/(main)/utilities/files/fileValidator';
 import axios from 'axios';
 import DateFormatter from '@/app/components/commons/formatDate';
+import { useContext } from 'react';
+import { LayoutContext } from '@/layout/context/layoutcontext';
+import { getlUrlFilesDps } from "@/app/(main)/utilities/documents/common/filesUtils";
 
 interface FileInfo {
     url: string;
@@ -38,6 +41,8 @@ const ConsultPaymentExecuted = () => {
     const [oUser, setOUser] = useState<any>(null);
     const [dateFilter, setDateFilter] = useState<any>(null);
 
+    const { dateToWork, setDateToWork } = useContext(LayoutContext);
+
     //constantes para el dialog
     const [visible, setDialogVisible] = useState(false);
     const [oPayment, setOPayment] = useState<any>(null);
@@ -47,6 +52,8 @@ const ConsultPaymentExecuted = () => {
     const isMobile = useIsMobile();
     const [historyAuth, setHistoryAuth] = useState<any[]>([]);
     const [loadingHistoryAuth, setLoadingHistoryAuth] = useState<boolean>(false);
+    const [lFilesCrp, setLFilesCrp] = useState<any[]>([]);
+    const [oCrp, setOCrp] = useState<any>(null);
 
     const columnsProps = {
         company_trade_name: { hidden: false },
@@ -59,7 +66,10 @@ const ConsultPaymentExecuted = () => {
         exec_date_n: { hidden: false },
         amount: { hidden: false },
         payment_way: { hidden: true },
-        payment_status: { hidden: false }
+        payment_status: { hidden: false },
+        openPayment: { hidden: false },
+        is_receipt_payment_req: { hidden: false },
+        crp: { hidden: false }
     }
 
 //*******FUNCIONES*******
@@ -81,7 +91,7 @@ const ConsultPaymentExecuted = () => {
                 functional_area_id: userFunctionalAreas,
                 start_date: startDate,
                 end_date: endDate,
-                payment_status_id: constants.PAYMENT_STATUS_EXECUTED_ID
+                payment_status_id: [constants.PAYMENT_STATUS_EXECUTED_ID, constants.PAYMENT_STATUS_COMP_ID]
             }
         } else {
             params = {
@@ -89,7 +99,7 @@ const ConsultPaymentExecuted = () => {
                 partner_id: oUser.oProvider.id,
                 start_date: startDate,
                 end_date: endDate,
-                payment_status_id: constants.PAYMENT_STATUS_EXECUTED_ID
+                payment_status_id: [constants.PAYMENT_STATUS_EXECUTED_ID, constants.PAYMENT_STATUS_COMP_ID]
             }
         }
 
@@ -172,6 +182,32 @@ const ConsultPaymentExecuted = () => {
         }
     }
 
+    const getCrp = async (data: any) => {
+        try {
+            if (!data.crp_id) {
+                return;
+            }
+            const route = constants.ROUTE_GET_INFO_DOC;
+            const response = await axios.get(constants.API_AXIOS_GET, {
+                params: {
+                    route: route,
+                    id_doc: data.crp_id
+                }
+            });
+
+            if (response.status == 200) {
+                const data = response.data.data || [];
+                setOCrp(data);
+            } else {
+                throw new Error(`Error al obtener el CRP: ${response.statusText}`);
+            }
+        } catch (error: any) {
+            showToast('error', error.response?.data?.error || 'Error al obtener el crp', 'Error al obtener el crp');
+        } finally {
+
+        }
+    }
+
 //*******OTROS*******
     const headerCard = (
         <div
@@ -228,16 +264,52 @@ const ConsultPaymentExecuted = () => {
         }
     };
 
-    const handleDoubleClick = (e: DataTableRowClickEvent) => {
+    const handleDoubleClick = async (e: DataTableRowClickEvent) => {
         // if (!oUser.isInternalUser) {
         //     e.originalEvent.preventDefault();
         //     return;
         // }
-
-        setORow(e.data);
-        setOPayment(e.data);
+        
         setDialogMode('view');
         setDialogVisible(true);
+        setORow(e.data);
+        setOPayment(e.data);
+        await getCrp(e.data);
+        await getlUrlFilesDps({
+            setLFiles: setLFilesCrp,
+            showToast,
+            document_id: e.data.id
+        });
+    };
+
+    const openPayment = async (data: any) => {
+        setDialogMode('view');
+        setDialogVisible(true);
+        setORow(data);
+        setOPayment(data);
+        await getCrp(data);
+        await getlUrlFilesDps({
+            setLFiles: setLFilesCrp,
+            showToast,
+            document_id: data.id
+        });
+    };
+
+    const openBodyTemplate = (rowData: any) => {
+        return (
+            <div className="flex align-items-center justify-content-center">
+                <Button
+                    label={'Abrir'}
+                    icon=""
+                    className="p-button-rounded"
+                    onClick={() => openPayment(rowData)}
+                    tooltip={''}
+                    tooltipOptions={{ position: 'top' }}
+                    size="small"
+                    disabled={loading}
+                />
+            </div>
+        );
     };
 
 //*******INIT*******
@@ -247,7 +319,7 @@ const ConsultPaymentExecuted = () => {
             const oUser = await getOUser();
             setUserFunctionalAreas(user_functional_areas);
             setOUser(oUser);
-            setDateFilter(new Date);
+            setDateFilter(dateToWork);
         }
         fetch();
     }, [])
@@ -293,6 +365,11 @@ const ConsultPaymentExecuted = () => {
                         // getHistoryAuth={getHistoryAuth}
                         loadingHistoryAuth={loadingHistoryAuth}
                         lHistoryAuth={historyAuth}
+                        withCrp={true}
+                        setOCrp={setOCrp}
+                        oCrp={oCrp}
+                        setLFilesCrp={setLFilesCrp}
+                        lFilesCrp={lFilesCrp}
                     />
                     <TablePayments 
                         lPayments={lPayments}
@@ -302,6 +379,7 @@ const ConsultPaymentExecuted = () => {
                         handleDoubleClick={handleDoubleClick}
                         setDateFilter={setDateFilter}
                         dateFilter={dateFilter}
+                        openBodyTemplate={openBodyTemplate}
                     />
                 </Card>
             </div>

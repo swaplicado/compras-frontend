@@ -17,6 +17,7 @@ import { CustomFileViewer } from '@/app/components/documents/invoice/fileViewer'
 import { HistoryAuth } from '@/app/components/documents/invoice/historyAuth';
 import { btnScroll } from '@/app/(main)/utilities/commons/useScrollDetection';
 import { useIntersectionObserver } from 'primereact/hooks';
+import { CrpFields } from '@/app/components/documents/payments/common/crpFields';
 
 interface FileInfo {
     url: string;
@@ -46,6 +47,11 @@ interface DialogPaymentProps {
     getHistoryAuth?: () => Promise<any>;
     loadingHistoryAuth?: boolean;
     lHistoryAuth?: any[];
+    withCrp?: boolean;
+    setOCrp?: React.Dispatch<React.SetStateAction<any>>;
+    oCrp?: any;
+    setLFilesCrp?: React.Dispatch<React.SetStateAction<any>>;
+    lFilesCrp?: any[]
 }
 
 export const DialogPayment = ({
@@ -68,7 +74,12 @@ export const DialogPayment = ({
     withHistoryAuth,
     getHistoryAuth,
     loadingHistoryAuth,
-    lHistoryAuth = []
+    lHistoryAuth = [],
+    withCrp = false,
+    setOCrp,
+    oCrp,
+    setLFilesCrp,
+    lFilesCrp = []
 }: DialogPaymentProps) => {
     const { t } = useTranslation('payments');
     const { t: tCommon } = useTranslation('common');
@@ -111,6 +122,13 @@ export const DialogPayment = ({
 
         if (withHistoryAuth && visible) {
             getHistoryAuth?.();
+        }
+
+        if (!visible) {
+            setOPayment(null);
+            setLEntries([]);
+            setOCrp?.(null);
+            setLFilesCrp?.([]);
         }
 
     }, [visible]);
@@ -170,7 +188,7 @@ export const DialogPayment = ({
                         tooltip: t('dialog.benef_trade_nameTooltip'),
                         value: oPayment?.benef_trade_name,
                         disabled: true,
-                        mdCol: 3,
+                        mdCol: 6,
                         type: 'text',
                         onChange: (value) => null,
                         options: [],
@@ -300,8 +318,8 @@ export const DialogPayment = ({
                     )}
                     { dialogType == 'executed' && (
                         RenderField({
-                            label: t('dialog.exchange_rate_exec'),
-                            tooltip: t('dialog.exchange_rate_execTooltip'),
+                            label: t('dialog.amount_loc_exec'),
+                            tooltip: t('dialog.amount_loc_execTooltip'),
                             value: oPayment?.amount_loc_exec,
                             disabled: true,
                             mdCol: 3,
@@ -385,6 +403,15 @@ export const DialogPayment = ({
                         errorMessage: ''
                     })}
                 </div>
+                { withCrp && oCrp && (
+                    <div>
+                        <CrpFields
+                            oCrp={oCrp}
+                            loadingCrp={true}
+                            lFilesCrp={lFilesCrp}
+                        />
+                    </div>
+                )}
                 <div>
                     <DataTable
                         value={lEntries}

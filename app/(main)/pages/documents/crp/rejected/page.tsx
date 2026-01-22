@@ -25,6 +25,8 @@ import { getlUrlFilesDps, getlFilesNames } from "@/app/(main)/utilities/document
 import { downloadFiles } from '@/app/(main)/utilities/documents/common/filesUtils';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { getlFiscalRegime } from '@/app/(main)/utilities/documents/common/fiscalRegimeUtils';
+import { useContext } from 'react';
+import { LayoutContext } from '@/layout/context/layoutcontext';
 
 const ConsultPaymentProgramded = () => {
     const [startDate, setStartDate] = useState<string>('');
@@ -39,6 +41,8 @@ const ConsultPaymentProgramded = () => {
     const [dateFilter, setDateFilter] = useState<any>(null);
     const [lCompaniesFilter, setLCompaniesFilter] = useState<any[]>([]);
     const [lFiscalRegimes, setLFiscalRegimes] = useState<any[]>([]);
+
+    const { dateToWork, setDateToWork } = useContext(LayoutContext);
 
     //constantes para el dialog
     const [visible, setDialogVisible] = useState(false);
@@ -79,7 +83,8 @@ const ConsultPaymentProgramded = () => {
         date: { hidden: false },
         authz_acceptance_name: { hidden: false },
         authz_authorization_name: { hidden: true },
-        delete: { hidden: false }
+        delete: { hidden: false },
+        openCrp: { hidden: false }
     }
 
 //*******FUNCIONES*******
@@ -313,6 +318,38 @@ const ConsultPaymentProgramded = () => {
         setLoadingFileNames(false);
         setLoadingFiles(false);
         setLoadinglPaymentsExec(false);
+    }
+    
+    const openCrp = async (data: any) => {
+        setLoadingFiles(true);
+        setLoadingFileNames(true);
+        setLoadinglPaymentsExec(true);
+        setIsXmlValid(true);
+        configCrpToView(data);
+        setDialogMode('edit');
+        setDialogVisible(true);
+        const oCompany = data.oCompany;
+        const oProvider = data.oProvider;
+        await getlUrlFilesDps({
+            setLFiles,
+            showToast,
+            document_id: data.id
+        });
+        await getPaymentsPlusDoc({
+            setLPaymentsExec,
+            setLPaymentsCrp,
+            partner_id: oProvider.id,
+            company_id: oCompany.id,
+            document_id: data.id
+        })
+        await getlFilesNames({
+            document_id: data.id,
+            setLFilesNames: setLFilesNames,
+            showToast: showToast,
+        });
+        setLoadingFileNames(false);
+        setLoadingFiles(false);
+        setLoadinglPaymentsExec(false);
     };
 
     useEffect(() => {
@@ -417,6 +454,23 @@ const ConsultPaymentProgramded = () => {
         );
     };
 
+    const openBodyTemplate = (rowData: any) => {
+        return (
+            <div className="flex align-items-center justify-content-center">
+                <Button
+                    label={'Abrir'}
+                    icon=""
+                    className="p-button-rounded"
+                    onClick={() => openCrp(rowData)}
+                    tooltip={''}
+                    tooltipOptions={{ position: 'top' }}
+                    size="small"
+                    disabled={loading}
+                />
+            </div>
+        );
+    };
+
 //*******INIT*******
     useEffect(() => {
         const fetch = async () => {
@@ -424,7 +478,7 @@ const ConsultPaymentProgramded = () => {
             const oUser = await getOUser();
             setUserFunctionalAreas(user_functional_areas);
             setOUser(oUser);
-            setDateFilter(new Date);
+            setDateFilter(dateToWork);
         }
         fetch();
     }, [])
@@ -516,6 +570,7 @@ const ConsultPaymentProgramded = () => {
                         setDialogMode={setDialogMode}
                         fileBodyTemplate={fileBodyTemplate}
                         deleteBodyTemplate={deleteBodyTemplate}
+                        openBodyTemplate={openBodyTemplate}
                     />
                 </Card>
             </div>

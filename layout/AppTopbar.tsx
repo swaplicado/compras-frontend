@@ -14,9 +14,11 @@ import loaderScreen from '@/app/components/commons/loaderScreen';
 import Cookies from 'js-cookie';
 import appConfig from '../appConfig.json';
 import { useTranslation } from 'react-i18next';
+import { Calendar } from 'primereact/calendar';
+import { addLocale } from 'primereact/api';
 
 const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
-    const { layoutConfig, layoutState, onMenuToggle, showProfileSidebar } = useContext(LayoutContext);
+    const { layoutConfig, layoutState, onMenuToggle, showProfileSidebar, dateToWork, setDateToWork } = useContext(LayoutContext);
     const menubuttonRef = useRef(null);
     const topbarmenuRef = useRef(null);
     const topbarmenubuttonRef = useRef(null);
@@ -29,6 +31,21 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
     const [ nameUser, setNameUser ] = useState<any>(null);
     const [ roleUser, setRoleUser ] = useState<any>(null);
     const { t } = useTranslation('topBar');
+    const [localeReady, setLocaleReady] = useState(false);
+    
+    useEffect(() => {
+        addLocale('es', {
+            firstDayOfWeek: 1,
+            dayNames: ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'],
+            dayNamesShort: ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'],
+            dayNamesMin: ['D', 'L', 'M', 'X', 'J', 'V', 'S'],
+            monthNames: ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'],
+            monthNamesShort: ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'],
+            today: 'Hoy',
+            clear: 'Limpiar'
+        });
+        setLocaleReady(true);
+    }, []);
     
     // let itemsCompany: MenuItem[] | { label: any; command: () => void; }[] | undefined = [];
     const itemsProfile = [
@@ -177,7 +194,24 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
                 </div>
             </div>
 
-            <div ref={topbarmenuRef} className={classNames('layout-topbar-menu', { 'layout-topbar-menu-mobile-active': layoutState.profileSidebarVisible })}>
+            <div className="layout-topbar-calendar">
+                <div className="flex align-items-center justify-content-center">
+                    Mes de trabajo:
+                </div>
+                {localeReady && (
+                    <Calendar 
+                        value={dateToWork} 
+                        onChange={ (e: any) => setDateToWork(e.value)}
+                        selectionMode={'single'}
+                        view="month" 
+                        dateFormat={ "MM/yy" } 
+                        locale="es"
+                        appendTo="self"
+                    />
+                )}
+            </div>
+
+            <div ref={topbarmenuRef} className={classNames({ 'layout-topbar-menu-mobile-active': layoutState.profileSidebarVisible })}>
                 {/* <Menu model={itemsCompany} popup ref={menuCompany} id="popup_menu_right" popupAlignment="right" />
                 <button type="button" className="p-link layout-topbar-button" onClick={(event) => menuCompany.current?.toggle(event)}>
                     <i className="pi pi-building"></i>

@@ -436,6 +436,13 @@ const Upload = () => {
         setIsEdit(true);
     };
 
+    const openDps = (data: any) => {
+        setSelectedRow(data);
+        setDialogMode('review');
+        setDialogVisible(true);
+        setIsEdit(true);
+    }
+
     useEffect(() => {
         const fetchReferences = async () => {
             setLoading(true);
@@ -563,6 +570,8 @@ const Upload = () => {
                                 hidden: true
                             }
                         }}
+                        openDps={openDps}
+                        showBtnOpenDps={true}
                     />
                 </Card>
             </div>
