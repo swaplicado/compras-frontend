@@ -309,11 +309,11 @@ const invoices = {
         invoiceWithOutOc: "No se seleccionó una OC",
         titleInvoiceWithOutOc: "No seleccionó una orden de compra para esta factura",
         expiredDate: {
-            label: "Fecha de expiración",
-            checkBoxLabel: "Factura con expiración",
+            label: "Fecha vencimiento",
+            checkBoxLabel: "Definir fecha vencimiento",
             placeholder: "Selecciona una fecha",
-            helperText: "Por favor selecciona una fecha de expiración.",
-            tooltip: "Esta es la fecha de expiración de la factura.",
+            helperText: "Por favor selecciona una fecha de vencimiento.",
+            tooltip: "Aplica para facturas de mas de una parcialidad",
         }
     },
     errors: {
