@@ -137,10 +137,10 @@ const ConsultPaymentProgramded = () => {
                 
                 setLFiles(files);
             } else {
-                throw new Error(`Error al obtener los archivos: ${response.statusText}`);
+                throw new Error(`No se encontraron archivos para este documento: ${response.statusText}`);
             }
         } catch (error: any) {
-            showToast?.('error', error.response?.data?.error || 'Error al obtener los archivos', 'Error al obtener los archivos');
+            showToast?.('info', error.response?.data?.error || 'No se encontraron archivos para este documento', 'No se encontraron archivos para este documento');
         } finally {
             setLoadingFiles(false);
         }

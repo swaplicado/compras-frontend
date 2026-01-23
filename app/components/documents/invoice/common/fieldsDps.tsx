@@ -100,6 +100,7 @@ export const FieldsDps = ({
 
         if (oDps?.payment_percentage == 100) {
             setPercentOption(lPercentOptions[0]);
+            setODps((prev: any) => ({ ...prev, due_date: null }))
         } else if (oDps?.payment_percentage == 0 || !(oDps?.payment_percentage > 0)) {
             setPercentOption(lPercentOptions[2]);
             setODps((prev: any) => ({ ...prev, payday: '' }));
@@ -798,7 +799,7 @@ export const FieldsDps = ({
                             </div>
                         </div>
 
-                        { (withEditExpiredDate || oDps?.due_date) && (
+                        { (withEditExpiredDate || oDps?.due_date) && oDps.payment_percentage < 100 && (
                             <div className="field col-12 md:col-6">
                                 <div className="formgrid grid">
                                     { withEditExpiredDate && (

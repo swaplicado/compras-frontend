@@ -35,11 +35,11 @@ export const getlUrlFilesDps = async ({
             });
             setLFiles(lUrls);
         } else {
-            throw new Error(`Error al obtener los archivos: ${response.statusText}`);
+            throw new Error(`No se encontraron archivos para este documento: ${response.statusText}`);
         }
     } catch (error: any) {
         setLFiles([]);
-        showToast?.('error', error.response?.data?.error || 'Error al obtener los archivos', 'Error al obtener los archivos');
+        showToast?.('info', error.response?.data?.error || 'No se encontraron archivos para este documento', 'No se encontraron archivos para este documento');
     }
 };
 
@@ -112,9 +112,9 @@ export const getlFilesNames = async (props: getlFilesNames) => {
             }
             props.setLFilesNames(files);
         } else {
-            throw new Error(`Error al obtener los archivos: ${response.statusText}`);
+            throw new Error(`No se encontraron archivos para este documento: ${response.statusText}`);
         }
     } catch (error: any) {
-        props.showToast?.('error', error.response?.data?.error || 'Error al obtener los archivos');
+        props.showToast?.('info', error.response?.data?.error || 'No se encontraron archivos para este documento');
     }
 };
