@@ -877,7 +877,7 @@ export const InvoiceDialog = ({
                 const serie = splitFolio.length > 1 ? splitFolio[0] : '';
                 const number = splitFolio.length > 1 ? splitFolio.slice(1).join('-') : splitFolio[0];
 
-                const area_id = lRefToValidateXml[0].id == 0 ? oArea?.id : lRefToValidateXml[0].functional_area_id;
+                const area_id = (lRefToValidateXml[0].id == 0 || lRefToValidateXml.length > 1) ? oArea?.id : lRefToValidateXml[0].functional_area_id;
 
                 let document = {
                     transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
@@ -1189,6 +1189,7 @@ export const InvoiceDialog = ({
                     <Button
                         label={'Guardar y revisar'}
                         icon="pi pi-upload"
+                        severity="info"
                         onClick={handleSubmitAndReview}
                         autoFocus
                         disabled={loading || (oProvider ? (oProvider.country == constants.COUNTRIES.MEXICO_ID ? !isXmlValid : false) : true)}
