@@ -6,6 +6,7 @@ import { Divider } from 'primereact/divider';
 import { InputNumber } from 'primereact/inputnumber';
 import { SelectButton } from 'primereact/selectbutton';
 import { InputTextarea } from 'primereact/inputtextarea';
+import constants from '@/app/constants/constants';
 
 interface FieldsDosTextPlaneProps {
     oDps: any;
@@ -96,7 +97,7 @@ export const FieldsDpsTextPlane = ({
                                     id="comments"
                                     rows={3}
                                     cols={30}
-                                    maxLength={500}
+                                    maxLength={constants.MAX_LENGTH_TEXT_AREA}
                                     autoResize
                                     className={`w-full`}
                                     value={value || ''}

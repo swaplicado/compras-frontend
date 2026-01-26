@@ -12,6 +12,7 @@ import { addLocale } from 'primereact/api';
 import { useTranslation } from 'react-i18next';
 import { Checkbox } from "primereact/checkbox";
 import moment from 'moment';
+import constants from '@/app/constants/constants';
 
 interface renderFieldProps {
     label: string;
@@ -191,7 +192,7 @@ export const RenderField = (props: renderFieldProps) => {
                                     id="comments"
                                     rows={props.textAreaRows || 3}
                                     cols={30}
-                                    maxLength={500}
+                                    maxLength={constants.MAX_LENGTH_TEXT_AREA}
                                     className={`w-full ${props.errors[props.errorKey] ? 'p-invalid' : ''}`}
                                     value={props.value || ''}
                                     readOnly={props.readonly}

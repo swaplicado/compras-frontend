@@ -225,7 +225,9 @@ const constants = {
     INVOICE_AUTH_PENDING: 1,
     INVOICE_AUTH_PROCESSING: 2,
     INVOICE_AUTH_REJECTED: 8,
-    INVOICE_AUTH_ACCEPTED: 9
+    INVOICE_AUTH_ACCEPTED: 9,
+
+    MAX_LENGTH_TEXT_AREA: 1000
 }
 
 export default constants;

@@ -718,7 +718,7 @@ export default function UploadDialog({
                 id="comments"
                 rows={3}
                 cols={30}
-                maxLength={500}
+                maxLength={constants.MAX_LENGTH_TEXT_AREA}
                 autoResize
                 className={`w-full ${errors.rejectComments ? 'p-invalid' : ''}`}
                 value={oDps.authz_acceptance_notes}
@@ -1065,7 +1065,7 @@ export default function UploadDialog({
                                                     id="notes"
                                                     rows={3}
                                                     cols={30}
-                                                    maxLength={500}
+                                                    maxLength={constants.MAX_LENGTH_TEXT_AREA}
                                                     autoResize
                                                     className={`w-full`}
                                                     value={oDps.notes}
