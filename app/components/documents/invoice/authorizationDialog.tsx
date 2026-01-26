@@ -289,7 +289,7 @@ export const AuthorizationDialog = ({
                                             id="comments"
                                             rows={3}
                                             cols={30}
-                                            maxLength={500}
+                                            maxLength={constants.MAX_LENGTH_TEXT_AREA}
                                             autoResize
                                             className={`w-full`}
                                             value={ comments }

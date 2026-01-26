@@ -393,7 +393,7 @@ export const InvoiceDialog = ({
                             <Tooltip target=".custom-target-icon" />
                             <i className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge" data-pr-tooltip={props.tooltip} data-pr-position="right" data-pr-my="left center-2" style={{ fontSize: '1rem', cursor: 'pointer' }}></i>
                             <div>
-                                <InputTextarea id="comments" rows={2} cols={30} maxLength={500} className={`w-full opacity-60`} value={props.value || ''} readOnly />
+                                <InputTextarea id="comments" rows={2} cols={30} maxLength={constants.MAX_LENGTH_TEXT_AREA} className={`w-full opacity-60`} value={props.value || ''} readOnly />
                             </div>
                         </div>
                     </div>
@@ -1956,7 +1956,7 @@ export const InvoiceDialog = ({
                                                     id="comments"
                                                     rows={3}
                                                     cols={30}
-                                                    maxLength={500}
+                                                    maxLength={constants.MAX_LENGTH_TEXT_AREA}
                                                     disabled={true}
                                                     className={`w-full`}
                                                     value={oDps?.authz_authorization_notes}
@@ -1987,7 +1987,7 @@ export const InvoiceDialog = ({
                                                         id="comments"
                                                         rows={3}
                                                         cols={30}
-                                                        maxLength={500}
+                                                        maxLength={constants.MAX_LENGTH_TEXT_AREA}
                                                         disabled={oDps?.authz_authorization_code != 'PR' || !isReviewAuth}
                                                         className={`w-full ${authErrors.auth_notes ? 'p-invalid' : ''} `}
                                                         value={oDps?.auth_notes}
@@ -2023,7 +2023,7 @@ export const InvoiceDialog = ({
                                                 id="comments"
                                                 rows={3}
                                                 cols={30}
-                                                maxLength={500}
+                                                maxLength={constants.MAX_LENGTH_TEXT_AREA}
                                                 disabled={false}
                                                 className={`w-full ${authErrors.auth_notes ? 'p-invalid' : ''} `}
                                                 value={oDps?.auth_notes}
