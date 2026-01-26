@@ -712,7 +712,7 @@ export const InvoiceDialog = ({
             const serie = splitFolio.length > 1 ? splitFolio[0] : '';
             const number = splitFolio.length > 1 ? splitFolio.slice(1).join('-') : splitFolio[0];
 
-            const area_id = lRefToValidateXml[0].id == 0 ? oArea?.id : lRefToValidateXml[0].functional_area_id;
+            const area_id = (lRefToValidateXml[0].id == 0 || lRefToValidateXml.length > 1) ? oArea?.id : lRefToValidateXml[0].functional_area_id;
 
             let document = {
                 transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
@@ -1682,7 +1682,7 @@ export const InvoiceDialog = ({
                                       </ul>
                                   )}
 
-                            {(oReference ? oReference[0]?.id == '0' || (dialogMode == 'review' && oDps?.reference == '') : false) &&
+                            {(oReference ? (oReference[0]?.id == '0' || oReference.length > 1) || (dialogMode == 'review' && oDps?.reference == '') : false) &&
                                 renderField({
                                     label: t('uploadDialog.areas.label'),
                                     tooltip: t('uploadDialog.areas.tooltip'),
