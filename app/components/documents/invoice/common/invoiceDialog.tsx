@@ -413,7 +413,7 @@ export const InvoiceDialog = ({
             includePdf: fileUploadRef.current?.getFiles().length || 0 > 0 ? !fileUploadRef.current?.getFiles().some((file: { type: string }) => file.type === 'application/pdf') : false,
             includeXml: false,
             xmlValidateFile: xmlUploadRef.current?.getFiles().length === 0,
-            folio: oDps.folio?.trim() == '',
+            folio: false,
         };
         setFormErrors(newFormErrors);
 
@@ -435,7 +435,7 @@ export const InvoiceDialog = ({
             setDpsErrors(newDpsErros);
         } else {
             const newDpsErros = {
-                folio: oDps.folio?.trim() == '',
+                folio: false,
                 date: false,
                 payment_method: false,
                 provider_rfc: false,
@@ -1884,8 +1884,8 @@ export const InvoiceDialog = ({
                                 lPaymentMethod={lPaymentMethod}
                                 lCurrency={lCurrencies}
                                 footerMode={footerMode}
-                                errors={dialogMode == 'create' ? formErrors : reviewErrors}
-                                setErrors={dialogMode == 'create' ? setFormErrors : setReviewErrors}
+                                errors={dialogMode == 'create' ? dpsErrors : reviewErrors}
+                                setErrors={dialogMode == 'create' ? setDpsErrors : setReviewErrors}
                                 lDaysToPay={lDaysToPay}
                                 loadingPartnerPaymentDay={loadingPartnerPaymentDay}
                                 partnerPaymentDay={partnerPaymentDay}
