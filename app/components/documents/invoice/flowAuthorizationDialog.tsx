@@ -109,11 +109,32 @@ export const FlowAuthorizationDialog = ({
             if (withAcceptance) {
                 await handleAcceptance?.();
             }
-            
-            const route = constants.ROUTE_POST_START_AUTHORIZATION;
-            const response = await axios.post(constants.API_AXIOS_POST, {
-                route,
-                jsonData: {
+
+            let jdata;
+            if (resource_type == constants.RESOURCE_TYPE_PUR_INVOICE) {
+                jdata = {
+                    id_external_system: 1,
+                    id_company: oDps.company_external_id, //company id del dps id_company
+                    id_flow_model: flowAuth?.id || '',
+                    resource: {
+                        code: oDps.folio ? oDps.folio : oDps.hiddenFolio , //folio
+                        name: oDps.provider_name ? oDps.provider_name : oDps.partner_full_name, //proveedor
+                        content: {},
+                        external_id: oDps.id_dps ? oDps.id_dps : oDps.id,
+                        resource_type: resource_type
+                    },
+                    deadline: null,
+                    sent_by: userExternalId, //external user id
+                    id_actor_type: 2,
+                    stakeholders: [{
+                        external_user_id: userExternalId,
+                        id_actor_type: 2
+                    }],
+                    notes: comments,
+                    generate_content: true
+                }
+            } else {
+                jdata = {
                     id_external_system: 1,
                     id_company: oDps.company_external_id, //company id del dps id_company
                     id_flow_model: flowAuth?.id || '',
@@ -133,6 +154,12 @@ export const FlowAuthorizationDialog = ({
                     }],
                     notes: comments
                 }
+            }
+            
+            const route = constants.ROUTE_POST_START_AUTHORIZATION;
+            const response = await axios.post(constants.API_AXIOS_POST, {
+                route,
+                jsonData: jdata
             });
 
             if (response.status == 200) {
