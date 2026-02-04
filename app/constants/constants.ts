@@ -59,6 +59,8 @@ const constants = {
     ROUTE_GET_CRP_PENDING_BY_PARTNER: '/transactions/partners/can-upload-for-payment/',
     ROUTE_GET_LAST_DAY_PAYMENT: '/transactions/last-day-payment',
     ROUTE_GET_INFO_DOC: '/transactions/documents/get-info-doc/',
+    ROUTE_GET_ACCOUNT_STATE_PDF: '/transactions/partners/get_account_state_pdf',
+    ROUTE_GET_ACCOUNT_STATE_INSTRUCTIONS: '/transactions/partners/get_account_state_instructions',
 
     ROUTE_COMPARE_FILES: '/pages/compareFiles/',
 
@@ -227,7 +229,17 @@ const constants = {
     INVOICE_AUTH_REJECTED: 8,
     INVOICE_AUTH_ACCEPTED: 9,
 
-    MAX_LENGTH_TEXT_AREA: 1000
+    MAX_LENGTH_TEXT_AREA: 1000,
+
+    AETH: 'erp_aeth',
+    AMESA: 'erp_amesa',
+    OPE: 'erp_otsa',
+    SWAP: 'erp_sasa',
+
+    AETH_ID: 2852,
+    AMESA_ID: 2217,
+    OPE_ID: 1211,
+    SWAP_ID: 1603
 }
 
 export default constants;

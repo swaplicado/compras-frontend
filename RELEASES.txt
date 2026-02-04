@@ -1,0 +1,42 @@
+========================================
+RELEASE
+Fecha: DD-MM-YYYY
+Autor: Nombre o equipo
+========================================
+
+Resumen:
+- Descripción breve del release.
+
+Cambios:
+- Cambio 1
+- Cambio 2
+
+Nuevas funcionalidades:
+- Feature nueva A
+- Feature nueva B
+
+Correcciones:
+- Bug corregido X
+- Bug corregido Y
+
+Notas:
+- Cualquier cosa importante a considerar
+
+----------------------------------------
+
+========================================
+RELEASE
+Fecha: 04-02-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- Funcionalidad para consultar el PDF del estado de cuenta de un proveedor
+
+Cambios:
+- Se ordenó alfabeticamente la lista de empresas
+
+Nuevas funcionalidades:
+- Funcionalidad para consultar el PDF del estado de cuenta de un proveedor
+
+----------------------------------------
