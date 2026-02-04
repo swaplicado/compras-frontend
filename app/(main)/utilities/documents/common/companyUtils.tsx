@@ -45,6 +45,8 @@ export const getlCompanies = async ({
                     name: item.full_name
                 });
             }
+            //ordenar por name
+            lCompanies.sort((a, b) => a.name.localeCompare(b.name));
             setLCompanies?.(lCompanies);
             setLCompaniesFilter?.(lCompaniesFilter);
             return true;

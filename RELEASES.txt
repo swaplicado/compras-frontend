@@ -19,11 +19,24 @@ Correcciones:
 - Bug corregido X
 - Bug corregido Y
 
-Migraciones:
-- Sí / No
-- Detalle si aplica
-
 Notas:
 - Cualquier cosa importante a considerar
+
+----------------------------------------
+
+========================================
+RELEASE
+Fecha: 04-02-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- Funcionalidad para consultar el PDF del estado de cuenta de un proveedor
+
+Cambios:
+- Se ordenó alfabeticamente la lista de empresas
+
+Nuevas funcionalidades:
+- Funcionalidad para consultar el PDF del estado de cuenta de un proveedor
 
 ----------------------------------------
