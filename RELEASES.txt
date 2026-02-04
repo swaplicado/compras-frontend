@@ -1,0 +1,29 @@
+========================================
+RELEASE
+Fecha: DD-MM-YYYY
+Autor: Nombre o equipo
+========================================
+
+Resumen:
+- Descripción breve del release.
+
+Cambios:
+- Cambio 1
+- Cambio 2
+
+Nuevas funcionalidades:
+- Feature nueva A
+- Feature nueva B
+
+Correcciones:
+- Bug corregido X
+- Bug corregido Y
+
+Migraciones:
+- Sí / No
+- Detalle si aplica
+
+Notas:
+- Cualquier cosa importante a considerar
+
+----------------------------------------
