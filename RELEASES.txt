@@ -40,3 +40,20 @@ Nuevas funcionalidades:
 - Funcionalidad para consultar el PDF del estado de cuenta de un proveedor
 
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 05-02-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- Seleccion automatica de metodo de pago al cargar factura
+
+Cambios:
+- Se selecciona automaticamente el metodo de pago al cargar una factura a los proveedores extrangeros
+
+Nuevas funcionalidades:
+- Funcionalidad para seleccionar automaticamente el metodo de pago de acuerdo al metodo que venga en la referencia al cargar una factura
+
+----------------------------------------

@@ -470,13 +470,19 @@ export const FieldsDps = ({
                         label: t('uploadDialog.payment_method.label'),
                         tooltip: t('uploadDialog.payment_method.tooltipReview'),
                         value: mode == 'view' ? oDps?.payment_method : oDps?.oPaymentMethod,
-                        disabled: mode == 'view',
+                        disabled: true,
                         mdCol: 5,
                         type: mode == 'view' ? 'text' : 'dropdown',
                         placeholder: '',
                         errorKey: '',
                         lOptions: lPaymentMethod,
-                        onChange: (value) => setODps((prev: any) => ({ ...prev, payment_method: value.name, oPaymentMethod: value }))
+                        onChange: (value) => {
+                            if (value) {
+                                setODps((prev: any) => ({ ...prev, payment_method: value.name, oPaymentMethod: value }))
+                            } else {
+                                setODps((prev: any) => ({ ...prev, payment_method: null, oPaymentMethod: null }))
+                            }
+                        }
                     })}
                     {renderField({
                         label: 'Forma pago',
