@@ -67,7 +67,7 @@ export const getOc = async (props: getOcProps) => {
                     authz_authorization_id: data[i].authz_authorization_id,
                     authz_authorization_code: data[i].authz_authorization_code,
                     authz_authorization_name: data[i].authz_authorization_name?.toLowerCase(),
-                    authz_authorization_notes: data[i].authz_authorization_notes,
+                    authz_authorization_notes: '',
                     payment_date: data[i].payment_date,
                     payment_percentage: data[i].payment_percentage,
                     notes: data[i].notes,

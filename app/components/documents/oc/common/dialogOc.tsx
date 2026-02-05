@@ -293,7 +293,7 @@ export const DialogOc = ({
                                         label={t('dialog.fields.notes_start_auth.label')}
                                         tooltip={t('dialog.fields.notes_start_auth.tooltip')}
                                         value={oOc?.jsonOc?.oDpsHeader.notesAuth}
-                                        disabled={dialogMode == 'view' || dialogMode == 'edit'}
+                                        readonly={true}
                                         mdCol={12}
                                         type={'textArea'}
                                         onChange={(value) => {
@@ -458,7 +458,7 @@ export const DialogOc = ({
                                     disabled={!editableBodyFields}
                                     mdCol={4}
                                     type={'number'}
-                                    suffix={' ' + oOc?.jsonOc?.oDpsHeader.currency}
+                                    suffix={' ' + (oOc?.jsonOc?.oDpsHeader?.currency ? oOc?.jsonOc?.oDpsHeader?.currency : '')}
                                     onChange={(value) => {
                                         setOOc?.((prev: any) => ({ ...prev, subtotalOc: value }));
                                         setFormErrors?.((prev: any) => ({ ...prev, subtotalOc: false }));
@@ -476,7 +476,7 @@ export const DialogOc = ({
                                     disabled={!editableBodyFields}
                                     mdCol={4}
                                     type={'number'}
-                                    suffix={' ' + oOc?.jsonOc?.oDpsHeader.currency}
+                                    suffix={' ' + (oOc?.jsonOc?.oDpsHeader?.currency ? oOc?.jsonOc?.oDpsHeader?.currency : '')}
                                     onChange={(value) => {
                                         setOOc?.((prev: any) => ({ ...prev, totalOc: value }));
                                         setFormErrors?.((prev: any) => ({ ...prev, totalOc: false }));
@@ -492,7 +492,7 @@ export const DialogOc = ({
                                     label={t('dialog.fields.notesOc.label')}
                                     tooltip={t('dialog.fields.notesOc.tooltip')}
                                     value={getDpsNotes()}
-                                    disabled={!editableBodyFields}
+                                    readonly={true}
                                     mdCol={12}
                                     type={'textArea'}
                                     onChange={(value) => {

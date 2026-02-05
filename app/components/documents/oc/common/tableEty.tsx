@@ -107,7 +107,7 @@ export const TableEty = ({ lEtys }: tableEtyProps) => {
                         <tr>
                             <td className="font-bold">Precio un. anterior</td>
                             <td>
-                                { oItemH?.priceUnitary && oItemH?.currencySymbol (
+                                { oItemH?.priceUnitary && oItemH?.currencySymbol && (
                                     FormateadorMonetario(oItemH?.priceUnitary) + ' ' + oItemH?.currencySymbol 
                                 )}
                             </td>

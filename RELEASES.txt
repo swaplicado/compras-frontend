@@ -57,3 +57,17 @@ Nuevas funcionalidades:
 - Funcionalidad para seleccionar automaticamente el metodo de pago de acuerdo al metodo que venga en la referencia al cargar una factura
 
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 05-02-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- Pantalla Todas las oc
+
+Cambios:
+- Se agrego la pantalla para ver todas las oc
+
+----------------------------------------
