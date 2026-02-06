@@ -62,6 +62,102 @@
                     ]
                 },
                 {
+                    "label": "Notas de crédito",
+                    "icon": "",
+                    "items": [
+                        {
+                            "label": "Entrega de NC",
+                            "icon": "",
+                            "items": [
+                                {
+                                    "label": "Cargar",
+                                    "icon": "pi pi-upload",
+                                    "to": "/pages/documents/nc/upload"
+                                },
+                                {
+                                    "label": "Revisadas",
+                                    "icon": "pi pi-check-square",
+                                    "to": "/pages/documents/nc/accepted"
+                                },
+                                {
+                                    "label": "Rechazadas",
+                                    "icon": "pi pi-times-circle",
+                                    "to": "/pages/documents/nc/rejected"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "Monitorear autorizaciones",
+                            "icon": "",
+                            "items": [
+                                {
+                                    "label": "En autorización",
+                                    "icon": "pi pi-clock",
+                                    "to": "/pages/documents/nc/authorizations/consultationAuth/inProcess"
+                                },
+                                {
+                                    "label": "Autorizadas",
+                                    "icon": "pi pi-check-circle",
+                                    "to": "/pages/documents/nc/authorizations/consultationAuth/authorized"
+                                },
+                                {
+                                    "label": "Rechazadas",
+                                    "icon": "pi pi-times-circle",
+                                    "to": "/pages/documents/nc/authorizations/consultationAuth/rejected"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "label": "Proformas",
+                    "icon": "",
+                    "items": [
+                        {
+                            "label": "Recepción de proformas",
+                            "icon": "",
+                            "items": [
+                                {
+                                    "label": "Cargar",
+                                    "icon": "pi pi-upload",
+                                    "to": "/pages/documents/prePayments/upload"
+                                },
+                                {
+                                    "label": "Revisadas",
+                                    "icon": "pi pi-check-square",
+                                    "to": "/pages/documents/prePayments/accepted"
+                                },
+                                {
+                                    "label": "Rechazadas",
+                                    "icon": "pi pi-times-circle",
+                                    "to": "/pages/documents/prePayments/rejected"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "Monitorear autorizaciones",
+                            "icon": "",
+                            "items": [
+                                {
+                                    "label": "En autorización",
+                                    "icon": "pi pi-clock",
+                                    "to": "/pages/documents/prePayments/authorizations/consultAuth/inAuthorization"
+                                },
+                                {
+                                    "label": "Autorizadas",
+                                    "icon": "pi pi-check-circle",
+                                    "to": "/pages/documents/prePayments/authorizations/consultAuth/authorized"
+                                },
+                                {
+                                    "label": "Rechazadas",
+                                    "icon": "pi pi-times-circle",
+                                    "to": "/pages/documents/prePayments/authorizations/consultAuth/rejected"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
                     "label": "Pagos",
                     "icon": "",
                     "items": [
@@ -126,55 +222,7 @@
                     ]
                 },
                 {
-                    "label": "Notas de crédito",
-                    "icon": "",
-                    "items": [
-                        {
-                            "label": "Entrega de NC",
-                            "icon": "",
-                            "items": [
-                                {
-                                    "label": "Cargar",
-                                    "icon": "pi pi-upload",
-                                    "to": "/pages/documents/nc/upload"
-                                },
-                                {
-                                    "label": "Revisadas",
-                                    "icon": "pi pi-check-square",
-                                    "to": "/pages/documents/nc/accepted"
-                                },
-                                {
-                                    "label": "Rechazadas",
-                                    "icon": "pi pi-times-circle",
-                                    "to": "/pages/documents/nc/rejected"
-                                }
-                            ]
-                        },
-                        {
-                            "label": "Monitorear autorizaciones",
-                            "icon": "",
-                            "items": [
-                                {
-                                    "label": "En autorización",
-                                    "icon": "pi pi-clock",
-                                    "to": "/pages/documents/nc/authorizations/consultationAuth/inProcess"
-                                },
-                                {
-                                    "label": "Autorizadas",
-                                    "icon": "pi pi-check-circle",
-                                    "to": "/pages/documents/nc/authorizations/consultationAuth/authorized"
-                                },
-                                {
-                                    "label": "Rechazadas",
-                                    "icon": "pi pi-times-circle",
-                                    "to": "/pages/documents/nc/authorizations/consultationAuth/rejected"
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "label": "Consultas",
+                    "label": "Estado de cuenta",
                     "icon": "",
                     "items": [
                         {
@@ -188,55 +236,7 @@
                             "to": "/pages/partners/accountStatePdf"
                         }
                     ]
-                },
-                {
-                    "label": "Proformas",
-                    "icon": "",
-                    "items": [
-                        {
-                            "label": "Recepción de proformas",
-                            "icon": "",
-                            "items": [
-                                {
-                                    "label": "Cargar",
-                                    "icon": "pi pi-upload",
-                                    "to": "/pages/documents/prePayments/upload"
-                                },
-                                {
-                                    "label": "Revisadas",
-                                    "icon": "pi pi-check-square",
-                                    "to": "/pages/documents/prePayments/accepted"
-                                },
-                                {
-                                    "label": "Rechazadas",
-                                    "icon": "pi pi-times-circle",
-                                    "to": "/pages/documents/prePayments/rejected"
-                                }
-                            ]
-                        },
-                        {
-                            "label": "Monitorear autorizaciones",
-                            "icon": "",
-                            "items": [
-                                {
-                                    "label": "En autorización",
-                                    "icon": "pi pi-clock",
-                                    "to": "/pages/documents/prePayments/authorizations/consultAuth/inAuthorization"
-                                },
-                                {
-                                    "label": "Autorizadas",
-                                    "icon": "pi pi-check-circle",
-                                    "to": "/pages/documents/prePayments/authorizations/consultAuth/authorized"
-                                },
-                                {
-                                    "label": "Rechazadas",
-                                    "icon": "pi pi-times-circle",
-                                    "to": "/pages/documents/prePayments/authorizations/consultAuth/rejected"
-                                }
-                            ]
-                        }
-                    ]
-                }
+                }   
             ]
         }
     ]

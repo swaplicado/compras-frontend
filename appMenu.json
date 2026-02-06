@@ -14,6 +14,49 @@
             "label": "Documentos",
             "items": [
                 {
+                    "label": "Órdenes de compra",
+                    "icon": "",
+                    "items": [
+                        {
+                            "label": "Todas las OC",
+                            "icon": "bx bx-list-ul bx-sm",
+                            "to": "/pages/documents/oc/allOc"
+                        },
+                        {
+                            "label": "Monitorear autorizaciones",
+                            "icon": "",
+                            "items": [
+                                {
+                                    "label": "En autorización",
+                                    "icon": "pi pi-clock",
+                                    "to": "/pages/documents/oc/authorizations/consultationAuth/inProcess"
+                                },
+                                {
+                                    "label": "Autorizadas",
+                                    "icon": "pi pi-check-circle",
+                                    "to": "/pages/documents/oc/authorizations/consultationAuth/authorized"
+                                },
+                                {
+                                    "label": "Rechazadas",
+                                    "icon": "pi pi-times-circle",
+                                    "to": "/pages/documents/oc/authorizations/consultationAuth/rejected"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "Autorizar OC",
+                            "icon": "",
+                            "items": [
+                                {
+                                    "label": "Pendientes para mí",
+                                    "icon": "pi pi-exclamation-circle",
+                                    "to": "/pages/documents/oc/authorizations/authOc"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
                     "label": "Facturas",
                     "icon": "",
                     "items": [
@@ -82,6 +125,134 @@
                                     "label": "En las que participo",
                                     "icon": "pi pi-list",
                                     "to": "/pages/documents/invoices/authorizations/myFlowAuthorizations/inFlowAuthorization"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "label": "Notas de crédito",
+                    "icon": "",
+                    "items": [
+                        {
+                            "label": "Todas las NC",
+                            "icon": "bx bx-list-ul bx-sm",
+                            "to": "/pages/documents/nc/allNc"
+                        },
+                        {
+                            "label": "Recepción de NC",
+                            "icon": "",
+                            "items": [
+                                {
+                                    "label": "Cargar y revisar",
+                                    "icon": "pi pi-upload",
+                                    "to": "/pages/documents/nc/upload"
+                                },
+                                {
+                                    "label": "Revisadas",
+                                    "icon": "pi pi-check-square",
+                                    "to": "/pages/documents/nc/accepted"
+                                },
+                                {
+                                    "label": "Rechazadas",
+                                    "icon": "pi pi-times-circle",
+                                    "to": "/pages/documents/nc/rejected"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "Monitorear autorizaciones",
+                            "icon": "",
+                            "items": [
+                                {
+                                    "label": "En autorización",
+                                    "icon": "pi pi-clock",
+                                    "to": "/pages/documents/nc/authorizations/consultationAuth/inProcess"
+                                },
+                                {
+                                    "label": "Autorizadas",
+                                    "icon": "pi pi-check-circle",
+                                    "to": "/pages/documents/nc/authorizations/consultationAuth/authorized"
+                                },
+                                {
+                                    "label": "Rechazadas",
+                                    "icon": "pi pi-times-circle",
+                                    "to": "/pages/documents/nc/authorizations/consultationAuth/rejected"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "Autorizar NC",
+                            "icon": "",
+                            "items": [
+                                {
+                                    "label": "Pendientes para mí",
+                                    "icon": "pi pi-exclamation-circle",
+                                    "to": "/pages/documents/nc/authorizations/authNc"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "label": "Proformas",
+                    "icon": "",
+                    "items": [
+                        {
+                            "label": "Todas las proformas",
+                            "icon": "bx bx-list-ul bx-sm",
+                            "to": "/pages/documents/prePayments/allPrePayments"
+                        },
+                        {
+                            "label": "Recepción de proformas",
+                            "icon": "",
+                            "items": [
+                                {
+                                    "label": "Cargar y revisar",
+                                    "icon": "pi pi-upload",
+                                    "to": "/pages/documents/prePayments/upload"
+                                },
+                                {
+                                    "label": "Revisadas",
+                                    "icon": "pi pi-check-square",
+                                    "to": "/pages/documents/prePayments/accepted"
+                                },
+                                {
+                                    "label": "Rechazadas",
+                                    "icon": "pi pi-times-circle",
+                                    "to": "/pages/documents/prePayments/rejected"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "Monitorear autorizaciones",
+                            "icon": "",
+                            "items": [
+                                {
+                                    "label": "En autorización",
+                                    "icon": "pi pi-clock",
+                                    "to": "/pages/documents/prePayments/authorizations/consultAuth/inAuthorization"
+                                },
+                                {
+                                    "label": "Autorizadas",
+                                    "icon": "pi pi-check-circle",
+                                    "to": "/pages/documents/prePayments/authorizations/consultAuth/authorized"
+                                },
+                                {
+                                    "label": "Rechazadas",
+                                    "icon": "pi pi-times-circle",
+                                    "to": "/pages/documents/prePayments/authorizations/consultAuth/rejected"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "Autorizar proformas",
+                            "icon": "",
+                            "items": [
+                                {
+                                    "label": "Pendientes para mí",
+                                    "icon": "pi pi-exclamation-circle",
+                                    "to": "/pages/documents/prePayments/authorizations/myAuth/inAuthorization"
                                 }
                             ]
                         }
@@ -177,177 +348,6 @@
                                     "label": "Pendientes para mí",
                                     "icon": "pi pi-exclamation-circle",
                                     "to": "/pages/documents/crp/authorizations/authCrp"
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "label": "Notas de crédito",
-                    "icon": "",
-                    "items": [
-                        {
-                            "label": "Todas las NC",
-                            "icon": "bx bx-list-ul bx-sm",
-                            "to": "/pages/documents/nc/allNc"
-                        },
-                        {
-                            "label": "Recepción de NC",
-                            "icon": "",
-                            "items": [
-                                {
-                                    "label": "Cargar y revisar",
-                                    "icon": "pi pi-upload",
-                                    "to": "/pages/documents/nc/upload"
-                                },
-                                {
-                                    "label": "Revisadas",
-                                    "icon": "pi pi-check-square",
-                                    "to": "/pages/documents/nc/accepted"
-                                },
-                                {
-                                    "label": "Rechazadas",
-                                    "icon": "pi pi-times-circle",
-                                    "to": "/pages/documents/nc/rejected"
-                                }
-                            ]
-                        },
-                        {
-                            "label": "Monitorear autorizaciones",
-                            "icon": "",
-                            "items": [
-                                {
-                                    "label": "En autorización",
-                                    "icon": "pi pi-clock",
-                                    "to": "/pages/documents/nc/authorizations/consultationAuth/inProcess"
-                                },
-                                {
-                                    "label": "Autorizadas",
-                                    "icon": "pi pi-check-circle",
-                                    "to": "/pages/documents/nc/authorizations/consultationAuth/authorized"
-                                },
-                                {
-                                    "label": "Rechazadas",
-                                    "icon": "pi pi-times-circle",
-                                    "to": "/pages/documents/nc/authorizations/consultationAuth/rejected"
-                                }
-                            ]
-                        },
-                        {
-                            "label": "Autorizar NC",
-                            "icon": "",
-                            "items": [
-                                {
-                                    "label": "Pendientes para mí",
-                                    "icon": "pi pi-exclamation-circle",
-                                    "to": "/pages/documents/nc/authorizations/authNc"
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "label": "Órdenes de compra",
-                    "icon": "",
-                    "items": [
-                        {
-                            "label": "Todas las OC",
-                            "icon": "bx bx-list-ul bx-sm",
-                            "to": "/pages/documents/oc/allOc"
-                        },
-                        {
-                            "label": "Monitorear autorizaciones",
-                            "icon": "",
-                            "items": [
-                                {
-                                    "label": "En autorización",
-                                    "icon": "pi pi-clock",
-                                    "to": "/pages/documents/oc/authorizations/consultationAuth/inProcess"
-                                },
-                                {
-                                    "label": "Autorizadas",
-                                    "icon": "pi pi-check-circle",
-                                    "to": "/pages/documents/oc/authorizations/consultationAuth/authorized"
-                                },
-                                {
-                                    "label": "Rechazadas",
-                                    "icon": "pi pi-times-circle",
-                                    "to": "/pages/documents/oc/authorizations/consultationAuth/rejected"
-                                }
-                            ]
-                        },
-                        {
-                            "label": "Autorizar OC",
-                            "icon": "",
-                            "items": [
-                                {
-                                    "label": "Pendientes para mí",
-                                    "icon": "pi pi-exclamation-circle",
-                                    "to": "/pages/documents/oc/authorizations/authOc"
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "label": "Proformas",
-                    "icon": "",
-                    "items": [
-                        {
-                            "label": "Todas las proformas",
-                            "icon": "bx bx-list-ul bx-sm",
-                            "to": "/pages/documents/prePayments/allPrePayments"
-                        },
-                        {
-                            "label": "Recepción de proformas",
-                            "icon": "",
-                            "items": [
-                                {
-                                    "label": "Cargar y revisar",
-                                    "icon": "pi pi-upload",
-                                    "to": "/pages/documents/prePayments/upload"
-                                },
-                                {
-                                    "label": "Revisadas",
-                                    "icon": "pi pi-check-square",
-                                    "to": "/pages/documents/prePayments/accepted"
-                                },
-                                {
-                                    "label": "Rechazadas",
-                                    "icon": "pi pi-times-circle",
-                                    "to": "/pages/documents/prePayments/rejected"
-                                }
-                            ]
-                        },
-                        {
-                            "label": "Monitorear autorizaciones",
-                            "icon": "",
-                            "items": [
-                                {
-                                    "label": "En autorización",
-                                    "icon": "pi pi-clock",
-                                    "to": "/pages/documents/prePayments/authorizations/consultAuth/inAuthorization"
-                                },
-                                {
-                                    "label": "Autorizadas",
-                                    "icon": "pi pi-check-circle",
-                                    "to": "/pages/documents/prePayments/authorizations/consultAuth/authorized"
-                                },
-                                {
-                                    "label": "Rechazadas",
-                                    "icon": "pi pi-times-circle",
-                                    "to": "/pages/documents/prePayments/authorizations/consultAuth/rejected"
-                                }
-                            ]
-                        },
-                        {
-                            "label": "Autorizar proformas",
-                            "icon": "",
-                            "items": [
-                                {
-                                    "label": "Pendientes para mí",
-                                    "icon": "pi pi-exclamation-circle",
-                                    "to": "/pages/documents/prePayments/authorizations/myAuth/inAuthorization"
                                 }
                             ]
                         }
