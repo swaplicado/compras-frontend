@@ -1564,6 +1564,23 @@ export const InvoiceDialog = ({
         fetchReferences();
     }, [filterReferences]);
 
+    useEffect(() => {
+        if (oProvider && oProvider.country != constants.COUNTRIES.MEXICO_ID) {
+            if (oReference && oReference[0]?.payment_method) {
+                const oPaymentMethod = findPaymentMethod(lPaymentMethod, oReference?.[0]?.payment_method);
+                setODps((prev: any) => ({
+                    ...prev,
+                    oPaymentMethod: oPaymentMethod,
+                }));
+            } else {
+                setODps((prev: any) => ({
+                    ...prev,
+                    oPaymentMethod: null
+                }));
+            }
+        }
+    }, [oReference])
+
     return (
         <div className="flex justify-content-center">
             <Dialog

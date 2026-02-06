@@ -1,4 +1,6 @@
 const oc = {
+    titleAllOc: "Todas las OC",
+    titleAllOcTooltip: "Todas las ordenes de compra",
     titleAuthOc: "Autorizaciones de OC pendientes para mí",
     titleAuthorizedOc: "OC autorizadas",
     titleAuthorizedOcTooltip: "Ordenes de compra autorizadas",

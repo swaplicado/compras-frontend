@@ -219,7 +219,8 @@ const Upload = () => {
                         functional_area_id: item.functional_area_id,
                         amount: item.amount,
                         concepts: item.concepts,
-                        cost_profit_center: item.cost_profit_center
+                        cost_profit_center: item.cost_profit_center,
+                        payment_method: item.payment_method
                     });
                 }
 

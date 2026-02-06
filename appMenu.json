@@ -251,6 +251,11 @@
                     "icon": "",
                     "items": [
                         {
+                            "label": "Todas las OC",
+                            "icon": "bx bx-list-ul bx-sm",
+                            "to": "/pages/documents/oc/allOc"
+                        },
+                        {
                             "label": "Monitorear autorizaciones",
                             "icon": "",
                             "items": [
