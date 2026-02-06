@@ -71,3 +71,17 @@ Cambios:
 - Se agrego la pantalla para ver todas las oc
 
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 06-02-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- Orden de menu
+
+Cambios:
+- Se cambio el orden del menu lateral al orden del proceso de compras
+
+----------------------------------------
