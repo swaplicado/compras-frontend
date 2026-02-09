@@ -189,7 +189,7 @@ const invoices = {
         },
         currency: {
             label: "Moneda: *",
-            placeholder: "ingresa moneda",
+            placeholder: "Selecciona moneda",
             helperText: "Por favor ingresa la moneda.",
             tooltip: "Ingresa la moneda de la factura.",
             tooltipReview: "Esta es la moneda de la factura.",
@@ -202,11 +202,11 @@ const invoices = {
             tooltipReview: "Este es el tipo de cambio de la factura.",
         },
         amount: {
-            label: "Monto: *",
-            placeholder: "ingresa monto",
-            helperText: "Por favor ingresa el monto.",
-            tooltip: "Ingresa el monto de la factura.",
-            tooltipReview: "Este es el monto de la factura.",
+            label: "Total: *",
+            placeholder: "ingresa total",
+            helperText: "Por favor ingresa el monto total.",
+            tooltip: "Ingresa el monto total de la factura.",
+            tooltipReview: "Este es el monto total de la factura.",
         },
         payDay: {
             label: "Fecha de pago:",

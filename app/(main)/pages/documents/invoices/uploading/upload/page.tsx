@@ -259,6 +259,7 @@ const Upload = () => {
                     });
                 }
 
+                lProviders.sort((a, b) => a.name.localeCompare(b.name));
                 setLProviders(lProviders);
                 return true;
             } else {
@@ -304,6 +305,8 @@ const Upload = () => {
                         name: item.full_name
                     });
                 }
+                
+                lCompanies.sort((a, b) => a.name.localeCompare(b.name));
                 setLCompanies(lCompanies);
                 setLCompaniesFilter(lCompaniesFilter);
                 return true;
@@ -445,14 +448,17 @@ const Upload = () => {
 
             if (response.status === 200) {
                 const data = response.data.data || [];
+                const functionalAreasArray = Array.isArray(functionalAreas) ? functionalAreas : [functionalAreas];
                 let lAreas: any[] = [];
                 for (const item of data) {
-                    lAreas.push({
-                        id: item.id,
-                        name: item.name
-                    });
+                    if (functionalAreasArray.includes(item.id)) {
+                        lAreas.push({
+                            id: item.id,
+                            name: item.name
+                        });
+                    }
                 }
-
+                lAreas.sort((a, b) => a.name.localeCompare(b.name));
                 setLAreas(lAreas);
             } else {
                 throw new Error(`${t('errors.getAreasError')}: ${response.statusText}`);

@@ -33,7 +33,8 @@ interface FieldsDpsProps {
     partnerPaymentDay?: any;
     withEditPaymentDay?: boolean;
     lastPayDayOfYear?: any[];
-    withEditExpiredDate?: boolean
+    withEditExpiredDate?: boolean;
+    isLocalPartner?: boolean;
 }
 
 interface renderFieldProps {
@@ -52,6 +53,7 @@ interface renderFieldProps {
     lOptions?: any[];
     labelClass?: string;
     lengthTextArea?: number;
+    digits?: number;
 }
 
 export const FieldsDps = ({ 
@@ -71,7 +73,8 @@ export const FieldsDps = ({
     partnerPaymentDay,
     withEditPaymentDay = false,
     lastPayDayOfYear = [],
-    withEditExpiredDate = false
+    withEditExpiredDate = false,
+    isLocalPartner = true
 }: FieldsDpsProps) => {
     const { t } = useTranslation('invoices');
     const { t: tCommon } = useTranslation('common');
@@ -271,8 +274,8 @@ export const FieldsDps = ({
                                     value={props.value || ''}
                                     disabled={props.disabled}
                                     maxLength={50}
-                                    minFractionDigits={2}
-                                    maxFractionDigits={2}
+                                    minFractionDigits={props.digits ? props.digits : 2}
+                                    maxFractionDigits={props.digits ? props.digits : 2}
                                     inputClassName="text-right"
                                     onChange={(e) => props.onChange?.(e.value)}
                                 />
@@ -466,86 +469,90 @@ export const FieldsDps = ({
                         placeholder: '',
                         errorKey: ''
                     })}
-                    {renderField({
-                        label: t('uploadDialog.payment_method.label'),
-                        tooltip: t('uploadDialog.payment_method.tooltipReview'),
-                        value: mode == 'view' ? oDps?.payment_method : oDps?.oPaymentMethod,
-                        disabled: true,
-                        mdCol: 5,
-                        type: mode == 'view' ? 'text' : 'dropdown',
-                        placeholder: '',
-                        errorKey: '',
-                        lOptions: lPaymentMethod,
-                        onChange: (value) => {
-                            if (value) {
-                                setODps((prev: any) => ({ ...prev, payment_method: value.name, oPaymentMethod: value }))
-                            } else {
-                                setODps((prev: any) => ({ ...prev, payment_method: null, oPaymentMethod: null }))
-                            }
-                        }
-                    })}
-                    {renderField({
-                        label: 'Forma pago',
-                        tooltip: 'Forma pago',
-                        value: oDps?.payment_way,
-                        disabled: mode == 'view',
-                        mdCol: 2,
-                        type: 'text',
-                        placeholder: '',
-                        errorKey: '',
-                        lOptions: [],
-                        onChange: (value) => setODps((prev: any) => ({ ...prev, payment_way: value}))
-                    })}
-                    {renderField({
-                        label: t('uploadDialog.rfc_issuer.label'),
-                        tooltip: t('uploadDialog.rfc_issuer.tooltipReview'),
-                        value: oDps?.provider_rfc,
-                        disabled: true,
-                        mdCol: 3,
-                        type: 'text',
-                        placeholder: '',
-                        errorKey: ''
-                    })}
-                    {renderField({
-                        label: t('uploadDialog.tax_regime_issuer.label'),
-                        tooltip: t('uploadDialog.tax_regime_issuer.tooltipReview'),
-                        value: oDps?.issuer_tax_regime,
-                        disabled: true,
-                        mdCol: 9,
-                        type: 'text',
-                        placeholder: '',
-                        errorKey: ''
-                    })}
-                    {renderField({
-                        label: t('uploadDialog.rfc_receiver.label'),
-                        tooltip: t('uploadDialog.rfc_receiver.tooltipReview'),
-                        value: oDps?.company_rfc,
-                        disabled: true,
-                        mdCol: 3,
-                        type: 'text',
-                        placeholder: '',
-                        errorKey: ''
-                    })}
-                    {renderField({
-                        label: t('uploadDialog.tax_regime_receiver.label'),
-                        tooltip: t('uploadDialog.tax_regime_receiver.tooltipReview'),
-                        value: oDps?.receiver_tax_regime,
-                        disabled: true,
-                        mdCol: 9,
-                        type: 'text',
-                        placeholder: '',
-                        errorKey: ''
-                    })}
-                    {renderField({
-                        label: t('uploadDialog.use_cfdi.label'),
-                        tooltip: t('uploadDialog.use_cfdi.tooltipReview'),
-                        value: oDps?.useCfdi,
-                        disabled: true,
-                        mdCol: 5,
-                        type: 'text',
-                        placeholder: '',
-                        errorKey: ''
-                    })}
+                    { isLocalPartner && (
+                        <>
+                            {renderField({
+                                label: t('uploadDialog.payment_method.label'),
+                                tooltip: t('uploadDialog.payment_method.tooltipReview'),
+                                value: mode == 'view' ? oDps?.payment_method : oDps?.oPaymentMethod,
+                                disabled: true,
+                                mdCol: 5,
+                                type: mode == 'view' ? 'text' : 'dropdown',
+                                placeholder: '',
+                                errorKey: '',
+                                lOptions: lPaymentMethod,
+                                onChange: (value) => {
+                                    if (value) {
+                                        setODps((prev: any) => ({ ...prev, payment_method: value.name, oPaymentMethod: value }))
+                                    } else {
+                                        setODps((prev: any) => ({ ...prev, payment_method: null, oPaymentMethod: null }))
+                                    }
+                                }
+                            })}
+                            {renderField({
+                                label: 'Forma pago',
+                                tooltip: 'Forma pago',
+                                value: oDps?.payment_way,
+                                disabled: mode == 'view',
+                                mdCol: 2,
+                                type: 'text',
+                                placeholder: '',
+                                errorKey: '',
+                                lOptions: [],
+                                onChange: (value) => setODps((prev: any) => ({ ...prev, payment_way: value}))
+                            })}
+                            {renderField({
+                                label: t('uploadDialog.rfc_issuer.label'),
+                                tooltip: t('uploadDialog.rfc_issuer.tooltipReview'),
+                                value: oDps?.provider_rfc,
+                                disabled: true,
+                                mdCol: 3,
+                                type: 'text',
+                                placeholder: '',
+                                errorKey: ''
+                            })}
+                            {renderField({
+                                label: t('uploadDialog.tax_regime_issuer.label'),
+                                tooltip: t('uploadDialog.tax_regime_issuer.tooltipReview'),
+                                value: oDps?.issuer_tax_regime,
+                                disabled: true,
+                                mdCol: 9,
+                                type: 'text',
+                                placeholder: '',
+                                errorKey: ''
+                            })}
+                            {renderField({
+                                label: t('uploadDialog.rfc_receiver.label'),
+                                tooltip: t('uploadDialog.rfc_receiver.tooltipReview'),
+                                value: oDps?.company_rfc,
+                                disabled: true,
+                                mdCol: 3,
+                                type: 'text',
+                                placeholder: '',
+                                errorKey: ''
+                            })}
+                            {renderField({
+                                label: t('uploadDialog.tax_regime_receiver.label'),
+                                tooltip: t('uploadDialog.tax_regime_receiver.tooltipReview'),
+                                value: oDps?.receiver_tax_regime,
+                                disabled: true,
+                                mdCol: 9,
+                                type: 'text',
+                                placeholder: '',
+                                errorKey: ''
+                            })}
+                            {renderField({
+                                label: t('uploadDialog.use_cfdi.label'),
+                                tooltip: t('uploadDialog.use_cfdi.tooltipReview'),
+                                value: oDps?.useCfdi,
+                                disabled: true,
+                                mdCol: 5,
+                                type: 'text',
+                                placeholder: '',
+                                errorKey: ''
+                            })}
+                        </>
+                    )}
                     {renderField({
                         label: t('uploadDialog.amount.label'),
                         tooltip: t('uploadDialog.amount.tooltipReview'),
@@ -564,22 +571,25 @@ export const FieldsDps = ({
                         disabled: mode == 'view',
                         mdCol: 2,
                         type: mode == 'view' ? 'text' : 'dropdown',
-                        placeholder: '',
+                        placeholder: t('uploadDialog.currency.placeholder'),
                         errorKey: '',
                         lOptions: lCurrency,
                         onChange: (value) => setODps((prev: any) => ({ ...prev, currency: value?.name, oCurrency: value }))
                     })}
-                    {renderField({
-                        label: t('uploadDialog.exchange_rate.label'),
-                        tooltip: t('uploadDialog.exchange_rate.tooltipReview'),
-                        value: oDps?.exchange_rate,
-                        disabled: mode == 'view',
-                        mdCol: 2,
-                        type: 'number',
-                        placeholder: '',
-                        errorKey: '',
-                        onChange: (value) => setODps((prev: any) => ({ ...prev, exchange_rate: value }))
-                    })}
+                    { isLocalPartner && (
+                        renderField({
+                            label: t('uploadDialog.exchange_rate.label'),
+                            tooltip: t('uploadDialog.exchange_rate.tooltipReview'),
+                            value: oDps?.exchange_rate,
+                            disabled: mode == 'view',
+                            mdCol: 2,
+                            type: 'number',
+                            placeholder: '',
+                            errorKey: '',
+                            onChange: (value) => setODps((prev: any) => ({ ...prev, exchange_rate: value })),
+                            digits: 4
+                        })
+                    )}
                 </div>
             )}
             {withFooterDps && (
