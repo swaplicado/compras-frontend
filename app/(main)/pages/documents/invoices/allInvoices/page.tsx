@@ -59,7 +59,7 @@ const Upload = () => {
     const [withBtnSendToUpoload, setWithBtnSendToUpoload] = useState<boolean>(false);
     const [columnsProps, setColumnsProps] = useState<any>({
             acceptance: {
-                hidden: true
+                hidden: false
             },
             actors_of_action: {
                 hidden: true

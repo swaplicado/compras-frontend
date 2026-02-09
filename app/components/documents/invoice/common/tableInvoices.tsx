@@ -462,20 +462,14 @@ export const TableInvoices = ({
         const overlayhistoryAuth = useRef<any>(null);
         
         return (
-            <div className="">
-                <div className='flex align-items-between justify-content-between'>
-                    <div>
-                        <span className={`status-dps-badge status-${rowData.authorization}`}>{rowData.authorization}</span>
-                    </div>
-                    <div>
-                        <Button 
-                            type="button" 
-                            icon="bx bx-list-ol" 
-                            label="" 
-                            onClick={(e) => { overlayhistoryAuth.current?.toggle(e); getHistory(rowData, setHistory, setLoadingHistory, overlayhistoryAuth); }} 
-                        />
-                    </div>
-                </div>
+            <div className="flex align-items-center justify-content-between gap-2">
+                <span className={`status-dps-badge status-${rowData.authorization}`}>{rowData.authorization}</span>
+                <Button 
+                    type="button" 
+                    icon="bx bx-list-ol" 
+                    label="" 
+                    onClick={(e) => { overlayhistoryAuth.current?.toggle(e); getHistory(rowData, setHistory, setLoadingHistory, overlayhistoryAuth); }} 
+                />
                 <OverlayPanel ref={overlayhistoryAuth} showCloseIcon closeOnEscape dismissable={false}>
                     {loadingHistory ? (
                         <div className="flex justify-content-center align-items-center p-4">

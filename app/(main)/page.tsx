@@ -14,10 +14,13 @@ const Dashboard = () => {
     const [loading, setLoading] = useState(false);
     const [oPanelData, setOPanelData] = useState({
         n_documents: 0,
+        n_oc_pending_auth: 0,
         n_invoice_pending_accept: 0,
         n_invoice_pending_auth: 0,
         n_cn_pending_accept: 0,
         n_cn_pending_auth: 0,
+        n_prepeyment_pending_accept: 0,
+        n_prepeyment_pending_auth: 0,
         n_payment_pending_auth: 0,
         n_payment_pending_check: 0,
         n_provider_pending_accept: 0,
@@ -108,6 +111,34 @@ const Dashboard = () => {
                         <div className="w-2rem h-2rem flex align-items-center justify-content-center bg-primary-100 border-round mr-3">
                             <i className="pi pi-folder text-primary-500 text-xl"></i>
                         </div>
+                        <h3 className="text-900 font-medium m-0 text-base">Ordenes de compra</h3>
+                    </div>
+                    <div className="grid">
+                        {oPanelData.n_oc_pending_auth > -1 ? (
+                            <div className="col-12 lg:col-6 xl:col-3">
+                                <div onClick={() => redirectToMenu('/pages/documents/oc/authorizations/consultationAuth/inProcess')} className="card mb-0" 
+                                style={{ paddingBottom: '0.5rem' }}>
+                                    <div className="flex justify-content-between mb-3">
+                                        <div>
+                                            <span className="block text-500 font-medium mb-3">Ordenes de compra en autorización</span>
+                                            <div className="text-900 font-medium text-xl">{oPanelData.n_oc_pending_auth}</div>
+                                        </div>
+                                        <div className="flex align-items-center justify-content-center bg-blue-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
+                                            <i className="pi pi-file text-blue-500 text-xl" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : ''}
+                    </div>
+                </div>) : ''}
+                
+            {panelDocs ? (
+                <div className="mb-4">
+                    <div className="flex align-items-center mb-2">
+                        <div className="w-2rem h-2rem flex align-items-center justify-content-center bg-primary-100 border-round mr-3">
+                            <i className="pi pi-folder text-primary-500 text-xl"></i>
+                        </div>
                         <h3 className="text-900 font-medium m-0 text-base">Facturas</h3>
                     </div>
                     <div className="grid">
@@ -185,6 +216,49 @@ const Dashboard = () => {
                                 </div>
                             </div>
                         ) : ''} */}
+                    </div>
+                </div>) : ''}
+
+            {panelDocs ? (
+                <div className="mb-4">
+                    <div className="flex align-items-center mb-2">
+                        <div className="w-2rem h-2rem flex align-items-center justify-content-center bg-primary-100 border-round mr-3">
+                            <i className="pi pi-folder text-primary-500 text-xl"></i>
+                        </div>
+                        <h3 className="text-900 font-medium m-0 text-base">Proformas</h3>
+                    </div>
+                    <div className="grid">
+                        {oPanelData.n_prepeyment_pending_accept > -1 ? (
+                            <div className="col-12 lg:col-6 xl:col-3">
+                                <div onClick={() => redirectToMenu('/pages/documents/prePayments/upload')} className="card mb-0" style={{ paddingBottom: '0.5rem' }}>
+                                    <div className="flex justify-content-between mb-3">
+                                        <div>
+                                            <span className="block text-500 font-medium mb-3">Proformas por revisar</span>
+                                            <div className="text-900 font-medium text-xl">{oPanelData.n_prepeyment_pending_accept}</div>
+                                        </div>
+                                        <div className="flex align-items-center justify-content-center bg-blue-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
+                                            <i className="pi pi-file text-blue-500 text-xl" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : ''}
+                        {oPanelData.n_prepeyment_pending_auth > -1 ? (
+                            <div className="col-12 lg:col-6 xl:col-3">
+                                <div onClick={() => redirectToMenu('/pages/documents/prePayments/authorizations/consultAuth/inAuthorization')} className="card mb-0" 
+                                style={{ paddingBottom: '0.5rem' }}>
+                                    <div className="flex justify-content-between mb-3">
+                                        <div>
+                                            <span className="block text-500 font-medium mb-3">Proformas en autorización</span>
+                                            <div className="text-900 font-medium text-xl">{oPanelData.n_prepeyment_pending_auth}</div>
+                                        </div>
+                                        <div className="flex align-items-center justify-content-center bg-blue-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
+                                            <i className="pi pi-file text-blue-500 text-xl" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : ''}
                     </div>
                 </div>) : ''}
 
