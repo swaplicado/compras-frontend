@@ -1565,18 +1565,22 @@ export const InvoiceDialog = ({
     }, [filterReferences]);
 
     useEffect(() => {
-        if (oProvider && oProvider.country != constants.COUNTRIES.MEXICO_ID) {
-            if (oReference && oReference[0]?.payment_method) {
-                const oPaymentMethod = findPaymentMethod(lPaymentMethod, oReference?.[0]?.payment_method);
-                setODps((prev: any) => ({
-                    ...prev,
-                    oPaymentMethod: oPaymentMethod,
-                }));
-            } else {
-                setODps((prev: any) => ({
-                    ...prev,
-                    oPaymentMethod: null
-                }));
+        if (oReference) {
+            if (oProvider?.country) {
+                if (oProvider && oProvider.country != constants.COUNTRIES.MEXICO_ID) {
+                    if (oReference && oReference[0]?.payment_method) {
+                        const oPaymentMethod = findPaymentMethod(lPaymentMethod, oReference?.[0]?.payment_method);
+                        setODps((prev: any) => ({
+                            ...prev,
+                            oPaymentMethod: oPaymentMethod,
+                        }));
+                    } else {
+                        setODps((prev: any) => ({
+                            ...prev,
+                            oPaymentMethod: null
+                        }));
+                    }
+                }
             }
         }
     }, [oReference])
@@ -1909,6 +1913,7 @@ export const InvoiceDialog = ({
                                 withEditPaymentDay={withEditPaymentDay}
                                 lastPayDayOfYear={lastPayDayOfYear}
                                 withEditExpiredDate={withEditExpiredDate}
+                                isLocalPartner={ oProvider ? oProvider?.country == constants.COUNTRIES.MEXICO_ID : true }
                             />
                         )}
                         {(dialogMode == 'create' || dialogMode == 'edit') && (isXmlValid || (oProvider ? oProvider.country != constants.COUNTRIES.MEXICO_ID : false)) && (

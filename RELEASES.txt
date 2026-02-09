@@ -98,3 +98,16 @@ Nuevas funcionalidades:
 - Añadida metrica para contar cuantas OC y Proformas hay pendientes
 
 ----------------------------------------
+========================================
+RELEASE
+Fecha: 09-02-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- Fix de pantalla de facturas por autorizar ("pendientes para mi")
+
+Correcciones:
+- Se valida que venga actors_of_action al iniciarse la pantalla
+- Se valida que se inicie el objeto oReference al iniciar la pantall
+----------------------------------------
