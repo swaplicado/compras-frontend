@@ -86,6 +86,7 @@ interface InvoiceDialogProps {
     lastPayDayOfYear?: any[];
     handlePassToReview?: (e: any) => Promise<any>;
     withEditExpiredDate?: boolean;
+    lOpex?: any[];
 }
 
 interface renderFieldProps {
@@ -159,7 +160,8 @@ export const InvoiceDialog = ({
     lAdvance = [],
     lastPayDayOfYear = [],
     handlePassToReview,
-    withEditExpiredDate = false
+    withEditExpiredDate = false,
+    lOpex = []
 }: InvoiceDialogProps) => {
     const [oCompany, setOCompany] = useState<any>(null);
     const [oProvider, setOProvider] = useState<any>(null);
@@ -607,7 +609,8 @@ export const InvoiceDialog = ({
                     priority: oDps.priority ? oDps.priority : false,
                     is_manual_payment_date: oDps.is_edit_payment_date,
                     notes_manual_payment_date: oDps.notes_manual_payment_date,
-                    due_date: oDps.due_date ? moment(oDps.due_date).format('YYYY-MM-DD') : ''
+                    due_date: oDps.due_date ? moment(oDps.due_date).format('YYYY-MM-DD') : '',
+                    account_tag: oDps.account_tag ? (oDps.account_tag.id != 0 ? oDps.account_tag.name : null) : null
                 }
             });
 
@@ -1914,6 +1917,7 @@ export const InvoiceDialog = ({
                                 lastPayDayOfYear={lastPayDayOfYear}
                                 withEditExpiredDate={withEditExpiredDate}
                                 isLocalPartner={ oProvider ? oProvider?.country == constants.COUNTRIES.MEXICO_ID : true }
+                                lOpex={lOpex}
                             />
                         )}
                         {(dialogMode == 'create' || dialogMode == 'edit') && (isXmlValid || (oProvider ? oProvider.country != constants.COUNTRIES.MEXICO_ID : false)) && (

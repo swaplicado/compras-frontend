@@ -793,6 +793,7 @@ export const TableInvoices = ({
                 <Column field="authz_authorization" header="authz_authorization" hidden />
                 <Column field="payment_way" header="payment_way" hidden />
                 <Column field="due_date" header="due_date" hidden />
+                <Column field="account_tag" header="account_tag" hidden />
                 <Column field="priority" header="Prioridad" body={priorityTemplate} footer="Prioridad" sortable />
                 <Column field="company" header={t('invoicesTable.columns.company')} footer={t('invoicesTable.columns.company')} sortable filter showFilterMatchModes={false} filterElement={companyFilterTemplate} filterApply={<></>} filterClear={<></>} />
                 <Column

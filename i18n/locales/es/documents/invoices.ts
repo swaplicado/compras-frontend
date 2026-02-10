@@ -314,6 +314,11 @@ const invoices = {
             placeholder: "Selecciona una fecha",
             helperText: "Por favor selecciona una fecha de vencimiento.",
             tooltip: "Aplica para facturas de mas de una parcialidad",
+        },
+        account_tag: {
+            label: "Etiqueta contable.",
+            placeholder: "Selecciona etiqueta contable",
+            tooltip: "Aqui coloca la etiqueta contable de tu factura.",
         }
     },
     errors: {

@@ -35,6 +35,7 @@ interface FieldsDpsProps {
     lastPayDayOfYear?: any[];
     withEditExpiredDate?: boolean;
     isLocalPartner?: boolean;
+    lOpex?: any[];
 }
 
 interface renderFieldProps {
@@ -74,7 +75,8 @@ export const FieldsDps = ({
     withEditPaymentDay = false,
     lastPayDayOfYear = [],
     withEditExpiredDate = false,
-    isLocalPartner = true
+    isLocalPartner = true,
+    lOpex = []
 }: FieldsDpsProps) => {
     const { t } = useTranslation('invoices');
     const { t: tCommon } = useTranslation('common');
@@ -923,6 +925,24 @@ export const FieldsDps = ({
                             labelClass: 'opacity-100 text-blue-600',
                             lengthTextArea: 100
                         })}
+
+                        {renderField({
+                            label: 'Etiqueta contable',
+                            tooltip: '',
+                            value: footerMode == 'edit' ? oDps?.account_tag : ( footerMode == 'view' ? ( oDps?.account_tag ? oDps?.account_tag : 'Sin etiqueta' ) : oDps?.account_tag ),
+                            onChange: (value) => {
+                                setODps((prev: any) => ({ ...prev, account_tag: value }));
+                            },
+                            disabled: footerMode == 'view',
+                            mdCol: 4,
+                            type: footerMode != 'edit' ? 'text' : 'dropdown',
+                            placeholder: '',
+                            errors: errors,
+                            errorKey: '',
+                            errorMessage: '',
+                            lOptions: lOpex
+                        })}
+
                         {renderField({
                             label: t('uploadDialog.rejectComments.label'),
                             tooltip: t('uploadDialog.rejectComments.tooltip'),
