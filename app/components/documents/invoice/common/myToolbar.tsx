@@ -141,6 +141,7 @@ export const MyToolbar = ({
                                 icon="pi pi-send"
                                 label={!isMobile ? 'Enviar autorizar' : ''}
                                 rounded
+                                severity='info'
                                 onClick={() => {
                                     setFlowAuthDialogVisible?.(true);
                                 }}
@@ -151,8 +152,9 @@ export const MyToolbar = ({
                             <Button
                                 size='small'
                                 icon="pi pi-reply"
-                                label={!isMobile ? 'Enviar a cargar' : ''}
+                                label={!isMobile ? 'Regresar al proveedor' : ''}
                                 rounded
+                                severity='help'
                                 onClick={() => {
                                     SendToUpoload?.();
                                 }}

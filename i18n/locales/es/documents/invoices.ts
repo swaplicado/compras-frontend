@@ -102,14 +102,14 @@ const invoices = {
                 tooltip: "Concepto de gasto de la referencia."
             },
             cost_profit_center: {
-                label: "Centros costo:",
-                placeholder: "Centros costo",
-                tooltip: "Centros de costo de la referencia."
+                label: "Centro costo:",
+                placeholder: "Centro costo",
+                tooltip: "Centro de costo de la referencia."
             },
             amount: {
-                label: "Monto:",
-                placeholder: "Monto",
-                tooltip: "Monto de la referencia."
+                label: "Total referencia:",
+                placeholder: "Total referencia",
+                tooltip: "Total de la referencia."
             },
         },
         xml_file: {
@@ -216,12 +216,19 @@ const invoices = {
             tooltipReview: "Esta es la fecha de pago solicitada por el comprador de la factura.",
         },
         edit_payDay: {
-            label: "Editar fecha pago:",
+            label: "Cambiar fecha de pago:",
         },
         notes_manual_payment_date: {
             label: 'Comentarios cambio de fecha de pago',
             tooltip: 'Ingresa los comentarios del motivo del cambio de fecha de pago',
             helperText: 'Ingresa comentario de cambio de fecha'
+        },
+        proportionOption: {
+            label: "Proporción de pago:",
+            placeholder: "Selecciona la proporción de pago",
+            helperText: "Por favor selecciona una opción.",
+            tooltip: "Selecciona la proporción de pago de la factura.",
+            tooltipReview: "Esta es la proporción de pago de la factura.",
         },
         percentOption: {
             label: "% de pago:",
@@ -231,7 +238,7 @@ const invoices = {
             tooltipReview: "Este es el porcentaje de pago de la factura.",
         },
         amountOption: {
-            label: "Monto pago:",
+            label: "Monto de pago:",
             placeholder: "Monto de pago",
             helperText: "Por favor ingresa el monto de pago.",
             tooltip: "Ingresa el monto de pago de la factura.",

@@ -400,7 +400,7 @@ export const FieldsDps = ({
 
     useEffect(() => {
         if (oDps?.is_edit_payment_date == false) {
-            setODps((prev: any) => ({ ...prev, payday: partnerPaymentDay, notes_manual_payment_date: '' }))
+            setODps((prev: any) => ({ ...prev, payday: partnerPaymentDay, notes_manual_payment_date: '' }));
         }
     }, [oDps?.is_edit_payment_date])
 
@@ -434,6 +434,9 @@ export const FieldsDps = ({
 
             {withBodyDps && (
                 <div className="p-fluid formgrid grid">
+                    <Divider align="center">
+                        <h5>Datos de la factura</h5>
+                    </Divider>
                     { oDps?.week && (
                         renderField({
                             label: t('uploadDialog.week.label'),
@@ -610,6 +613,26 @@ export const FieldsDps = ({
                         errorMessage: 'Ingresa la descripción',
                         labelClass: 'opacity-100 text-blue-600'
                     })}
+                    
+                    {renderField({
+                        label: 'Etiqueta contable',
+                        tooltip: '',
+                        value: footerMode == 'edit' ? oDps?.account_tag : ( footerMode == 'view' ? ( oDps?.account_tag ? oDps?.account_tag : 'Sin etiqueta' ) : oDps?.account_tag ),
+                        onChange: (value) => {
+                            setODps((prev: any) => ({ ...prev, account_tag: value }));
+                        },
+                        disabled: footerMode == 'view',
+                        mdCol: 4,
+                        type: footerMode != 'edit' ? 'text' : 'dropdown',
+                        placeholder: '',
+                        errors: errors,
+                        errorKey: '',
+                        errorMessage: '',
+                        lOptions: lOpex
+                    })}
+                    <Divider align="center">
+                        <h5>Datos del pago</h5>
+                    </Divider>
                     <div className="p-fluid formgrid grid">
                         {renderField({
                             label: 'Días de crédito:',
@@ -627,12 +650,12 @@ export const FieldsDps = ({
                         <div className="field col-12 md:col-5">
                             <div className="formgrid grid">
                                 <div className="col">
-                                    <label>{t('uploadDialog.percentOption.label')}</label>
+                                    <label>{t('uploadDialog.proportionOption.label')}</label>
                                     &nbsp;
                                     <Tooltip target=".custom-target-icon" />
                                     <i
                                         className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                                        data-pr-tooltip={t('uploadDialog.percentOption.tooltip')}
+                                        data-pr-tooltip={t('uploadDialog.proportionOption.tooltip')}
                                         data-pr-position="right"
                                         data-pr-my="left center-2"
                                         style={{ fontSize: '1rem', cursor: 'pointer' }}
@@ -789,7 +812,7 @@ export const FieldsDps = ({
                                             setODps((prev: any) => ({ ...prev, is_payment_loc: e.checked }));
                                         }}
                                         checked={oDps?.is_payment_loc}
-                                        disabled={footerMode != 'edit'}
+                                        disabled={footerMode != 'edit' || oDps?.currency == 'MXN'}
                                     />
                                     <label htmlFor="is_payment_loc" className="ml-2">
                                         {t('uploadDialog.is_payment_loc.label')}
@@ -926,22 +949,9 @@ export const FieldsDps = ({
                             lengthTextArea: 100
                         })}
 
-                        {renderField({
-                            label: 'Etiqueta contable',
-                            tooltip: '',
-                            value: footerMode == 'edit' ? oDps?.account_tag : ( footerMode == 'view' ? ( oDps?.account_tag ? oDps?.account_tag : 'Sin etiqueta' ) : oDps?.account_tag ),
-                            onChange: (value) => {
-                                setODps((prev: any) => ({ ...prev, account_tag: value }));
-                            },
-                            disabled: footerMode == 'view',
-                            mdCol: 4,
-                            type: footerMode != 'edit' ? 'text' : 'dropdown',
-                            placeholder: '',
-                            errors: errors,
-                            errorKey: '',
-                            errorMessage: '',
-                            lOptions: lOpex
-                        })}
+                        <Divider align="center">
+                            <h5>Comentarios de la revisión</h5>
+                        </Divider>
 
                         {renderField({
                             label: t('uploadDialog.rejectComments.label'),

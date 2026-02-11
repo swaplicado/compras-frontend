@@ -18,6 +18,7 @@ import { getDps } from "@/app/(main)/utilities/documents/invoice/dps";
 import { FlowAuthorizationDialog } from '@/app/components/documents/invoice/flowAuthorizationDialog';
 import { Tooltip } from 'primereact/tooltip';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
+import { getOpex, findOpex } from '@/app/(main)/utilities/documents/invoice/opex';
 
 const Upload = () => {
     const [dialogVisible, setDialogVisible] = useState(false);
@@ -57,6 +58,10 @@ const Upload = () => {
     const isMobile = useIsMobile();
     const [getDpsParams, setGetDpsParams] = useState<any>(null);
     const [withBtnSendToUpoload, setWithBtnSendToUpoload] = useState<boolean>(false);
+    const [withEditPaymentDay, setWithEditPaymentDay] = useState<boolean>(true);
+    const [canEditAcceptance, setCanEditAcceptance] = useState<boolean>(false);
+    const [lOpex, setLOpex] = useState<Array<any>>([]);
+    const [partnerPaymentDay, setPartnerPaymentDay] = useState<any>('');
 
     const headerCard = (
         <div
@@ -520,6 +525,16 @@ const Upload = () => {
             return;
         }
 
+        e.data.account_tag = findOpex('name', e.data.account_tag, lOpex);
+
+        if (!e.data.account_tag) {
+            e.data.account_tag = lOpex[0];
+        }
+
+        if (e.data.payday) {
+            setPartnerPaymentDay(e.data.payday);
+        }
+        setCanEditAcceptance(true);
         setSelectedRow(e.data);
         setDialogMode('review');
         setDialogVisible(true);
@@ -593,6 +608,11 @@ const Upload = () => {
             await getlPaymentMethod();
             await getlUseCfdi();
             await getFlowAuthorizations();
+            await getOpex({
+                setLOpex: setLOpex,
+                showToast: showToast,
+                errorMessage: ''
+            });
             // setLoading(false);
         };
         fetchReferences();
@@ -630,6 +650,11 @@ const Upload = () => {
                         showToast={showToast}
                         oValidUser={oValidUser}
                         setLoading={setLoading}
+                        withEditPaymentDay={withEditPaymentDay}
+                        withEditExpiredDate={true}
+                        canEditAcceptance={canEditAcceptance}
+                        lOpex={lOpex}
+                        partnerPaymentDay={partnerPaymentDay}
                     />
 
                     { oValidUser.isInternalUser && (
