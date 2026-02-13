@@ -33,7 +33,9 @@ interface FieldsDpsProps {
     partnerPaymentDay?: any;
     withEditPaymentDay?: boolean;
     lastPayDayOfYear?: any[];
-    withEditExpiredDate?: boolean
+    withEditExpiredDate?: boolean;
+    isLocalPartner?: boolean;
+    lOpex?: any[];
 }
 
 interface renderFieldProps {
@@ -52,6 +54,7 @@ interface renderFieldProps {
     lOptions?: any[];
     labelClass?: string;
     lengthTextArea?: number;
+    digits?: number;
 }
 
 export const FieldsDps = ({ 
@@ -71,7 +74,9 @@ export const FieldsDps = ({
     partnerPaymentDay,
     withEditPaymentDay = false,
     lastPayDayOfYear = [],
-    withEditExpiredDate = false
+    withEditExpiredDate = false,
+    isLocalPartner = true,
+    lOpex = []
 }: FieldsDpsProps) => {
     const { t } = useTranslation('invoices');
     const { t: tCommon } = useTranslation('common');
@@ -271,8 +276,8 @@ export const FieldsDps = ({
                                     value={props.value || ''}
                                     disabled={props.disabled}
                                     maxLength={50}
-                                    minFractionDigits={2}
-                                    maxFractionDigits={2}
+                                    minFractionDigits={props.digits ? props.digits : 2}
+                                    maxFractionDigits={props.digits ? props.digits : 2}
                                     inputClassName="text-right"
                                     onChange={(e) => props.onChange?.(e.value)}
                                 />
@@ -395,7 +400,7 @@ export const FieldsDps = ({
 
     useEffect(() => {
         if (oDps?.is_edit_payment_date == false) {
-            setODps((prev: any) => ({ ...prev, payday: partnerPaymentDay, notes_manual_payment_date: '' }))
+            setODps((prev: any) => ({ ...prev, payday: partnerPaymentDay, notes_manual_payment_date: '' }));
         }
     }, [oDps?.is_edit_payment_date])
 
@@ -429,6 +434,9 @@ export const FieldsDps = ({
 
             {withBodyDps && (
                 <div className="p-fluid formgrid grid">
+                    <Divider align="center">
+                        <h5>Datos de la factura</h5>
+                    </Divider>
                     { oDps?.week && (
                         renderField({
                             label: t('uploadDialog.week.label'),
@@ -466,86 +474,90 @@ export const FieldsDps = ({
                         placeholder: '',
                         errorKey: ''
                     })}
-                    {renderField({
-                        label: t('uploadDialog.payment_method.label'),
-                        tooltip: t('uploadDialog.payment_method.tooltipReview'),
-                        value: mode == 'view' ? oDps?.payment_method : oDps?.oPaymentMethod,
-                        disabled: true,
-                        mdCol: 5,
-                        type: mode == 'view' ? 'text' : 'dropdown',
-                        placeholder: '',
-                        errorKey: '',
-                        lOptions: lPaymentMethod,
-                        onChange: (value) => {
-                            if (value) {
-                                setODps((prev: any) => ({ ...prev, payment_method: value.name, oPaymentMethod: value }))
-                            } else {
-                                setODps((prev: any) => ({ ...prev, payment_method: null, oPaymentMethod: null }))
-                            }
-                        }
-                    })}
-                    {renderField({
-                        label: 'Forma pago',
-                        tooltip: 'Forma pago',
-                        value: oDps?.payment_way,
-                        disabled: mode == 'view',
-                        mdCol: 2,
-                        type: 'text',
-                        placeholder: '',
-                        errorKey: '',
-                        lOptions: [],
-                        onChange: (value) => setODps((prev: any) => ({ ...prev, payment_way: value}))
-                    })}
-                    {renderField({
-                        label: t('uploadDialog.rfc_issuer.label'),
-                        tooltip: t('uploadDialog.rfc_issuer.tooltipReview'),
-                        value: oDps?.provider_rfc,
-                        disabled: true,
-                        mdCol: 3,
-                        type: 'text',
-                        placeholder: '',
-                        errorKey: ''
-                    })}
-                    {renderField({
-                        label: t('uploadDialog.tax_regime_issuer.label'),
-                        tooltip: t('uploadDialog.tax_regime_issuer.tooltipReview'),
-                        value: oDps?.issuer_tax_regime,
-                        disabled: true,
-                        mdCol: 9,
-                        type: 'text',
-                        placeholder: '',
-                        errorKey: ''
-                    })}
-                    {renderField({
-                        label: t('uploadDialog.rfc_receiver.label'),
-                        tooltip: t('uploadDialog.rfc_receiver.tooltipReview'),
-                        value: oDps?.company_rfc,
-                        disabled: true,
-                        mdCol: 3,
-                        type: 'text',
-                        placeholder: '',
-                        errorKey: ''
-                    })}
-                    {renderField({
-                        label: t('uploadDialog.tax_regime_receiver.label'),
-                        tooltip: t('uploadDialog.tax_regime_receiver.tooltipReview'),
-                        value: oDps?.receiver_tax_regime,
-                        disabled: true,
-                        mdCol: 9,
-                        type: 'text',
-                        placeholder: '',
-                        errorKey: ''
-                    })}
-                    {renderField({
-                        label: t('uploadDialog.use_cfdi.label'),
-                        tooltip: t('uploadDialog.use_cfdi.tooltipReview'),
-                        value: oDps?.useCfdi,
-                        disabled: true,
-                        mdCol: 5,
-                        type: 'text',
-                        placeholder: '',
-                        errorKey: ''
-                    })}
+                    { isLocalPartner && (
+                        <>
+                            {renderField({
+                                label: t('uploadDialog.payment_method.label'),
+                                tooltip: t('uploadDialog.payment_method.tooltipReview'),
+                                value: mode == 'view' ? oDps?.payment_method : oDps?.oPaymentMethod,
+                                disabled: true,
+                                mdCol: 5,
+                                type: mode == 'view' ? 'text' : 'dropdown',
+                                placeholder: '',
+                                errorKey: '',
+                                lOptions: lPaymentMethod,
+                                onChange: (value) => {
+                                    if (value) {
+                                        setODps((prev: any) => ({ ...prev, payment_method: value.name, oPaymentMethod: value }))
+                                    } else {
+                                        setODps((prev: any) => ({ ...prev, payment_method: null, oPaymentMethod: null }))
+                                    }
+                                }
+                            })}
+                            {renderField({
+                                label: 'Forma pago',
+                                tooltip: 'Forma pago',
+                                value: oDps?.payment_way,
+                                disabled: mode == 'view',
+                                mdCol: 2,
+                                type: 'text',
+                                placeholder: '',
+                                errorKey: '',
+                                lOptions: [],
+                                onChange: (value) => setODps((prev: any) => ({ ...prev, payment_way: value}))
+                            })}
+                            {renderField({
+                                label: t('uploadDialog.rfc_issuer.label'),
+                                tooltip: t('uploadDialog.rfc_issuer.tooltipReview'),
+                                value: oDps?.provider_rfc,
+                                disabled: true,
+                                mdCol: 3,
+                                type: 'text',
+                                placeholder: '',
+                                errorKey: ''
+                            })}
+                            {renderField({
+                                label: t('uploadDialog.tax_regime_issuer.label'),
+                                tooltip: t('uploadDialog.tax_regime_issuer.tooltipReview'),
+                                value: oDps?.issuer_tax_regime,
+                                disabled: true,
+                                mdCol: 9,
+                                type: 'text',
+                                placeholder: '',
+                                errorKey: ''
+                            })}
+                            {renderField({
+                                label: t('uploadDialog.rfc_receiver.label'),
+                                tooltip: t('uploadDialog.rfc_receiver.tooltipReview'),
+                                value: oDps?.company_rfc,
+                                disabled: true,
+                                mdCol: 3,
+                                type: 'text',
+                                placeholder: '',
+                                errorKey: ''
+                            })}
+                            {renderField({
+                                label: t('uploadDialog.tax_regime_receiver.label'),
+                                tooltip: t('uploadDialog.tax_regime_receiver.tooltipReview'),
+                                value: oDps?.receiver_tax_regime,
+                                disabled: true,
+                                mdCol: 9,
+                                type: 'text',
+                                placeholder: '',
+                                errorKey: ''
+                            })}
+                            {renderField({
+                                label: t('uploadDialog.use_cfdi.label'),
+                                tooltip: t('uploadDialog.use_cfdi.tooltipReview'),
+                                value: oDps?.useCfdi,
+                                disabled: true,
+                                mdCol: 5,
+                                type: 'text',
+                                placeholder: '',
+                                errorKey: ''
+                            })}
+                        </>
+                    )}
                     {renderField({
                         label: t('uploadDialog.amount.label'),
                         tooltip: t('uploadDialog.amount.tooltipReview'),
@@ -564,22 +576,25 @@ export const FieldsDps = ({
                         disabled: mode == 'view',
                         mdCol: 2,
                         type: mode == 'view' ? 'text' : 'dropdown',
-                        placeholder: '',
+                        placeholder: t('uploadDialog.currency.placeholder'),
                         errorKey: '',
                         lOptions: lCurrency,
                         onChange: (value) => setODps((prev: any) => ({ ...prev, currency: value?.name, oCurrency: value }))
                     })}
-                    {renderField({
-                        label: t('uploadDialog.exchange_rate.label'),
-                        tooltip: t('uploadDialog.exchange_rate.tooltipReview'),
-                        value: oDps?.exchange_rate,
-                        disabled: mode == 'view',
-                        mdCol: 2,
-                        type: 'number',
-                        placeholder: '',
-                        errorKey: '',
-                        onChange: (value) => setODps((prev: any) => ({ ...prev, exchange_rate: value }))
-                    })}
+                    { isLocalPartner && (
+                        renderField({
+                            label: t('uploadDialog.exchange_rate.label'),
+                            tooltip: t('uploadDialog.exchange_rate.tooltipReview'),
+                            value: oDps?.exchange_rate,
+                            disabled: mode == 'view',
+                            mdCol: 2,
+                            type: 'number',
+                            placeholder: '',
+                            errorKey: '',
+                            onChange: (value) => setODps((prev: any) => ({ ...prev, exchange_rate: value })),
+                            digits: 4
+                        })
+                    )}
                 </div>
             )}
             {withFooterDps && (
@@ -598,6 +613,26 @@ export const FieldsDps = ({
                         errorMessage: 'Ingresa la descripción',
                         labelClass: 'opacity-100 text-blue-600'
                     })}
+                    
+                    {renderField({
+                        label: 'Etiqueta contable',
+                        tooltip: '',
+                        value: footerMode == 'edit' ? oDps?.account_tag : ( footerMode == 'view' ? ( oDps?.account_tag ? oDps?.account_tag : 'Sin etiqueta' ) : oDps?.account_tag ),
+                        onChange: (value) => {
+                            setODps((prev: any) => ({ ...prev, account_tag: value }));
+                        },
+                        disabled: footerMode == 'view',
+                        mdCol: 4,
+                        type: footerMode != 'edit' ? 'text' : 'dropdown',
+                        placeholder: '',
+                        errors: errors,
+                        errorKey: '',
+                        errorMessage: '',
+                        lOptions: lOpex
+                    })}
+                    <Divider align="center">
+                        <h5>Datos del pago</h5>
+                    </Divider>
                     <div className="p-fluid formgrid grid">
                         {renderField({
                             label: 'Días de crédito:',
@@ -615,12 +650,12 @@ export const FieldsDps = ({
                         <div className="field col-12 md:col-5">
                             <div className="formgrid grid">
                                 <div className="col">
-                                    <label>{t('uploadDialog.percentOption.label')}</label>
+                                    <label>{t('uploadDialog.proportionOption.label')}</label>
                                     &nbsp;
                                     <Tooltip target=".custom-target-icon" />
                                     <i
                                         className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                                        data-pr-tooltip={t('uploadDialog.percentOption.tooltip')}
+                                        data-pr-tooltip={t('uploadDialog.proportionOption.tooltip')}
                                         data-pr-position="right"
                                         data-pr-my="left center-2"
                                         style={{ fontSize: '1rem', cursor: 'pointer' }}
@@ -777,7 +812,7 @@ export const FieldsDps = ({
                                             setODps((prev: any) => ({ ...prev, is_payment_loc: e.checked }));
                                         }}
                                         checked={oDps?.is_payment_loc}
-                                        disabled={footerMode != 'edit'}
+                                        disabled={footerMode != 'edit' || oDps?.currency == 'MXN'}
                                     />
                                     <label htmlFor="is_payment_loc" className="ml-2">
                                         {t('uploadDialog.is_payment_loc.label')}
@@ -913,6 +948,11 @@ export const FieldsDps = ({
                             labelClass: 'opacity-100 text-blue-600',
                             lengthTextArea: 100
                         })}
+
+                        <Divider align="center">
+                            <h5>Comentarios de la revisión</h5>
+                        </Divider>
+
                         {renderField({
                             label: t('uploadDialog.rejectComments.label'),
                             tooltip: t('uploadDialog.rejectComments.tooltip'),

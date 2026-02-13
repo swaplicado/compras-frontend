@@ -160,18 +160,18 @@ const oc = {
         },
         animationSuccess: {
             authorizedTitle: "Orden de compra autorizada.",
-            authorizedText: "La nota de crédito se ha autorizado correctamente.",
+            authorizedText: "La orden de compra se ha autorizado correctamente.",
             rejectedTitle: "Orden de compra rechazada.",
-            rejectedText: "La nota de crédito se ha rechazado correctamente."
+            rejectedText: "La orden de compra se ha rechazado correctamente."
         },
         animationError: {
-            authorizedTitle: "Error al autorizar la nota de crédito.",
-            authorizedText: "Ocurrió un error al autorizar la nota de crédito.",
-            rejectedTitle: "Error al rechazar la nota de crédito.",
-            rejectedText: "Ocurrió un error al rechazar la nota de crédito."
+            authorizedTitle: "Error al autorizar la orden de compra.",
+            authorizedText: "Ocurrió un error al autorizar la orden de compra.",
+            rejectedTitle: "Error al rechazar la orden de compra.",
+            rejectedText: "Ocurrió un error al rechazar la orden de compra."
         },
         reviewInstructions: {
-            header: "Para revisar una nota de crédito, sigue estos pasos:",
+            header: "Para revisar una orden de compra, sigue estos pasos:",
             step1: "Haz doble clic sobre el renglón de la OC a revisar, se abrirá el diálogo con la información de la OC para revisar.",
             step2: "En la parte inferior del diálogo se encuentra un botón Mostrar archivos, presiona este botón para ver los archivos de la OC.",
             step3: "Para aceptar la OC solo presiona el botón Aceptar.",

@@ -37,6 +37,7 @@ export const getDps = async ( props: getDpsProps  ) => {
                             amount: data[i].references[j].amount,
                             concepts: data[i].references[j].concepts ? data[i].references[j].concepts.split(';').map((concept: any) => concept.trim() + ';\n').join('') : "N/D",
                             cost_profit_center: data[i].references[j].cost_profit_center ? data[i].references[j].cost_profit_center .split(';').map((value: any) => value.trim() + ';\n').join('') : "N/D",
+                            account_tag: data[i].references[j].account_tag
                         });
                     }   
                 }
@@ -101,6 +102,7 @@ export const getDps = async ( props: getDpsProps  ) => {
                     authz_authorization_id: data[i].authz_authorization_id ? data[i].authz_authorization_id : data[i].authz_authorization,
                     payment_way: data[i].payment_way,
                     due_date: data[i].due_date,
+                    account_tag: data[i].account_tag,
                 });
             }
             props.setLDps(dps);

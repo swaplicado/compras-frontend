@@ -14,12 +14,13 @@ import DateFormatter from '@/app/components/commons/formatDate';
 import moment from 'moment';
 import { useIsMobile } from '@/app/components/commons/screenMobile';
 import { InvoiceDialog } from '@/app/components/documents/invoice/common/invoiceDialog';
-import { getDps, getlAdvance } from "@/app/(main)/utilities/documents/invoice/dps"
+import { getDps, getlAdvance } from "@/app/(main)/utilities/documents/invoice/dps";
 import { Tooltip } from 'primereact/tooltip';
 import { FlowAuthorizationDialog } from '@/app/components/documents/invoice/flowAuthorizationDialog';
 import { Button } from 'primereact/button';
 import { DialogManual } from '@/app/components/videoManual/dialogManual';
 import { getCrpPending } from '@/app/(main)/utilities/documents/invoice/dps';
+import { getOpex, findOpex } from '@/app/(main)/utilities/documents/invoice/opex';
 
 const Upload = () => {
     const [dialogVisible, setDialogVisible] = useState(false);
@@ -72,6 +73,7 @@ const Upload = () => {
     const [lAdvance, setLAdvance] = useState<Array<any>>([]);
     const [crpPending, setCrpPending] = useState<any>(false);
     const [lastPayDayOfYear, setLastPayDayOfYear] = useState<Array<any>>([]);
+    const [lOpex, setLOpex] = useState<Array<any>>([]);
 
     const headerCard = (
         <div
@@ -259,6 +261,7 @@ const Upload = () => {
                     });
                 }
 
+                lProviders.sort((a, b) => a.name.localeCompare(b.name));
                 setLProviders(lProviders);
                 return true;
             } else {
@@ -304,6 +307,8 @@ const Upload = () => {
                         name: item.full_name
                     });
                 }
+                
+                lCompanies.sort((a, b) => a.name.localeCompare(b.name));
                 setLCompanies(lCompanies);
                 setLCompaniesFilter(lCompaniesFilter);
                 return true;
@@ -445,14 +450,17 @@ const Upload = () => {
 
             if (response.status === 200) {
                 const data = response.data.data || [];
+                const functionalAreasArray = Array.isArray(functionalAreas) ? functionalAreas : [functionalAreas];
                 let lAreas: any[] = [];
                 for (const item of data) {
-                    lAreas.push({
-                        id: item.id,
-                        name: item.name
-                    });
+                    if (functionalAreasArray.includes(item.id)) {
+                        lAreas.push({
+                            id: item.id,
+                            name: item.name
+                        });
+                    }
                 }
-
+                lAreas.sort((a, b) => a.name.localeCompare(b.name));
                 setLAreas(lAreas);
             } else {
                 throw new Error(`${t('errors.getAreasError')}: ${response.statusText}`);
@@ -618,7 +626,9 @@ const Upload = () => {
                 payment_notes: selectedRow.payment_notes,
                 priority: selectedRow.priority,
                 is_manual_payment_date: selectedRow.is_edit_payment_date,
-                notes_manual_payment_date: selectedRow.notes_manual_payment_date
+                notes_manual_payment_date: selectedRow.notes_manual_payment_date,
+                due_date: selectedRow.due_date ? moment(selectedRow.due_date).format('YYYY-MM-DD') : '',
+                account_tag: selectedRow.account_tag ? (selectedRow.account_tag.id != 0 ? selectedRow.account_tag.name : null) : null
             }
         });
 
@@ -734,6 +744,19 @@ const Upload = () => {
         if (e.data.payday) {
             setPartnerPaymentDay(e.data.payday);
         }
+
+        e.data.account_tag = findOpex('name', e.data.account_tag, lOpex);
+
+        if (e.data.lReferences.length > 0 && !e.data.account_tag) {
+            let lReferences = e.data.lReferences;
+            let account_tag = lReferences[0].account_tag
+            let oAccount_tag = findOpex('name', account_tag, lOpex);
+            e.data.account_tag = oAccount_tag
+        }
+
+        if (!e.data.account_tag) {
+            e.data.account_tag = lOpex[0];
+        }
         
         setSelectedRow(e.data);
         setDialogMode('review');
@@ -833,6 +856,11 @@ const Upload = () => {
                 setLAdvance,
                 showToast
             });
+            await getOpex({
+                setLOpex: setLOpex,
+                showToast: showToast,
+                errorMessage: ''
+            });
             // setLoading(false);
         };
         fetchReferences();
@@ -891,6 +919,7 @@ const Upload = () => {
                         lastPayDayOfYear={lastPayDayOfYear}
                         handlePassToReview={handlePassToReview}
                         withEditExpiredDate={true}
+                        lOpex={lOpex}
                     />
                     { oValidUser.isInternalUser && (
                         <FlowAuthorizationDialog 

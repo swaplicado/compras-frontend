@@ -85,3 +85,88 @@ Cambios:
 - Se cambio el orden del menu lateral al orden del proceso de compras
 
 ----------------------------------------
+========================================
+RELEASE
+Fecha: 09-02-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- Oc y Proforma en metricas de inicio
+
+Nuevas funcionalidades:
+- Añadida metrica para contar cuantas OC y Proformas hay pendientes
+
+----------------------------------------
+========================================
+RELEASE
+Fecha: 09-02-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- Fix de pantalla de facturas por autorizar ("pendientes para mi")
+
+Correcciones:
+- Se valida que venga actors_of_action al iniciarse la pantalla
+- Se valida que se inicie el objeto oReference al iniciar la pantall
+----------------------------------------
+========================================
+RELEASE
+Fecha: 09-02-2026
+Autor: Nombre o equipo
+========================================
+
+Resumen:
+- PDC-692 Mejorar proceso de captura en pantalla de carga de facturas en PC.
+
+Cambios:
+- Ordenar alfabéticamente:
+    * Empresa
+    * Proveedor
+    * Área funcional
+- Acotar opciones de área funcional limitándose a las que tenga asignadas el usuario Comprador.
+- Si el Proveedor es extranjero, ocultar “método de pago”, “forma de pago” “RFC” y “Régimen fiscal” del emisor y receptor, “Uso de CFDI” y “tipo de cambio”.
+- Agregar placeholder para “moneda”.
+- Validar que el “tipo de cambio”, si hay CFDI, se muestre a 4 decimales.
+----------------------------------------
+========================================
+RELEASE
+Fecha: 10-02-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- Etiqueta contable en facturas.
+
+Nuevas funcionalidades:
+- Mostrar etiqueta contable en las facturas
+- Editar etiqueta contable al aceptar una factura
+
+----------------------------------------
+========================================
+RELEASE
+Fecha: 11-02-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- Edición de factura revisada
+
+Nuevas funcionalidades:
+- Se puede editar la factura en la pantalla de revisadas
+----------------------------------------
+========================================
+RELEASE
+Fecha: 13-02-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- Fix, pantalla OC
+
+Correcciones:
+- Fix, getHistoryAuth
+- Fix, mensajes de OC
+
+----------------------------------------

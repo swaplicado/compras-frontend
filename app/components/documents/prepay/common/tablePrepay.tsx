@@ -268,8 +268,8 @@ export const TablePrepayments = ({
                 onRowClick={(e) => (handleRowClick?.(e))}
                 onRowDoubleClick={(e) => (handleDoubleClick?.(e))}
                 metaKeySelection={false}
-                sortField="benef_trade_name"
-                sortOrder={-1}
+                sortMode="multiple"
+                multiSortMeta={[{ field: 'priority', order: -1 }, { field: 'date', order: -1 }]}
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                 currentPageReportTemplate={tCommon('datatable.currentPageReportTemplate')}
                 resizableColumns

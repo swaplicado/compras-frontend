@@ -145,7 +145,7 @@ const UploadPrepayment = () => {
                 functional_area: userFunctionalAreas,
                 transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
                 document_type: constants.DOC_TYPE_PP,
-                authz_acceptance: constants.REVIEW_PENDING_ID,
+                // authz_acceptance: constants.REVIEW_PENDING_ID,
                 start_date: startDate,
                 end_date: endDate,
                 user_id: oUser.id
@@ -159,7 +159,7 @@ const UploadPrepayment = () => {
                 partner_id: oUser.oProvider.id,
                 transaction_class: constants.TRANSACTION_CLASS_COMPRAS,
                 document_type: constants.DOC_TYPE_PP,
-                authz_acceptance: constants.REVIEW_PENDING_ID,
+                // authz_acceptance: constants.REVIEW_PENDING_ID,
                 start_date: startDate,
                 end_date: endDate,
             };

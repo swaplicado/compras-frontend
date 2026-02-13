@@ -102,14 +102,14 @@ const invoices = {
                 tooltip: "Concepto de gasto de la referencia."
             },
             cost_profit_center: {
-                label: "Centros costo:",
-                placeholder: "Centros costo",
-                tooltip: "Centros de costo de la referencia."
+                label: "Centro costo:",
+                placeholder: "Centro costo",
+                tooltip: "Centro de costo de la referencia."
             },
             amount: {
-                label: "Monto:",
-                placeholder: "Monto",
-                tooltip: "Monto de la referencia."
+                label: "Total referencia:",
+                placeholder: "Total referencia",
+                tooltip: "Total de la referencia."
             },
         },
         xml_file: {
@@ -189,7 +189,7 @@ const invoices = {
         },
         currency: {
             label: "Moneda: *",
-            placeholder: "ingresa moneda",
+            placeholder: "Selecciona moneda",
             helperText: "Por favor ingresa la moneda.",
             tooltip: "Ingresa la moneda de la factura.",
             tooltipReview: "Esta es la moneda de la factura.",
@@ -202,11 +202,11 @@ const invoices = {
             tooltipReview: "Este es el tipo de cambio de la factura.",
         },
         amount: {
-            label: "Monto: *",
-            placeholder: "ingresa monto",
-            helperText: "Por favor ingresa el monto.",
-            tooltip: "Ingresa el monto de la factura.",
-            tooltipReview: "Este es el monto de la factura.",
+            label: "Total: *",
+            placeholder: "ingresa total",
+            helperText: "Por favor ingresa el monto total.",
+            tooltip: "Ingresa el monto total de la factura.",
+            tooltipReview: "Este es el monto total de la factura.",
         },
         payDay: {
             label: "Fecha de pago:",
@@ -216,12 +216,19 @@ const invoices = {
             tooltipReview: "Esta es la fecha de pago solicitada por el comprador de la factura.",
         },
         edit_payDay: {
-            label: "Editar fecha pago:",
+            label: "Cambiar fecha de pago:",
         },
         notes_manual_payment_date: {
             label: 'Comentarios cambio de fecha de pago',
             tooltip: 'Ingresa los comentarios del motivo del cambio de fecha de pago',
             helperText: 'Ingresa comentario de cambio de fecha'
+        },
+        proportionOption: {
+            label: "Proporción de pago:",
+            placeholder: "Selecciona la proporción de pago",
+            helperText: "Por favor selecciona una opción.",
+            tooltip: "Selecciona la proporción de pago de la factura.",
+            tooltipReview: "Esta es la proporción de pago de la factura.",
         },
         percentOption: {
             label: "% de pago:",
@@ -231,7 +238,7 @@ const invoices = {
             tooltipReview: "Este es el porcentaje de pago de la factura.",
         },
         amountOption: {
-            label: "Monto pago:",
+            label: "Monto de pago:",
             placeholder: "Monto de pago",
             helperText: "Por favor ingresa el monto de pago.",
             tooltip: "Ingresa el monto de pago de la factura.",
@@ -314,6 +321,11 @@ const invoices = {
             placeholder: "Selecciona una fecha",
             helperText: "Por favor selecciona una fecha de vencimiento.",
             tooltip: "Aplica para facturas de mas de una parcialidad",
+        },
+        account_tag: {
+            label: "Etiqueta contable.",
+            placeholder: "Selecciona etiqueta contable",
+            tooltip: "Aqui coloca la etiqueta contable de tu factura.",
         }
     },
     errors: {

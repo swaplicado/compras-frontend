@@ -511,7 +511,7 @@ const Upload = () => {
     };
 
     useEffect(() => {
-        if (selectedRow) {
+        if (selectedRow && selectedRow.actors_of_action) {
             validateUserAuth();
         }
     }, [selectedRow])

@@ -86,6 +86,8 @@ interface InvoiceDialogProps {
     lastPayDayOfYear?: any[];
     handlePassToReview?: (e: any) => Promise<any>;
     withEditExpiredDate?: boolean;
+    lOpex?: any[];
+    canEditAcceptance?: boolean
 }
 
 interface renderFieldProps {
@@ -159,7 +161,9 @@ export const InvoiceDialog = ({
     lAdvance = [],
     lastPayDayOfYear = [],
     handlePassToReview,
-    withEditExpiredDate = false
+    withEditExpiredDate = false,
+    lOpex = [],
+    canEditAcceptance = false
 }: InvoiceDialogProps) => {
     const [oCompany, setOCompany] = useState<any>(null);
     const [oProvider, setOProvider] = useState<any>(null);
@@ -607,7 +611,8 @@ export const InvoiceDialog = ({
                     priority: oDps.priority ? oDps.priority : false,
                     is_manual_payment_date: oDps.is_edit_payment_date,
                     notes_manual_payment_date: oDps.notes_manual_payment_date,
-                    due_date: oDps.due_date ? moment(oDps.due_date).format('YYYY-MM-DD') : ''
+                    due_date: oDps.due_date ? moment(oDps.due_date).format('YYYY-MM-DD') : '',
+                    account_tag: oDps.account_tag ? (oDps.account_tag.id != 0 ? oDps.account_tag.name : null) : null
                 }
             });
 
@@ -1096,7 +1101,7 @@ export const InvoiceDialog = ({
         }
 
         if (dialogMode == 'review') {
-            if ((oDps?.authz_authorization_code == 'P' && oDps?.acceptance == 'pendiente') || (isEdit && typeEdit == 'authorization')) {
+            if ((oDps?.authz_authorization_code == 'P' && (oDps?.acceptance == 'pendiente' || oDps?.acceptance == 'ok')) || (isEdit && typeEdit == 'authorization')) {
                 setFooterMode('edit');
             } else {
                 setFooterMode('view');
@@ -1123,6 +1128,7 @@ export const InvoiceDialog = ({
         if (oDps?.authz_authorization_id == constants.INVOICE_AUTH_ACCEPTED) {
             getlFilesNames();
         }
+        
     }, [visible]);
 
     useEffect(() => {
@@ -1218,6 +1224,9 @@ export const InvoiceDialog = ({
                         <Button label={tCommon('btnClose')} icon="bx bx-x" onClick={onHide} severity="secondary" disabled={loading} />
                         { oDps?.authz_authorization_id == constants.INVOICE_AUTH_ACCEPTED && (
                             <Button label={'Cargar archivos adicionales'} icon="bx bx-upload" onClick={handleUploadExtraFiles} disabled={loading} />
+                        )}
+                        { canEditAcceptance && (
+                            <Button label={tCommon('btnSave')} icon="bx bx-save" onClick={() => handleEditAuthorize?.()} disabled={loading} />
                         )}
                     </div>
                 </>
@@ -1416,9 +1425,14 @@ export const InvoiceDialog = ({
                     payment_amount: oDps.payment_amount,
                     notes: oDps.notes,
                     user_id: userId,
+                    payment_definition: oDps.payment_definition,
                     is_payment_loc: oDps.is_payment_loc,
                     payment_notes: oDps.payment_notes,
-                    priority: oDps.priority
+                    is_manual_payment_date: oDps.is_edit_payment_date,
+                    notes_manual_payment_date: oDps.notes_manual_payment_date,
+                    priority: oDps.priority,
+                    due_date: oDps.due_date ? moment(oDps.due_date).format('YYYY-MM-DD') : '',
+                    account_tag: oDps.account_tag ? (oDps.account_tag.id != 0 ? oDps.account_tag.name : null) : null
                 }
             });
 
@@ -1565,18 +1579,22 @@ export const InvoiceDialog = ({
     }, [filterReferences]);
 
     useEffect(() => {
-        if (oProvider && oProvider.country != constants.COUNTRIES.MEXICO_ID) {
-            if (oReference && oReference[0]?.payment_method) {
-                const oPaymentMethod = findPaymentMethod(lPaymentMethod, oReference?.[0]?.payment_method);
-                setODps((prev: any) => ({
-                    ...prev,
-                    oPaymentMethod: oPaymentMethod,
-                }));
-            } else {
-                setODps((prev: any) => ({
-                    ...prev,
-                    oPaymentMethod: null
-                }));
+        if (oReference) {
+            if (oProvider?.country) {
+                if (oProvider && oProvider.country != constants.COUNTRIES.MEXICO_ID) {
+                    if (oReference && oReference[0]?.payment_method) {
+                        const oPaymentMethod = findPaymentMethod(lPaymentMethod, oReference?.[0]?.payment_method);
+                        setODps((prev: any) => ({
+                            ...prev,
+                            oPaymentMethod: oPaymentMethod,
+                        }));
+                    } else {
+                        setODps((prev: any) => ({
+                            ...prev,
+                            oPaymentMethod: null
+                        }));
+                    }
+                }
             }
         }
     }, [oReference])
@@ -1786,6 +1804,9 @@ export const InvoiceDialog = ({
 
                             { lRefToValidateXml && lRefToValidateXml[0]?.id != 0 && dialogMode != 'create' && (
                                 <div className={`field col-12 md:col-12 mb-0 mt-2`}>
+                                    <Divider align="center">
+                                        <h5>Datos de la referencia</h5>
+                                    </Divider>
                                     <div className="formgrid grid">
                                         <div className="col">
                                             {lRefToValidateXml.map((item: any, index: number) => (
@@ -1888,7 +1909,6 @@ export const InvoiceDialog = ({
                                 <XmlWarnings xmlValidateErrors={xmlValidateErrors} />
                             </>
                         )}
-                        <Divider></Divider>
                         <div className="p-fluid formgrid grid">{loadingValidateXml && <ProgressSpinner style={{ width: '50px', height: '50px' }} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />}</div>
                         {(isXmlValid || (oProvider ? oProvider.country != constants.COUNTRIES.MEXICO_ID : false) || dialogMode == 'review' || dialogMode == 'authorization') && (
                             <FieldsDps
@@ -1909,6 +1929,8 @@ export const InvoiceDialog = ({
                                 withEditPaymentDay={withEditPaymentDay}
                                 lastPayDayOfYear={lastPayDayOfYear}
                                 withEditExpiredDate={withEditExpiredDate}
+                                isLocalPartner={ oProvider ? oProvider?.country == constants.COUNTRIES.MEXICO_ID : ( oDps?.oPartner ? oDps.oPartner.country == constants.COUNTRIES.MEXICO_ID : true ) }
+                                lOpex={lOpex}
                             />
                         )}
                         {(dialogMode == 'create' || dialogMode == 'edit') && (isXmlValid || (oProvider ? oProvider.country != constants.COUNTRIES.MEXICO_ID : false)) && (
@@ -1955,10 +1977,13 @@ export const InvoiceDialog = ({
 
                         {(dialogMode == 'authorization' || isReviewAuth) && (
                             <>
+                                <Divider align="center">
+                                    <h5>Comentarios de la autorización</h5>
+                                </Divider>
                                 <div className={`field col-12 md:col-12`}>
                                     <div className="formgrid grid">
                                         <div className="col">
-                                            <label data-pr-tooltip="">Comentarios de la autorización</label>
+                                            <label data-pr-tooltip="" className='text-blue-600'>Comentarios de la autorización</label>
                                             &nbsp;
                                             <Tooltip target=".custom-target-icon" />
                                             <i
@@ -1989,7 +2014,7 @@ export const InvoiceDialog = ({
                                     <div className={`field col-12 md:col-12`}>
                                         <div className="formgrid grid">
                                             <div className="col">
-                                                <label data-pr-tooltip="">Tus comentarios de la autorización</label>
+                                                <label data-pr-tooltip="" className='text-blue-600'>Tus comentarios de la autorización</label>
                                                 &nbsp;
                                                 <Tooltip target=".custom-target-icon" />
                                                 <i
@@ -2056,13 +2081,19 @@ export const InvoiceDialog = ({
                         )}
 
                         {(dialogMode == 'view' || dialogMode == 'review' || dialogMode == 'authorization') &&
-                            (!loadingUrlsFiles ? (
-                                <CustomFileViewer lFiles={lUrlFiles} withBtnCompare={true} urlCompare={constants.ROUTE_COMPARE_FILES + oDps?.id_dps + '/' + (oDps?.reference ? 1 : 0)}/>
-                            ) : (
-                                <div className="flex justify-content-center">
-                                    <ProgressSpinner style={{ width: '50px', height: '50px' }} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />
-                                </div>
-                            ))}
+                            <>
+                                <Divider align="center">
+                                    <h5>Archivos de la factura</h5>
+                                </Divider>
+                                {(!loadingUrlsFiles ? (
+                                    <CustomFileViewer lFiles={lUrlFiles} withBtnCompare={true} urlCompare={constants.ROUTE_COMPARE_FILES + oDps?.id_dps + '/' + (oDps?.reference ? 1 : 0)}/>
+                                ) : (
+                                    <div className="flex justify-content-center">
+                                        <ProgressSpinner style={{ width: '50px', height: '50px' }} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />
+                                    </div>
+                                ))}
+                            </>
+                        }
 
                         {dialogMode == 'review' && isEdit && typeEdit == 'acceptance' && (
                             <>
