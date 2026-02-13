@@ -29,7 +29,7 @@ export const getHistoryAuth = async (props: getHistoryAuthProps) => {
 
             for (const item of data) {
                 history.push({
-                    actioned_by: item.actioned_by ? item.actioned_by.full_name : item.all_actors[0].full_name,
+                    actioned_by: item.actioned_by ? item.actioned_by.full_name : (item.all_actors ? item.all_actors[0]?.full_name : ''),
                     status: item.flow_status.name,
                     notes: item.notes,
                     actioned_at: item.actioned_at ? DateFormatter(item.actioned_at, 'DD-MMM-YYYY HH:mm:ss') : ''

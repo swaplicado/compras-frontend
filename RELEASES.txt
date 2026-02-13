@@ -156,3 +156,17 @@ Resumen:
 Nuevas funcionalidades:
 - Se puede editar la factura en la pantalla de revisadas
 ----------------------------------------
+========================================
+RELEASE
+Fecha: 13-02-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- Fix, pantalla OC
+
+Correcciones:
+- Fix, getHistoryAuth
+- Fix, mensajes de OC
+
+----------------------------------------
