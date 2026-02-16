@@ -196,3 +196,17 @@ Cambios:
 - Añadida etiueta de "IMPORTANTE" en la advertencia de fecha límite de carga de facturas
 
 ----------------------------------------
+========================================
+RELEASE
+Fecha: 16-02-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- Homologar procesamiento de CRP al de facturas en PC.
+
+Cambios:
+- Selección obligatoria de pagos para Proveedores.
+- Selección opcional de pagos para Compradores.
+
+----------------------------------------
