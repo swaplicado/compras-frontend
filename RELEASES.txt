@@ -183,3 +183,16 @@ Correcciones:
 - Fix, al presionar "cargar y revisar" la factura ocurria un error con el id del metodo de pago
 
 ----------------------------------------
+========================================
+RELEASE
+Fecha: 16-02-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- PDC-727: Resaltar aún más el mensaje de advertencia de fecha límite de carga de facturas en PC.
+
+Cambios:
+- Añadida etiueta de "IMPORTANTE" en la advertencia de fecha límite de carga de facturas
+
+----------------------------------------
