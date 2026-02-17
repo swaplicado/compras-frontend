@@ -10,16 +10,28 @@ import DateFormatter from '@/app/components/commons/formatDate';
 
 interface tableEtyProps {
     lEtys: any[];
+    oMaterialREquest?: any;
+    setOMaterialRequest?: React.Dispatch<React.SetStateAction<any>>;
 }
 
-export const TableEty = ({ lEtys }: tableEtyProps) => {
-    console.log('lEtys: ', lEtys);
-    
+export const TableEty = ({ 
+    lEtys,
+    oMaterialREquest,
+    setOMaterialRequest
+
+}: tableEtyProps) => {
     const { t } = useTranslation('oc');
     const { t: tCommon } = useTranslation('common');
     const [visible, setVisible] = useState<boolean>(false);
-
+    const [selectedRow, setSelectedRow] = useState<any>(null);
     const [oItemH, setOItemH] = useState<any>(null);
+
+    useEffect(() => {
+        if (lEtys && lEtys.length > 0) {
+            setSelectedRow(lEtys[0]);
+            setOMaterialRequest?.(lEtys[0].oMaterialRequest);
+        }
+    }, [lEtys]);
 
     const variationTemplate = (row: any) => {
         return (
@@ -141,6 +153,9 @@ export const TableEty = ({ lEtys }: tableEtyProps) => {
             </Dialog>
             <DataTable
                 value={lEtys}
+                selection={selectedRow}
+                onSelectionChange={(e) => setSelectedRow(e.value)}
+                selectionMode="single"
                 paginator
                 rowsPerPageOptions={constants.TABLE_ROWS}
                 className="p-datatable-gridlines"
@@ -157,6 +172,7 @@ export const TableEty = ({ lEtys }: tableEtyProps) => {
                 resizableColumns
             >
                 <Column field="idYear" header="id" hidden />
+                <Column field="oMaterialRequest" header="oMaterialRequest" hidden />
                 <Column field="conceptKey" header={t('dialog.tableEtys.columns.cve')} />
                 <Column field="concept" header={t('dialog.tableEtys.columns.concept')} />
                 <Column field="quantity" header={t('dialog.tableEtys.columns.amount')} />

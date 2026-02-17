@@ -210,3 +210,16 @@ Cambios:
 - Selección opcional de pagos para Compradores.
 
 ----------------------------------------
+========================================
+RELEASE
+Fecha: 17-02-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- PDC-729 Homologar la información del portal anterior al autorizar OC en PC y App Autorizaciones.
+
+Cambios:
+- Añadidos los campos de la requisición de materiales en OC
+
+----------------------------------------
