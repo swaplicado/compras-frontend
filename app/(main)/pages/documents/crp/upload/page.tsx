@@ -149,13 +149,16 @@ const ConsultPaymentProgramded = () => {
                     oCompany,
                     oProvider
                 });
-                setLPaymentsExec((prev: any) => [{ 
-                    id: 0,
-                    name: 'Sin referencia',
-                    functional_area__id: '',
-                    functional_area__name: ''
-                 }
-                 , ...prev]);
+                if (oUser.isInternalUser) {
+                    setLPaymentsExec((prev: any) => [{ 
+                        id: 0,
+                        name: 'Sin referencia',
+                        functional_area__id: '',
+                        functional_area__name: ''
+                     }
+                     , ...prev]);
+                }
+                
                 await getlAreas({
                     setLAreas: setLGlobalAreas,
                     showToast,
@@ -190,7 +193,8 @@ const ConsultPaymentProgramded = () => {
     const validate = () => {
         const newFormErrors = {
             area: !oCrp.functional_area,
-            authz_acceptance_notes: !oCrp.authz_acceptance_notes && isInReview
+            authz_acceptance_notes: !oCrp.authz_acceptance_notes && isInReview,
+            pay: oCrp?.oPay?.length == 0
         }
         setFormErrors(newFormErrors);
         

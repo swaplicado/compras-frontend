@@ -142,17 +142,38 @@ export const DialogCrp = ({
 
     //****Funciones****/
     const handleSelectPayment = (value: any) => {
-        const noDocument = value?.some((item: any) => item.id == 0);
-        if (noDocument) {
-            value = [{
-                id: 0,
-                name: 'Sin referencia',
-                functional_area__id: '',
-                functional_area__name: ''
-            }];
+        if (oUser.isInternalUser) {
+            const noDocument = value?.some((item: any) => item.id == 0);
+            if (noDocument) {
+                value = [{
+                    id: 0,
+                    name: 'Sin referencia',
+                    functional_area__id: '',
+                    functional_area__name: ''
+                }];
+            }
         }
 
-        setOCrp?.((prev: any) => ({ ...prev, oPay: value }));
+        setOCrp((prev: any) => ({
+            ...prev,
+            authz_acceptance_name: null,
+            company: null,
+            date: null,
+            dateFormatted: null,
+            folio: null,
+            id: null,
+            number: null,
+            rfc_issuer: null,
+            rfc_receiver: null,
+            series: null,
+            tax_regime_issuer: null,
+            tax_regime_receiver: null,
+            uuid: null,
+            version: null,
+            xml_date: null,
+            oPay: value
+        }))
+        setIsXmlValid(false);
     }
 
     //Para formatear el input del componente Calendar
@@ -162,7 +183,7 @@ export const DialogCrp = ({
             if (inputCalendarRef.current && oCrp.xml_date) {
                 inputCalendarRef.current.value = DateFormatter(oCrp.xml_date);
             }
-        }, 100);
+        }, 400);
     }, [oCrp?.xml_date]);
 
     //****INIT****/
@@ -256,9 +277,9 @@ export const DialogCrp = ({
                                         }}
                                         options={lProviders}
                                         placeholder={"Selecciona proveedor"}
-                                        errorKey={""}
+                                        errorKey={"pay"}
                                         errors={formErrors}
-                                        errorMessage={""}
+                                        errorMessage={"Seleccione pago"}
                                     />
                                 )}
 
@@ -347,7 +368,7 @@ export const DialogCrp = ({
                                     </div>
                                 )}
 
-                                {oCrp?.oPay && dialogMode == 'create' && (
+                                {oCrp?.oPay?.length > 0 && dialogMode == 'create' && (
                                     <div className={`field col-12 md:col-12`}>
                                         <div className="formgrid grid">
                                             <div className="col">

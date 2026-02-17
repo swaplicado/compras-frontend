@@ -101,7 +101,7 @@ const Upload = () => {
             </h3>
             {limitDate && !oValidUser.isInternalUser && (
                 <h6 className="ml-3 text-700 font-medium text-right" style={{ color: moment(actualDate).isAfter(limitDate) ? 'red' : 'black' }}>
-                    {moment(actualDate).isBefore(limitDate) ? t('dpsDateLimitText') : t('dpsDateAfterLimitText')} {DateFormatter(limitDate)}
+                    IMPORTANTE: {moment(actualDate).isBefore(limitDate) ? t('dpsDateLimitText') : t('dpsDateAfterLimitText')} {DateFormatter(limitDate)}
                     { !crpPending?.authorized ? (
                         <p style={{color: "red"}}>
                             {crpPending?.reason}

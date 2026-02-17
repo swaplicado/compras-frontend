@@ -127,6 +127,7 @@ export const DialogOc = ({
     const [fileErrors, setFilesErrros] = useState({
         files: false,
     });
+    const [oMaterialRequest, setOMaterialRequest] = useState<any>(null);
 
     //const para el boton de scroll al final
     const [elementRef, setElementRef] = useState<HTMLDivElement | null>(null);
@@ -158,6 +159,17 @@ export const DialogOc = ({
             return '';
         }
         oOc.jsonOc?.lNotes.forEach((note: any) => {
+            notes += note.note + '\n';
+        });
+        return notes;
+    }
+
+    const getMrNotes = () => {
+        let notes = '';
+        if (!oMaterialRequest?.lNotes) {
+            return '';
+        }
+        oMaterialRequest.lNotes.forEach((note: any) => {
             notes += note.note + '\n';
         });
         return notes;
@@ -376,17 +388,29 @@ export const DialogOc = ({
                                     errors={formErrors}
                                     errorMessage={'Selecciona fecha'}
                                 />
-
-                                <Divider/>
+                                <RenderField
+                                    label={t('dialog.fields.account_tag.label')}
+                                    tooltip={''}
+                                    value={oOc.account_tag}
+                                    disabled={!editableBodyFields}
+                                    mdCol={3}
+                                    type={ editableBodyFields ? 'calendar' : 'text'}
+                                    inputRef={inputCalendarRef}
+                                    onChange={(value) => {
+                                        setOOc?.((prev: any) => ({ ...prev, date: value }));
+                                        setFormErrors?.((prev: any) => ({ ...prev, date: false }));
+                                    }}
+                                    options={[]}
+                                    placeholder={t('dialog.fields.date.placeholder')}
+                                    errorKey={'date'}
+                                    errors={formErrors}
+                                    errorMessage={'Selecciona fecha'}
+                                />
                                 { oOc?.jsonOc?.oDpsHeader?.exchangeRate > 1 && (
                                     <>
-                                        <div className={`col-12 md:col-12`}>
-                                            <div className="">
-                                                <div className="col">
-                                                    <h6>Moneda local</h6>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        <Divider align="center">
+                                            <h6>{t('dialog.fields.localCurrencySubtitle.label')}</h6>
+                                        </Divider>
                                         <RenderField
                                             label={t('dialog.fields.exchange_rate.label')}
                                             tooltip={t('dialog.fields.exchange_rate.tooltip')}
@@ -443,14 +467,9 @@ export const DialogOc = ({
                                         />
                                     </>
                                 )}
-
-                                <div className={`col-12 md:col-12`}>
-                                    <div className="">
-                                        <div className="col">
-                                            <h6>Moneda Documento</h6>
-                                        </div>
-                                    </div>
-                                </div>
+                                <Divider align="center">
+                                    <h6>{t('dialog.fields.docCurrencySubtitle')}</h6>
+                                </Divider>
                                 <RenderField
                                     label={t('dialog.fields.subtotalOc.label')}
                                     tooltip={t('dialog.fields.subtotalOc.tooltip')}
@@ -487,7 +506,9 @@ export const DialogOc = ({
                                     errors={formErrors}
                                     errorMessage={''}
                                 />
-                                <Divider/>
+                                <Divider align="center">
+                                    <h6>{t('dialog.fields.notesOcSubtitle')}</h6>
+                                </Divider>
                                 <RenderField
                                     label={t('dialog.fields.notesOc.label')}
                                     tooltip={t('dialog.fields.notesOc.tooltip')}
@@ -508,13 +529,139 @@ export const DialogOc = ({
                             </div>
                         )}
                         <div>
+                            <Divider align="center">
+                                <h6>{t('dialog.fields.docRowsSubtitle')}</h6>
+                            </Divider>
                             <TableEty
                                 lEtys={oOc?.jsonOc?.lEtys}
+                                setOMaterialRequest={setOMaterialRequest}
                             />
+                        </div>
+                        <div className="p-fluid formgrid grid">
+                            <Divider align="center">
+                                <h6>{t('dialog.fields.materialRequestSubtitle')}</h6>
+                            </Divider>
+                            { oMaterialRequest && oMaterialRequest?.idMaterialRequest != 0 ? (
+                                <>
+                                    <RenderField
+                                        label={t('dialog.fields.mrUser.label')}
+                                        tooltip={t('dialog.fields.mrUser.tooltip')}
+                                        value={oMaterialRequest?.mrUser}
+                                        disabled={!editableBodyFields}
+                                        mdCol={3}
+                                        type={'text'}
+                                        onChange={() => {}}
+                                        options={[]}
+                                        placeholder={t('dialog.fields.folio.placeholder')}
+                                        errorKey={''}
+                                        errors={[]}
+                                        errorMessage={''}
+                                    />
+                                    <RenderField
+                                        label={t('dialog.fields.mrFolio.label')}
+                                        tooltip={t('dialog.fields.mrFolio.tooltip')}
+                                        value={oMaterialRequest?.mrFolio}
+                                        disabled={!editableBodyFields}
+                                        mdCol={3}
+                                        type={'text'}
+                                        onChange={() => {}}
+                                        options={[]}
+                                        placeholder={t('dialog.fields.folio.placeholder')}
+                                        errorKey={''}
+                                        errors={[]}
+                                        errorMessage={''}
+                                    />
+                                    <RenderField
+                                        label={t('dialog.fields.mrDate.label')}
+                                        tooltip={t('dialog.fields.mrDate.tooltip')}
+                                        value={DateFormatter(oMaterialRequest?.mrDate)}
+                                        disabled={!editableBodyFields}
+                                        mdCol={3}
+                                        type={'text'}
+                                        onChange={() => {}}
+                                        options={[]}
+                                        placeholder={t('dialog.fields.folio.placeholder')}
+                                        errorKey={''}
+                                        errors={[]}
+                                        errorMessage={''}
+                                    />
+                                    <RenderField
+                                        label={t('dialog.fields.mrPriority.label')}
+                                        tooltip={t('dialog.fields.mrPriority.tooltip')}
+                                        value={oMaterialRequest?.mrPriority}
+                                        disabled={!editableBodyFields}
+                                        mdCol={3}
+                                        type={'text'}
+                                        onChange={() => {}}
+                                        options={[]}
+                                        placeholder={t('dialog.fields.folio.placeholder')}
+                                        errorKey={''}
+                                        errors={[]}
+                                        errorMessage={''}
+                                    />
+                                    <RenderField
+                                        label={t('dialog.fields.mrRequiredDate.label')}
+                                        tooltip={t('dialog.fields.mrRequiredDate.tooltip')}
+                                        value={DateFormatter(oMaterialRequest?.mrRequiredDate)}
+                                        disabled={!editableBodyFields}
+                                        mdCol={3}
+                                        type={'text'}
+                                        onChange={() => {}}
+                                        options={[]}
+                                        placeholder={t('dialog.fields.folio.placeholder')}
+                                        errorKey={''}
+                                        errors={[]}
+                                        errorMessage={''}
+                                    />
+                                    <RenderField
+                                        label={t('dialog.fields.mrType.label')}
+                                        tooltip={t('dialog.fields.mrType.tooltip')}
+                                        value={oMaterialRequest?.mrType === 'C' ? 'Consumo' : 'Resurtido'}
+                                        disabled={!editableBodyFields}
+                                        mdCol={3}
+                                        type={'text'}
+                                        onChange={() => {}}
+                                        options={[]}
+                                        placeholder={t('dialog.fields.folio.placeholder')}
+                                        errorKey={''}
+                                        errors={[]}
+                                        errorMessage={''}
+                                    />
+                                    <RenderField
+                                        label={t('dialog.fields.mrNotes.label')}
+                                        tooltip={t('dialog.fields.mrNotes.tooltip')}
+                                        value={getMrNotes()}
+                                        readonly={!editableBodyFields}
+                                        mdCol={12}
+                                        type={'textArea'}
+                                        onChange={() => {}}
+                                        options={[]}
+                                        placeholder={t('dialog.fields.folio.placeholder')}
+                                        errorKey={''}
+                                        errors={[]}
+                                        errorMessage={''}
+                                    />
+                                </>
+                            ) : 
+                            (
+                                <div className="field col-12 md:col-12">
+                                    <div className="formgrid grid">
+                                        <div className="col">
+                                            <span className="p-float-label">
+                                                <div className="flex justify-content-center">
+                                                    <div className="font-bold text-lg">{t('dialog.fields.withOutMr')}</div>
+                                                </div>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                         { showAuthComments && (
                             <>
-                                <Divider/>
+                                <Divider align="center">
+                                    <h6>{t('dialog.fields.authzCommentsSubtitle')}</h6>
+                                </Divider>
                                 <RenderField
                                     label={t('dialog.fields.authz_authorization_notes.label')}
                                     tooltip={t('dialog.fields.authz_authorization_notes.tooltip')}
@@ -537,6 +684,9 @@ export const DialogOc = ({
                         )}
                         { withFooter && (dialogMode == 'view' || dialogMode == 'edit') && (
                             <>
+                                <Divider align="center">
+                                    <h6>{t('dialog.fields.filesSubtitles')}</h6>
+                                </Divider>
                                 {!loadingFiles && (
                                     <CustomFileViewer lFiles={lFiles} />
                                 )}
@@ -580,9 +730,14 @@ export const DialogOc = ({
                                         <ProgressSpinner style={{ width: '50px', height: '50px' }} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />
                                     </div>
                                 ) : (
-                                    <HistoryAuth
-                                        lHistory={lHistoryAuth}
-                                    />
+                                    <>
+                                        <Divider align="center">
+                                            <h6>{t('dialog.fields.authHistorySubtitle')}</h6>
+                                        </Divider>
+                                        <HistoryAuth
+                                            lHistory={lHistoryAuth}
+                                        />
+                                    </>
                                 )}
                             </>
                         )}

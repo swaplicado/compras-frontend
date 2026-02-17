@@ -125,7 +125,56 @@ const oc = {
                     placeholder: "Centros costo",
                     tooltip: "Centros costo"
                 }
-            }
+            },
+            account_tag: {
+                label: "Etiqueta contable",
+                placeholder: "Etiqueta contable",
+                tooltip: "Etiqueta contable"
+            },
+            localCurrencySubtitle: "Moneda local",
+            docCurrencySubtitle: "Moneda Documento",
+            notesOcSubtitle: "Notas de la OC",
+            docRowsSubtitle: "Partidas documento",
+            materialRequestSubtitle: "Requisición de materiales (RM)",
+            mrUser: {
+                label: "Solicitante",
+                placeholder: "",
+                tooltip: "Este es el usuario de siie que hizo la RM"
+            },
+            mrFolio: {
+                label: "Folio",
+                placeholder: "",
+                tooltip: "Este es el número identificador de la RM"
+            },
+            mrDate: {
+                label: "Fecha captura",
+                placeholder: "",
+                tooltip: "Fecha en la que se realizó la RM"
+            },
+            mrRequiredDate: {
+                label: "Fecha requerida de entrega",
+                placeholder: "",
+                tooltip: "Fecha límite para la entrega (por el solicitante)"
+            },
+            mrPriority: {
+                label: "Prioridad",
+                placeholder: "",
+                tooltip: "Prioridad con la que se solicita el material"
+            },
+            mrType: {
+                label: "Tipo",
+                placeholder: "",
+                tooltip: "Resurtido: proviene de almacén"
+            },
+            mrNotes: {
+                label: "Notas de la RM",
+                placeholder: "",
+                tooltip: ""
+            },
+            withOutMr: "Sin requisición",
+            authzCommentsSubtitle: "Comentarios de autorización",
+            filesSubtitles: "Archivos",
+            authHistorySubtitle: "Historial de autorizaciones",
         },
         tableEtys: {
             columns: {
