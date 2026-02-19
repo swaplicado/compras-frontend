@@ -223,3 +223,19 @@ Cambios:
 - Añadidos los campos de la requisición de materiales en OC
 
 ----------------------------------------
+========================================
+RELEASE
+Fecha: 19-02-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- PDC-712 Mostrar historial de autorización de OC en revisión y autorización de facturas en PC.
+
+Cambios:
+- Añadido historial de autorizaciones en dialogo de facturas
+
+Nuevas funcionalidades:
+- Petición del historial de autorizaciones de OC por medio de siie_resource_id
+
+----------------------------------------

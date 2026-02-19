@@ -33,6 +33,8 @@ export const getDps = async ( props: getDpsProps  ) => {
                             reference += ', ';
                         }
                         lReferences.push({
+                            id: data[i].references[j].id,
+                            external_id: data[i].references[j].external_id,
                             reference: data[i].references[j].reference,
                             amount: data[i].references[j].amount,
                             concepts: data[i].references[j].concepts ? data[i].references[j].concepts.split(';').map((concept: any) => concept.trim() + ';\n').join('') : "N/D",
