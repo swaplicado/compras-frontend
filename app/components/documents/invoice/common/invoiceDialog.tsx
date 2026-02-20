@@ -240,6 +240,7 @@ export const InvoiceDialog = ({
     const [lRefToValidateXml, setLRefToValidateXml] = useState<any[]>([]);
     const [lRefErrors, setLRefErrors] = useState<any[]>([]);
     const [crpPending, setCrpPending] = useState<any>({});
+    const [loadingReferenceData, setLoadingReferenceData] = useState<boolean>(false);
 
     //const para el boton de scroll al final
     const [elementRef, setElementRef] = useState<HTMLDivElement | null>(null);
@@ -1013,6 +1014,7 @@ export const InvoiceDialog = ({
 
     //INIT
     useEffect(() => {
+        setLRefToValidateXml([]);
         setLUrlFiles([]);
         setLoadingReferences?.(false);
         setOCompany(null);
@@ -1069,14 +1071,58 @@ export const InvoiceDialog = ({
             payment_percentage: false
         });
 
-        if ((dialogMode == 'review' || dialogMode == 'view' || dialogMode == 'authorization') && (oDps ? true : false)) {
+        if ((dialogMode == 'review' || dialogMode == 'view' || dialogMode == 'authorization') && (oDps ? true : false) && visible) {
             const oPaymentMethod = findPaymentMethod(lPaymentMethod, oDps?.payment_method);
             const oIssuer_tax_regime = findFiscalRegime(lFiscalRegimes, oDps?.issuer_tax_regime);
             const oReceiver_tax_regime = findFiscalRegime(lFiscalRegimes, oDps?.receiver_tax_regime);
             const oUseCfdi = findUseCfdi(lUseCfdi, oDps?.useCfdi);
             const oCurrency = findCurrency(lCurrencies, oDps?.currency);
+            let lReferencesDps = oDps?.lReferences || [];
 
-            setLRefToValidateXml(oDps?.lReferences);
+            const fetchHistoryAuth = async () => {
+                setLoadingReferenceData(true);
+                for (let i = 0; i<lReferencesDps.length; i++) {
+                    try {
+                        lReferencesDps[i].history = [];
+                        if (!lReferencesDps[i].external_id) {
+                            continue;
+                        }
+                        const route = constants.ROUTE_GET_HISTORY_AUTH;
+                        const response = await axios.get(constants.API_AXIOS_GET, {
+                            params: {
+                                route: route,
+                                siie_resource_id: lReferencesDps[i].external_id,
+                                resource_type: constants.RESOURCE_TYPE_OC,
+                                id_company: oDps?.company_external_id
+                            }
+                        });
+                
+                        if (response.status === 200) {
+                            const data = response.data.data || [];
+                            let history: any[] = [];
+                
+                            for (const item of data) {
+                                history.push({
+                                    actioned_by: item.actioned_by ? item.actioned_by.full_name : (item.all_actors ? item.all_actors[0]?.full_name : ''),
+                                    status: item.flow_status.name,
+                                    notes: item.notes,
+                                    actioned_at: item.actioned_at ? DateFormatter(item.actioned_at, 'DD-MMM-YYYY HH:mm:ss') : ''
+                                });
+                            }
+
+                            lReferencesDps[i].history = history;
+                            
+                        } else {
+                            throw new Error(`Error al obtener el historial de autorización: ${response.statusText}`);
+                        }
+                    } catch (error: any) {
+                        showToast?.('error', error.response?.data?.error || 'Error al obtener el historial de autorización', 'Error al obtener el historial de autorización');
+                    }
+                }
+                setLRefToValidateXml(lReferencesDps);
+                setLoadingReferenceData(false);
+            };
+            fetchHistoryAuth();
 
             setTimeout(() => {
                 setODps((prev: any) => ({
@@ -1807,6 +1853,7 @@ export const InvoiceDialog = ({
                                     <Divider align="center">
                                         <h5>Datos de la referencia</h5>
                                     </Divider>
+                                    <div className="p-fluid formgrid grid">{loadingReferenceData && <ProgressSpinner style={{ width: '50px', height: '50px' }} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />}</div>
                                     <div className="formgrid grid">
                                         <div className="col">
                                             {lRefToValidateXml.map((item: any, index: number) => (
@@ -1859,6 +1906,87 @@ export const InvoiceDialog = ({
                                                                 errors: formErrors,
                                                                 errorMessage: ''
                                                             })}
+
+                                                            { item.purchase_ticket_details && (
+                                                                <>
+                                                                    {renderField({
+                                                                        label: t('uploadDialog.net_weight.label'),
+                                                                        tooltip: t('uploadDialog.net_weight.tooltip'),
+                                                                        value: item.purchase_ticket_details.net_weight,
+                                                                        disabled: true,
+                                                                        mdCol: 3,
+                                                                        type: 'text',
+                                                                        onChange: () => null,
+                                                                        options: [],
+                                                                        placeholder: '',
+                                                                        errorKey: '',
+                                                                        errors: formErrors,
+                                                                        errorMessage: ''
+                                                                    })}
+                                                                    {renderField({
+                                                                        label: t('uploadDialog.gross_weight.label'),
+                                                                        tooltip: t('uploadDialog.gross_weight.tooltip'),
+                                                                        value: item.purchase_ticket_details.gross_weight,
+                                                                        disabled: true,
+                                                                        mdCol: 3,
+                                                                        type: 'text',
+                                                                        onChange: () => null,
+                                                                        options: [],
+                                                                        placeholder: '',
+                                                                        errorKey: '',
+                                                                        errors: formErrors,
+                                                                        errorMessage: ''
+                                                                    })}
+                                                                    {renderField({
+                                                                        label: t('uploadDialog.productor_name.label'),
+                                                                        tooltip: t('uploadDialog.productor_name.tooltip'),
+                                                                        value: item.purchase_ticket_details.productor_name,
+                                                                        disabled: true,
+                                                                        mdCol: 6,
+                                                                        type: 'text',
+                                                                        onChange: () => null,
+                                                                        options: [],
+                                                                        placeholder: '',
+                                                                        errorKey: '',
+                                                                        errors: formErrors,
+                                                                        errorMessage: ''
+                                                                    })}
+                                                                    {renderField({
+                                                                        label: t('uploadDialog.purchase_origin_location.label'),
+                                                                        tooltip: t('uploadDialog.purchase_origin_location.tooltip'),
+                                                                        value: item.purchase_ticket_details.purchase_origin_location,
+                                                                        disabled: true,
+                                                                        mdCol: 6,
+                                                                        type: 'text',
+                                                                        onChange: () => null,
+                                                                        options: [],
+                                                                        placeholder: '',
+                                                                        errorKey: '',
+                                                                        errors: formErrors,
+                                                                        errorMessage: ''
+                                                                    })}
+                                                                    {renderField({
+                                                                        label: t('uploadDialog.purchase_origin_zone.label'),
+                                                                        tooltip: t('uploadDialog.purchase_origin_zone.tooltip'),
+                                                                        value: item.purchase_ticket_details.purchase_origin_zone,
+                                                                        disabled: true,
+                                                                        mdCol: 6,
+                                                                        type: 'text',
+                                                                        onChange: () => null,
+                                                                        options: [],
+                                                                        placeholder: '',
+                                                                        errorKey: '',
+                                                                        errors: formErrors,
+                                                                        errorMessage: ''
+                                                                    })}
+                                                                </>
+                                                            )}
+
+                                                    </div>
+                                                    <div className='pb-5'>
+                                                        <HistoryAuth
+                                                            lHistory={item.history}
+                                                        />
                                                     </div>
                                                 </div>
                                             ))}
