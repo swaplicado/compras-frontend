@@ -326,6 +326,31 @@ const invoices = {
             label: "Etiqueta contable.",
             placeholder: "Selecciona etiqueta contable",
             tooltip: "Aqui coloca la etiqueta contable de tu factura.",
+        },
+        net_weight: {
+            label: "Peso neto en kg",
+            placeholder: "",
+            tooltip: "Aquí va el peso neto en kilogramos indicado en el boleto",
+        },
+        gross_weight: {
+            label: "Peso bruto en kg",
+            placeholder: "",
+            tooltip: "Aquí va el peso bruto en kilogramos indicado en el boleto",
+        },
+        productor_name: {
+            label: "Productor",
+            placeholder: "",
+            tooltip: "Aquí va el nombre del productor indicado en el boleto",
+        },
+        purchase_origin_location: {
+            label: "Origen compra",
+            placeholder: "",
+            tooltip: "Aquí va el origen de la compra indicado en el boleto",
+        },
+        purchase_origin_zone: {
+            label: "Origen del insumo",
+            placeholder: "",
+            tooltip: "Aquí va el origen del insumo indicado en el boleto",
         }
     },
     errors: {

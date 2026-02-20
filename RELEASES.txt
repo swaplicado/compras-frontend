@@ -239,3 +239,16 @@ Nuevas funcionalidades:
 - Petición del historial de autorizaciones de OC por medio de siie_resource_id
 
 ----------------------------------------
+========================================
+RELEASE
+Fecha: 20-02-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- PDC-711 Mostrar datos complementarios de boletos de báscula
+
+Cambios:
+- Añadidos los campos adicionales de boletos para facturas de fletes
+
+----------------------------------------

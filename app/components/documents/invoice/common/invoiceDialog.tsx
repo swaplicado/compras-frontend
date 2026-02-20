@@ -1084,6 +1084,9 @@ export const InvoiceDialog = ({
                 for (let i = 0; i<lReferencesDps.length; i++) {
                     try {
                         lReferencesDps[i].history = [];
+                        if (!lReferencesDps[i].external_id) {
+                            continue;
+                        }
                         const route = constants.ROUTE_GET_HISTORY_AUTH;
                         const response = await axios.get(constants.API_AXIOS_GET, {
                             params: {
@@ -1903,6 +1906,82 @@ export const InvoiceDialog = ({
                                                                 errors: formErrors,
                                                                 errorMessage: ''
                                                             })}
+
+                                                            { item.purchase_ticket_details && (
+                                                                <>
+                                                                    {renderField({
+                                                                        label: t('uploadDialog.net_weight.label'),
+                                                                        tooltip: t('uploadDialog.net_weight.tooltip'),
+                                                                        value: item.purchase_ticket_details.net_weight,
+                                                                        disabled: true,
+                                                                        mdCol: 3,
+                                                                        type: 'text',
+                                                                        onChange: () => null,
+                                                                        options: [],
+                                                                        placeholder: '',
+                                                                        errorKey: '',
+                                                                        errors: formErrors,
+                                                                        errorMessage: ''
+                                                                    })}
+                                                                    {renderField({
+                                                                        label: t('uploadDialog.gross_weight.label'),
+                                                                        tooltip: t('uploadDialog.gross_weight.tooltip'),
+                                                                        value: item.purchase_ticket_details.gross_weight,
+                                                                        disabled: true,
+                                                                        mdCol: 3,
+                                                                        type: 'text',
+                                                                        onChange: () => null,
+                                                                        options: [],
+                                                                        placeholder: '',
+                                                                        errorKey: '',
+                                                                        errors: formErrors,
+                                                                        errorMessage: ''
+                                                                    })}
+                                                                    {renderField({
+                                                                        label: t('uploadDialog.productor_name.label'),
+                                                                        tooltip: t('uploadDialog.productor_name.tooltip'),
+                                                                        value: item.purchase_ticket_details.productor_name,
+                                                                        disabled: true,
+                                                                        mdCol: 6,
+                                                                        type: 'text',
+                                                                        onChange: () => null,
+                                                                        options: [],
+                                                                        placeholder: '',
+                                                                        errorKey: '',
+                                                                        errors: formErrors,
+                                                                        errorMessage: ''
+                                                                    })}
+                                                                    {renderField({
+                                                                        label: t('uploadDialog.purchase_origin_location.label'),
+                                                                        tooltip: t('uploadDialog.purchase_origin_location.tooltip'),
+                                                                        value: item.purchase_ticket_details.purchase_origin_location,
+                                                                        disabled: true,
+                                                                        mdCol: 6,
+                                                                        type: 'text',
+                                                                        onChange: () => null,
+                                                                        options: [],
+                                                                        placeholder: '',
+                                                                        errorKey: '',
+                                                                        errors: formErrors,
+                                                                        errorMessage: ''
+                                                                    })}
+                                                                    {renderField({
+                                                                        label: t('uploadDialog.purchase_origin_zone.label'),
+                                                                        tooltip: t('uploadDialog.purchase_origin_zone.tooltip'),
+                                                                        value: item.purchase_ticket_details.purchase_origin_zone,
+                                                                        disabled: true,
+                                                                        mdCol: 6,
+                                                                        type: 'text',
+                                                                        onChange: () => null,
+                                                                        options: [],
+                                                                        placeholder: '',
+                                                                        errorKey: '',
+                                                                        errors: formErrors,
+                                                                        errorMessage: ''
+                                                                    })}
+                                                                </>
+                                                            )}
+
                                                     </div>
                                                     <div className='pb-5'>
                                                         <HistoryAuth
