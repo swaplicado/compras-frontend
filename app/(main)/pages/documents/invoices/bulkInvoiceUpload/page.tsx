@@ -476,7 +476,13 @@ const BulkInvoiceUpload = () => {
                 });
                 
                 // const area_id = lRefToValidateXml[0].id == 0 ? oArea?.id : lRefToValidateXml[0].functional_area_id;
-                const area_id = invoiceType == 'Fletes' ? lDps[i].reference[0].area_id : constants.AREA_COMPRAS_AGUACATE;
+                // const area_id = invoiceType == 'Fletes' ? lDps[i].reference[0].area_id : constants.AREA_COMPRAS_AGUACATE;
+                 const area_id = invoiceType == 'Fletes' ? 
+                    (lDps[i].reference[0].area_id ? lDps[i].reference[0].area_id : (
+                        lDps[i].company_partner_id == constants.AETH_ID_LOCAL ? constants.AREA_COMPRAS_AGUACATE : constants.AREA_AME_NO_APLICA
+                    )) : (lDps[i].company_partner_id == constants.AETH_ID_LOCAL ? constants.AREA_COMPRAS_AGUACATE : constants.AREA_AME_NO_APLICA);
+
+                console.log('area_id: ', area_id);
     
                 formData.append('references', lDps[i].reference ? JSON.stringify(lDps[i].reference) : '[]');
                 formData.append('area_id', area_id || '');

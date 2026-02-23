@@ -208,6 +208,7 @@ const constants = {
 
     //area compras aguacate
     AREA_COMPRAS_AGUACATE: 4,
+    AREA_AME_NO_APLICA: 17,
 
     //Uso de cfdi de activo fijo
     USE_CFDI_ACTIVO_FIJO: ['I01', 'I02', 'I03', 'I04', 'I05', 'I06', 'I07', 'I08'],
@@ -240,7 +241,10 @@ const constants = {
     AETH_ID: 2852,
     AMESA_ID: 2217,
     OPE_ID: 1211,
-    SWAP_ID: 1603
+    SWAP_ID: 1603,
+
+    AETH_ID_LOCAL: 459,
+    AMESA_ID_LOCAL: 253
 }
 
 export default constants;
