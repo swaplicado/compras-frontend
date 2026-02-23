@@ -252,3 +252,17 @@ Cambios:
 - Añadidos los campos adicionales de boletos para facturas de fletes
 
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: DD-MM-YYYY
+Autor: Nombre o equipo
+========================================
+
+Resumen:
+- Fix, area funcional dependiendo de empresa en carga masiva de facturas
+
+Correcciones:
+- Se selecciona el area dependiendo de la empresa destino de la factura
+
+----------------------------------------
