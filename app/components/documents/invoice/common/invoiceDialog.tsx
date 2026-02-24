@@ -1116,7 +1116,7 @@ export const InvoiceDialog = ({
                             throw new Error(`Error al obtener el historial de autorización: ${response.statusText}`);
                         }
                     } catch (error: any) {
-                        showToast?.('error', error.response?.data?.error || 'Error al obtener el historial de autorización', 'Error al obtener el historial de autorización');
+                        // showToast?.('error', error.response?.data?.error || 'Error al obtener el historial de autorización', 'Error al obtener el historial de autorización');
                     }
                 }
                 setLRefToValidateXml(lReferencesDps);
