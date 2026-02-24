@@ -83,9 +83,10 @@ export async function POST(req: NextRequest) {
             const data = await req.json();
             route = data.route;
             jsonData = data.jsonData;
-            if (!jsonData.company_id && !jsonData.company && company) {
+            if (!jsonData.company_id && !jsonData.company && company && !jsonData.withOutCompany) {
                 jsonData.company = company?.value || '';
             }
+            delete jsonData.withOutCompany;
         }
 
         let headers = {};

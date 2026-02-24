@@ -10,26 +10,43 @@ import appConfig from '../appMenu.json';
 import appConfigProvider from '@/appMenuProvider.json';
 import Cookies from 'js-cookie';
 import constants from '@/app/constants/constants';
+import {getOUser} from '@/app/(main)/utilities/user/common/userUtilities'
 
 const AppMenu = () => {
     const [modelProvider, setModelProvider] = useState<AppMenuItem[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Este código solo se ejecuta en el cliente
-        let userGroups = Cookies.get('groups') ? JSON.parse(Cookies.get('groups') || '[]') : [];
-        let groups = [];
-        
-        if (!Array.isArray(userGroups)) {
-            groups = [userGroups];
-        } else {
-            groups = userGroups;
-        }
+        const init = async () => {
+            // Este código solo se ejecuta en el cliente
+            let userGroups = Cookies.get('groups') ? JSON.parse(Cookies.get('groups') || '[]') : [];
+            let groups = [];
+            
+            if (!Array.isArray(userGroups)) {
+                groups = [userGroups];
+            } else {
+                groups = userGroups;
+            }
 
-        // const config = groups.includes(constants.ROLES.COMPRADOR_ID) ? appConfig : appConfigProvider;
-        const config = groups.includes(constants.ROLES.PROVEEDOR_ID) ? appConfigProvider : appConfig;
-        setModelProvider(config?.menu || []);
-        setLoading(false);
+            // const config = groups.includes(constants.ROLES.COMPRADOR_ID) ? appConfig : appConfigProvider;
+            let config = groups.includes(constants.ROLES.PROVEEDOR_ID) ? appConfigProvider : appConfig;
+            const oUser = await getOUser();
+            if (constants.USERS_CAN_CONFIG.includes(oUser?.oUser.id)) {
+                config.menu.push({
+                    "label": "Configuraciones",
+                    "items": [
+                        {
+                            "label": "Calendario de facturas",
+                            "icon": "bx bxs-calendar bx-sm",
+                            "to": "/pages/configurations/uploadInvoicesDates"
+                        }
+                    ]
+                })
+            }
+            setModelProvider(config?.menu || []);
+            setLoading(false);
+        }
+        init();
     }, []);
 
     if (loading) {
