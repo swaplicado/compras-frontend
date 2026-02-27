@@ -255,8 +255,8 @@ Cambios:
 
 ========================================
 RELEASE
-Fecha: DD-MM-YYYY
-Autor: Nombre o equipo
+Fecha: 23-02-2026
+Autor: Adrián Alejandro Avilés Gómez
 ========================================
 
 Resumen:
