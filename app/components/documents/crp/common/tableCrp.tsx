@@ -148,7 +148,7 @@ export const TableCrp = ({
     };
 
     const appDateBodyTemplate = (rowData: any) => {
-        return DateFormatter(rowData.app_date);
+        return DateFormatter(rowData.date);
     };
     const reqDateBodyTemplate = (rowData: any) => {
         return DateFormatter(rowData.req_date);

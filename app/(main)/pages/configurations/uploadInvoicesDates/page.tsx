@@ -239,6 +239,9 @@ export default function UploadInvoicesDates() {
     return (
         <>
             <style jsx global>{`
+                .p-datepicker-inline {
+                    min-width: 280px !important;
+                }
                 .p-datepicker .p-datepicker-header {
                     display: none;
                 }

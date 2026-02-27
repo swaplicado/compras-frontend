@@ -280,3 +280,18 @@ Nuevas funcionalidades:
 - Pantalla para configurar calendario de carga de facturas
 
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 27-02-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- Fix, columna fecha en CRP y ancho de los calendarios
+
+Correcciones:
+- Fix, nombre de campo fecha erroneo en tabla de CRP
+- Fix, ancho de calendarios al recargar la pantalla
+
+----------------------------------------
