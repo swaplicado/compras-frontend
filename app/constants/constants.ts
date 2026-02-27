@@ -62,6 +62,7 @@ const constants = {
     ROUTE_GET_ACCOUNT_STATE_PDF: '/transactions/partners/get_account_state_pdf',
     ROUTE_GET_ACCOUNT_STATE_INSTRUCTIONS: '/transactions/partners/get_account_state_instructions',
     ROUTE_GET_OPEX: '/transactions/get-accounting-tags',
+    ROUTE_GET_DEADLINE: '/transactions/upload-deadline/year-deadline/',
 
     ROUTE_COMPARE_FILES: '/pages/compareFiles/',
 
@@ -80,6 +81,7 @@ const constants = {
     ROUTE_POST_VALIDATE_XML_NC: '/transactions/documents/validate-xml-nc/',
     ROUTE_POST_NC: '/transactions/document-transaction-nc/',
     ROUTE_POST_CANCEL_FLOW: '/transactions/cancel-flow/',
+    ROUTE_POST_SAVE_DEADLINE: '/transactions/upload-deadline/create-or-update/',
 
     //Constantes de estados de las facturas
     REVIEW_ACCEPT: 'O',
@@ -244,7 +246,9 @@ const constants = {
     SWAP_ID: 1603,
 
     AETH_ID_LOCAL: 459,
-    AMESA_ID_LOCAL: 253
+    AMESA_ID_LOCAL: 253,
+
+    USERS_CAN_CONFIG: [460, 462, 463]
 }
 
 export default constants;

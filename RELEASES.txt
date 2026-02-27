@@ -255,8 +255,8 @@ Cambios:
 
 ========================================
 RELEASE
-Fecha: DD-MM-YYYY
-Autor: Nombre o equipo
+Fecha: 23-02-2026
+Autor: Adrián Alejandro Avilés Gómez
 ========================================
 
 Resumen:
@@ -264,5 +264,19 @@ Resumen:
 
 Correcciones:
 - Se selecciona el area dependiendo de la empresa destino de la factura
+
+----------------------------------------
+
+========================================
+RELEASE
+Fecha: 24-02-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+-PDC-608 Gestión y consulta del calendario de recepción de facturas 
+
+Nuevas funcionalidades:
+- Pantalla para configurar calendario de carga de facturas
 
 ----------------------------------------
