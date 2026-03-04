@@ -738,7 +738,7 @@ export const InvoiceDialog = ({
                 uuid: oDps.uuid || '',
                 functional_area: area_id,
                 is_advance: isAdvance,
-                advance_application: oAdvance
+                advance_application: oAdvance?.id
             };
 
             formData.append('document', JSON.stringify(document));

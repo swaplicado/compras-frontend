@@ -295,3 +295,17 @@ Correcciones:
 - Fix, ancho de calendarios al recargar la pantalla
 
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 03-04-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- Fix, envio de factura de anticipo
+
+Correcciones:
+- Fix, carga de factura con anticipo
+
+----------------------------------------
