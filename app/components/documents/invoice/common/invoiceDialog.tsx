@@ -802,7 +802,6 @@ export const InvoiceDialog = ({
             myDps.provider_id = oProvider?.id;
             myDps.functional_area = oArea?.name;
             myDps.is_advance = isAdvance;
-            myDps.advance_application = oAdvance;
             myDps.acceptance = "pendiente";
             myDps.authorization = "pendiente";
             myDps.authz_acceptance_id = 1;

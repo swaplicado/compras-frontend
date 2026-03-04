@@ -309,3 +309,17 @@ Correcciones:
 - Fix, carga de factura con anticipo
 
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 03-04-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- Campos Centro de costos y conceptos a nivel documento en OC
+
+Cambios:
+- Leer el CC y concepto del documento o de la referencia en OC
+
+----------------------------------------
