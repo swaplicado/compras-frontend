@@ -323,3 +323,18 @@ Cambios:
 - Leer el CC y concepto del documento o de la referencia en OC
 
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 10-03-2026
+Autor: Cesar Orozco
+========================================
+
+Resumen:
+- Se agrega historial de autorizaciones a proformas.
+
+Cambios:
+- Se agrega el historial de autorizaciones a pantalla de todas las proformas, monitorear autorizaciones (autorizadas, rechazadas y en autorización),
+tambien en autorizar proformas (pendientes para mi).
+
+----------------------------------------
