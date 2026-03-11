@@ -338,3 +338,17 @@ Cambios:
 tambien en autorizar proformas (pendientes para mi).
 
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 11-03-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- Cambio en columna autorizacion de la tabla de facturas de PENDIENTE a SIN INICIAR
+
+Cambios:
+- Cambio en columna autorizacion de la tabla de facturas de PENDIENTE a SIN INICIAR
+
+----------------------------------------

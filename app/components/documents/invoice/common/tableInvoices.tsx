@@ -463,7 +463,12 @@ export const TableInvoices = ({
         
         return (
             <div className="flex align-items-center justify-content-between gap-2">
-                <span className={`status-dps-badge status-${rowData.authorization}`}>{rowData.authorization}</span>
+                {(rowData.authorization == 'pendiente') ? (
+                    <span className="status-dps-badge surface-200">SIN INICIAR</span>
+                ) : (
+                    <span className={`status-dps-badge status-${rowData.authorization}`}>{rowData.authorization}</span>
+                )}  
+                  
                 <Button 
                     type="button" 
                     icon="bx bx-list-ol" 
@@ -485,7 +490,11 @@ export const TableInvoices = ({
 
     const statusAuthDpsBodyTemplate = (rowData: any) => {
         if (!withHistoryAuth) {
-            return <span className={`status-dps-badge status-${rowData.authorization}`}>{rowData.authorization}</span>;
+            if (rowData.authorization == 'pendiente') {
+                return <span className={`status-dps-badge surface-200`} >SIN INICIAR</span>;
+            } else {
+                return <span className={`status-dps-badge status-${rowData.authorization}`}>{rowData.authorization}</span>;
+            }
         } else if (withHistoryAuth) {
             return <HistoryOverlay rowData={rowData} />
         }
