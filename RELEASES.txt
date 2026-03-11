@@ -352,3 +352,18 @@ Cambios:
 - Cambio en columna autorizacion de la tabla de facturas de PENDIENTE a SIN INICIAR
 
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 11-03-2026
+Autor: Cesar Orozco
+========================================
+
+Resumen:
+- Se muestra la información de tipo de carga.
+
+Cambios:
+- Se agrega el tipo de carga en las tablas de facturas.
+- Se agrega el tipo de carga en los dialogos de facturas.
+
+----------------------------------------

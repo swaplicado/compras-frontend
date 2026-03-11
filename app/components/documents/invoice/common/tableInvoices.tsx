@@ -387,6 +387,45 @@ export const TableInvoices = ({
         return lCfdis.includes(rowData.useCfdi) ? renderActivoFijo : renderGasto;
     }
 
+    const processingTypeTemplate = (rowData: any) => {
+        const icon = rowData.processing_icon;
+        const name = rowData.processing_name;
+
+        if (!icon) {
+            return (
+                <div className="flex justify-content-center">
+                    <Tooltip target=".processing-icon" />
+                    <i
+                        className="pi pi-file text-gray-400 processing-icon"
+                        data-pr-tooltip="Normal"
+                        data-pr-position="top"
+                    ></i>
+                </div>
+            );
+        }
+
+        return (
+            <div className="flex justify-content-center align-items-center">
+                <Tooltip target=".processing-icon" />
+                {icon.startsWith("pi") ? (
+                    <i
+                        className={`${icon} processing-icon`}
+                        data-pr-tooltip={name}
+                        data-pr-position="top"
+                    ></i>
+                ) : (
+                    <span
+                        className="processing-icon"
+                        data-pr-tooltip={name}
+                        data-pr-position="top"
+                    >
+                        {icon}
+                    </span>
+                )}
+            </div>
+        );
+    };
+
     const companyFilterTemplate = () => {
         return (
             <Dropdown 
@@ -826,6 +865,7 @@ export const TableInvoices = ({
                 <Column field="payday" header={t('invoicesTable.columns.payday')} footer={t('invoicesTable.columns.payday')} body={payDayBodyTemplate} sortable />
                 <Column field="payment_percentage" header={t('invoicesTable.columns.payment_percentage')} footer={t('invoicesTable.columns.payment_percentage')} />
                 <Column field="useCfdi" header={t('invoicesTable.columns.useCfdi')} footer={t('invoicesTable.columns.useCfdi')} body={useCfdiTemplate} />
+                <Column field="processing_icon" header="Carga" footer="Carga" body={processingTypeTemplate} />
                 <Column field="acceptance" header={t('invoicesTable.columns.acceptance')} footer={t('invoicesTable.columns.acceptance')} body={statusAcceptanceDpsBodyTemplate} sortable hidden={ columnsProps?.acceptance.hidden } />
                 <Column field="actors_of_action" header={'Usuario en turno'} footer={'Usuario en turno'} body={actorsOfActionBody} sortable hidden={ columnsProps?.actors_of_action.hidden } />
                 <Column field="authorization" header={t('invoicesTable.columns.authorization')} footer={t('invoicesTable.columns.authorization')} body={statusAuthDpsBodyTemplate} sortable hidden={ columnsProps?.authorization.hidden } />

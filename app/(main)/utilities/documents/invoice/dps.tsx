@@ -106,6 +106,8 @@ export const getDps = async ( props: getDpsProps  ) => {
                     payment_way: data[i].payment_way,
                     due_date: data[i].due_date,
                     account_tag: data[i].account_tag,
+                    processing_icon: data[i].processing_type_icon,
+                    processing_name: data[i].processing_type_name,
                 });
             }
             props.setLDps(dps);
