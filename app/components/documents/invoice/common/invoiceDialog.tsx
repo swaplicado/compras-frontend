@@ -738,7 +738,7 @@ export const InvoiceDialog = ({
                 uuid: oDps.uuid || '',
                 functional_area: area_id,
                 is_advance: isAdvance,
-                advance_application: oAdvance
+                advance_application: oAdvance?.id
             };
 
             formData.append('document', JSON.stringify(document));
@@ -802,7 +802,6 @@ export const InvoiceDialog = ({
             myDps.provider_id = oProvider?.id;
             myDps.functional_area = oArea?.name;
             myDps.is_advance = isAdvance;
-            myDps.advance_application = oAdvance;
             myDps.acceptance = "pendiente";
             myDps.authorization = "pendiente";
             myDps.authz_acceptance_id = 1;

@@ -20,6 +20,7 @@ import { FieldsEditAcceptance } from '@/app/components/documents/invoice/fieldsE
 import { findCurrency, findFiscalRegime, findPaymentMethod, findUseCfdi } from '@/app/(main)/utilities/files/catFinder';
 import { SelectButton } from 'primereact/selectbutton';
 import { InputNumber } from 'primereact/inputnumber';
+import { HistoryAuth } from '@/app/components/documents/invoice/historyAuth';
 
 interface DialogPrepay {
     visible: boolean;
@@ -38,6 +39,10 @@ interface DialogPrepay {
     setLoading?: React.Dispatch<React.SetStateAction<boolean>>;
     loading?: boolean;
     oUser: any;
+    withHistoryAuth?: boolean;
+    getHistoryAuth?: () => Promise<any>;
+    loadingHistoryAuth?: boolean;
+    lHistoryAuth?: any[];
     withHeader?: boolean;
     withBody?: boolean;
     withFooter?: boolean;
@@ -90,6 +95,10 @@ export const DialogPrepay = ({
     setLoading,
     loading,
     oUser,
+    withHistoryAuth,
+    getHistoryAuth,
+    loadingHistoryAuth,
+    lHistoryAuth = [],
     withHeader,
     withBody,
     withFooter,
@@ -422,6 +431,10 @@ export const DialogPrepay = ({
                     ...prev,
                     payment_date: nextTusday
                 }));
+            }
+
+            if (withHistoryAuth && visible) {
+                getHistoryAuth?.();
             }
         }
     }, [visible]);
@@ -1051,6 +1064,17 @@ export const DialogPrepay = ({
                             </>
                         )}
                     </>
+                )}
+                { withHistoryAuth && oUser?.isInternalUser && (
+                    loadingHistoryAuth ? (
+                        <div className='flex justify-content-center'>
+                            <ProgressSpinner style={{ width: '50px', height: '50px' }} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />
+                        </div>
+                    ) : (
+                        <HistoryAuth
+                            lHistory={lHistoryAuth}
+                        />
+                    )
                 )}
                 <div ref={setElementRef} data-observer-element className={''}></div>
             </Dialog>

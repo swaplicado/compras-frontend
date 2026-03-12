@@ -43,6 +43,9 @@ const UploadPrepayment = () => {
     const [userFunctionalAreas, setUserFunctionalAreas] = useState<any>(null);
     const [oUser, setOUser] = useState<any>(null);
     const [dateFilter, setDateFilter] = useState<any>(null);
+    const [historyAuth, setHistoryAuth] = useState<any[]>([]);
+    const [loadingHistoryAuth, setLoadingHistoryAuth] = useState<boolean>(false);
+
     const [lCompaniesFilter, setLCompaniesFilter] = useState<any[]>([]);
     const [showInfo, setShowInfo] = useState<boolean>(false);
     const [showManual, setShowManual] = useState<boolean>(false);
@@ -137,7 +140,7 @@ const UploadPrepayment = () => {
     };
 
     const getLPrepayments = async () => {
-        let params: any = {};
+        let params: any = {};        
         if (oUser.isInternalUser) {
             const route = constants.ROUTE_GET_DPS_BY_AREA_ID
             params = {
@@ -200,6 +203,42 @@ const UploadPrepayment = () => {
         xmlUploadRef.current?.clear();
         setIsXmlValid(false);
         setEditableBodyFields(false);
+    }
+
+    const getHistoryAuth = async () => {
+        try {
+            setLoadingHistoryAuth(true);
+            const route = constants.ROUTE_GET_HISTORY_AUTH;
+            const response = await axios.get(constants.API_AXIOS_GET, {
+                params: {
+                    route: route,
+                    external_id: oPrepay.id,
+                    resource_type: constants.RESOURCE_TYPE_PP,
+                    id_company: oPrepay.company_external_id
+                }
+            });
+
+            if (response.status === 200) {
+                const data = response.data.data || [];
+                let history: any[] = [];
+
+                for (const item of data) {
+                    history.push({
+                        actioned_by: item.actioned_by ? item.actioned_by.full_name : item.all_actors[0].full_name,
+                        status: item.flow_status.name,
+                        notes: item.notes,
+                        actioned_at: item.actioned_at ? DateFormatter(item.actioned_at, 'DD-MMM-YYYY HH:mm:ss') : ''
+                    });
+                }
+                setHistoryAuth(history);
+            } else {
+                throw new Error(`Error al obtener el historial de autorización: ${response.statusText}`);
+            }
+        } catch (error: any) {
+            showToast('error', error.response?.data?.error || 'Error al obtener el historial de autorización', 'Error al obtener el historial de autorización');
+        } finally {
+            setLoadingHistoryAuth(false);
+        }
     }
 
     useEffect(() => {
@@ -432,6 +471,10 @@ const UploadPrepayment = () => {
             const oUser = await getOUser();
             setUserFunctionalAreas(user_functional_areas);
             setOUser(oUser);
+            //sleep de 1 seg
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            console.log(oUser);
+            
             setDateFilter(dateToWork);
         }
         fetch();
@@ -535,6 +578,10 @@ const UploadPrepayment = () => {
                         setShowing={setShowing}
                         showAuthComments={true}
                         isInAuth={false}
+                        withHistoryAuth={true}
+                        getHistoryAuth={getHistoryAuth}
+                        loadingHistoryAuth={loadingHistoryAuth}
+                        lHistoryAuth={historyAuth}
                     />
                     <TablePrepayments
                         lNc={lNc}

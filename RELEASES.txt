@@ -280,3 +280,90 @@ Nuevas funcionalidades:
 - Pantalla para configurar calendario de carga de facturas
 
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 27-02-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- Fix, columna fecha en CRP y ancho de los calendarios
+
+Correcciones:
+- Fix, nombre de campo fecha erroneo en tabla de CRP
+- Fix, ancho de calendarios al recargar la pantalla
+
+----------------------------------------
+
+========================================
+RELEASE
+Fecha: 03-04-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- Fix, envio de factura de anticipo
+
+Correcciones:
+- Fix, carga de factura con anticipo
+
+----------------------------------------
+
+========================================
+RELEASE
+Fecha: 03-04-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- Campos Centro de costos y conceptos a nivel documento en OC
+
+Cambios:
+- Leer el CC y concepto del documento o de la referencia en OC
+
+----------------------------------------
+
+========================================
+RELEASE
+Fecha: 10-03-2026
+Autor: Cesar Orozco
+========================================
+
+Resumen:
+- Se agrega historial de autorizaciones a proformas.
+
+Cambios:
+- Se agrega el historial de autorizaciones a pantalla de todas las proformas, monitorear autorizaciones (autorizadas, rechazadas y en autorización),
+tambien en autorizar proformas (pendientes para mi).
+
+----------------------------------------
+
+========================================
+RELEASE
+Fecha: 11-03-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- Cambio en columna autorizacion de la tabla de facturas de PENDIENTE a SIN INICIAR
+
+Cambios:
+- Cambio en columna autorizacion de la tabla de facturas de PENDIENTE a SIN INICIAR
+
+----------------------------------------
+
+========================================
+RELEASE
+Fecha: 11-03-2026
+Autor: Cesar Orozco
+========================================
+
+Resumen:
+- Se muestra la información de tipo de carga.
+
+Cambios:
+- Se agrega el tipo de carga en las tablas de facturas.
+- Se agrega el tipo de carga en los dialogos de facturas.
+
+----------------------------------------

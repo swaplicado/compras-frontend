@@ -44,7 +44,7 @@ interface renderFieldProps {
     value: any;
     disabled?: boolean;
     mdCol: number | 6;
-    type: 'text' | 'dropdown' | 'number' | 'textArea' | 'calendar';
+    type: 'text' | 'dropdown' | 'number' | 'textArea' | 'calendar' | 'display';
     onChange?: (value: any) => void;
     options?: any[];
     placeholder: string;
@@ -347,6 +347,28 @@ export const FieldsDps = ({
                     </div>
                 </div>
             )}
+            {props.type == 'display' && (
+                <div className={`field col-12 md:col-${props.mdCol}`}>
+                    <div className="formgrid grid">
+                        <div className="col">
+                            <label>{props.label}</label>
+                            &nbsp;
+                            <Tooltip target=".custom-target-icon" />
+                            <i
+                                className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
+                                data-pr-tooltip={props.tooltip}
+                                data-pr-position="right"
+                                data-pr-my="left center-2"
+                                style={{ fontSize: '1rem', cursor: 'pointer' }}
+                            ></i>
+
+                            <div className="w-full p-inputtext flex align-items-center">
+                                {props.value}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </>
     );
 
@@ -613,23 +635,44 @@ export const FieldsDps = ({
                         errorMessage: 'Ingresa la descripción',
                         labelClass: 'opacity-100 text-blue-600'
                     })}
-                    
-                    {renderField({
-                        label: 'Etiqueta contable',
-                        tooltip: '',
-                        value: footerMode == 'edit' ? oDps?.account_tag : ( footerMode == 'view' ? ( oDps?.account_tag ? oDps?.account_tag : 'Sin etiqueta' ) : oDps?.account_tag ),
-                        onChange: (value) => {
-                            setODps((prev: any) => ({ ...prev, account_tag: value }));
-                        },
-                        disabled: footerMode == 'view',
-                        mdCol: 4,
-                        type: footerMode != 'edit' ? 'text' : 'dropdown',
-                        placeholder: '',
-                        errors: errors,
-                        errorKey: '',
-                        errorMessage: '',
-                        lOptions: lOpex
-                    })}
+                    <div className="p-fluid formgrid grid">
+                        {renderField({
+                            label: 'Etiqueta contable',
+                            tooltip: '',
+                            value: footerMode == 'edit' ? oDps?.account_tag : ( footerMode == 'view' ? ( oDps?.account_tag ? oDps?.account_tag : 'Sin etiqueta' ) : oDps?.account_tag ),
+                            onChange: (value) => {
+                                setODps((prev: any) => ({ ...prev, account_tag: value }));
+                            },
+                            disabled: footerMode == 'view',
+                            mdCol: 4,
+                            type: footerMode != 'edit' ? 'text' : 'dropdown',
+                            placeholder: '',
+                            errors: errors,
+                            errorKey: '',
+                            errorMessage: '',
+                            lOptions: lOpex
+                        })}
+                        {renderField({
+                            label: 'Tipo de carga',
+                            tooltip: 'Como se cargo el documento (estandar, compras o fletes).',
+                            value: (
+                                <span className="flex align-items-center gap-2">
+                                    {oDps?.processing_icon?.startsWith("pi") ? (
+                                        <i className={oDps.processing_icon}></i>
+                                    ) : (
+                                        <span>{oDps?.processing_icon}</span>
+                                    )}
+                                    <span>{oDps?.processing_name || 'Sin tipo'}</span>
+                                </span>
+                            ),
+                            onChange: () => ({}),
+                            disabled: true,
+                            mdCol: 4,
+                            type: 'display',
+                            placeholder: '',
+                            errorKey: ''
+                        })}
+                    </div>
                     <Divider align="center">
                         <h5>Datos del pago</h5>
                     </Divider>

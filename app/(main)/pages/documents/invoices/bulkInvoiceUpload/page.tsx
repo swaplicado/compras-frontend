@@ -51,7 +51,11 @@ const BulkInvoiceUpload = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const { t } = useTranslation('bulkInvoiceUpload');
     const { t: tCommon } = useTranslation('common');
-    const options = ['Fletes', 'Compras'];
+    // const options = ['Fletes', 'Compras'];
+    const options = [
+        {label: "Fletes", value: "Fletes", icon: "pi pi-truck" },
+        {label: "Compras", value: "Compras", icon: "pi pi-shopping-cart"}
+    ]
     const [invoiceType, setInvoiceType] = useState<string | null>(null);
     const [lInvoices, setLInvoices] = useState<any[]>([]);
     const [invoiceKeys, setInvoiceKeys] = useState<string[]>([]);
@@ -566,6 +570,20 @@ const BulkInvoiceUpload = () => {
         // setIsSubmitting(false);
     }
 
+    //Template para mostrar el icono + texto
+    const itemTemplate = (option: any) => {
+        return (
+            <span style={{ display: "flex", alignItems: "center", gap: "6px", justifyContent: "center", width: "100%", fontWeight: "bold" }}>
+                {option.icon.startsWith("pi") ? (
+                    <i className={option.icon}></i>
+                ) : (
+                    <span>{option.icon}</span>
+                )}
+                {option.label}
+            </span>
+        );
+    };
+
     //*******Renders*******
     const headerCard = (
         <div
@@ -957,8 +975,18 @@ const BulkInvoiceUpload = () => {
                 <Card header={headerCard} pt={{ content: { className: 'p-0' }, body: { className: 'p-2'} }}>
                     <div className="p-fluid formgrid grid">
                         <div className="field col-12 md:col-6">
-                            <label htmlFor="invoicetype" className='mb-0'>Selecciona tipo de factura</label>
-                            <SelectButton id="invoicetype" value={invoiceType} onChange={(e) => handleChoiceInvoiceType(e.value)} options={options} />
+                            <label htmlFor="invoicetype" className="mb-0">
+                                Selecciona tipo de factura
+                            </label>
+
+                            <SelectButton
+                                id="invoicetype"
+                                value={invoiceType}
+                                options={options}
+                                optionLabel="label"
+                                onChange={(e) => handleChoiceInvoiceType(e.value)}
+                                itemTemplate={itemTemplate}
+                            />
                         </div>
                         <div className="field col-12 md:col-4">
                             <RenderField
