@@ -382,3 +382,19 @@ Cambios:
 - En crp se clarifico la información, se agrego botón para ver pagos que esten ligados a la CRP.
 
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 13-03-2026
+Autor: Cesar Orozco
+========================================
+
+Resumen:
+- Se modifica la pantalla de calendario para permitir verla sin modificar.
+
+Cambios:
+- Se incorpora funcionalidad para ver los calendarios sin modificar.
+- Se agrega al menú para que vean esta opción si no son proveedores 
+
+
+----------------------------------------
