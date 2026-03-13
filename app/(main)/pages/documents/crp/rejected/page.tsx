@@ -217,6 +217,7 @@ const ConsultPaymentProgramded = () => {
             rfc_receiver: data.oCompany.fiscal_id,
             tax_regime_receiver: data.receiver_tax_regime,
             xml_date: data.dateFormatted,
+            folio: data.folio,
             uuid: data.uuid
         }));
     }

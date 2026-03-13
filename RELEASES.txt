@@ -367,3 +367,18 @@ Cambios:
 - Se agrega el tipo de carga en los dialogos de facturas.
 
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 13-03-2026
+Autor: Nombre o equipo
+========================================
+
+Resumen:
+- Clarificación de pagos y crp.
+
+Cambios:
+- En pagos se cambiaron como se llaman algunos campos y se clarifico la información.
+- En crp se clarifico la información, se agrego botón para ver pagos que esten ligados a la CRP.
+
+----------------------------------------
