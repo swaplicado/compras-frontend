@@ -65,6 +65,7 @@ const constants = {
     ROUTE_GET_DEADLINE: '/transactions/upload-deadline/year-deadline/',
 
     ROUTE_COMPARE_FILES: '/pages/compareFiles/',
+    ROUTE_SEE_FILES: '/pages/seeFiles/',
 
     // ROUTE_POST_VALIDATE_XML: '/transactions/documents/validate-xml/',
     ROUTE_POST_VALIDATE_XML: '/transactions/documents/xml_validator/',

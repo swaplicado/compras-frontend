@@ -139,7 +139,10 @@ export const getPaymentsExec = async ({
             for (let i = 0; i < data.length; i++) {
                 payments.push({
                     id: data[i].id,
-                    name: 'Folio: ' + data[i].folio + ' Pago: ' + data[i].amount + ' ' +data[i].currency__code + ' Fecha: ' + DateFormatter(data[i].exec_date_n),
+                    name: 'Folio: ' + data[i].folio + 
+                            '  | Fecha: ' + DateFormatter(data[i].exec_date_n) + 
+                            ' ' +data[i].currency__code + 
+                            ' | Monto: ' + Number(data[i].amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
                     functional_area__id: data[i].functional_area__id,
                     functional_area__name: data[i].functional_area__name
                     // folio: data[i].folio,
@@ -185,7 +188,8 @@ export const getPaymentsExecDetails = async ({
                     folio: data.payments[i].folio,
                     amount: data.payments[i].amount,
                     currency_code: data.payments[i].currency.code,
-                    exec_date_n: DateFormatter(data.payments[i].exec_date_n)
+                    exec_date_n: DateFormatter(data.payments[i].exec_date_n),
+                    have_files: data.payments[i].have_files
                 })
             }
             

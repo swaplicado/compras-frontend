@@ -18,6 +18,7 @@ import { HistoryAuth } from '@/app/components/documents/invoice/historyAuth';
 import { btnScroll } from '@/app/(main)/utilities/commons/useScrollDetection';
 import { useIntersectionObserver } from 'primereact/hooks';
 import { CrpFields } from '@/app/components/documents/payments/common/crpFields';
+import { Divider } from "primereact/divider";
 
 interface FileInfo {
     url: string;
@@ -286,51 +287,54 @@ export const DialogPayment = ({
                         errors: formErrors,
                         errorMessage: ''
                     })}
-                    {RenderField({
-                        label: t('dialog.exchange_rate_app'),
-                        tooltip: t('dialog.exchange_rate_appTooltip'),
-                        value: oPayment?.exchange_rate_app,
-                        disabled: true,
-                        mdCol: 3,
-                        type: 'number',
-                        onChange: (value) => null,
-                        options: [],
-                        placeholder: '',
-                        errorKey: '',
-                        errors: formErrors,
-                        errorMessage: ''
-                    })}
-                    { dialogType == 'executed' && (
-                        RenderField({
-                            label: t('dialog.exchange_rate_exec'),
-                            tooltip: t('dialog.exchange_rate_execTooltip'),
-                            value: oPayment?.exchange_rate_exec,
-                            disabled: true,
-                            mdCol: 3,
-                            type: 'number',
-                            onChange: (value) => null,
-                            options: [],
-                            placeholder: '',
-                            errorKey: '',
-                            errors: formErrors,
-                            errorMessage: ''
-                        })
+                    {oPayment?.currency_code !== 'MXN' && (
+                        <RenderField
+                            label={t('dialog.exchange_rate_app')}
+                            tooltip={t('dialog.exchange_rate_appTooltip')}
+                            value={oPayment?.exchange_rate_app}
+                            disabled={true}
+                            mdCol={3}
+                            type="number"
+                            onChange={(value) => null}
+                            options={[]}
+                            placeholder=""
+                            errorKey=""
+                            errors={formErrors}
+                            errorMessage=""
+                        />
                     )}
-                    { dialogType == 'executed' && (
-                        RenderField({
-                            label: t('dialog.amount_loc_exec'),
-                            tooltip: t('dialog.amount_loc_execTooltip'),
-                            value: oPayment?.amount_loc_exec,
-                            disabled: true,
-                            mdCol: 3,
-                            type: 'number',
-                            onChange: (value) => null,
-                            options: [],
-                            placeholder: '',
-                            errorKey: '',
-                            errors: formErrors,
-                            errorMessage: ''
-                        })
+                    {dialogType == 'executed' && oPayment?.currency_code !== 'MXN' && (
+                        <RenderField
+                            label={t('dialog.exchange_rate_exec')}
+                            tooltip={t('dialog.exchange_rate_execTooltip')}
+                            value={oPayment?.exchange_rate_exec}
+                            disabled={true}
+                            mdCol={3}
+                            type="number"
+                            onChange={(value) => null}
+                            options={[]}
+                            placeholder=""
+                            errorKey=""
+                            errors={formErrors}
+                            errorMessage=""
+                        />
+                    )}
+
+                    {dialogType == 'executed' && oPayment?.currency_code !== 'MXN' && (
+                        <RenderField
+                            label={t('dialog.amount_loc_exec')}
+                            tooltip={t('dialog.amount_loc_execTooltip')}
+                            value={oPayment?.amount_loc_exec}
+                            disabled={true}
+                            mdCol={3}
+                            type="number"
+                            onChange={(value) => null}
+                            options={[]}
+                            placeholder=""
+                            errorKey=""
+                            errors={formErrors}
+                            errorMessage=""
+                        />
                     )}
                     {RenderField({
                         label: t('dialog.payment_way'),
@@ -412,7 +416,11 @@ export const DialogPayment = ({
                         />
                     </div>
                 )}
+                
                 <div>
+                    <Divider align="center">
+                        <h5>Partidas del pago</h5>
+                    </Divider>
                     <DataTable
                         value={lEntries}
                         paginator
