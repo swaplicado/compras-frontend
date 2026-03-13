@@ -17,6 +17,7 @@ import loaderScreen from '@/app/components/commons/loaderScreen';
 import axios from "axios";
 import moment from "moment";
 import {getOUser} from '@/app/(main)/utilities/user/common/userUtilities'
+import { useSearchParams } from "next/navigation";
 
 export default function UploadInvoicesDates() {
     const { t } = useTranslation('uploadInvoicesDates');
@@ -27,6 +28,7 @@ export default function UploadInvoicesDates() {
     const añoActual = new Date().getFullYear();
     const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
     const [fechas, setFechas] = useState<{ [key: number]: Date | null }>({});
+    const [fechasOriginales, setFechasOriginales] = useState<{ [key: number]: Date | null }>({});
     const [tipoConfig, setTipoConfig] = useState('entidad');
     const [tipoEntidad, setTipoEntidad] = useState(1);
     const [proveedorSeleccionado, setProveedorSeleccionado] = useState<any>(null);
@@ -38,6 +40,10 @@ export default function UploadInvoicesDates() {
     const [calendarProveedor, setCalendarProveedor] = useState<any[]>([]);
     const [calendarEmpresa, setCalendarEmpresa] = useState<any[]>([]);
     const [oUser, setOUser] = useState<any>(null);
+    const searchParams = useSearchParams();
+    const isReadOnly = searchParams.get('readonly') === '1';
+    const [canEdit, setCanEdit] = useState(false);
+    const [editMode, setEditMode] = useState(false);
 
 //*******FUNCIONES*******
     const showToast = (type: 'success' | 'info' | 'warn' | 'error' = 'error', message: string, summaryText = 'Error:') => {
@@ -135,6 +141,8 @@ export default function UploadInvoicesDates() {
 
             if (response.status == 200) {
                 showToast('success', response.data.message || 'Configuración guardada correctamente', 'Exito:');
+                setFechasOriginales(fechas); // actualizar snapshot
+                setEditMode(false);
             }
         } catch (error: any) {
             showToast('error', error.response?.data?.error || 'Error al guardar la configuración', 'Error:');
@@ -146,7 +154,7 @@ export default function UploadInvoicesDates() {
     const tiposConfig = [
         { label: t('configTypes.entityType.label'), value: 'entidad' },
         { label: t('configTypes.provider.label'), value: 'proveedor' },
-        { label: t('configTypes.company.label'), value: 'empresa' }
+        // { label: t('configTypes.company.label'), value: 'empresa' }
     ];
 
     const tiposEntidad = [
@@ -188,6 +196,11 @@ export default function UploadInvoicesDates() {
             setLoading(true);
             const oUser = await getOUser();
             setOUser(oUser);
+
+            if (constants.USERS_CAN_CONFIG.includes(oUser?.oUser.id)) {
+                setCanEdit(true);
+            }
+
             await getlCompanies({
                 setLCompanies,
                 showToast,
@@ -226,15 +239,22 @@ export default function UploadInvoicesDates() {
     }, [empresaSeleccionada])
 
     useEffect(() => {
-        const calendar = tipoConfig === 'entidad' ? calendarEntidad : 
-                        tipoConfig === 'proveedor' ? calendarProveedor : calendarEmpresa;
+        const calendar = tipoConfig === 'entidad' 
+            ? calendarEntidad 
+            : tipoConfig === 'proveedor' 
+                ? calendarProveedor 
+                : calendarEmpresa;
+
         const newFechas: { [key: number]: Date | null } = {};
+
         calendar.forEach((item: any) => {
             const dateEnd = new Date(item.date_end + 'T00:00:00');
             newFechas[dateEnd.getMonth()] = dateEnd;
         });
+
         setFechas(newFechas);
-    }, [tipoConfig, calendarEntidad, calendarProveedor, calendarEmpresa])
+        setFechasOriginales(newFechas); // snapshot original
+    }, [tipoConfig, calendarEntidad, calendarProveedor, calendarEmpresa]);
     
     return (
         <>
@@ -354,6 +374,22 @@ export default function UploadInvoicesDates() {
                                 />
                             </div>
                         </div>
+                        {isReadOnly && canEdit && (
+                            <div className="flex justify-content-end mb-3">
+                                <Button
+                                    label={editMode ? "Modo edición activo" : "Habilitar edición"}
+                                    icon={editMode ? "pi pi-lock-open" : "pi pi-lock"}
+                                    severity={editMode ? "success" : "secondary"}
+                                    outlined={!editMode}
+                                    onClick={() => {
+                                        if (editMode) {
+                                            setFechas(fechasOriginales); // restaurar datos
+                                        }
+                                        setEditMode(!editMode);
+                                    }}
+                                />
+                            </div>
+                        )}
                         <div className="grid">
                             {meses.map((mes, i) => (
                                 <div key={`${i}-${año}`} className="col-12 md:col-6 lg:col-4">
@@ -363,6 +399,7 @@ export default function UploadInvoicesDates() {
                                             value={fechas[i] || null}
                                             onChange={(e) => setFechas(prev => ({ ...prev, [i]: e.value as Date }))}
                                             inline
+                                            disabled={isReadOnly && !editMode}
                                             dateFormat="dd/mm/yy"
                                             locale="es"
                                             viewDate={new Date(año, i, 1)}
@@ -380,9 +417,15 @@ export default function UploadInvoicesDates() {
                                 </div>
                             ))}
                         </div>
-                        <div className="flex justify-content-end mt-3">
-                            <Button label={tCommon('btnSave')} icon="pi pi-save" onClick={() => saveCalendar()} />
-                        </div>
+                        {(!isReadOnly || editMode) && (
+                            <div className="flex justify-content-end mt-3">
+                                <Button
+                                    label={tCommon('btnSave')}
+                                    icon="pi pi-save"
+                                    onClick={() => saveCalendar()}
+                                />
+                            </div>
+                        )}
                     </Card>
                 </div>
             </div>

@@ -31,14 +31,14 @@ const AppMenu = () => {
             // const config = groups.includes(constants.ROLES.COMPRADOR_ID) ? appConfig : appConfigProvider;
             let config = groups.includes(constants.ROLES.PROVEEDOR_ID) ? appConfigProvider : appConfig;
             const oUser = await getOUser();
-            if (constants.USERS_CAN_CONFIG.includes(oUser?.oUser.id)) {
+            if (!groups.includes(constants.ROLES.PROVEEDOR_ID)) {
                 config.menu.push({
                     "label": "Configuraciones",
                     "items": [
                         {
                             "label": "Calendario de facturas",
                             "icon": "bx bxs-calendar bx-sm",
-                            "to": "/pages/configurations/uploadInvoicesDates"
+                            "to": "/pages/configurations/uploadInvoicesDates?readonly=1"
                         }
                     ]
                 })
