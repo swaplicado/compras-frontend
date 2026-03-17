@@ -230,6 +230,16 @@ export const DialogCrp = ({
         }
     }, [visible]);
 
+    const emptyFieldTemplate = (rowData: any, field: string) => {
+        const value = rowData[field];
+
+        if (!value || value === '') {
+            return <span style={{ color: '#999' }}>Sin información</span>;
+        }
+
+        return value;
+    };
+
     return (
         <div className="flex justify-content-center">
             <Dialog 
@@ -570,6 +580,30 @@ export const DialogCrp = ({
                                             <Column field="exec_date_n" header="Fecha pago" />
                                             <Column field="amount" header="Monto" body={amountBodyTemplate} />
                                             <Column field="currency_code" header="Moneda" />
+                                            <Column field="payment_way" header="Metodo de pago" />
+                                            <Column 
+                                                field="paying_bank" 
+                                                header="B. ordenante" 
+                                                body={(rowData) => emptyFieldTemplate(rowData, 'paying_bank')}
+                                            />
+
+                                            <Column 
+                                                field="paying_account" 
+                                                header="C. ordenante" 
+                                                body={(rowData) => emptyFieldTemplate(rowData, 'paying_account')}
+                                            />
+
+                                            <Column 
+                                                field="benef_bank" 
+                                                header="B. beneficiario" 
+                                                body={(rowData) => emptyFieldTemplate(rowData, 'benef_bank')}
+                                            />
+
+                                            <Column 
+                                                field="benef_account" 
+                                                header="C. beneficiario" 
+                                                body={(rowData) => emptyFieldTemplate(rowData, 'benef_account')}
+                                            />
                                             <Column header="Archivos" body={filesButtonTemplate} style={{ textAlign: 'center', width: '8rem' }} />
                                         </DataTable>
                                     </div>

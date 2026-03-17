@@ -189,7 +189,12 @@ export const getPaymentsExecDetails = async ({
                     amount: data.payments[i].amount,
                     currency_code: data.payments[i].currency.code,
                     exec_date_n: DateFormatter(data.payments[i].exec_date_n),
-                    have_files: data.payments[i].have_files
+                    have_files: data.payments[i].have_files,
+                    payment_way: data.payments[i].payment_way,
+                    payment_bank: data.payments[i].payment_bank,
+                    payment_account: data.payments[i].payment_account,
+                    benef_bank: data.payments[i].benef_bank,
+                    benef_account: data.payments[i].benef_account
                 })
             }
             

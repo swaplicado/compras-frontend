@@ -412,3 +412,17 @@ Correcciones:
 - La reactividad de react estaba ocasionando que los datos no estuvieran listos cuando se estaban mostrando.
 
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 17-03-2026
+Autor: Cesar Orozco
+========================================
+
+Resumen:
+- Se agregan columnas de bancos y cuentas en la tabla que muestra los pagos de una CRP.
+
+Cambios:
+- Se incorpora metodo de pago, banco ordenante, cuenta ordenante, banco beneficiario, cuenta ordenante a la tabla de pagos en CRP.
+
+----------------------------------------
