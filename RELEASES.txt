@@ -398,3 +398,17 @@ Cambios:
 
 
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 17-03-2026
+Autor: Cesar Orozco
+========================================
+
+Resumen:
+- Se muestran correctamente los archivos de la CRP asociada a un pago comprobado
+
+Correcciones:
+- La reactividad de react estaba ocasionando que los datos no estuvieran listos cuando se estaban mostrando.
+
+----------------------------------------
