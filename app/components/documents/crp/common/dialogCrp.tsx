@@ -553,59 +553,62 @@ export const DialogCrp = ({
                         
                         { dialogMode == 'view' && !loadinglPaymentsExec && (
                             <div className={`field col-12 md:col-12`}>
-                                <Divider align="center">
-                                    <h5>Datos de los pagos</h5>
-                                </Divider>
-                                <div className="formgrid grid">
-                                    <div className="col">
-                                        <DataTable
-                                            value={lPaymentsExecDetails}
-                                            paginator
-                                            rowsPerPageOptions={constants.TABLE_ROWS}
-                                            className="p-datatable-gridlines"
-                                            rows={constants.TABLE_DEFAULT_ROWS}
-                                            showGridlines
-                                            responsiveLayout="scroll"
-                                            emptyMessage={tCommon('datatable.emptyMessage')}
-                                            scrollable
-                                            scrollHeight="40rem"
-                                            sortField="date"
-                                            sortOrder={-1}
-                                            paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-                                            currentPageReportTemplate={tCommon('datatable.currentPageReportTemplate')}
-                                            resizableColumns
-                                        >
-                                            <Column field="id" header="id" hidden />
-                                            <Column field="folio" header="Folio" />
-                                            <Column field="exec_date_n" header="Fecha pago" />
-                                            <Column field="amount" header="Monto" body={amountBodyTemplate} />
-                                            <Column field="currency_code" header="Moneda" />
-                                            <Column field="payment_way" header="Metodo de pago" />
-                                            <Column 
-                                                field="paying_bank" 
-                                                header="B. ordenante" 
-                                                body={(rowData) => emptyFieldTemplate(rowData, 'paying_bank')}
-                                            />
+                                <div style={{ overflowX: 'auto' }}>
+                                    <Divider align="center">
+                                        <h5>Datos de los pagos</h5>
+                                    </Divider>
+                                    <div className="formgrid grid">
+                                        <div className="col">
+                                            <DataTable
+                                                value={lPaymentsExecDetails}
+                                                paginator
+                                                rowsPerPageOptions={constants.TABLE_ROWS}
+                                                className="p-datatable-gridlines"
+                                                rows={constants.TABLE_DEFAULT_ROWS}
+                                                showGridlines
+                                                responsiveLayout="scroll"
+                                                emptyMessage={tCommon('datatable.emptyMessage')}
+                                                scrollable
+                                                scrollHeight="40rem"
+                                                sortField="date"
+                                                sortOrder={-1}
+                                                paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+                                                currentPageReportTemplate={tCommon('datatable.currentPageReportTemplate')}
+                                                resizableColumns
+                                                tableStyle={{ minWidth: '100%' }}
+                                            >
+                                                <Column field="id" header="id" hidden />
+                                                <Column field="folio" header="Folio" />
+                                                <Column field="exec_date_n" header="Fecha pago" />
+                                                <Column field="amount" header="Monto" body={amountBodyTemplate} />
+                                                <Column field="currency_code" header="Moneda" />
+                                                <Column field="payment_way" header="Metodo de pago" />
+                                                <Column 
+                                                    field="paying_bank" 
+                                                    header="B. ordenante" 
+                                                    body={(rowData) => emptyFieldTemplate(rowData, 'paying_bank')}
+                                                />
 
-                                            <Column 
-                                                field="paying_account" 
-                                                header="C. ordenante" 
-                                                body={(rowData) => emptyFieldTemplate(rowData, 'paying_account')}
-                                            />
+                                                <Column 
+                                                    field="paying_account" 
+                                                    header="C. ordenante" 
+                                                    body={(rowData) => emptyFieldTemplate(rowData, 'paying_account')}
+                                                />
 
-                                            <Column 
-                                                field="benef_bank" 
-                                                header="B. beneficiario" 
-                                                body={(rowData) => emptyFieldTemplate(rowData, 'benef_bank')}
-                                            />
+                                                <Column 
+                                                    field="benef_bank" 
+                                                    header="B. beneficiario" 
+                                                    body={(rowData) => emptyFieldTemplate(rowData, 'benef_bank')}
+                                                />
 
-                                            <Column 
-                                                field="benef_account" 
-                                                header="C. beneficiario" 
-                                                body={(rowData) => emptyFieldTemplate(rowData, 'benef_account')}
-                                            />
-                                            <Column header="Archivos" body={filesButtonTemplate} style={{ textAlign: 'center', width: '8rem' }} />
-                                        </DataTable>
+                                                <Column 
+                                                    field="benef_account" 
+                                                    header="C. beneficiario" 
+                                                    body={(rowData) => emptyFieldTemplate(rowData, 'benef_account')}
+                                                />
+                                                <Column header="Archivos" body={filesButtonTemplate} style={{ textAlign: 'center', width: '8rem' }} />
+                                            </DataTable>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

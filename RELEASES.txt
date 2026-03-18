@@ -439,5 +439,6 @@ Resumen:
 Cambios:
 - El campo de carga se incorpora en todas las vistas de facturas, donde se pueda modificar se pone y donde no solo se muestra para su consulta.
 - Nuevo endpoint para consultar los tipos de procesamientos desde la BD.
+- Cuando se selecciona una opción diferente a la estándar manda mensaje.
 
 ----------------------------------------
