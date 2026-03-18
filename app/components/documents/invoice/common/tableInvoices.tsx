@@ -873,6 +873,7 @@ export const TableInvoices = ({
                 <Column field="files" header={t('invoicesTable.columns.files')} footer={t('invoicesTable.columns.files')} body={fileBodyTemplate} />
                 <Column field="id_dps" header={'Eliminar'} footer={'Eliminar'} body={deleteBodyTemplate} hidden={ columnsProps?.delete.hidden } />
                 <Column field="id_dps" header={''} footer={''} body={openBodyTemplate} hidden={ !showBtnOpenDps }/>
+                <Column field="processing_type_id" header="processing_type_id" hidden />
             </DataTable>
         </>
     );

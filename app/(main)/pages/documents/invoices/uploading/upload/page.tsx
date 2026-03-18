@@ -21,6 +21,7 @@ import { Button } from 'primereact/button';
 import { DialogManual } from '@/app/components/videoManual/dialogManual';
 import { getCrpPending } from '@/app/(main)/utilities/documents/invoice/dps';
 import { getOpex, findOpex } from '@/app/(main)/utilities/documents/invoice/opex';
+import { getProcessingType } from '@/app/(main)/utilities/documents/invoice/processingType';
 
 const Upload = () => {
     const [dialogVisible, setDialogVisible] = useState(false);
@@ -74,6 +75,7 @@ const Upload = () => {
     const [crpPending, setCrpPending] = useState<any>(false);
     const [lastPayDayOfYear, setLastPayDayOfYear] = useState<Array<any>>([]);
     const [lOpex, setLOpex] = useState<Array<any>>([]);
+    const [lProcessingType, setLProcessingType] = useState<Array<any>>([]);
 
     const headerCard = (
         <div
@@ -628,7 +630,8 @@ const Upload = () => {
                 is_manual_payment_date: selectedRow.is_edit_payment_date,
                 notes_manual_payment_date: selectedRow.notes_manual_payment_date,
                 due_date: selectedRow.due_date ? moment(selectedRow.due_date).format('YYYY-MM-DD') : '',
-                account_tag: selectedRow.account_tag ? (selectedRow.account_tag.id != 0 ? selectedRow.account_tag.name : null) : null
+                account_tag: selectedRow.account_tag ? (selectedRow.account_tag.id != 0 ? selectedRow.account_tag.name : null) : null,
+                processing_type_id: selectedRow.processing_type_id 
             }
         });
 
@@ -757,7 +760,7 @@ const Upload = () => {
         if (!e.data.account_tag) {
             e.data.account_tag = lOpex[0];
         }
-        
+
         setSelectedRow(e.data);
         setDialogMode('review');
         setDialogVisible(true);
@@ -861,6 +864,11 @@ const Upload = () => {
                 showToast: showToast,
                 errorMessage: ''
             });
+            await getProcessingType({
+                setLProcessingType: setLProcessingType,
+                showToast: showToast,
+                errorMessage: ''
+            })
             // setLoading(false);
         };
         fetchReferences();
@@ -920,6 +928,7 @@ const Upload = () => {
                         handlePassToReview={handlePassToReview}
                         withEditExpiredDate={true}
                         lOpex={lOpex}
+                        lProcessingType={lProcessingType}
                     />
                     { oValidUser.isInternalUser && (
                         <FlowAuthorizationDialog 

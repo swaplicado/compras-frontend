@@ -44,6 +44,7 @@ export default function UploadInvoicesDates() {
     const isReadOnly = searchParams.get('readonly') === '1';
     const [canEdit, setCanEdit] = useState(false);
     const [editMode, setEditMode] = useState(false);
+    const [isProviderUser, setIsProviderUser] = useState(false);
 
 //*******FUNCIONES*******
     const showToast = (type: 'success' | 'info' | 'warn' | 'error' = 'error', message: string, summaryText = 'Error:') => {
@@ -201,6 +202,12 @@ export default function UploadInvoicesDates() {
                 setCanEdit(true);
             }
 
+            // detectar si el usuario es proveedor
+            if (oUser?.oUser.groups?.includes(constants.ROLES.PROVEEDOR_ID)) {
+                setIsProviderUser(true);
+                setTipoConfig('proveedor');
+            }
+
             await getlCompanies({
                 setLCompanies,
                 showToast,
@@ -217,6 +224,14 @@ export default function UploadInvoicesDates() {
     useEffect(() => {
         let params: any = { year: año };
         
+        if (isProviderUser) {
+            params.provider = oUser?.provider_id;
+
+            getCalendar(params, 'proveedor');
+
+            return;
+        }
+
         if (tipoConfig === 'entidad') {
             params.entity_type = tipoEntidad;
             getCalendar(params, 'entidad');
@@ -229,6 +244,20 @@ export default function UploadInvoicesDates() {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [año, tipoConfig, tipoEntidad, proveedorSeleccionado, empresaSeleccionada])
+
+    useEffect(() => {
+        if (isProviderUser && calendarProveedor.length === 0) {
+
+            let params = {
+                year: año,
+                entity_type: oUser?.entity_type
+        };
+
+            getCalendar(params, 'entidad');
+            setTipoConfig('entidad');
+        }
+
+    }, [calendarProveedor]);
 
     useEffect(() => {
         if (!proveedorSeleccionado) setCalendarProveedor([]);
@@ -298,6 +327,7 @@ export default function UploadInvoicesDates() {
                                     value={tipoConfig} 
                                     onChange={(e) => setTipoConfig(e.value)} 
                                     options={tiposConfig} 
+                                    disabled={isProviderUser}
                                 />
                                 <div className="flex gap-3 mt-2">
                                     <div className="flex align-items-center gap-2">
@@ -328,6 +358,7 @@ export default function UploadInvoicesDates() {
                                         options={tiposEntidad} 
                                         placeholder={t('selectOptionEntityTypePlaceHolder')}
                                         className="w-full"
+                                        disabled={isProviderUser}
                                     />
                                 </div>
                             )}
@@ -374,7 +405,7 @@ export default function UploadInvoicesDates() {
                                 />
                             </div>
                         </div>
-                        {isReadOnly && canEdit && (
+                        {isReadOnly && canEdit && !isProviderUser && (
                             <div className="flex justify-content-end mb-3">
                                 <Button
                                     label={editMode ? "Modo edición activo" : "Habilitar edición"}
@@ -399,7 +430,7 @@ export default function UploadInvoicesDates() {
                                             value={fechas[i] || null}
                                             onChange={(e) => setFechas(prev => ({ ...prev, [i]: e.value as Date }))}
                                             inline
-                                            disabled={isReadOnly && !editMode}
+                                            disabled={isProviderUser || (isReadOnly && !editMode)}
                                             dateFormat="dd/mm/yy"
                                             locale="es"
                                             viewDate={new Date(año, i, 1)}

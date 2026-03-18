@@ -108,6 +108,7 @@ export const getDps = async ( props: getDpsProps  ) => {
                     account_tag: data[i].account_tag,
                     processing_icon: data[i].processing_type_icon,
                     processing_name: data[i].processing_type_name,
+                    processing_type_id: data[i].processing_type_id
                 });
             }
             props.setLDps(dps);

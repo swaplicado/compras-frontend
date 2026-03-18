@@ -15,6 +15,7 @@ import constants from '@/app/constants/constants';
 import moment from 'moment';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { ProgressSpinner } from 'primereact/progressspinner';
+import { Toast } from 'primereact/toast';
 
 interface FieldsDpsProps {
     oDps: any;
@@ -36,6 +37,7 @@ interface FieldsDpsProps {
     withEditExpiredDate?: boolean;
     isLocalPartner?: boolean;
     lOpex?: any[];
+    lProcessingType?: any[];
 }
 
 interface renderFieldProps {
@@ -55,6 +57,8 @@ interface renderFieldProps {
     labelClass?: string;
     lengthTextArea?: number;
     digits?: number;
+    itemTemplate?: (option: any) => JSX.Element | null;
+    valueTemplate?: (option: any) => JSX.Element | null;
 }
 
 export const FieldsDps = ({ 
@@ -76,7 +80,8 @@ export const FieldsDps = ({
     lastPayDayOfYear = [],
     withEditExpiredDate = false,
     isLocalPartner = true,
-    lOpex = []
+    lOpex = [],
+    lProcessingType = []
 }: FieldsDpsProps) => {
     const { t } = useTranslation('invoices');
     const { t: tCommon } = useTranslation('common');
@@ -84,6 +89,7 @@ export const FieldsDps = ({
     const lPercentOptions = ['Todo', 'Parcial', 'Nada'];
     const [minDate, setMinDate] = useState<any>(new Date());
     const [paymentDefinition, setPaymentDefinition] = useState<any>();
+    const toast = useRef<any>(null);
 
     addLocale('es', tCommon('calendar', { returnObjects: true }) as any);
 
@@ -155,6 +161,21 @@ export const FieldsDps = ({
             calcAmountPercentage('percentage', oDps?.payment_percentage);
         }
     }, [oDps?.payment_amount]);
+
+    useEffect(() => {
+        if (oDps?.processing_type_id != null && oDps?.processing_type_id != undefined) {
+            const found = lProcessingType.find(
+                (item) => item.id === oDps.processing_type_id
+            );
+
+            if (found) {
+                setODps((prev: any) => ({
+                    ...prev,
+                    oProcessingType: found
+                }));
+            }
+        }
+    }, [oDps?.processing_type_id]);
 
     const calcAmountPercentage = async (originEvent: string, value: number) => {
         if (originEvent == 'amount') {
@@ -237,6 +258,8 @@ export const FieldsDps = ({
                                     className={`w-full ${props.errors?.[props.errorKey] ? 'p-invalid' : ''}`}
                                     showClear
                                     disabled={props.disabled}
+                                    {...(props.itemTemplate && { itemTemplate: props.itemTemplate })}
+                                    {...(props.valueTemplate && { valueTemplate: props.valueTemplate })}
                                 />
                             </div>
                         </div>
@@ -252,9 +275,28 @@ export const FieldsDps = ({
                             <Tooltip target=".custom-target-icon" />
                             <i className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge" data-pr-tooltip={props.tooltip} data-pr-position="right" data-pr-my="left center-2" style={{ fontSize: '1rem', cursor: 'pointer' }}></i>
                             <div>
-                                <InputText value={props.value || ''} className={`w-full ${props.errors?.[props.errorKey] ? 'p-invalid' : ''}`} disabled={props.disabled} onChange={(e) => props.onChange?.(e.target.value)} />
-                                {props.errors?.[props.errorKey] && <small className="p-error">{props.errorMessage}</small>}
-                                <small className="p-error">{props.errors?.[props.errorKey]}</small>
+                                {React.isValidElement(props.value) ? (
+                                    <div
+                                        className={`p-inputtext p-disabled w-full flex align-items-center gap-2 ${
+                                            props.errors?.[props.errorKey] ? 'p-invalid' : ''
+                                        }`}
+                                        style={{ minHeight: '2.5rem' }}
+                                    >
+                                        {props.value}
+                                    </div>
+                                ) : (
+                                    <>
+                                        <InputText
+                                            value={props.value || ''}
+                                            className={`w-full ${props.errors?.[props.errorKey] ? 'p-invalid' : ''}`}
+                                            disabled={props.disabled}
+                                            onChange={(e) => props.onChange?.(e.target.value)}
+                                        />
+                                        {props.errors?.[props.errorKey] && (
+                                            <small className="p-error">{props.errorMessage}</small>
+                                        )}
+                                    </>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -420,6 +462,22 @@ export const FieldsDps = ({
         return date;
     };
 
+    const processingTypeTemplate = (option: any) => {
+        return (
+            <div
+                className="flex align-items-center gap-2"
+                style={{ minHeight: '1.5rem' }}
+            >
+                {option && (
+                    <>
+                        {option.icon && <i className={option.icon}></i>}
+                        <span>{option.name}</span>
+                    </>
+                )}
+            </div>
+        );
+    };
+
     useEffect(() => {
         if (oDps?.is_edit_payment_date == false) {
             setODps((prev: any) => ({ ...prev, payday: partnerPaymentDay, notes_manual_payment_date: '' }));
@@ -428,6 +486,7 @@ export const FieldsDps = ({
 
     return (
         <>
+            <Toast ref={toast} />
             {/* <ConfirmDialog /> */}
             {withHeaderDps && (
                 <div className="p-fluid formgrid grid">
@@ -654,23 +713,42 @@ export const FieldsDps = ({
                         })}
                         {renderField({
                             label: 'Tipo de carga',
-                            tooltip: 'Como se cargo el documento (estandar, compras o fletes).',
-                            value: (
-                                <span className="flex align-items-center gap-2">
-                                    {oDps?.processing_icon?.startsWith("pi") ? (
-                                        <i className={oDps.processing_icon}></i>
-                                    ) : (
-                                        <span>{oDps?.processing_icon}</span>
-                                    )}
-                                    <span>{oDps?.processing_name || 'Sin tipo'}</span>
-                                </span>
-                            ),
-                            onChange: () => ({}),
-                            disabled: true,
+                            tooltip: '',
+                            value: footerMode == 'edit'
+                                ? (oDps?.oProcessingType || null)
+                                : (
+                                    <div className="flex align-items-center gap-2">
+                                        {oDps?.processing_icon && <i className={oDps.processing_icon}></i>}
+                                        <span>{oDps?.processing_name}</span>
+                                    </div>
+                                ),
+                            onChange: (value) => {
+                                setODps((prev: any) => ({
+                                    ...prev,
+                                    processing_type_id: value?.id,
+                                    processing_name: value?.name,
+                                    processing_icon: value?.icon,
+                                    oProcessingType: value
+                                }));
+                                if (value?.id && value.id !== 0) {
+                                    toast.current?.show({
+                                        severity: 'warn',
+                                        summary: 'Verifica selección',
+                                        detail: `Asegúrate que el tipo "${value.name}" sea correcto.`,
+                                        life: 4000
+                                    });
+                                }
+                            },
+                            disabled: footerMode == 'view',
                             mdCol: 4,
-                            type: 'display',
+                            type: footerMode != 'edit' ? 'text' : 'dropdown',
                             placeholder: '',
-                            errorKey: ''
+                            errors: errors,
+                            errorKey: '',
+                            errorMessage: '',
+                            lOptions: lProcessingType,
+                            itemTemplate: processingTypeTemplate,
+                            valueTemplate: processingTypeTemplate
                         })}
                     </div>
                     <Divider align="center">

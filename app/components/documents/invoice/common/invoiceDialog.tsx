@@ -87,6 +87,7 @@ interface InvoiceDialogProps {
     handlePassToReview?: (e: any) => Promise<any>;
     withEditExpiredDate?: boolean;
     lOpex?: any[];
+    lProcessingType?: any[];
     canEditAcceptance?: boolean
 }
 
@@ -163,6 +164,7 @@ export const InvoiceDialog = ({
     handlePassToReview,
     withEditExpiredDate = false,
     lOpex = [],
+    lProcessingType = [],
     canEditAcceptance = false
 }: InvoiceDialogProps) => {
     const [oCompany, setOCompany] = useState<any>(null);
@@ -613,7 +615,8 @@ export const InvoiceDialog = ({
                     is_manual_payment_date: oDps.is_edit_payment_date,
                     notes_manual_payment_date: oDps.notes_manual_payment_date,
                     due_date: oDps.due_date ? moment(oDps.due_date).format('YYYY-MM-DD') : '',
-                    account_tag: oDps.account_tag ? (oDps.account_tag.id != 0 ? oDps.account_tag.name : null) : null
+                    account_tag: oDps.account_tag ? (oDps.account_tag.id != 0 ? oDps.account_tag.name : null) : null,
+                    processing_type_id: oDps.processing_type_id
                 }
             });
 
@@ -819,6 +822,7 @@ export const InvoiceDialog = ({
             myDps.oPartner = oProvider;
             myDps.is_advance = isAdvance;
             myDps.advance_application = oAdvance?.name;
+            myDps.processing_type_id = oDps.processing_type_id; 
 
             try {
                 const formData = new FormData();
@@ -902,7 +906,8 @@ export const InvoiceDialog = ({
                     uuid: oDps.uuid || '',
                     functional_area: area_id,
                     is_advance: isAdvance,
-                    advance_application: oAdvance?.id
+                    advance_application: oAdvance?.id,
+                    processing_type_id : oDps.processing_type_id
                 };
 
                 formData.append('document', JSON.stringify(document));
@@ -1477,7 +1482,8 @@ export const InvoiceDialog = ({
                     notes_manual_payment_date: oDps.notes_manual_payment_date,
                     priority: oDps.priority,
                     due_date: oDps.due_date ? moment(oDps.due_date).format('YYYY-MM-DD') : '',
-                    account_tag: oDps.account_tag ? (oDps.account_tag.id != 0 ? oDps.account_tag.name : null) : null
+                    account_tag: oDps.account_tag ? (oDps.account_tag.id != 0 ? oDps.account_tag.name : null) : null,
+                    processing_type_id: oDps.processing_type_id 
                 }
             });
 
@@ -2058,6 +2064,7 @@ export const InvoiceDialog = ({
                                 withEditExpiredDate={withEditExpiredDate}
                                 isLocalPartner={ oProvider ? oProvider?.country == constants.COUNTRIES.MEXICO_ID : ( oDps?.oPartner ? oDps.oPartner.country == constants.COUNTRIES.MEXICO_ID : true ) }
                                 lOpex={lOpex}
+                                lProcessingType={lProcessingType}
                             />
                         )}
                         {(dialogMode == 'create' || dialogMode == 'edit') && (isXmlValid || (oProvider ? oProvider.country != constants.COUNTRIES.MEXICO_ID : false)) && (
