@@ -106,6 +106,7 @@ export const ValidateXml = ( {
                         oDps = {
                             serie: data.data.serie,
                             folio: data.data.serie ? (data.data.serie + '-' + data.data.folio) : data.data.folio,
+                            num: data.data.folio,
                             date: data.data.xml_date,
                             dateFormated: DateFormatter(data.data.xml_date),
                             oPaymentMethod: oPaymentMethod,

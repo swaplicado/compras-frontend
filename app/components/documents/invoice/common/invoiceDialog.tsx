@@ -717,9 +717,16 @@ export const InvoiceDialog = ({
             formData.append('user_id', userId.toString());
             formData.append('is_internal_user', oValidUser.isInternalUser ? 'True' : 'False');
 
-            const splitFolio = oDps.folio.split('-');
-            const serie = splitFolio.length > 1 ? splitFolio[0] : '';
-            const number = splitFolio.length > 1 ? splitFolio.slice(1).join('-') : splitFolio[0];
+            let serie = '';
+            let number = '';
+            if (oProvider?.country != constants.COUNTRIES.MEXICO_ID) {
+                const lastDash = oDps.folio.lastIndexOf('-');
+                serie = lastDash > -1 ? oDps.folio.slice(0, lastDash) : '';
+                number = lastDash > -1 ? oDps.folio.slice(lastDash + 1) : oDps.folio;
+            } else {
+                serie = oDps.serie;
+                number = oDps.num;
+            }
 
             const area_id = (lRefToValidateXml[0].id == 0 || lRefToValidateXml.length > 1) ? oArea?.id : lRefToValidateXml[0].functional_area_id;
 
@@ -882,9 +889,16 @@ export const InvoiceDialog = ({
                 formData.append('user_id', userId.toString());
                 formData.append('is_internal_user', oValidUser.isInternalUser ? 'True' : 'False');
 
-                const splitFolio = oDps.folio.split('-');
-                const serie = splitFolio.length > 1 ? splitFolio[0] : '';
-                const number = splitFolio.length > 1 ? splitFolio.slice(1).join('-') : splitFolio[0];
+                let serie = '';
+                let number = '';
+                if (oProvider?.country != constants.COUNTRIES.MEXICO_ID) {
+                    const lastDash = oDps.folio.lastIndexOf('-');
+                    serie = lastDash > -1 ? oDps.folio.slice(0, lastDash) : '';
+                    number = lastDash > -1 ? oDps.folio.slice(lastDash + 1) : oDps.folio;
+                } else {
+                    serie = oDps.serie;
+                    number = oDps.num;
+                }
 
                 const area_id = (lRefToValidateXml[0].id == 0 || lRefToValidateXml.length > 1) ? oArea?.id : lRefToValidateXml[0].functional_area_id;
 
