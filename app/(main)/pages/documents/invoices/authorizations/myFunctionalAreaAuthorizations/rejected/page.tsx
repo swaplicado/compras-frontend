@@ -17,6 +17,8 @@ import { InvoiceDialog } from '@/app/components/documents/invoice/common/invoice
 import { getDps } from "@/app/(main)/utilities/documents/invoice/dps";
 import { FlowAuthorizationDialog } from '@/app/components/documents/invoice/flowAuthorizationDialog';
 import { Tooltip } from 'primereact/tooltip';
+import { getOpex, findOpex } from '@/app/(main)/utilities/documents/invoice/opex';
+import { getProcessingType } from '@/app/(main)/utilities/documents/invoice/processingType';
 
 const Upload = () => {
     const [dialogVisible, setDialogVisible] = useState(false);
@@ -76,6 +78,8 @@ const Upload = () => {
     });
     const [historyAuth, setHistoryAuth] = useState<any[]>([]);
     const [loadingHistoryAuth, setLoadingHistoryAuth] = useState<boolean>(false);
+    const [lOpex, setLOpex] = useState<Array<any>>([]);
+    const [lProcessingType, setLProcessingType] = useState<Array<any>>([]);
 
     const headerCard = (
         <div
@@ -613,6 +617,16 @@ const Upload = () => {
             await getlUseCfdi();
             // await getFlowAuthorizations();
             // setLoading(false);
+            await getOpex({
+                setLOpex: setLOpex,
+                showToast: showToast,
+                errorMessage: ''
+            });
+            await getProcessingType({
+                setLProcessingType: setLProcessingType,
+                showToast: showToast,
+                errorMessage: ''
+            })
         };
         fetchReferences();
     }, []);
@@ -655,6 +669,8 @@ const Upload = () => {
                         getHistoryAuth={getHistoryAuth}
                         loadingHistoryAuth={loadingHistoryAuth}
                         lHistoryAuth={historyAuth}
+                        lOpex={lOpex}
+                        lProcessingType={lProcessingType}
                     />
 
                     <TableInvoices

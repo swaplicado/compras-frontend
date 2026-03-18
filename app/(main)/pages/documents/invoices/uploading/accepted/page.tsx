@@ -19,6 +19,7 @@ import { FlowAuthorizationDialog } from '@/app/components/documents/invoice/flow
 import { Tooltip } from 'primereact/tooltip';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { getOpex, findOpex } from '@/app/(main)/utilities/documents/invoice/opex';
+import { getProcessingType } from '@/app/(main)/utilities/documents/invoice/processingType';
 
 const Upload = () => {
     const [dialogVisible, setDialogVisible] = useState(false);
@@ -61,6 +62,7 @@ const Upload = () => {
     const [withEditPaymentDay, setWithEditPaymentDay] = useState<boolean>(true);
     const [canEditAcceptance, setCanEditAcceptance] = useState<boolean>(false);
     const [lOpex, setLOpex] = useState<Array<any>>([]);
+    const [lProcessingType, setLProcessingType] = useState<Array<any>>([]);
     const [partnerPaymentDay, setPartnerPaymentDay] = useState<any>('');
 
     const headerCard = (
@@ -613,6 +615,11 @@ const Upload = () => {
                 showToast: showToast,
                 errorMessage: ''
             });
+            await getProcessingType({
+                setLProcessingType: setLProcessingType,
+                showToast: showToast,
+                errorMessage: ''
+            })
             // setLoading(false);
         };
         fetchReferences();
@@ -654,6 +661,7 @@ const Upload = () => {
                         withEditExpiredDate={true}
                         canEditAcceptance={canEditAcceptance}
                         lOpex={lOpex}
+                        lProcessingType={lProcessingType}
                         partnerPaymentDay={partnerPaymentDay}
                     />
 

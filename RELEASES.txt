@@ -426,3 +426,18 @@ Cambios:
 - Se incorpora metodo de pago, banco ordenante, cuenta ordenante, banco beneficiario, cuenta ordenante a la tabla de pagos en CRP.
 
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 17-03-2026
+Autor: Cesar Orozco
+========================================
+
+Resumen:
+- Se coloca el campo de tipo de carga para que se pueda modificar y se agrega en cada dialogo.
+
+Cambios:
+- El campo de carga se incorpora en todas las vistas de facturas, donde se pueda modificar se pone y donde no solo se muestra para su consulta.
+- Nuevo endpoint para consultar los tipos de procesamientos desde la BD.
+
+----------------------------------------
