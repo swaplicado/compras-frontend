@@ -19,7 +19,7 @@ import { Tooltip } from 'primereact/tooltip';
 import { FlowAuthorizationDialog } from '@/app/components/documents/invoice/flowAuthorizationDialog';
 import { Button } from 'primereact/button';
 import { DialogManual } from '@/app/components/videoManual/dialogManual';
-import { getCrpPending } from '@/app/(main)/utilities/documents/invoice/dps';
+import { getCrpPending, getCanUploadWithOutReference } from '@/app/(main)/utilities/documents/invoice/dps';
 import { getOpex, findOpex } from '@/app/(main)/utilities/documents/invoice/opex';
 import { getProcessingType } from '@/app/(main)/utilities/documents/invoice/processingType';
 
@@ -76,6 +76,7 @@ const Upload = () => {
     const [lastPayDayOfYear, setLastPayDayOfYear] = useState<Array<any>>([]);
     const [lOpex, setLOpex] = useState<Array<any>>([]);
     const [lProcessingType, setLProcessingType] = useState<Array<any>>([]);
+    const [canUploadWithOutReference, setCanUploadWithOutReference] = useState<boolean>(false);
 
     const headerCard = (
         <div
@@ -205,7 +206,7 @@ const Upload = () => {
                 const data = response.data.data || [];
 
                 let lReferences: any[] = [];
-                if (oValidUser.isInternalUser) {
+                if (canUploadWithOutReference) {
                     lReferences.push({
                         id: 0,
                         name: t('uploadDialog.reference.withOutReferenceOption'),
@@ -844,6 +845,12 @@ const Upload = () => {
                 });
             }
 
+            await getCanUploadWithOutReference({
+                userId,
+                setCanUploadWithOutReference,
+                errorMessage: "",
+                showToast
+            });
             await getlCompanies();
             await getlCurrencies();
             await getlFiscalRegime();

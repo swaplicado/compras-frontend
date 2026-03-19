@@ -64,6 +64,7 @@ const constants = {
     ROUTE_GET_OPEX: '/transactions/get-accounting-tags',
     ROUTE_GET_PROCESSING_TYPE: '/transactions/get-processing-type',
     ROUTE_GET_DEADLINE: '/transactions/upload-deadline/year-deadline/',
+    ROUTE_GET_CAN_UPLOAD_INVOICE_WITHOUT_OC: '/transactions/can-upload-invoice-without-oc',
 
     ROUTE_COMPARE_FILES: '/pages/compareFiles/',
     ROUTE_SEE_FILES: '/pages/seeFiles/',
