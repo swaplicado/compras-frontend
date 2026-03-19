@@ -456,3 +456,17 @@ Correcciones:
 - Separacion correcta de serie y folio
 
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 19-03-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- PDC-754 Reforzar la carga de facturas, haciendo obligatoria la OC también a Compradores, exceptuando los usuarios indicados mediante configuración
+
+Nuevas funcionalidades:
+- Verifica si el usuario puede cargar factura sin referencia
+
+----------------------------------------

@@ -186,3 +186,35 @@ export const getCrpPending = async (props: getCrpPending) => {
         return null;
     }
 }
+
+interface getCanUploadWithOutReferenceProps {
+    userId: any;
+    setCanUploadWithOutReference: React.Dispatch<React.SetStateAction<any>>;
+    errorMessage: string;
+    showToast?: (type: 'success' | 'info' | 'warn' | 'error', message: string, summaryText?: string) => void;
+}
+
+export const getCanUploadWithOutReference = async (props: getCanUploadWithOutReferenceProps) => {
+    try {
+        const route = constants.ROUTE_GET_CAN_UPLOAD_INVOICE_WITHOUT_OC;
+        const params = {
+            route: route,
+            user_id: props.userId
+        };
+        const response = await axios.get(constants.API_AXIOS_GET, {
+            params: params
+        });
+        
+        if (response.status === 200) {
+            const data = response.data.data || [];
+            props.setCanUploadWithOutReference(data.can_upload_without_oc);
+            return data;
+        } else {
+            throw new Error(`${props.errorMessage}: ${response.statusText}`);
+        }
+
+    } catch (error: any) {
+        props.showToast?.('error', error.response?.data?.error || props.errorMessage, props.errorMessage);
+        return null;
+    }
+}
