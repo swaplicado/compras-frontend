@@ -142,7 +142,11 @@ export const TableReception = ({
     };
 
     const statusAuthDpsBodyTemplate = (rowData: any) => {
-        return <span className={`status-dps-badge status-${rowData.authz_authorization}`}>{rowData.authz_authorization}</span>;
+        if (rowData.authz_authorization == 'pendiente') {
+            return <span className={`status-dps-badge surface-200`} >SIN INICIAR</span>;
+        } else {
+            return <span className={`status-dps-badge status-${rowData.authz_authorization}`}>{rowData.authz_authorization}</span>;
+        }
     };
 
 //*********** INIT ***********
@@ -186,7 +190,7 @@ export const TableReception = ({
                 onRowClick={(e) => (handleRowClick?.(e))}
                 onRowDoubleClick={(e) => (handleDoubleClick?.(e))}
                 metaKeySelection={false}
-                sortField="benef_trade_name"
+                sortField="updated_at"
                 sortOrder={-1}
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                 currentPageReportTemplate={tCommon('datatable.currentPageReportTemplate')}
@@ -206,16 +210,16 @@ export const TableReception = ({
                 <Column field="company_external_id" header="company_external_id" hidden />
                 <Column field="authz_acceptance_notes" header="authz_acceptance_notes" hidden />
                 <Column field="authz_authorization_notes" header="authz_authorization_notes" hidden />
-                <Column field="trade_name" header="Proveedor" />
-                <Column field="full_name" header="Nombre" />
-                <Column field="email" header="Email" />
-                <Column field="phone" header="Teléfono" />
-                <Column field="functional_area" header="Area" />
-                <Column field="updated_at" header="Fecha" body={dateBodyTemplate}/>
-                <Column field="authz_acceptance" header="Aceptación" body={statusAcceptanceDpsBodyTemplate} hidden={columnProps.authz_acceptance.hidden}/>
-                <Column field="authz_authorization" header="Autorización" body={statusAuthDpsBodyTemplate} hidden={columnProps.authz_authorization.hidden}/>
-                <Column field="id" header='Archivos' footer='Archivos' body={fileBodyTemplate} />
-                <Column field="id" header={''} footer={''} body={openPartnerBodyTemplate} hidden={ columnProps?.openPartner.hidden } />
+                <Column field="trade_name" header="Proveedor" sortable/>
+                <Column field="full_name" header="Nombre" sortable/>
+                <Column field="email" header="Email" sortable/>
+                <Column field="phone" header="Teléfono" sortable/>
+                <Column field="functional_area" header="Area" sortable/>
+                <Column field="updated_at" header="Fecha" body={dateBodyTemplate} sortable/>
+                <Column field="authz_acceptance" header="Aceptación" body={statusAcceptanceDpsBodyTemplate} hidden={columnProps.authz_acceptance.hidden} sortable/>
+                <Column field="authz_authorization" header="Autorización" body={statusAuthDpsBodyTemplate} hidden={columnProps.authz_authorization.hidden} sortable/>
+                <Column field="id" header='Archivos' footer='Archivos' body={fileBodyTemplate} sortable/>
+                <Column field="id" header={''} footer={''} body={openPartnerBodyTemplate} hidden={ columnProps?.openPartner.hidden } sortable/>
             </DataTable>
         </>
     );

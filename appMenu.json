@@ -358,6 +358,11 @@
                     "icon": "",
                     "items": [
                         {
+                            "label": "Todas las solicitudes de proveedor",
+                            "icon": "bx bx-list-ul bx-sm",
+                            "to": "/pages/partners/allPartners"
+                        },
+                        {
                             "label": "Recepción de solicitudes",
                             "icon": "",
                             "items": [

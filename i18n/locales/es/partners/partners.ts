@@ -6,6 +6,7 @@ const partners = {
     titleAuthorized: "Solicitudes de alta autorizadas",
     titleRejectedAuth: "Solicitudes de alta rechazadas en la autorización",
     titleMyAuth: "Autorizaciones de solicitudes de alta pendientes para mí",
+    titleAllRequestPartner: "Todas las solicitudes de proveedor",
     reviewInstructions: {
         header: "Para revisar un proveedor sigue estos pasos:",
         step1: "Identifica el renglón del proveedor que deseas revisar.",

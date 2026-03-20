@@ -39,13 +39,13 @@ export const getlPartners = async ({
                     id: data[i].id,
                     partner_address_partner_applying: [
                         {
-                            street: data[i].partner_address_partner_applying[0].street,
-                            number: data[i].partner_address_partner_applying[0].number,
-                            county: data[i].partner_address_partner_applying[0].county,
-                            city: data[i].partner_address_partner_applying[0].city,
-                            state: data[i].partner_address_partner_applying[0].state,
-                            postal_code: data[i].partner_address_partner_applying[0].postal_code,
-                            country: data[i].partner_address_partner_applying[0].country
+                            street: data[i].partner_address_partner_applying?.[0]?.street,
+                            number: data[i].partner_address_partner_applying?.[0]?.number,
+                            county: data[i].partner_address_partner_applying?.[0]?.county,
+                            city: data[i].partner_address_partner_applying?.[0]?.city,
+                            state: data[i].partner_address_partner_applying?.[0]?.state,
+                            postal_code: data[i].partner_address_partner_applying?.[0]?.postal_code,
+                            country: data[i].partner_address_partner_applying?.[0]?.country
                         }
                     ],
                     created_at: data[i].created_at,
@@ -61,14 +61,14 @@ export const getlPartners = async ({
                     email: data[i].email,
                     authz_acceptance_notes: data[i].authz_acceptance_notes,
                     authz_authorization_notes: data[i].authz_authorization_notes,
-                    entity_type: data[i].entity_type_obj.name,
-                    country: data[i].country_obj.name,
-                    company: data[i].company_obj.full_name,
-                    company_external_id: data[i].company_obj.external_id,
-                    fiscal_regime: data[i].fiscal_regime_obj.name,
-                    authz_acceptance: data[i].authz_acceptance_name.toLowerCase(),
-                    authz_authorization: data[i].authz_authorization,
-                    functional_area: data[i].functional_area_obj.name,
+                    entity_type: data[i].entity_type_obj?.name,
+                    country: data[i].country_obj?.name,
+                    company: data[i].company_obj?.full_name,
+                    company_external_id: data[i].company_obj?.external_id,
+                    fiscal_regime: data[i].fiscal_regime_obj?.name,
+                    authz_acceptance: data[i].authz_acceptance_name?.toLowerCase(),
+                    authz_authorization: data[i].authz_authorization_name?.toLowerCase(),
+                    functional_area: data[i].functional_area_obj?.name,
                     functional_area_obj: data[i].functional_area_obj
                 })
             }
