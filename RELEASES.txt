@@ -499,3 +499,17 @@ Cambios:
 - si no tiene calendario el proveedor se le muestra el de su tipo de entidad.
 
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 20-03-2026
+Autor: Cesar Orozco
+========================================
+
+Resumen:
+- Se corrige pantalla de pagos operados que ya tengan crp
+
+Cambios:
+- Se corrige pantalla de pagos operados que ya tengan crp
+
+----------------------------------------

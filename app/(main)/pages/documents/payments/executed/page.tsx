@@ -185,7 +185,7 @@ const ConsultPaymentExecuted = () => {
     const getCrp = async (data: any) => {
         try {
             if (!data.crp_id) {
-                return;
+                return null;
             }
             const route = constants.ROUTE_GET_INFO_DOC;
             const response = await axios.get(constants.API_AXIOS_GET, {
@@ -198,11 +198,13 @@ const ConsultPaymentExecuted = () => {
             if (response.status == 200) {
                 const data = response.data.data || [];
                 setOCrp(data);
+                return data;
             } else {
                 throw new Error(`Error al obtener el CRP: ${response.statusText}`);
             }
         } catch (error: any) {
             showToast('error', error.response?.data?.error || 'Error al obtener el crp', 'Error al obtener el crp');
+            return null;
         } finally {
 
         }
@@ -275,12 +277,17 @@ const ConsultPaymentExecuted = () => {
         setORow(e.data);
         setOPayment(e.data);
         await getCrp(e.data);
-        await getlUrlFilesDps({
-            setLFiles: setLFilesCrp,
-            showToast,
-            document_id: e.data.id
-        });
     };
+
+    useEffect(() => {
+            if (oCrp?.id) {
+                getlUrlFilesDps({
+                    setLFiles: setLFilesCrp,
+                    showToast,
+                    document_id: oCrp.id
+                });
+            }
+        }, [oCrp]);
 
     const openPayment = async (data: any) => {
         setDialogMode('view');
@@ -288,11 +295,6 @@ const ConsultPaymentExecuted = () => {
         setORow(data);
         setOPayment(data);
         await getCrp(data);
-        await getlUrlFilesDps({
-            setLFiles: setLFilesCrp,
-            showToast,
-            document_id: data.id
-        });
     };
 
     const openBodyTemplate = (rowData: any) => {
