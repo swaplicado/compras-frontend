@@ -482,6 +482,20 @@ Resumen:
 
 Cambios:
 - Agregada pantalla de todas las solicitudes de proveedor
-- Cambio 2
+
+----------------------------------------
+
+========================================
+RELEASE
+Fecha: 20-03-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- Opción para proveedores de ver el calendario de carga de facturas.
+
+Cambios:
+- Los proveedores pueden ver el calendario, sin poder modificar nada.
+- si no tiene calendario el proveedor se le muestra el de su tipo de entidad.
 
 ----------------------------------------

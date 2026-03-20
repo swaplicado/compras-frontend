@@ -61,7 +61,8 @@ export default function UploadInvoicesDates() {
         const route = constants.ROUTE_GET_DEADLINE;
         const myParams = {
             route: route,
-            ...params
+            ...params,
+            ...(isProviderUser ? { is_provider_user: true } : {})
         }
         await getCalendarToUploadinvoice({
             params: myParams,
@@ -70,6 +71,9 @@ export default function UploadInvoicesDates() {
                 if (tipo === 'entidad') setCalendarEntidad(data);
                 else if (tipo === 'proveedor') setCalendarProveedor(data);
                 else if (tipo === 'empresa') setCalendarEmpresa(data);
+                else if (tipo === 'proveedorUser') {
+                    setCalendarProveedor(data);
+                }
             },
             showToast,
         });
@@ -222,13 +226,14 @@ export default function UploadInvoicesDates() {
     }, [])
 
     useEffect(() => {
+        if (!oUser) return;
+
         let params: any = { year: año };
         
         if (isProviderUser) {
-            params.provider = oUser?.provider_id;
-
-            getCalendar(params, 'proveedor');
-
+            params.provider = oUser?.oProvider?.id;
+            console.log(oUser);
+            getCalendar(params, 'proveedorUser');
             return;
         }
 
@@ -242,22 +247,8 @@ export default function UploadInvoicesDates() {
             params.company = empresaSeleccionada.id;
             getCalendar(params, 'empresa');
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [año, tipoConfig, tipoEntidad, proveedorSeleccionado, empresaSeleccionada])
 
-    useEffect(() => {
-        if (isProviderUser && calendarProveedor.length === 0) {
-
-            let params = {
-                year: año,
-                entity_type: oUser?.entity_type
-        };
-
-            getCalendar(params, 'entidad');
-            setTipoConfig('entidad');
-        }
-
-    }, [calendarProveedor]);
+    }, [oUser, isProviderUser, año, tipoConfig, tipoEntidad, proveedorSeleccionado, empresaSeleccionada]);
 
     useEffect(() => {
         if (!proveedorSeleccionado) setCalendarProveedor([]);
@@ -320,91 +311,93 @@ export default function UploadInvoicesDates() {
                     {loading && loaderScreen()}
                     <Toast ref={toast} />
                     <Card header={headerCard} pt={{ content: { className: 'p-0' } }}>
-                        <div className="grid mb-4">
-                            <div className="col-12">
-                                <label className="block mb-2 font-bold">{t('optionsType')}</label>
-                                <SelectButton 
-                                    value={tipoConfig} 
-                                    onChange={(e) => setTipoConfig(e.value)} 
-                                    options={tiposConfig} 
-                                    disabled={isProviderUser}
-                                />
-                                <div className="flex gap-3 mt-2">
-                                    <div className="flex align-items-center gap-2">
-                                        <div style={{ width: '20px', height: '20px', background: '#ffd700', border: '1px solid #ccc' }}></div>
-                                        <span className="text-sm">{t('optionFisica')}</span>
-                                    </div>
-                                    <div className="flex align-items-center gap-2">
-                                        <div style={{ width: '20px', height: '20px', background: '#8b4513', border: '1px solid #ccc' }}></div>
-                                        <span className="text-sm">{t('optionMoral')}</span>
-                                    </div>
-                                    <div className="flex align-items-center gap-2">
-                                        <div style={{ width: '20px', height: '20px', background: '#2196f3', border: '1px solid #ccc' }}></div>
-                                        <span className="text-sm">{t('optionProvider')}</span>
-                                    </div>
-                                    <div className="flex align-items-center gap-2">
-                                        <div style={{ width: '20px', height: '20px', background: '#4caf50', border: '1px solid #ccc' }}></div>
-                                        <span className="text-sm">{t('optionCompany')}</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {tipoConfig === 'entidad' && (
-                                <div className="col-12 md:col-4">
-                                    <label className="block mb-2 font-bold">{t('selectOptionEntityType')}</label>
-                                    <Dropdown 
-                                        value={tipoEntidad} 
-                                        onChange={(e) => setTipoEntidad(e.value)} 
-                                        options={tiposEntidad} 
-                                        placeholder={t('selectOptionEntityTypePlaceHolder')}
-                                        className="w-full"
+                        {!isProviderUser && (
+                            <div className="grid mb-4">
+                                <div className="col-12">
+                                    <label className="block mb-2 font-bold">{t('optionsType')}</label>
+                                    <SelectButton 
+                                        value={tipoConfig} 
+                                        onChange={(e) => setTipoConfig(e.value)} 
+                                        options={tiposConfig} 
                                         disabled={isProviderUser}
                                     />
+                                    <div className="flex gap-3 mt-2">
+                                        <div className="flex align-items-center gap-2">
+                                            <div style={{ width: '20px', height: '20px', background: '#ffd700', border: '1px solid #ccc' }}></div>
+                                            <span className="text-sm">{t('optionFisica')}</span>
+                                        </div>
+                                        <div className="flex align-items-center gap-2">
+                                            <div style={{ width: '20px', height: '20px', background: '#8b4513', border: '1px solid #ccc' }}></div>
+                                            <span className="text-sm">{t('optionMoral')}</span>
+                                        </div>
+                                        <div className="flex align-items-center gap-2">
+                                            <div style={{ width: '20px', height: '20px', background: '#2196f3', border: '1px solid #ccc' }}></div>
+                                            <span className="text-sm">{t('optionProvider')}</span>
+                                        </div>
+                                        <div className="flex align-items-center gap-2">
+                                            <div style={{ width: '20px', height: '20px', background: '#4caf50', border: '1px solid #ccc' }}></div>
+                                            <span className="text-sm">{t('optionCompany')}</span>
+                                        </div>
+                                    </div>
                                 </div>
-                            )}
 
-                            {tipoConfig === 'proveedor' && (
-                                <div className="col-12 md:col-4">
-                                    <label className="block mb-2 font-bold">{t('selectOptionProvider')}</label>
+                                {tipoConfig === 'entidad' && (
+                                    <div className="col-12 md:col-4">
+                                        <label className="block mb-2 font-bold">{t('selectOptionEntityType')}</label>
+                                        <Dropdown 
+                                            value={tipoEntidad} 
+                                            onChange={(e) => setTipoEntidad(e.value)} 
+                                            options={tiposEntidad} 
+                                            placeholder={t('selectOptionEntityTypePlaceHolder')}
+                                            className="w-full"
+                                            disabled={isProviderUser}
+                                        />
+                                    </div>
+                                )}
+
+                                {tipoConfig === 'proveedor' && (
+                                    <div className="col-12 md:col-4">
+                                        <label className="block mb-2 font-bold">{t('selectOptionProvider')}</label>
+                                        <Dropdown 
+                                            value={proveedorSeleccionado} 
+                                            onChange={(e) => setProveedorSeleccionado(e.value)} 
+                                            options={lProviders} 
+                                            placeholder={t('selectOptionProviderPlaceHolder')}
+                                            className="w-full"
+                                            optionLabel="name"
+                                            filter
+                                            showClear
+                                        />
+                                    </div>
+                                )}
+
+                                {tipoConfig === 'empresa' && (
+                                    <div className="col-12 md:col-4">
+                                        <label className="block mb-2 font-bold">{t('selectOptionCompany')}</label>
+                                        <Dropdown 
+                                            value={empresaSeleccionada} 
+                                            onChange={(e) => setEmpresaSeleccionada(e.value)} 
+                                            options={lCompanies} 
+                                            placeholder={t('selectOptionCompanyPlaceHolder')}
+                                            className="w-full"
+                                            optionLabel="name"
+                                            filter
+                                            showClear
+                                        />
+                                    </div>
+                                )}
+
+                                <div className="col-12 md:col-2">
+                                    <label className="block mb-2 font-bold">{t('year')}</label>
                                     <Dropdown 
-                                        value={proveedorSeleccionado} 
-                                        onChange={(e) => setProveedorSeleccionado(e.value)} 
-                                        options={lProviders} 
-                                        placeholder={t('selectOptionProviderPlaceHolder')}
+                                        value={año} 
+                                        onChange={(e) => setAño(e.value)} 
+                                        options={años} 
                                         className="w-full"
-                                        optionLabel="name"
-                                        filter
-                                        showClear
                                     />
                                 </div>
-                            )}
-
-                            {tipoConfig === 'empresa' && (
-                                <div className="col-12 md:col-4">
-                                    <label className="block mb-2 font-bold">{t('selectOptionCompany')}</label>
-                                    <Dropdown 
-                                        value={empresaSeleccionada} 
-                                        onChange={(e) => setEmpresaSeleccionada(e.value)} 
-                                        options={lCompanies} 
-                                        placeholder={t('selectOptionCompanyPlaceHolder')}
-                                        className="w-full"
-                                        optionLabel="name"
-                                        filter
-                                        showClear
-                                    />
-                                </div>
-                            )}
-
-                            <div className="col-12 md:col-2">
-                                <label className="block mb-2 font-bold">{t('year')}</label>
-                                <Dropdown 
-                                    value={año} 
-                                    onChange={(e) => setAño(e.value)} 
-                                    options={años} 
-                                    className="w-full"
-                                />
                             </div>
-                        </div>
+                        )}
                         {isReadOnly && canEdit && !isProviderUser && (
                             <div className="flex justify-content-end mb-3">
                                 <Button
