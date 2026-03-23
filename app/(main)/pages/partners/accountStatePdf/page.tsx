@@ -20,6 +20,11 @@ const ConsultAccountState = () => {
     const [company, setCompany] = useState<any>(null);
     const [partner, setPartner] = useState<any>(null);
     const [lCompany, setlCompany] = useState<any[]>([]);
+    const [year, setYear] = useState<any>({id: moment().year(), name: moment().year()});
+    const [lYears, setLYears] = useState<any[]>([
+        {id: moment().year(), name: moment().year()},
+        {id: moment().year() - 1, name: moment().year() - 1},
+    ]);
     const toast = useRef<Toast>(null);
     const [loading, setLoading] = useState(false);
     const [oUser, setOUser] = useState<any>(null);
@@ -75,7 +80,8 @@ const ConsultAccountState = () => {
                     route: route,
                     partner_id: oUser.oProvider.id,
                     company: scompany,
-                    company_id: company.company_id
+                    company_id: company.company_id,
+                    year: year.id
                 }
             })
 
@@ -219,6 +225,20 @@ const ConsultAccountState = () => {
                                 options={lCompany}
                                 optionLabel="name"
                                 placeholder={'Selecciona empresa'}
+                                filter
+                                className={`w-full`}
+                                showClear
+                                disabled={false}
+                                readOnly={false}
+                            />        
+                        </div>
+                        <div className="col-2">
+                            <Dropdown
+                                value={year}
+                                onChange={(e) => setYear(e.value)}
+                                options={lYears}
+                                optionLabel="name"
+                                placeholder={'Selecciona año'}
                                 filter
                                 className={`w-full`}
                                 showClear

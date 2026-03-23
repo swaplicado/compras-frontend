@@ -513,3 +513,14 @@ Cambios:
 - Se corrige pantalla de pagos operados que ya tengan crp
 
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 23-03-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- PDC-718 Permitir selección de año para solicitar reporte de movimientos contables del proveedor en PC.
+
+----------------------------------------
