@@ -303,19 +303,9 @@
                             "icon": "",
                             "items": [
                                 {
-                                    "label": "Cargar y revisar",
+                                    "label": "Cargar",
                                     "icon": "pi pi-upload",
                                     "to": "/pages/documents/crp/upload"
-                                },
-                                {
-                                    "label": "Revisados",
-                                    "icon": "pi pi-check-square",
-                                    "to": "/pages/documents/crp/accepted"
-                                },
-                                {
-                                    "label": "Rechazados",
-                                    "icon": "pi pi-times-circle",
-                                    "to": "/pages/documents/crp/rejected"
                                 }
                             ]
                         },

@@ -524,3 +524,17 @@ Resumen:
 - PDC-718 Permitir selección de año para solicitar reporte de movimientos contables del proveedor en PC.
 
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 23-03-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- PDC-763 Adecuación de menús de CRP
+
+Cambios:
+- Se quitaron las opciones del menu Revisadas y Rechazadas en revision de CRP
+
+----------------------------------------
