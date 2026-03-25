@@ -3,7 +3,7 @@ import { Dialog } from "primereact/dialog";
 import React from "react";
 
 interface DialogMessageProps {
-    type: 'validate' | 'upload' | null;
+    type: 'validate' | 'upload' | 'warning' | null;
     visible: boolean;
     onHide: () => void;
     lMessage: Array<any>;
@@ -17,6 +17,38 @@ export const DialogMessage = ({
     lMessage,
     succesInvoices = []
 }: DialogMessageProps) =>  {
+    const renderWarningMessage = () => {
+        return (
+            <div className="flex flex-column gap-3">
+
+                {/* Encabezado */}
+                <div className='flex flex-column align-items-center mb-3'>
+                    <i className="pi pi-exclamation-triangle" style={{ fontSize: '4rem', color: '#FFC107' }}></i>
+                    <h2 className="mt-2 mb-1">¡Atención!</h2>
+                    <p className="text-center">Se encontraron incosistencias en las siguientes facturas:</p>
+                </div>
+
+                {/* Listado de errores */}
+                {lMessage.map((array, index) => (
+                    array.length > 0 && (
+                        <div key={index} className="mb-3">
+                            <h4 className="mb-2">Factura {index + 1}</h4>
+                            <ul className="pl-3">
+                                {array.map((value: any, index2: number) => (
+                                    <li key={'list_'+index2}>{String(value)}</li>
+                                ))}
+                            </ul>
+                        </div>
+                    )
+                ))}
+
+                {/* Pie del mensaje */}
+                <div className='flex flex-column align-items-center mt-3'>
+                    <p className="text-center">Puedes continuar con el guardado de la factura.</p>
+                </div>
+            </div>
+        );
+    }
 
     const renderValidateMessage = () => {
         return (
@@ -136,6 +168,7 @@ export const DialogMessage = ({
         >
             { type === 'validate' && renderValidateMessage() }
             { type === 'upload' && renderUploadMessage() }
+            { type === 'warning' && renderWarningMessage() }
         </Dialog>
     );
 };

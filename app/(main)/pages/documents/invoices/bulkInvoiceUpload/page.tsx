@@ -1,6 +1,6 @@
 //CARGA MASIVA DE FACTURAS
 'use client';
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import loaderScreen from '@/app/components/commons/loaderScreen';
 import { Toast } from 'primereact/toast';
 import { Card } from 'primereact/card';
@@ -66,8 +66,9 @@ const BulkInvoiceUpload = () => {
     const [disabledArray, setDisabledArray] = useState<Array<boolean>>([]);
     const [showDialogErrors, setShowDialogErrors] = useState<boolean>(false);
     const [messageDialogErrors, setMessageDialogErrors] = useState<Array<any>>([]);
-    const [dialogType, setDialogType] = useState<'validate' | 'upload' | null>(null);
+    const [dialogType, setDialogType] = useState<'validate' | 'upload' | 'warning' | null>(null);
     const [succesInvoices, setSuccesInvoices] = useState<Array<any>>([]);
+    const [enabledSaveBtn, setEnabledSaveBtn] = useState<boolean>(false);
 
     const message = useRef<Messages>(null);
 
@@ -81,7 +82,7 @@ const BulkInvoiceUpload = () => {
 
     //*******Constantes para el XML*******
     const xmlUploadRefs = useMemo(() => lInvoices.map((_, i) => React.createRef<FileUpload>()), [lInvoices.length]);
-    const [xmlErrorsArray, setXmlErrorsArray] = useState<Array<{includeXml: boolean, isValid: boolean, errors: any, warnings: any}>>([]);
+    const [xmlErrorsArray, setXmlErrorsArray] = useState<Array<{includeXml: boolean, isValid: boolean, errors: any, warnings: any, extraWarnings: any}>>([]);
     const [lDps, setLDps] = useState<any[]>([]);
     const [lXmlValid, setXmlValid] = useState<boolean[]>([]);
     const [lLoadingXml, setLLoadingXml] = useState<boolean[]>([]);
@@ -276,7 +277,7 @@ const BulkInvoiceUpload = () => {
         setLoadingDpsArray([...loadingDpsArray, false]);
         setDisabledArray([...disabledArray, false]);
 
-        setXmlErrorsArray([...xmlErrorsArray, {includeXml: false, isValid: false, errors: [], warnings: []}]);
+        setXmlErrorsArray([...xmlErrorsArray, {includeXml: false, isValid: false, errors: [], warnings: [], extraWarnings: []}]);
         setLLoadingXml([...lLoadingXml, false]);
         setXmlValid([...lXmlValid, false]);
         setDpsReferencesArray([...dpsReferencesArray, []]);
@@ -336,7 +337,7 @@ const BulkInvoiceUpload = () => {
             setLoadingDpsArray([false]);
             setDisabledArray([false]);
 
-            setXmlErrorsArray([{includeXml: false, isValid: false, errors: [], warnings: []}]);
+            setXmlErrorsArray([{includeXml: false, isValid: false, errors: [], warnings: [], extraWarnings: []}]);
             setLLoadingXml([false]);
             setXmlValid([false]);
             setDpsReferencesArray([[]]);
@@ -441,6 +442,92 @@ const BulkInvoiceUpload = () => {
         return isValid;
     }
 
+    const handleValidateXmlVsTicket = async () => {
+        let lErrors = [];
+        for (let i = 0; i < lDps.length; i++) {
+            try {
+                setLoadingDpsArray((prev) => {
+                    const newArray = [...prev];
+                    newArray[i] = true;
+                    return newArray;
+                });
+
+                const route = constants.ROUTE_POST_VALIDATE_WAYBILL_SUPPLEMENT;
+                const formData = new FormData();
+                const xmlFiles = xmlUploadRefs[i].current?.getFiles() || [];
+    
+                xmlFiles.forEach((file: string | Blob) => {
+                    formData.append('files', file);
+                });
+
+                let lReferences = JSON.stringify(lDps[i]?.reference?.map((ref: any, index: number) => {
+                                        return (
+                                            ref.id
+                                        )
+                                    }))
+
+                formData.append('references', lReferences);
+                formData.append('route', route);
+
+                const response = await axios.post(constants.API_AXIOS_POST, formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
+    
+                if (response.status === 200 || response.status === 201) {
+                    let data = response.data.data;
+                    setLDps((prev) => {
+                        const newArray = [...prev];
+                        newArray[i].xmlVsTicket = data.warnings;
+                        newArray[i].sendxmlVsTicket = true;
+                        return newArray;
+                    })
+
+                    if (data.warnings.length > 0) {
+                        setXmlErrorsArray((prev) => {
+                            const newArray = [...prev];
+                            newArray[i].extraWarnings = data.warnings
+                            return newArray;
+                        });
+
+                        lErrors.push(data.warnings);
+                    }
+
+                } else {
+                    throw new Error(t('uploadDialog.errors.uploadError'));
+                }
+            } catch (error: any) {
+                lErrors.push([error.response?.data?.error || 'Error al validar los datos del boleto contra el XML']);
+            } finally {
+                setLoadingDpsArray((prev) => {
+                    const newArray = [...prev];
+                    newArray[i] = false;
+                    return newArray;
+                });
+            }
+        }
+        checkAllDpsValidateXmlVsTicket();
+        setMessageDialogErrors(lErrors);
+        setDialogType('warning');
+        setShowDialogErrors(true);
+    }
+
+    const checkAllDpsValidateXmlVsTicket = useCallback(() => {
+        if (invoiceType == 'Fletes') {
+            let validate = false;
+            for (let i = 0; i < lDps.length; i++) {
+                if (!lDps[i].sendxmlVsTicket) {
+                    validate = false;
+                    break;
+                } else {
+                    validate = true;
+                }
+            }
+            setEnabledSaveBtn(validate);
+        } else {
+            setEnabledSaveBtn(true);
+        }
+    }, [lDps, invoiceType]);
+
     const handleSubmit = async () => {
         if (!validateForm()){
             setDialogType('validate');
@@ -485,8 +572,6 @@ const BulkInvoiceUpload = () => {
                     (lDps[i].reference[0].area_id ? lDps[i].reference[0].area_id : (
                         lDps[i].company_partner_id == constants.AETH_ID_LOCAL ? constants.AREA_COMPRAS_AGUACATE : constants.AREA_AME_NO_APLICA
                     )) : (lDps[i].company_partner_id == constants.AETH_ID_LOCAL ? constants.AREA_COMPRAS_AGUACATE : constants.AREA_AME_NO_APLICA);
-
-                console.log('area_id: ', area_id);
     
                 formData.append('references', lDps[i].reference ? JSON.stringify(lDps[i].reference) : '[]');
                 formData.append('area_id', area_id || '');
@@ -614,10 +699,23 @@ const BulkInvoiceUpload = () => {
                         {lInvoices.map((invoice, index) => (
                             <div key={invoiceKeys[index]}>
                                 <Divider/>
-                                <div className='felx text-center'>
-                                    <h4 key={'index_' + invoiceKeys[index]}>Factura número {index + 1}:</h4>
+                                <div className='flex align-items-center justify-content-center gap-2'>
+                                    { lDps[index].xmlVsTicket?.length > 0 && (
+                                        <i className='bx bxs-error bx-md' style={{color: '#FFD700'}}></i>
+                                    )}
+                                    <h4 key={'index_' + invoiceKeys[index]} className='m-0'>Factura número {index + 1}:</h4>
                                 </div>
-                                <div className={`card p-2 relative ${lDps[index].sended == 'sended' ? 'border-green-400' : ( lDps[index].sended == 'error' ? 'border-red-400' : 'border-black-alpha-90' ) }`}>
+                                <div className={`card p-2 relative 
+                                                    ${lDps[index].sended == 'sended' ? 
+                                                        'border-3 border-green-400' : 
+                                                            ( lDps[index].sended == 'error' ? 
+                                                                'border-3 border-red-400' :
+                                                                    ( lDps[index].xmlVsTicket?.length > 0 && !lDps[index].sended ?
+                                                                        'border-3 border-yellow-400' : 'border-black-alpha-90' )
+                                                                    )
+                                                    }
+                                                `}
+                                >
                                     { loadingDpsArray[index] && (
                                         <div className='flex align-items-center justify-content-center absolute' 
                                                 style={{ 
@@ -966,6 +1064,10 @@ const BulkInvoiceUpload = () => {
         fetch();
     }, []);
 
+    useEffect(() => {
+        checkAllDpsValidateXmlVsTicket();
+    }, [lDps, checkAllDpsValidateXmlVsTicket])
+
     //*******VISTA*******
     return (
         <div className="grid">
@@ -974,7 +1076,7 @@ const BulkInvoiceUpload = () => {
                 <Toast ref={toast} />
                 <Card header={headerCard} pt={{ content: { className: 'p-0' }, body: { className: 'p-2'} }}>
                     <div className="p-fluid formgrid grid">
-                        <div className="field col-12 md:col-6">
+                        <div className="field col-12 md:col-4">
                             <label htmlFor="invoicetype" className="mb-0">
                                 Selecciona tipo de factura
                             </label>
@@ -994,7 +1096,7 @@ const BulkInvoiceUpload = () => {
                                 tooltip={''}
                                 value={payDay}
                                 disabled={false}
-                                mdCol={6}
+                                mdCol={8}
                                 type={'calendar'}
                                 inputRef={inputCalendarPayDay}
                                 onChange={(value) => { setPayDay(value) }}
@@ -1005,8 +1107,15 @@ const BulkInvoiceUpload = () => {
                             />
                         </div>
                         <div className='field col-12 md:col-2'>
+                            { invoiceType == 'Fletes' && (
+                                <div className="flex justify-content-end">
+                                    <Button icon="pi pi-reply" className="" label='Validar' onClick={handleValidateXmlVsTicket} />
+                                </div>
+                            )}
+                        </div>
+                        <div className='field col-12 md:col-2'>
                             <div className="flex justify-content-end">
-                                <Button icon="pi pi-save" className="" label='Guardar' onClick={handleSubmit} />
+                                <Button icon="pi pi-save" disabled={!enabledSaveBtn} className="" label='Guardar' onClick={handleSubmit} />
                             </div>
                         </div>
                     </div>
