@@ -42,6 +42,7 @@ const constants = {
     ROUTE_GET_HISTORY_AUTH: '/transactions/get-history-authorization',
     ROUTE_GET_PAYMENTS_EXEC: '/transactions/payments/select-payments-exec/',
     ROUTE_GET_PAYMENTS_EXEC_DETAILS: '/transactions/documents/payments/',
+    ROUTE_GET_PAYMENTS_EXEC_DETAILS_ENTRIES: '/transactions/documents/payments-with-entries/',
     ROUTE_GET_PAYMENTS_PLUS_DOC: '/transactions/payments/select-payments-exc-plus-document/',
     ROUTE_GET_COUNTRIES: '/transactions/countries/',
     ROUTE_GET_PARTNERS_TO_ACCEPT: '/transactions/partner-applying/filtered/',

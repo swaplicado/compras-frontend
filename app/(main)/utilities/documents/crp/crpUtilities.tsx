@@ -171,7 +171,8 @@ export const getPaymentsExecDetails = async ({
     document_id
 }: getPaymentsExecDetailsProps) => {
     try {
-        const route = constants.ROUTE_GET_PAYMENTS_EXEC_DETAILS;
+        const route = constants.ROUTE_GET_PAYMENTS_EXEC_DETAILS_ENTRIES;
+
         const response = await axios.get(constants.API_AXIOS_GET, {
             params: {
                 route: route,
@@ -181,29 +182,55 @@ export const getPaymentsExecDetails = async ({
 
         if (response.status === 200) {
             const data = response.data.data || [];
+
             let payments: any[] = [];
+
             for (let i = 0; i < data.payments.length; i++) {
+                const payment = data.payments[i];
+
                 payments.push({
-                    id: data.payments[i].id,
-                    folio: data.payments[i].folio,
-                    amount: data.payments[i].amount,
-                    currency_code: data.payments[i].currency.code,
-                    exec_date_n: DateFormatter(data.payments[i].exec_date_n),
-                    have_files: data.payments[i].have_files,
-                    payment_way: data.payments[i].payment_way,
-                    payment_bank: data.payments[i].payment_bank,
-                    payment_account: data.payments[i].payment_account,
-                    benef_bank: data.payments[i].benef_bank,
-                    benef_account: data.payments[i].benef_account
-                })
+                    id: payment.id,
+                    folio: payment.folio,
+                    amount: payment.amount,
+                    currency_code: payment.currency?.code,
+                    exec_date_n: DateFormatter(payment.exec_date_n),
+                    have_files: payment.have_files,
+                    payment_way: payment.payment_way,
+
+                    paying_bank: payment.paying_bank,
+                    paying_account: payment.paying_account,
+                    benef_bank: payment.benef_bank,
+                    benef_account: payment.benef_account,
+
+                    entries: (payment.entries || []).map((entry: any) => ({
+                        id: entry.id,
+                        amount: entry.amount,
+                        installment: entry.installment,
+
+                        currency_code: entry.currency?.code,
+
+                        document_folio: entry.document?.folio,
+                        document_uuid: entry.document?.uuid,
+                        document_date: entry.document?.date,
+                        document_amount: entry.document?.amount,
+
+                        bal_prev: entry.document_bal_prev_app,
+                        bal_rest: entry.document_bal_unpd_app
+                    }))
+                });
             }
-            
+
             setLPaymentsExecDetails(payments);
         }
+
     } catch (error: any) {
-        showToast?.('error', error.response?.data?.error || 'Error al obtener los pagos', 'Error al obtener los pagos');
+        showToast?.(
+            'error',
+            error.response?.data?.error || 'Error al obtener los pagos',
+            'Error al obtener los pagos'
+        );
     }
-}
+};
 
 interface getPaymentsPlusDocProps { 
     setLPaymentsExec: React.Dispatch<React.SetStateAction<any[]>>;

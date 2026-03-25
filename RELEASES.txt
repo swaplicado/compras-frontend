@@ -538,3 +538,17 @@ Cambios:
 - Se quitaron las opciones del menu Revisadas y Rechazadas en revision de CRP
 
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 25-03-2026
+Autor: Cesar Orozco
+========================================
+
+Resumen:
+- PDC-787 Complementar información mostrada (detalles del pago y facturas pagadas).
+
+Cambios:
+- Se agrega en las vistas CRP, en la tabla donde aparecen pagos, ahora aparece el pago padre y se pueden mostrar los entries de los pagos que es cada pago individual.
+
+----------------------------------------
