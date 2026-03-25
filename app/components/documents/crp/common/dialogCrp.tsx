@@ -127,6 +127,7 @@ export const DialogCrp = ({
     });
     const message = useRef<Messages>(null);
     const [loadingValidateXml, setLoadingValidateXml] = useState(false);
+    const [expandedRows, setExpandedRows] = useState<any>(null);
 
     //const para el boton de scroll al final
     const [elementRef, setElementRef] = useState<HTMLDivElement | null>(null);
@@ -207,6 +208,29 @@ export const DialogCrp = ({
             }
         }, 400);
     }, [oCrp?.xml_date]);
+
+    const rowExpansionTemplate = (data: any) => {
+        return (
+            <div className="p-3">
+                <h6>Facturas relacionadas</h6>
+
+                <DataTable value={data.entries || []} responsiveLayout="scroll">
+                    <Column field="document_uuid" header="UUID" />
+                    <Column field="document_folio" header="Folio factura" />
+                    <Column field="document_date" header="Fecha factura" />
+                    <Column 
+                        field="amount" 
+                        header="Monto pagado"
+                        body={(rowData) =>
+                            formatCurrency(rowData.amount)
+                        }
+                    />
+                    <Column field="currency_code" header="Moneda" />
+                    <Column field="installment" header="Parcialidad" />
+                </DataTable>
+            </div>
+        );
+    };
 
     //****INIT****/
     useEffect(() => {
@@ -559,8 +583,13 @@ export const DialogCrp = ({
                                     </Divider>
                                     <div className="formgrid grid">
                                         <div className="col">
+                                            <Tooltip target=".p-datatable .p-row-toggler" content="Facturas relacionadas"/>
                                             <DataTable
                                                 value={lPaymentsExecDetails}
+                                                expandedRows={expandedRows}
+                                                onRowToggle={(e) => setExpandedRows(e.data)}
+                                                rowExpansionTemplate={rowExpansionTemplate}
+                                                dataKey="id"
                                                 paginator
                                                 rowsPerPageOptions={constants.TABLE_ROWS}
                                                 className="p-datatable-gridlines"
@@ -577,6 +606,7 @@ export const DialogCrp = ({
                                                 resizableColumns
                                                 tableStyle={{ minWidth: '100%' }}
                                             >
+                                                <Column expander style={{ width: '3em' }} />
                                                 <Column field="id" header="id" hidden />
                                                 <Column field="folio" header="Folio" />
                                                 <Column field="exec_date_n" header="Fecha pago" />

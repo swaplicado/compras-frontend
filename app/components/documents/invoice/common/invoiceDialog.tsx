@@ -413,7 +413,7 @@ export const InvoiceDialog = ({
         const newFormErrors = {
             provider: !oProvider,
             company: !oCompany,
-            reference: !oReference,
+            reference: !oReference || oReference?.length == 0,
             // area: oReference ? (oReference.id == '0' ? !oArea : false) : false,
             area: false,
             files: (fileUploadRef.current?.getFiles().length || 0) === 0,

@@ -513,3 +513,42 @@ Cambios:
 - Se corrige pantalla de pagos operados que ya tengan crp
 
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 23-03-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- PDC-718 Permitir selección de año para solicitar reporte de movimientos contables del proveedor en PC.
+
+----------------------------------------
+
+========================================
+RELEASE
+Fecha: 23-03-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- PDC-763 Adecuación de menús de CRP
+
+Cambios:
+- Se quitaron las opciones del menu Revisadas y Rechazadas en revision de CRP
+
+----------------------------------------
+
+========================================
+RELEASE
+Fecha: 25-03-2026
+Autor: Cesar Orozco
+========================================
+
+Resumen:
+- PDC-787 Complementar información mostrada (detalles del pago y facturas pagadas).
+
+Cambios:
+- Se agrega en las vistas CRP, en la tabla donde aparecen pagos, ahora aparece el pago padre y se pueden mostrar los entries de los pagos que es cada pago individual.
+
+----------------------------------------
