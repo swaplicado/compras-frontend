@@ -31,6 +31,7 @@ import { FlowAuthorizationDialog } from '@/app/components/documents/invoice/flow
 import DateFormatter from '@/app/components/commons/formatDate';
 import { useContext } from 'react';
 import { LayoutContext } from '@/layout/context/layoutcontext';
+import { getCanUploadFiles } from '@/app/(main)/utilities/documents/common/checkCanUploadFiles';
 
 const UploadPrepayment = () => {
     const [startDate, setStartDate] = useState<string>('');
@@ -105,6 +106,8 @@ const UploadPrepayment = () => {
     const [lFilesNames, setLFilesNames] = useState<any[]>([]);
     const [lFilesToEdit, setLFilesToEdit] = useState<any[]>([]);
     const [editableBodyFields, setEditableBodyFields] = useState<boolean>(false);
+    const [canUploadFiles, setCanUploadFiles] = useState<boolean>(false);
+    const [canShowBtnCreate, setCanShowBtnCreate] = useState<boolean>(true);
 
     const isMobile = useIsMobile();
 
@@ -719,10 +722,25 @@ const UploadPrepayment = () => {
                 setLCompaniesFilter,
                 showToast,
             });
-            await getlProviders({
-                setLProviders,
-                showToast,
-            });
+            
+            if (oUser.isInternalUser) {
+                const canUpload = await getCanUploadFiles({
+                                    user_id: oUser.oUser.id,
+                                    lAreas: userFunctionalAreas,
+                                    setCanUploadFiles: setCanUploadFiles,
+                                    setLProviders: setLProviders,
+                                    setShowUploadBtn: setCanShowBtnCreate,
+                                    showToast: showToast
+                                });
+                
+                if (canUpload) {
+                    await getlProviders({
+                        setLProviders,
+                        showToast,
+                    });
+                }
+            }
+
             await getlCurrencies({
                 setLCurrencies,
                 showToast,
@@ -864,7 +882,7 @@ const UploadPrepayment = () => {
                         dateFilter={dateFilter}
                         setDateFilter={setDateFilter}
                         showToast={showToast}
-                        withBtnCreate={true}
+                        withBtnCreate={canShowBtnCreate}
                         selectedRow={oPrepay}
                         setSelectedRow={setOPrepay}
                         setDialogVisible={setDialogVisible}

@@ -566,3 +566,17 @@ Cambios:
 - Funcionalidad para validar los datos dell boleto contra el XML en la carga masiva de facturas.
 
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 26-03-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- PDC-790 Compradores pueden cargar documentos y a cuáles Proveedores se les puede cargar sus documentos
+
+Cambios:
+- Funcionalidad para restringir carga de documentos
+
+----------------------------------------
