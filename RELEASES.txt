@@ -552,3 +552,17 @@ Cambios:
 - Se agrega en las vistas CRP, en la tabla donde aparecen pagos, ahora aparece el pago padre y se pueden mostrar los entries de los pagos que es cada pago individual.
 
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 25-03-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- PDC-520 Validación automática de kg de boleto vs. kg en carta porte en PC o SIIE.
+
+Cambios:
+- Funcionalidad para validar los datos dell boleto contra el XML en la carga masiva de facturas.
+
+----------------------------------------

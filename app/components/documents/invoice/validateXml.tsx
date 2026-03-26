@@ -220,7 +220,9 @@ export const ValidateXml = ( {
                 receiver_tax_regime: "",
                 serie: "",
                 useCfdi: "",
-                uuid: ""
+                uuid: "",
+                xmlVsTicket: [],
+                sendxmlVsTicket: false
             }))
 
             setReferences?.([]);
