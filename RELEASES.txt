@@ -593,3 +593,17 @@ Resumen:
 Cambios:
 - Añadido campo para selecionar tipo de aplicación de la nota de credito
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 27-03-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- Validación de "ess anticipo" al cargar factura
+
+Cambios:
+- Se valida el campo "es anticipo" cuando se valida el xml
+
+----------------------------------------
