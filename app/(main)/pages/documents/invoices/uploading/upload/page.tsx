@@ -22,6 +22,7 @@ import { DialogManual } from '@/app/components/videoManual/dialogManual';
 import { getCrpPending, getCanUploadWithOutReference } from '@/app/(main)/utilities/documents/invoice/dps';
 import { getOpex, findOpex } from '@/app/(main)/utilities/documents/invoice/opex';
 import { getProcessingType } from '@/app/(main)/utilities/documents/invoice/processingType';
+import { getCanUploadFiles } from '@/app/(main)/utilities/documents/common/checkCanUploadFiles';
 
 const Upload = () => {
     const [dialogVisible, setDialogVisible] = useState(false);
@@ -77,6 +78,8 @@ const Upload = () => {
     const [lOpex, setLOpex] = useState<Array<any>>([]);
     const [lProcessingType, setLProcessingType] = useState<Array<any>>([]);
     const [canUploadWithOutReference, setCanUploadWithOutReference] = useState<boolean>(false);
+    const [canUploadFiles, setCanUploadFiles] = useState<boolean>(false);
+    const [canShowBtnCreate, setCanShowBtnCreate] = useState<boolean>(false);
 
     const headerCard = (
         <div
@@ -118,9 +121,9 @@ const Upload = () => {
 
     const showBtnCreate = () => {
         let showBtn = true;
-        // if (limitDate && !oValidUser.isInternalUser) {
-        //     showBtn = moment(actualDate).isBefore(limitDate);
-        // }
+        if (oValidUser.isInternalUser) {
+            showBtn = canShowBtnCreate;
+        }
 
         return showBtn;
     }
@@ -817,8 +820,20 @@ const Upload = () => {
                 setGetDpsParams({ params, errorMessage: t('errors.getInvoicesError'), setLDps, showToast });
 
                 setOValidUser({ isInternalUser: true, isProvider: false, isProviderMexico: false, oProvider: {} });
-                await getlProviders();
+                // await getlProviders();
                 await getFlowAuthorizations();
+                const canUpload = await getCanUploadFiles({
+                                    user_id: userId,
+                                    lAreas: functionalAreas,
+                                    setCanUploadFiles: setCanUploadFiles,
+                                    setLProviders: setLProviders,
+                                    setShowUploadBtn: setCanShowBtnCreate,
+                                    showToast: showToast
+                                });
+                
+                if (canUpload) {
+                    await getlProviders();
+                }
             }
 
             if (groups.includes(constants.ROLES.PROVEEDOR_ID)) {

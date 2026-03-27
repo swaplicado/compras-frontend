@@ -421,6 +421,7 @@ export const InvoiceDialog = ({
             includeXml: false,
             xmlValidateFile: xmlUploadRef.current?.getFiles().length === 0,
             folio: false,
+            oAdvance: isAdvance ? !oAdvance : false
         };
         setFormErrors(newFormErrors);
 
@@ -1032,6 +1033,8 @@ export const InvoiceDialog = ({
 
     //INIT
     useEffect(() => {
+        setOAdvance(null);
+        setIsAdvance(false);
         setLRefToValidateXml([]);
         setLUrlFiles([]);
         setLoadingReferences?.(false);
@@ -1839,6 +1842,7 @@ export const InvoiceDialog = ({
                                         onChange={(e: any) => {
                                             setIsAdvance(e.checked);
                                             !e.checked ? setOAdvance(null) : '';
+                                            xmlUploadRef.current?.clear();
                                         }}
                                         checked={ dialogMode == 'create' ? isAdvance : oDps?.is_advance }
                                         disabled={dialogMode != 'create'}
@@ -1858,12 +1862,15 @@ export const InvoiceDialog = ({
                                     disabled: dialogMode != 'create' || !isAdvance,
                                     mdCol: 4,
                                     type: dialogMode == 'create' ? 'dropdown' : 'text',
-                                    onChange: (value) => setOAdvance(value),
+                                    onChange: (value) => {
+                                        setOAdvance(value);
+                                        setFormErrors((prev: any) => ({ ...prev, oAdvance: '' }));
+                                    },
                                     options: lAdvance,
-                                    placeholder: '',
-                                    errorKey: '',
+                                    placeholder: 'Selecciona aplicación anticipo',
+                                    errorKey: 'oAdvance',
                                     errors: formErrors,
-                                    errorMessage: ''
+                                    errorMessage: 'Selecciona aplicación anticipo'
                                 })
                             )}
 
@@ -2036,6 +2043,7 @@ export const InvoiceDialog = ({
                                                 xmlUploadRef={xmlUploadRef}
                                                 oCompany={oCompany}
                                                 oPartner={oProvider}
+                                                isAdvance={isAdvance}
                                                 user_id={userId}
                                                 oRef={lRefToValidateXml}
                                                 errors={xmlValidateErrors}

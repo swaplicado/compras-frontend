@@ -27,6 +27,7 @@ import { RenderInfoButton } from "@/app/components/commons/instructionsButton";
 import { getlFiscalRegime } from '@/app/(main)/utilities/documents/common/fiscalRegimeUtils';
 import { useContext } from 'react';
 import { LayoutContext } from '@/layout/context/layoutcontext';
+import { getCanUploadFiles } from '@/app/(main)/utilities/documents/common/checkCanUploadFiles';
 
 const ConsultPaymentProgramded = () => {
     const [startDate, setStartDate] = useState<string>('');
@@ -40,6 +41,8 @@ const ConsultPaymentProgramded = () => {
     const [oUser, setOUser] = useState<any>(null);
     const [dateFilter, setDateFilter] = useState<any>(null);
     const [lCompaniesFilter, setLCompaniesFilter] = useState<any[]>([]);
+    const [canUploadFiles, setCanUploadFiles] = useState<boolean>(false);
+    const [canShowBtnCreate, setCanShowBtnCreate] = useState<boolean>(true);
 
     const { dateToWork, setDateToWork } = useContext(LayoutContext);
 
@@ -600,10 +603,23 @@ const ConsultPaymentProgramded = () => {
                 setLCompaniesFilter,
                 showToast,
             });
-            await getlProviders({
-                setLProviders,
-                showToast,
-            });
+            if (oUser.isInternalUser) {
+                const canUpload = await getCanUploadFiles({
+                                    user_id: oUser.oUser.id,
+                                    lAreas: userFunctionalAreas,
+                                    setCanUploadFiles: setCanUploadFiles,
+                                    setLProviders: setLProviders,
+                                    setShowUploadBtn: setCanShowBtnCreate,
+                                    showToast: showToast
+                                });
+                
+                if (canUpload) {
+                    await getlProviders({
+                        setLProviders,
+                        showToast,
+                    });
+                }
+            }
             await getlFiscalRegime({
                 setLFiscalRegimes,
                 showToast,
@@ -692,7 +708,7 @@ const ConsultPaymentProgramded = () => {
                         dateFilter={dateFilter}
                         setDateFilter={setDateFilter}
                         showToast={showToast}
-                        withBtnCreate={true}
+                        withBtnCreate={canShowBtnCreate}
                         setDialogVisible={setDialogVisible}
                         setDialogMode={setDialogMode}
                         fileBodyTemplate={fileBodyTemplate}

@@ -566,3 +566,44 @@ Cambios:
 - Funcionalidad para validar los datos dell boleto contra el XML en la carga masiva de facturas.
 
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 26-03-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- PDC-790 Compradores pueden cargar documentos y a cuáles Proveedores se les puede cargar sus documentos
+
+Cambios:
+- Funcionalidad para restringir carga de documentos
+
+----------------------------------------
+
+========================================
+RELEASE
+Fecha: 27-03-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- PDC-784 Distinguir en la carga de NC si se trata de descuento/devolución o de aplicación de anticipos
+
+Cambios:
+- Añadido campo para selecionar tipo de aplicación de la nota de credito
+----------------------------------------
+
+========================================
+RELEASE
+Fecha: 27-03-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- Validación de "ess anticipo" al cargar factura
+
+Cambios:
+- Se valida el campo "es anticipo" cuando se valida el xml
+
+----------------------------------------

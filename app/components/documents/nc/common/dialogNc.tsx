@@ -19,6 +19,7 @@ import { InputNumber } from 'primereact/inputnumber';
 import { ValidateNcXml } from '@/app/components/documents/nc/common/ValidNcXml';
 import { Divider } from 'primereact/divider';
 import { FieldsEditAcceptance } from '@/app/components/documents/invoice/fieldsEditAcceptance';
+import { getlOptionsApplicationTypeNc } from '@/app/(main)/utilities/documents/nc/ncUtilities';
 
 interface DialogNc {
     visible: boolean;
@@ -127,6 +128,8 @@ export const DialogNc = ({
     const [fileErrors, setFilesErrros] = useState({
         files: false,
     });
+    const [loadingApplicationType, setLoadingApplicationType] = useState<boolean>(false);
+    const [lOptionsApplicationTypeNc, setLOptionsApplicationTypeNc] = useState<Array<any>>([]);
 
     //const para el boton de scroll al final
     const [elementRef, setElementRef] = useState<HTMLDivElement | null>(null);
@@ -165,9 +168,11 @@ export const DialogNc = ({
         });
     }
 
-    const handleSelectInvoices = (value: any) => {
+    const handleSelectInvoices = async (value: any) => {
         if (value.length == 1) {
             value[0].amount = 0;
+        } else {
+            setLOptionsApplicationTypeNc([]);
         }
 
         const noDocument = value?.some((item: any) => item.id == 0);
@@ -185,6 +190,13 @@ export const DialogNc = ({
             }];
         }
 
+        if (value.length > 0) {
+            await getlOptionsApplicationTypeNc({
+                    setLOptionsApplicationTypeNc: setLOptionsApplicationTypeNc,
+                    setLoadingApplicationType: setLoadingApplicationType,
+                    invoice_ids: value.map((item: any) => item.id)
+                });
+        }
         setONc?.((prev: any) => ({ ...prev, invoices: value }));
     }
 
@@ -325,6 +337,36 @@ export const DialogNc = ({
                                             errors={formErrors}
                                             errorMessage={'Selecciona facturas'}
                                         />
+                                        { !loadingApplicationType ? (
+                                            <RenderField
+                                                label={t('dialog.fields.application_type.label')}
+                                                tooltip={t('dialog.fields.application_type.tooltip')}
+                                                value={oNc?.application_type}
+                                                disabled={dialogMode == 'view' || dialogMode == 'edit' || (lOptionsApplicationTypeNc?.length || 0) < 1}
+                                                mdCol={6}
+                                                type={dialogMode == 'create' ? 'dropdown' : 'text'}
+                                                onChange={(value) => {
+                                                    setONc?.((prev: any) => ({ ...prev, application_type: value }));
+                                                    setFormErrors?.((prev: any) => ({ ...prev, application_type: false }));
+                                                }}
+                                                options={lOptionsApplicationTypeNc}
+                                                placeholder={t('dialog.fields.application_type.placeholder')}
+                                                errorKey={'application_type'}
+                                                errors={formErrors}
+                                                errorMessage={'Selecciona un tipo de aplicacion'}
+                                            />
+                                        ):
+                                            <div className={`field col-12 md:col-6`}>
+                                                <div className="">
+                                                    <div className="col">
+                                                        <div className="flex justify-content-center">
+                                                            <ProgressSpinner style={{ width: '50px', height: '50px' }} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                        
                                         {oNc?.invoices && ((oNc?.invoices?.length > 1 || dialogMode == 'view') || (oNc?.invoices[0]?.id == 0))  && (
                                             <RenderField
                                                 label={t('dialog.fields.lAreas.label')}
@@ -348,13 +390,14 @@ export const DialogNc = ({
                                             <>
                                                 {/* <Divider className='m-2'/> */}
                                                 <div className={`field col-12 md:col-12 text-center`}>
-                                                    <Divider className='m-0'/>
-                                                    <h6>Facturas de la nota de crédito:</h6>
+                                                    <Divider align="center">
+                                                        <h6>Facturas de la nota de crédito</h6>
+                                                    </Divider>
                                                     <div className="">
                                                         <div className="col">
                                                             {oNc?.invoices.map((item: any, index: number) => (
                                                                 <div className="field grid" key={index}>
-                                                                    <label className="col-12 mb-2 md:col-7 md:mb-0 justify-content-end">{item.folio}:</label>
+                                                                    <label className="col-12 mb-2 md:col-7 md:mb-0 justify-content-end">Folio: {item.folio} | Monto aplicado:</label>
                                                                     <div className="col-12 md:col-5">
                                                                         <InputNumber
                                                                             type="text"
@@ -375,7 +418,6 @@ export const DialogNc = ({
                                                             ))}
                                                         </div>
                                                     </div>
-                                                    <Divider className='m-0'/>
                                                 </div>
                                             </>
                                         )}
@@ -421,6 +463,9 @@ export const DialogNc = ({
                         )}
                         {withBody && isXmlValid && (dialogMode == 'create' || dialogMode == 'edit' || dialogMode == 'view') && (
                             <div className="p-fluid formgrid grid">
+                                <Divider align="center">
+                                    <h6>Datos de la nota de crédito</h6>
+                                </Divider>
                                 <RenderField
                                     label={t('dialog.fields.folio.label')}
                                     tooltip={t('dialog.fields.folio.tooltip')}
@@ -620,7 +665,9 @@ export const DialogNc = ({
 
                                 { (dialogMode == 'view' || dialogMode == 'edit') && (
                                     <>
-                                        <Divider/>
+                                        <Divider align="center">
+                                            <h6>Comentarios de la revisión</h6>
+                                        </Divider>
                                         <RenderField
                                             label={t('dialog.fields.authz_acceptance_notes.label')}
                                             tooltip={t('dialog.fields.authz_acceptance_notes.tooltip')}
@@ -644,7 +691,9 @@ export const DialogNc = ({
                                 
                                 { showAuthComments && (
                                     <>
-                                        <Divider/>
+                                        <Divider align="center">
+                                            <h6>Comentarios de la autorización</h6>
+                                        </Divider>
                                         <RenderField
                                             label={t('dialog.fields.authz_authorization_notes.label')}
                                             tooltip={t('dialog.fields.authz_authorization_notes.tooltip')}

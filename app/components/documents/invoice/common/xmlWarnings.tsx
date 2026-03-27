@@ -27,14 +27,14 @@ export const XmlWarnings = ( props: XmlWarningsProps ) => {
                                 style={{ fontSize: '1rem', cursor: 'pointer' }}
                             ></i>
                             <ul>
-                                {props.xmlValidateErrors.warnings.map((warnings: any, index: number) => (
+                                {props.xmlValidateErrors.warnings?.map((warnings: any, index: number) => (
                                     <li key={index} className="col-12 md:col-12">
                                         <i className='bx bxs-error' style={{color: '#FFD700'}}></i>
                                         &nbsp;&nbsp;
                                         {warnings}
                                     </li>
                                 ))}
-                                {props.xmlValidateErrors.extraWarnings.map((warnings: any, index: number) => (
+                                {props.xmlValidateErrors.extraWarnings?.map((warnings: any, index: number) => (
                                     <li key={index} className="col-12 md:col-12">
                                         <i className='bx bxs-error' style={{color: '#FFD700'}}></i>
                                         &nbsp;&nbsp;

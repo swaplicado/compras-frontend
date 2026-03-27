@@ -29,6 +29,7 @@ import invoices from "@/i18n/locales/es/documents/invoices";
 import { RenderInfoButton } from "@/app/components/commons/instructionsButton";
 import { useContext } from 'react';
 import { LayoutContext } from '@/layout/context/layoutcontext';
+import { getCanUploadFiles } from '@/app/(main)/utilities/documents/common/checkCanUploadFiles';
 
 const UploadNC = () => {
     const [startDate, setStartDate] = useState<string>('');
@@ -44,6 +45,8 @@ const UploadNC = () => {
     const [lCompaniesFilter, setLCompaniesFilter] = useState<any[]>([]);
     const [showInfo, setShowInfo] = useState<boolean>(false);
     const [showManual, setShowManual] = useState<boolean>(false);
+    const [canUploadFiles, setCanUploadFiles] = useState<boolean>(false);
+    const [canShowBtnCreate, setCanShowBtnCreate] = useState<boolean>(true);
 
     const { dateToWork, setDateToWork } = useContext(LayoutContext);
 
@@ -217,6 +220,7 @@ const UploadNC = () => {
             }
         } else {
             newErrors = {
+                application_type: !oNc.application_type,
                 company: !oNc.company,
                 partner: !oNc.partner,
                 invoices: !oNc.invoices,
@@ -330,7 +334,8 @@ const UploadNC = () => {
                 functional_area: oNc.area ? oNc.area.id : '',
                 exchange_rate: oNc.exchange_rate,
                 amount: oNc.amount,
-                uuid: oNc.uuid
+                uuid: oNc.uuid,
+                credit_note_application_type_id: oNc.application_type?.id
             }
 
             if (documents[0].id == 0) {
@@ -769,10 +774,25 @@ const UploadNC = () => {
                 setLCompaniesFilter,
                 showToast,
             });
-            await getlProviders({
-                setLProviders,
-                showToast,
-            });
+
+            if (oUser.isInternalUser) {
+                const canUpload = await getCanUploadFiles({
+                                    user_id: oUser.oUser.id,
+                                    lAreas: userFunctionalAreas,
+                                    setCanUploadFiles: setCanUploadFiles,
+                                    setLProviders: setLProviders,
+                                    setShowUploadBtn: setCanShowBtnCreate,
+                                    showToast: showToast
+                                });
+                
+                if (canUpload) {
+                    await getlProviders({
+                        setLProviders,
+                        showToast,
+                    });
+                }
+            }
+
             await getlCurrencies({
                 setLCurrencies,
                 showToast,
@@ -885,7 +905,7 @@ const UploadNC = () => {
                         dateFilter={dateFilter}
                         setDateFilter={setDateFilter}
                         showToast={showToast}
-                        withBtnCreate={true}
+                        withBtnCreate={canShowBtnCreate}
                         selectedRow={oNc}
                         setSelectedRow={setONc}
                         setDialogVisible={setDialogVisible}

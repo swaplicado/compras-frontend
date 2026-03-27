@@ -120,6 +120,11 @@ const nc = {
                 label: "Comentarios de autorización/rechazo:",
                 placeholder: "Comentarios de autorización/rechazo:",
                 tooltip: "Comentarios de autorización/rechazo:",
+            },
+            application_type: {
+                label: "Tipo aplicación",
+                placeholder: "Tipo aplicación",
+                tooltip: "Tipo aplicación"
             }
         },
         files: {

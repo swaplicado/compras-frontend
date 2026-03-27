@@ -12,6 +12,7 @@ interface validateXmlProps {
     xmlUploadRef: React.RefObject<FileUpload>;
     oCompany: { id: string; name: string } | null,
     oPartner: { id: string; name: string; country: number } | null,
+    isAdvance?: boolean,
     user_id: number,
     oRef: any[],
     errors: {
@@ -39,7 +40,8 @@ interface validateXmlProps {
 export const ValidateXml = ( { 
     xmlUploadRef, 
     oCompany, 
-    oPartner, 
+    oPartner,
+    isAdvance,
     user_id, 
     oRef, 
     errors, 
@@ -81,6 +83,7 @@ export const ValidateXml = ( {
             // formData.append('references', oRef[0]?.id != 0 ? JSON.stringify(oRef) : '[]');
             formData.append('complements', oRef[0]?.id != 0 ? JSON.stringify(oRef) : '[]');
             formData.append('user_id', user_id.toString());
+            formData.append('is_advance', isAdvance ? 'true' : 'false');
 
             const response = await axios.post(constants.API_AXIOS_POST, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
