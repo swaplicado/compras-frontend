@@ -141,8 +141,7 @@ export const getPaymentsExec = async ({
                     id: data[i].id,
                     name: 'Folio: ' + data[i].folio + 
                             '  | Fecha: ' + DateFormatter(data[i].exec_date_n) + 
-                            ' ' +data[i].currency__code + 
-                            ' | Monto: ' + Number(data[i].amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+                            ' | Monto: ' + Number(data[i].amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ' + data[i].currency__code,
                     functional_area__id: data[i].functional_area__id,
                     functional_area__name: data[i].functional_area__name
                     // folio: data[i].folio,

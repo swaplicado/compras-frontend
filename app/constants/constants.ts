@@ -88,6 +88,7 @@ const constants = {
     ROUTE_POST_CANCEL_FLOW: '/transactions/cancel-flow/',
     ROUTE_POST_SAVE_DEADLINE: '/transactions/upload-deadline/create-or-update/',
     ROUTE_POST_VALIDATE_WAYBILL_SUPPLEMENT: '/transactions/documents/validate-waybill-supplement/',
+    ROUTE_POST_GET_AVAILABLE_CREDIT_NOTE_TYPE: '/transactions/get-available-creditnote-type',
 
     //Constantes de estados de las facturas
     REVIEW_ACCEPT: 'O',

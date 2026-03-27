@@ -96,6 +96,8 @@ export const getNc = async (props: getNcProps) => {
                     functional_area_code: data[i].functional_area?.code,
                     functional_area_name: data[i].functional_area?.name,
                     actors_of_action: actors_of_action ? JSON.stringify(actors_of_action) : '',
+                    application_type: data[i].credit_note_application_type_name,
+                    application_type_id: data[i].credit_note_application_type_id
                 })
             }
 
@@ -143,7 +145,7 @@ export const getlInvoices = async (props: getlInvoices) => {
             for (let i = 0; i < data.length; i++) {
                 invoices.push({
                     id: data[i].id,
-                    name: data[i].folio + ' - ' + data[i].currency__code + ' - ' + FormateadorMonetario(data[i].amount) + ' - ' + DateFormatter(data[i].date),
+                    name: 'Folio: ' + data[i].folio + ' | ' + 'Fecha: ' + DateFormatter(data[i].date) + ' | ' + 'Monto: ' + FormateadorMonetario(data[i].amount) + ' ' + data[i].currency__code,
                     folio: data[i].folio,
                     date: data[i].date,
                     amount: data[i].amount,
@@ -206,5 +208,42 @@ export const getInvoicesToReview = async (props: getInvoicesToReview) => {
     } catch (error: any) {
         props.showToast?.('error', error.response?.data?.error || props.errorMessage, props.errorMessage);
         return false;
+    }
+}
+
+interface getlOptionsTypeNcProps {
+    setLOptionsApplicationTypeNc: React.Dispatch<React.SetStateAction<any[]>>;
+    setLoadingApplicationType: React.Dispatch<React.SetStateAction<boolean>>;
+    invoice_ids: Array<[any]>;
+}
+export const getlOptionsApplicationTypeNc = async (props: getlOptionsTypeNcProps) => {
+    try {
+        props.setLoadingApplicationType(true);
+        const route = constants.ROUTE_POST_GET_AVAILABLE_CREDIT_NOTE_TYPE;
+        const response = await axios.post(constants.API_AXIOS_POST, {
+            route: route,
+            jsonData: {
+                invoice_ids: props.invoice_ids
+            }
+        })
+
+        if (response.status == 200) {
+            const data = (await response).data.data || [];
+            console.log(data);
+            
+            let options = [];
+            for (let i = 0; i < data.types.length; i++) {
+                options.push({
+                    id: data.types[i].id,
+                    name: data.types[i].name
+                })
+            }
+
+            props.setLOptionsApplicationTypeNc(options);
+        }
+    } catch (error: any) {
+        console.log(error);
+    } finally {
+        props.setLoadingApplicationType(false);
     }
 }

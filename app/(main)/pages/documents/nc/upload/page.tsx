@@ -220,6 +220,7 @@ const UploadNC = () => {
             }
         } else {
             newErrors = {
+                application_type: !oNc.application_type,
                 company: !oNc.company,
                 partner: !oNc.partner,
                 invoices: !oNc.invoices,
@@ -333,7 +334,8 @@ const UploadNC = () => {
                 functional_area: oNc.area ? oNc.area.id : '',
                 exchange_rate: oNc.exchange_rate,
                 amount: oNc.amount,
-                uuid: oNc.uuid
+                uuid: oNc.uuid,
+                credit_note_application_type_id: oNc.application_type?.id
             }
 
             if (documents[0].id == 0) {

@@ -580,3 +580,16 @@ Cambios:
 - Funcionalidad para restringir carga de documentos
 
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 27-03-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- PDC-784 Distinguir en la carga de NC si se trata de descuento/devolución o de aplicación de anticipos
+
+Cambios:
+- Añadido campo para selecionar tipo de aplicación de la nota de credito
+----------------------------------------
