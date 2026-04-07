@@ -648,6 +648,10 @@ export const TableInvoices = ({
         )
     }
 
+    const payAuthorizedAtBodyTemplate = (rowData: any) => {
+        return rowData.authorized_at ? DateFormatter(rowData.authorized_at, 'DD-MMM-YYYY HH:MM:ss') : '';
+    };
+
     const PaymentsOverlay = ({ payments, folio }: any) => {
         const overlayPayment = useRef<any>(null);
         
@@ -670,13 +674,28 @@ export const TableInvoices = ({
                     </div>
                 </div>
                 <OverlayPanel ref={overlayPayment} showCloseIcon closeOnEscape dismissable={false}>
-                    <DataTable value={payments} emptyMessage={'Sin datos para mostrar.'}>
+                    Historial de pagos
+                    <DataTable 
+                        value={payments} 
+                        emptyMessage={'Sin datos para mostrar.'}
+                        paginator
+                        rowsPerPageOptions={constants.TABLE_ROWS}
+                        className="p-datatable-gridlines"
+                        rows={constants.TABLE_DEFAULT_ROWS}
+                        showGridlines
+                        responsiveLayout="scroll"
+                        scrollable
+                        scrollHeight="40rem"
+                        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+                        currentPageReportTemplate={tCommon('datatable.currentPageReportTemplate')}
+                        resizableColumns
+                    >
                         <Column field="folio" header="Folio" />
-                        <Column field="amount" header="Monto" />
+                        <Column field="amount" header="Monto" body={amountBodyTemplate}/>
                         <Column field="currency" header="Moneda" />
-                        <Column field="authorized_at" header="F. Autorización" />
+                        <Column field="authorized_at" header="F. autorización" body={payAuthorizedAtBodyTemplate}/>
                         <Column field="sched_date" header="F. programado" />
-                        <Column field="exec_date" header="F. Ejecutado" />
+                        <Column field="exec_date" header="F. ejecutado" />
                         <Column field="status" header="Estatus" />
                     </DataTable>
                 </OverlayPanel>
