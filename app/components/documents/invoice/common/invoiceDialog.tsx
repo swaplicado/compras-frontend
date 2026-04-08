@@ -2064,7 +2064,14 @@ export const InvoiceDialog = ({
                                 <XmlWarnings xmlValidateErrors={xmlValidateErrors} />
                             </>
                         )}
-                        <div className="p-fluid formgrid grid">{loadingValidateXml && <ProgressSpinner style={{ width: '50px', height: '50px' }} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />}</div>
+                        <div className="p-fluid formgrid grid">
+                            {loadingValidateXml && (
+                                <div className="col-12 flex flex-column align-items-center">
+                                    <div>Validando CFDI ante el SAT</div>
+                                    <ProgressSpinner style={{ width: '50px', height: '50px' }} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />
+                                </div>
+                            )}
+                        </div>
                         {(isXmlValid || (oProvider ? oProvider.country != constants.COUNTRIES.MEXICO_ID : false) || dialogMode == 'review' || dialogMode == 'authorization') && (
                             <FieldsDps
                                 oDps={oDps}
