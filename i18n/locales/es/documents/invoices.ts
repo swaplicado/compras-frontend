@@ -107,9 +107,9 @@ const invoices = {
                 tooltip: "Centro de costo de la referencia."
             },
             amount: {
-                label: "Total referencia:",
-                placeholder: "Total referencia",
-                tooltip: "Total de la referencia."
+                label: "Monto asignado referencia:",
+                placeholder: "Monto asignado referencia",
+                tooltip: "El monto asignado a dicha referencia."
             },
         },
         xml_file: {
