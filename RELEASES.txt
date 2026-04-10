@@ -607,3 +607,17 @@ Cambios:
 - Se valida el campo "es anticipo" cuando se valida el xml
 
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 10-04-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- PDC-792 Mostrar Uso de CFDI en OC
+
+Cambios:
+- Añadido campo uso CFDI en pantalla de OC
+
+----------------------------------------

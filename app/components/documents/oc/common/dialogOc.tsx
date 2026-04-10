@@ -394,17 +394,30 @@ export const DialogOc = ({
                                     value={oOc.account_tag}
                                     disabled={!editableBodyFields}
                                     mdCol={3}
-                                    type={ editableBodyFields ? 'calendar' : 'text'}
-                                    inputRef={inputCalendarRef}
+                                    type={ editableBodyFields ? 'dropdown' : 'text'}
                                     onChange={(value) => {
-                                        setOOc?.((prev: any) => ({ ...prev, date: value }));
-                                        setFormErrors?.((prev: any) => ({ ...prev, date: false }));
+                                        setOOc?.((prev: any) => ({ ...prev, account_tag: value }));
+                                        setFormErrors?.((prev: any) => ({ ...prev, account_tag: false }));
                                     }}
                                     options={[]}
-                                    placeholder={t('dialog.fields.date.placeholder')}
-                                    errorKey={'date'}
+                                    placeholder={''}
+                                    errorKey={''}
                                     errors={formErrors}
-                                    errorMessage={'Selecciona fecha'}
+                                    errorMessage={''}
+                                />
+                                <RenderField
+                                    label={t('dialog.fields.fiscal_use.label')}
+                                    tooltip={''}
+                                    value={oOc.fiscal_use}
+                                    disabled={true}
+                                    mdCol={3}
+                                    type={'text'}
+                                    onChange={(value) => {}}
+                                    options={[]}
+                                    placeholder={t('dialog.fields.fiscal_use.placeholder')}
+                                    errorKey={''}
+                                    errors={formErrors}
+                                    errorMessage={''}
                                 />
                                 { oOc?.jsonOc?.oDpsHeader?.exchangeRate > 1 && (
                                     <>

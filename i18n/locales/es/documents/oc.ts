@@ -171,6 +171,11 @@ const oc = {
                 placeholder: "",
                 tooltip: ""
             },
+            fiscal_use: {
+                label: "Uso CFDI",
+                placeholder: "",
+                tooltip: ""
+            },
             withOutMr: "Sin requisición",
             authzCommentsSubtitle: "Comentarios de autorización",
             filesSubtitles: "Archivos",
