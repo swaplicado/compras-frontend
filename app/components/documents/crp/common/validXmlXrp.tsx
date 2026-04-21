@@ -43,7 +43,10 @@ export const ValidateXmlCrp = ({ xmlUploadRef, oCompany, oPartner, oUser, oPay, 
             // const route = constants.ROUTE_POST_VALIDATE_XML_CRP;
             const route = constants.ROUTE_POST_VALIDATE_XML;
             const formData = new FormData();
+            const lPayids = oPay.map((pay: any) => pay.id === 0 ? '' : pay.id.toString());
+            
             formData.append('files', validFiles[0]);
+            formData.append('complements', JSON.stringify(lPayids));
             formData.append('route', route);
             formData.append('company_id', oCrp?.oCompany.id || '');
             formData.append('partner_id', oCrp?.oProvider.id || '');
