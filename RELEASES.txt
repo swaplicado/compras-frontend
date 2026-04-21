@@ -635,3 +635,17 @@ Nuevas funcionalidades:
 - Se valida que exista el pago para el crp al enviar el xml a validar
 
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 21-04-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- Fix, ruta ROUTE_GET_ACCOUNT_STATE_INSTRUCTIONS
+
+Correcciones:
+- Añadida una / al final de la ruta /partners/get_account_state_instructions/
+
+----------------------------------------
