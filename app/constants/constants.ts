@@ -61,7 +61,7 @@ const constants = {
     ROUTE_GET_LAST_DAY_PAYMENT: '/transactions/last-day-payment',
     ROUTE_GET_INFO_DOC: '/transactions/documents/get-info-doc/',
     ROUTE_GET_ACCOUNT_STATE_PDF: '/transactions/partners/get_account_state_pdf',
-    ROUTE_GET_ACCOUNT_STATE_INSTRUCTIONS: '/transactions/partners/get_account_state_instructions',
+    ROUTE_GET_ACCOUNT_STATE_INSTRUCTIONS: '/transactions/partners/get_account_state_instructions/',
     ROUTE_GET_OPEX: '/transactions/get-accounting-tags',
     ROUTE_GET_PROCESSING_TYPE: '/transactions/get-processing-type',
     ROUTE_GET_DEADLINE: '/transactions/upload-deadline/year-deadline/',
