@@ -649,3 +649,18 @@ Correcciones:
 - Añadida una / al final de la ruta /partners/get_account_state_instructions/
 
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 23-04-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- Fix, textos de pantalla Todos los pagos y folio en crp
+
+Correcciones:
+- No se mostraba el folio en crp
+- Cambio de textos de titulo y fecha invalida en la pantalla de todos los pagos
+
+----------------------------------------

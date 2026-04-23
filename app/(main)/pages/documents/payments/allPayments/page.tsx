@@ -62,7 +62,7 @@ const ConsultPaymentProgramded = () => {
         app_date: { hidden: true },
         req_date: { hidden: true },
         sched_date_n: { hidden: false },
-        exec_date_n: { hidden: true },
+        exec_date_n: { hidden: false },
         amount: { hidden: false },
         payment_way: { hidden: true },
         payment_status: { hidden: false },
@@ -158,12 +158,12 @@ const ConsultPaymentProgramded = () => {
             }}
         >
             <h3 className="m-0 text-900 font-medium">
-                {t('programed.title')}
+                {t('all.title')}
                 &nbsp;&nbsp;
                 <Tooltip target=".custom-target-icon" />
                 <i
                     className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                    data-pr-tooltip={t('programed.titleTooltip')}
+                    data-pr-tooltip={t('all.titleTooltip')}
                     data-pr-position="right"
                     data-pr-my="left center-2"
                     style={{ fontSize: '1rem', cursor: 'pointer' }}
