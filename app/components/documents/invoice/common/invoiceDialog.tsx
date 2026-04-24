@@ -1891,6 +1891,20 @@ export const InvoiceDialog = ({
                                                     )}
                                                     <div className="grid">
                                                             {renderField({
+                                                                label: t('uploadDialog.nature.label'),
+                                                                tooltip: t('uploadDialog.nature.tooltip'),
+                                                                value: item.nature,
+                                                                disabled: true,
+                                                                mdCol: 3,
+                                                                type: 'textArea',
+                                                                onChange: () => null,
+                                                                options: [],
+                                                                placeholder: t('uploadDialog.nature.placeholder'),
+                                                                errorKey: '',
+                                                                errors: formErrors,
+                                                                errorMessage: ''
+                                                            })}
+                                                            {renderField({
                                                                 label: t('uploadDialog.CeCo.concept.label'),
                                                                 tooltip: t('uploadDialog.CeCo.concept.tooltip'),
                                                                 value: item.concepts,

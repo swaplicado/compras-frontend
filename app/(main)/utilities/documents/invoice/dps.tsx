@@ -40,7 +40,8 @@ export const getDps = async ( props: getDpsProps  ) => {
                             concepts: data[i].references[j].concepts ? data[i].references[j].concepts.split(';').map((concept: any) => concept.trim() + ';\n').join('') : "N/D",
                             cost_profit_center: data[i].references[j].cost_profit_center ? data[i].references[j].cost_profit_center .split(';').map((value: any) => value.trim() + ';\n').join('') : "N/D",
                             account_tag: data[i].references[j].account_tag,
-                            purchase_ticket_details: data[i].references[j].purchase_ticket_details ? data[i].references[j].purchase_ticket_details : null
+                            purchase_ticket_details: data[i].references[j].purchase_ticket_details ? data[i].references[j].purchase_ticket_details : null,
+                            nature: data[i].references[j].nature
                         });
                     }   
                 }

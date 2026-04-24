@@ -104,7 +104,8 @@ export const getOc = async (props: getOcProps) => {
                         data[i].reference_external.cost_profit_center.split(';').map((concept: any) => concept.trim() + ';\n').join('') : 
                             ( data[i].cost_profit_center ? data[i].cost_profit_center : 
                                 'N/D'),
-                    account_tag: data[i].account_tag
+                    account_tag: data[i].account_tag,
+                    nature: data[i].nature
                 })
             }
 
