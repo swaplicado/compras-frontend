@@ -1,6 +1,11 @@
 import { title } from "process"
 
 const payments = {
+    all: {
+        title: 'Todos los pagos',
+        titleTooltip: 'Pantalla para consultar todos los pagos',
+        dialogTitle: 'Pago'
+    },
     programed: {
         title: 'Pagos programados',
         titleTooltip: 'Pantalla para consultar los pagos programados',

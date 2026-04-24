@@ -146,9 +146,23 @@ export const TablePayments = ({
         return DateFormatter(rowData.req_date);
     };
     const schedDateBodyTemplate = (rowData: any) => {
+        if (!rowData.sched_date_n) {
+            return (
+                <div className="flex justify-content-center align-items-center">
+                    N/D
+                </div>
+            )
+        }
         return DateFormatter(rowData.sched_date_n);
     };
     const execDateBodyTemplate = (rowData: any) => {
+        if (!rowData.exec_date_n) {
+            return (
+                <div className="flex justify-content-center align-items-center">
+                    N/D
+                </div>
+            )
+        }
         return DateFormatter(rowData.exec_date_n);
     };
 

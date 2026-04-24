@@ -75,7 +75,8 @@ export const ValidateXmlCrp = ({ xmlUploadRef, oCompany, oPartner, oUser, oPay, 
                         version: data.data.version,
                         xml_date: data.data.xml_date,
                         series: data.data.series,
-                        number: data.data.number
+                        number: data.data.number,
+                        folio: data.data.folio
                     }))
                 } else {
                     setLErrors(data.errors);
