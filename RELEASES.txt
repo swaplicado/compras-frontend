@@ -664,3 +664,17 @@ Correcciones:
 - Cambio de textos de titulo y fecha invalida en la pantalla de todos los pagos
 
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 24-04-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- Fix, Fecha invalida en modal de pagos
+
+Correcciones:
+- Cambio de texto de fecha invalida a N/D en la utileria de DateFormatter
+
+----------------------------------------
