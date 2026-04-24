@@ -138,7 +138,7 @@ export const getEntries = async (props: getEntriesProps) => {
                     document_bal_unpd_app: data[i].document_bal_unpd_app,
                     document_bal_prev_exec: data[i].document_bal_prev_exec,
                     document_bal_unpd_exec: data[i].document_bal_unpd_exec,
-                    document_uuid: data[i].document_uuid,
+                    document_uuid: data[i].document_n ? data[i].document_n.uuid : '',
                     
                     document_n: data[i].document_n,
                     

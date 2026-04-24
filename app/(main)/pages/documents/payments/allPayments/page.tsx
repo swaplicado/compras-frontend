@@ -275,7 +275,7 @@ const ConsultPaymentProgramded = () => {
                         onHide={() => setDialogVisible(false)}
                         isMobile={isMobile}
                         footerContent={dialogFooterContent}
-                        headerTitle={t('programed.dialogTitle')}
+                        headerTitle={t('all.dialogTitle')}
                         oPayment={oPayment}
                         setOPayment={setOPayment}
                         dialogMode={dialogMode}

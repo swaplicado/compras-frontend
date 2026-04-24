@@ -10,7 +10,10 @@ import 'moment/locale/es'; // Importa el locale español (opcional)
  * @returns {JSX.Element} Un elemento span con la fecha formateada.
  */
 const DateFormatter = ( date: string | Date, format = 'DD-MMM-YYYY', locale = 'es') => {
-  // Configura el locale (opcional)
+  if (!date) {
+    return "N/D";
+  }
+    // Configura el locale (opcional)
   moment.locale(locale);
   
   // Formatea la fecha
