@@ -692,3 +692,17 @@ Cambios:
 - Se añadie el campo Tipo contabilización en las OC y la referencia de las facturas.
 
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 28-04-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- Añadido campo Notas de la oc y datos de la requisicion en el modal de facturas.
+
+Cambios:
+- Añadido campo Notas de la oc y datos de la requisicion en el modal de facturas.
+
+----------------------------------------

@@ -31,6 +31,9 @@ import { MultiSelect } from 'primereact/multiselect';
 import { btnScroll } from '@/app/(main)/utilities/commons/useScrollDetection';
 import { useIntersectionObserver } from 'primereact/hooks';
 import { getCrpPending } from '@/app/(main)/utilities/documents/invoice/dps';
+import { getJsonOc } from "@/app/(main)/utilities/documents/oc/ocUtilities";
+import { TableEty } from '@/app/components/documents/oc/common/tableEty';
+import { RenderField } from '@/app/components/commons/renderField';
 
 interface InvoiceDialogProps {
     visible: boolean;
@@ -107,6 +110,7 @@ interface renderFieldProps {
     renderLeftItem?: { item: React.ReactNode; mdCol: number };
     renderRightItem?: { item: React.ReactNode; mdCol: number };
     mySyle?: any;
+    digits?: number;
 }
 
 export const InvoiceDialog = ({
@@ -188,6 +192,7 @@ export const InvoiceDialog = ({
     const { t } = useTranslation('invoices');
     const { t: tAuth } = useTranslation('authorizations');
     const { t: tCommon } = useTranslation('common');
+    const { t: tOc } = useTranslation('oc');
     const [totalSize, setTotalSize] = useState(0);
     const [fileErrors, setFilesErrros] = useState({
         files: false,
@@ -243,6 +248,7 @@ export const InvoiceDialog = ({
     const [lRefErrors, setLRefErrors] = useState<any[]>([]);
     const [crpPending, setCrpPending] = useState<any>({});
     const [loadingReferenceData, setLoadingReferenceData] = useState<boolean>(false);
+    const [oMaterialRequest, setOMaterialRequest] = useState<any>(null);
 
     //const para el boton de scroll al final
     const [elementRef, setElementRef] = useState<HTMLDivElement | null>(null);
@@ -384,7 +390,7 @@ export const InvoiceDialog = ({
                             <Tooltip target=".custom-target-icon" />
                             <i className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge" data-pr-tooltip={props.tooltip} data-pr-position="right" data-pr-my="left center-2" style={{ fontSize: '1rem', cursor: 'pointer' }}></i>
                             <div>
-                                <InputNumber type="text" className={`w-full`} value={props.value || ''} disabled={props.disabled} maxLength={50} minFractionDigits={2} maxFractionDigits={2} inputClassName="text-right" />
+                                <InputNumber type="text" className={`w-full`} value={props.value || ''} disabled={props.disabled} maxLength={50} minFractionDigits={props.digits ? props.digits : 2} maxFractionDigits={props.digits ? props.digits : 2} inputClassName="text-right" />
                             </div>
                         </div>
                     </div>
@@ -1139,7 +1145,23 @@ export const InvoiceDialog = ({
                     } catch (error: any) {
                         // showToast?.('error', error.response?.data?.error || 'Error al obtener el historial de autorización', 'Error al obtener el historial de autorización');
                     }
+
+                    try {
+                        if (lReferencesDps[i].reference_document_id) {
+                            let jsonOc = await getJsonOc({
+                                            doc_id: lReferencesDps[i].reference_document_id,
+                                            errorMessage: '',
+                                            showToast: showToast
+                                        })
+                            lReferencesDps[i].jsonOc = jsonOc;
+                        } else {
+                            lReferencesDps[i].jsonOc = null;
+                        }
+                    } catch (error: any) {
+                        // console.log(error);
+                    }
                 }
+                
                 setLRefToValidateXml(lReferencesDps);
                 setLoadingReferenceData(false);
             };
@@ -1667,6 +1689,27 @@ export const InvoiceDialog = ({
         }
     }, [oReference])
 
+    const getDpsOcNotes = (lNotes: Array<any>) => {
+        let notes = '';
+        if (lNotes) {
+            lNotes.forEach((note: any) => {
+                notes += note.note + '\n';
+            });
+        }
+        return notes;
+    }
+
+    const getMrNotes = () => {
+        let notes = '';
+        if (!oMaterialRequest?.lNotes) {
+            return '';
+        }
+        oMaterialRequest.lNotes.forEach((note: any) => {
+            notes += note.note + '\n';
+        });
+        return notes;
+    }
+
     return (
         <div className="flex justify-content-center">
             <Dialog
@@ -1705,6 +1748,59 @@ export const InvoiceDialog = ({
                     <>
                         <br />
                         <div className="p-fluid formgrid grid">
+                            { oDps?.reference && (
+                                <>
+                                    {renderField({
+                                        label: t('uploadDialog.folio.label'),
+                                        tooltip: t('uploadDialog.folio.tooltipReview'),
+                                        value: oDps?.folio,
+                                        disabled: true,
+                                        mdCol: 2,
+                                        type: 'text',
+                                        placeholder: '',
+                                        errorKey: 'folio',
+                                        errors: errors,
+                                        errorMessage: ''
+                                    })}
+                                    {renderField({
+                                        label: t('uploadDialog.xml_date.label'),
+                                        tooltip: t('uploadDialog.xml_date.tooltipReview'),
+                                        value: oDps?.dateFormated,
+                                        disabled: true,
+                                        mdCol: !oDps?.week ? 3 : 2,
+                                        type: 'text',
+                                        placeholder: '',
+                                        errorKey: '',
+                                        errors: errors,
+                                        errorMessage: ''
+                                    })}
+                                    {renderField({
+                                        label: t('uploadDialog.amount.label'),
+                                        tooltip: t('uploadDialog.amount.tooltipReview'),
+                                        value: oDps?.amount,
+                                        disabled: true,
+                                        mdCol: 3,
+                                        type: 'number',
+                                        placeholder: '',
+                                        errorKey: '',
+                                        errors: errors,
+                                        errorMessage: ''
+                                    })}
+                                    {renderField({
+                                        label: t('uploadDialog.currency.label'),
+                                        tooltip: t('uploadDialog.currency.tooltipReview'),
+                                        value: oDps?.currency,
+                                        disabled: true,
+                                        mdCol: 2,
+                                        type: 'text',
+                                        placeholder: t('uploadDialog.currency.placeholder'),
+                                        errorKey: '',
+                                        errors: errors,
+                                        errorMessage: ''
+                                    })}
+                                </>
+                            )}
+
                             {renderField({
                                 label: t('uploadDialog.company.label'),
                                 tooltip: t('uploadDialog.company.tooltip'),
@@ -1881,7 +1977,20 @@ export const InvoiceDialog = ({
                                     </Divider>
                                     <div className="p-fluid formgrid grid">{loadingReferenceData && <ProgressSpinner style={{ width: '50px', height: '50px' }} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />}</div>
                                     <div className="formgrid grid">
-                                        <div className="col">
+                                        <div className="col" style={{ minWidth: 0 }}>
+                                            { lRefToValidateXml.length == 0 && 
+                                                <div className="field col-12 md:col-12">
+                                                    <div className="formgrid grid">
+                                                        <div className="col">
+                                                            <span className="p-float-label">
+                                                                <div className="flex justify-content-center">
+                                                                    <div className="font-bold text-lg">Sin referencia</div>
+                                                                </div>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
                                             {lRefToValidateXml.map((item: any, index: number) => (
                                                 <div key={index}>
                                                     { lRefToValidateXml.length > 1 && (
@@ -1889,7 +1998,7 @@ export const InvoiceDialog = ({
                                                             <h6>{t('uploadDialog.CeCo.title')} {item.reference}</h6>
                                                         </div>
                                                     )}
-                                                    <div className="grid">
+                                                    <div className="grid" style={{ minWidth: 0 }}>
                                                             {renderField({
                                                                 label: t('uploadDialog.nature.label'),
                                                                 tooltip: t('uploadDialog.nature.tooltip'),
@@ -2022,8 +2131,158 @@ export const InvoiceDialog = ({
                                                                 </>
                                                             )}
 
+                                                            {renderField({
+                                                                label: 'Notas de la oc',
+                                                                tooltip: '',
+                                                                value: getDpsOcNotes(item.jsonOc?.lNotes),
+                                                                disabled: true,
+                                                                mdCol: 12,
+                                                                type: 'textArea',
+                                                                onChange: () => null,
+                                                                options: [],
+                                                                placeholder: '',
+                                                                errorKey: '',
+                                                                errors: formErrors,
+                                                                errorMessage: ''
+                                                            })}
+                                                        
+                                                        <div style={{ overflowX: 'auto', width: '100%' }}>
+                                                            <Divider align="center">
+                                                                <h6>Partidas referencia {item.reference}</h6>
+                                                            </Divider>
+                                                            <TableEty
+                                                                lEtys={item?.jsonOc?.lEtys}
+                                                                setOMaterialRequest={setOMaterialRequest}
+                                                            />
+                                                        </div>
+                                                        <div className={`field col-12 md:col-12`}>
+                                                        
+                                                        <div className="p-fluid formgrid grid">
+                                                            <Divider align="center">
+                                                                <h6>{tOc('dialog.fields.materialRequestSubtitle')}</h6>
+                                                            </Divider>
+                                                            { oMaterialRequest && oMaterialRequest?.idMaterialRequest != 0 ? (
+                                                                <>
+                                                                    <RenderField
+                                                                        label={tOc('dialog.fields.mrUser.label')}
+                                                                        tooltip={tOc('dialog.fields.mrUser.tooltip')}
+                                                                        value={oMaterialRequest?.mrUser}
+                                                                        disabled={true}
+                                                                        mdCol={3}
+                                                                        type={'text'}
+                                                                        onChange={() => {}}
+                                                                        options={[]}
+                                                                        placeholder={tOc('dialog.fields.folio.placeholder')}
+                                                                        errorKey={''}
+                                                                        errors={[]}
+                                                                        errorMessage={''}
+                                                                    />
+                                                                    <RenderField
+                                                                        label={tOc('dialog.fields.mrFolio.label')}
+                                                                        tooltip={tOc('dialog.fields.mrFolio.tooltip')}
+                                                                        value={oMaterialRequest?.mrFolio}
+                                                                        disabled={true}
+                                                                        mdCol={3}
+                                                                        type={'text'}
+                                                                        onChange={() => {}}
+                                                                        options={[]}
+                                                                        placeholder={tOc('dialog.fields.folio.placeholder')}
+                                                                        errorKey={''}
+                                                                        errors={[]}
+                                                                        errorMessage={''}
+                                                                    />
+                                                                    <RenderField
+                                                                        label={tOc('dialog.fields.mrDate.label')}
+                                                                        tooltip={tOc('dialog.fields.mrDate.tooltip')}
+                                                                        value={DateFormatter(oMaterialRequest?.mrDate)}
+                                                                        disabled={true}
+                                                                        mdCol={3}
+                                                                        type={'text'}
+                                                                        onChange={() => {}}
+                                                                        options={[]}
+                                                                        placeholder={tOc('dialog.fields.folio.placeholder')}
+                                                                        errorKey={''}
+                                                                        errors={[]}
+                                                                        errorMessage={''}
+                                                                    />
+                                                                    <RenderField
+                                                                        label={tOc('dialog.fields.mrPriority.label')}
+                                                                        tooltip={tOc('dialog.fields.mrPriority.tooltip')}
+                                                                        value={oMaterialRequest?.mrPriority}
+                                                                        disabled={true}
+                                                                        mdCol={3}
+                                                                        type={'text'}
+                                                                        onChange={() => {}}
+                                                                        options={[]}
+                                                                        placeholder={tOc('dialog.fields.folio.placeholder')}
+                                                                        errorKey={''}
+                                                                        errors={[]}
+                                                                        errorMessage={''}
+                                                                    />
+                                                                    <RenderField
+                                                                        label={tOc('dialog.fields.mrRequiredDate.label')}
+                                                                        tooltip={tOc('dialog.fields.mrRequiredDate.tooltip')}
+                                                                        value={DateFormatter(oMaterialRequest?.mrRequiredDate)}
+                                                                        disabled={true}
+                                                                        mdCol={3}
+                                                                        type={'text'}
+                                                                        onChange={() => {}}
+                                                                        options={[]}
+                                                                        placeholder={tOc('dialog.fields.folio.placeholder')}
+                                                                        errorKey={''}
+                                                                        errors={[]}
+                                                                        errorMessage={''}
+                                                                    />
+                                                                    <RenderField
+                                                                        label={tOc('dialog.fields.mrType.label')}
+                                                                        tooltip={tOc('dialog.fields.mrType.tooltip')}
+                                                                        value={oMaterialRequest?.mrType === 'C' ? 'Consumo' : 'Resurtido'}
+                                                                        disabled={true}
+                                                                        mdCol={3}
+                                                                        type={'text'}
+                                                                        onChange={() => {}}
+                                                                        options={[]}
+                                                                        placeholder={tOc('dialog.fields.folio.placeholder')}
+                                                                        errorKey={''}
+                                                                        errors={[]}
+                                                                        errorMessage={''}
+                                                                    />
+                                                                    <RenderField
+                                                                        label={tOc('dialog.fields.mrNotes.label')}
+                                                                        tooltip={tOc('dialog.fields.mrNotes.tooltip')}
+                                                                        value={getMrNotes()}
+                                                                        readonly={true}
+                                                                        mdCol={12}
+                                                                        type={'textArea'}
+                                                                        onChange={() => {}}
+                                                                        options={[]}
+                                                                        placeholder={tOc('dialog.fields.folio.placeholder')}
+                                                                        errorKey={''}
+                                                                        errors={[]}
+                                                                        errorMessage={''}
+                                                                    />
+                                                                </>
+                                                            ) : 
+                                                            (
+                                                                <div className="field col-12 md:col-12">
+                                                                    <div className="formgrid grid">
+                                                                        <div className="col">
+                                                                            <span className="p-float-label">
+                                                                                <div className="flex justify-content-center">
+                                                                                    <div className="font-bold text-lg">{tOc('dialog.fields.withOutMr')}</div>
+                                                                                </div>
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
                                                     </div>
                                                     <div className='pb-5'>
+                                                        <Divider align="center">
+                                                            <h6>Historial de autorizaciones de {item.reference}</h6>
+                                                        </Divider>
                                                         <HistoryAuth
                                                             lHistory={item.history}
                                                         />

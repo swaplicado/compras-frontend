@@ -32,6 +32,7 @@ export const getDps = async ( props: getDpsProps  ) => {
                         if (j < data[i].references.length - 1) {
                             reference += ', ';
                         }
+
                         lReferences.push({
                             id: data[i].references[j].id,
                             external_id: data[i].references[j].external_id,
@@ -41,7 +42,8 @@ export const getDps = async ( props: getDpsProps  ) => {
                             cost_profit_center: data[i].references[j].cost_profit_center ? data[i].references[j].cost_profit_center .split(';').map((value: any) => value.trim() + ';\n').join('') : "N/D",
                             account_tag: data[i].references[j].account_tag,
                             purchase_ticket_details: data[i].references[j].purchase_ticket_details ? data[i].references[j].purchase_ticket_details : null,
-                            nature: data[i].references[j].nature
+                            nature: data[i].references[j].nature,
+                            reference_document_id: data[i].references[j].reference_document_id
                         });
                     }   
                 }

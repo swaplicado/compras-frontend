@@ -436,7 +436,7 @@ export const DialogOc = ({
                                 { oOc?.jsonOc?.oDpsHeader?.exchangeRate > 1 && (
                                     <>
                                         <Divider align="center">
-                                            <h6>{t('dialog.fields.localCurrencySubtitle.label')}</h6>
+                                            <h6>{t('dialog.fields.localCurrencySubtitle')}</h6>
                                         </Divider>
                                         <RenderField
                                             label={t('dialog.fields.exchange_rate.label')}
