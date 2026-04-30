@@ -104,7 +104,8 @@ export const getOc = async (props: getOcProps) => {
                         data[i].reference_external.cost_profit_center.split(';').map((concept: any) => concept.trim() + ';\n').join('') : 
                             ( data[i].cost_profit_center ? data[i].cost_profit_center : 
                                 'N/D'),
-                    account_tag: data[i].account_tag
+                    account_tag: data[i].account_tag,
+                    nature: data[i].nature
                 })
             }
 
@@ -121,7 +122,7 @@ export const getOc = async (props: getOcProps) => {
 
 interface getJsonOcProps {
     doc_id: string | number,
-    setJsonOc: React.Dispatch<React.SetStateAction<any[]>>;
+    setJsonOc?: React.Dispatch<React.SetStateAction<any[]>>;
     errorMessage: string;
     showToast?: (type: 'success' | 'info' | 'warn' | 'error', message: string, summaryText?: string) => void;
 }
@@ -142,11 +143,12 @@ export const getJsonOc = async (props: getJsonOcProps) => {
 
         if (response.status === 200) {
             const data = response.data.data || [];
-            props.setJsonOc(data);
+            props.setJsonOc?.(data);
+            return data;
         } else {
             throw new Error(`Error al obtener datos de la OC: ${response.statusText}`);
         }
     } catch (error: any) {
-        props.showToast?.('error', error.response?.data?.error || props.errorMessage, props.errorMessage);
+        props.showToast?.('info', error.response?.data?.error || props.errorMessage, props.errorMessage);
     }
 }

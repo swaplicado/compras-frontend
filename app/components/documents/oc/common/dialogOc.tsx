@@ -325,6 +325,20 @@ export const DialogOc = ({
                             <div className="p-fluid formgrid grid">
                                 
                                 <RenderField
+                                    label={t('dialog.fields.nanture.label')}
+                                    tooltip={t('dialog.fields.nanture.tooltip')}
+                                    value={oOc?.nature}
+                                    readonly={!editableBodyFields}
+                                    mdCol={3}
+                                    type={'textArea'}
+                                    onChange={() => null}
+                                    options={[]}
+                                    placeholder={t('dialog.fields.nanture.placeholder')}
+                                    errorKey={''}
+                                    errors={formErrors}
+                                    errorMessage={''}
+                                />
+                                <RenderField
                                     label={t('dialog.fields.CeCo.concepts.label')}
                                     tooltip={t('dialog.fields.CeCo.concepts.tooltip')}
                                     value={oOc?.concepts}
@@ -422,7 +436,7 @@ export const DialogOc = ({
                                 { oOc?.jsonOc?.oDpsHeader?.exchangeRate > 1 && (
                                     <>
                                         <Divider align="center">
-                                            <h6>{t('dialog.fields.localCurrencySubtitle.label')}</h6>
+                                            <h6>{t('dialog.fields.localCurrencySubtitle')}</h6>
                                         </Divider>
                                         <RenderField
                                             label={t('dialog.fields.exchange_rate.label')}

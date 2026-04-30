@@ -114,6 +114,11 @@ const oc = {
                 placeholder: "Notas de la OC",
                 tooltip: "Notas de la OC"
             },
+            nanture: {
+                label: "Tipo contabilización",
+                placeholder: "Tipo contabilización",
+                tooltip: "Tipo contabilización"
+            },
             CeCo: {
                 concepts: {
                     label: "Concepto/gasto",
