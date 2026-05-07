@@ -76,7 +76,7 @@ export const ValidateNcXml = ({
                 setLWarnings(data.warnings);
                 if (data.valid) {
                     
-                    const folio = data.data.series ? data.data.series + '-' + data.data.folio : data.data.folio;
+                    const folio = data.data.serie ? data.data.serie + '-' + data.data.folio : data.data.folio;
                     const oCurrency = findCurrency(lCurrencies, data.data.currency)
                     const oIssuer_tax_regime = findFiscalRegime(lFiscalRegimes, data.data.tax_regime_issuer)
                     const oReceiver_tax_regime = findFiscalRegime(lFiscalRegimes, data.data.tax_regime_receiver);
@@ -84,7 +84,7 @@ export const ValidateNcXml = ({
                     setONc?.((prev: any) => ({
                         ...prev,   
                         uuid: data.data.uuid,
-                        series: data.data.series,
+                        series: data.data.serie,
                         number: data.data.number,
                         folio: folio,
                         dateFormatted: DateFormatter(data.data.xml_date),
