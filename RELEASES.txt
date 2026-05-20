@@ -706,3 +706,17 @@ Cambios:
 - Añadido campo Notas de la oc y datos de la requisicion en el modal de facturas.
 
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 20-05-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- Validación de monto de proforma
+
+Nuevas funcionalidades:
+- Se valida el monto de la proforma vs la referencia al cargar la proforma
+
+----------------------------------------

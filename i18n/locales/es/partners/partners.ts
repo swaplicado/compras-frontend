@@ -31,6 +31,11 @@ const partners = {
         step5: "Para rechazar al proveedor debes ingresar un comentario con el motivo del rechazo, luego presiona el botón Rechazar."
     },
     register: {
+        importantNote: "Antes de comenzar, asegúrate de saber a cuál empresa y área funcional debes dirigir esta solicitud.",
+        titleproviderCompany: {
+            label: "Empresa y área funcional a proveer inicialmente",
+            tooltip: "Empresa y área funcional a las que se dirigirá esta solicitud"
+        },
         titleProviderData: {
             label: "Datos del proveedor",
             tooltip: "De conformidad con la Constancia de Situación Fiscal (CSF) o documento equivalente"
@@ -68,14 +73,14 @@ const partners = {
             textHelper: "Ingresa régimen fiscal del proveedor"
         },
         company: {
-            label: "Empresa a proveer",
+            label: "Empresa",
             tooltip: "Empresa a la que se pretende suministrar inicialmente bienes o servicios",
             placeholder: "",
             textHelper: "Ingresa la empresa a proveer"
         },
         area: {
-            label: "Área funcional a proveer",
-            tooltip: "Área funcional de la empresa a la que se pretende inicialmente suministrar bienes o servicios",
+            label: "Área funcional",
+            tooltip: "Área funcional a la que se pretende suministrar inicialmente bienes o servicios",
             placeholder: "",
             textHelper: "Ingresa área funcional a proveer"
         },

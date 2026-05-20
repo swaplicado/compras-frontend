@@ -67,6 +67,7 @@ const constants = {
     ROUTE_GET_DEADLINE: '/transactions/upload-deadline/year-deadline/',
     ROUTE_GET_CAN_UPLOAD_INVOICE_WITHOUT_OC: '/transactions/can-upload-invoice-without-oc',
     ROUTE_GET_CAN_UPLOAD_DOCS: '/transactions/can-upload-docs',
+    ROUTE_GET_VALIDATE_REFERENCE_BALANCE: '/transactions/validate-reference-balance/',
 
     ROUTE_COMPARE_FILES: '/pages/compareFiles/',
     ROUTE_SEE_FILES: '/pages/seeFiles/',
