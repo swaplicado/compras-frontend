@@ -75,7 +75,7 @@ const RegisterProvider = () => {
     });
     const toast = useRef<Toast>(null);
     const lEntityType = [
-        { id: 2, name: 'Organizacion' },
+        { id: 2, name: 'Organización' },
         { id: 1, name: 'Persona' }
     ]
     const [lFiscalRegimes, setLFiscalRegimes] = useState<any[]>([]);
@@ -121,7 +121,8 @@ const RegisterProvider = () => {
                 for (const item of data) {
                     companies.push({
                         id: item.id,
-                        name: item.full_name
+                        name: item.full_name,
+                        external_id: item.external_id
                     });
                 }
 
@@ -149,10 +150,12 @@ const RegisterProvider = () => {
                 const data = response.data.data || [];
                 let areas: any[] = [];
                 for (const item of data) {
-                    areas.push({
-                        id: item.id,
-                        name: item.name
-                    });
+                    if (item.company_id == oProvider.company.external_id) {
+                        areas.push({
+                            id: item.id,
+                            name: item.name
+                        });
+                    }
                 }
 
                 setLAreas(areas);

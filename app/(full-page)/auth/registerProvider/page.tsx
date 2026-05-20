@@ -68,7 +68,7 @@ const RegisterProvider = () => {
     });
     const toast = useRef<Toast>(null);
     const lEntityType = [
-        { id: 2, name: 'Organizacion' },
+        { id: 2, name: 'Organización' },
         { id: 1, name: 'Persona' }
     ]
     const [lFiscalRegimes, setLFiscalRegimes] = useState<any[]>([]);
@@ -112,11 +112,12 @@ const RegisterProvider = () => {
                 for (const item of data) {
                     companies.push({
                         id: item.id,
-                        name: item.full_name
+                        name: item.full_name,
+                        external_id: item.external_id
                     });
                 }
 
-                setLCompanies(companies);
+                setLCompanies(companies.sort((a, b) => a.name.localeCompare(b.name)));
             } else {
                 throw new Error(`Error al obtener los paises: ${response.statusText}`);
             }
@@ -140,10 +141,12 @@ const RegisterProvider = () => {
                 const data = response.data.data || [];
                 let areas: any[] = [];
                 for (const item of data) {
-                    areas.push({
-                        id: item.id,
-                        name: item.name
-                    });
+                    if (item.company_id == oProvider.company.external_id) {
+                        areas.push({
+                            id: item.id,
+                            name: item.name
+                        });
+                    }
                 }
 
                 setLAreas(areas);
@@ -177,6 +180,10 @@ const RegisterProvider = () => {
                 }
 
                 setLCountries(countries);
+                setOProvider({
+                    ...oProvider,
+                    country: countries.find((country: any) => country.code === 'MEX')
+                })
             } else {
                 throw new Error(`Error al obtener los paises: ${response.statusText}`);
             }
@@ -355,7 +362,7 @@ const RegisterProvider = () => {
     const footerContent = (
         resultUpload == 'waiting' && (
             <div className='flex justify-content-end'>
-                <Button label={tCommon('btnUpload')} icon="pi pi-upload" onClick={handleSubmit} autoFocus disabled={loading} className="order-0 md:order-1" />
+                <Button label={tCommon('btnUpload')} icon="pi pi-upload" onClick={handleSubmit} disabled={loading} className="order-0 md:order-1" />
             </div>
         )
     )
@@ -379,6 +386,57 @@ const RegisterProvider = () => {
                 
                 { resultUpload == 'waiting' && (
                     <div className="p-fluid formgrid grid">
+                        <div className='md:col-12 col-12'>
+                            <span className='opacity-100 text-blue-600'><b>Importante: </b> {t('register.importantNote')}</span>
+                        </div>
+                        <h5 className='md:col-12 col-12'>
+                            {t('register.titleproviderCompany.label')}
+                            &nbsp;
+                            <Tooltip target=".custom-target-icon" />
+                            <i
+                                className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
+                                data-pr-tooltip={t('register.titleproviderCompany.tooltip')}
+                                data-pr-position="right"
+                                data-pr-my="left center-2"
+                                style={{ fontSize: '1rem', cursor: 'pointer' }}
+                            ></i>
+                        </h5>
+                        <RenderField
+                            label={t('register.company.label')}
+                            tooltip={t('register.company.tooltip')}
+                            value={oProvider?.company}
+                            disabled={false}
+                            mdCol={6}
+                            type={'dropdown'}
+                            onChange={(value) => {
+                                setOProvider((prev: any) => ({ ...prev, company: value }));
+                                setFormErrors((prev: any) => ({ ...prev, company: false }));
+                            }}
+                            options={lCompanies}
+                            placeholder={t('register.company.placeholder')}
+                            errorKey={'company'}
+                            errors={formErrors}
+                            errorMessage={t('register.company.textHelper')}
+                        />
+                        { !loadingAreas && (
+                            <RenderField
+                                label={t('register.area.label')}
+                                tooltip={t('register.area.tooltip')}
+                                value={oProvider?.area}
+                                disabled={!oProvider.company}
+                                mdCol={6}
+                                type={'dropdown'}
+                                onChange={(value) => {
+                                    setOProvider((prev: any) => ({ ...prev, area: value }));
+                                    setFormErrors((prev: any) => ({ ...prev, area: false }));
+                                }}
+                                options={lAreas}
+                                placeholder={t('register.area.placeholder')}
+                                errorKey={'area'}
+                                errors={formErrors}
+                                errorMessage={t('register.area.textHelper')}
+                            />
+                        )}
                         <h5 className='md:col-12 col-12'>
                             {t('register.titleProviderData.label')}
                             &nbsp;
@@ -459,42 +517,6 @@ const RegisterProvider = () => {
                             errors={formErrors}
                             errorMessage={t('register.rfc.textHelper')}
                         />
-                        <RenderField
-                            label={t('register.company.label')}
-                            tooltip={t('register.company.tooltip')}
-                            value={oProvider?.company}
-                            disabled={false}
-                            mdCol={6}
-                            type={'dropdown'}
-                            onChange={(value) => {
-                                setOProvider((prev: any) => ({ ...prev, company: value }));
-                                setFormErrors((prev: any) => ({ ...prev, company: false }));
-                            }}
-                            options={lCompanies}
-                            placeholder={t('register.company.placeholder')}
-                            errorKey={'company'}
-                            errors={formErrors}
-                            errorMessage={t('register.company.textHelper')}
-                        />
-                        { !loadingAreas && (
-                            <RenderField
-                                label={t('register.area.label')}
-                                tooltip={t('register.area.tooltip')}
-                                value={oProvider?.area}
-                                disabled={!oProvider.company}
-                                mdCol={6}
-                                type={'dropdown'}
-                                onChange={(value) => {
-                                    setOProvider((prev: any) => ({ ...prev, area: value }));
-                                    setFormErrors((prev: any) => ({ ...prev, area: false }));
-                                }}
-                                options={lAreas}
-                                placeholder={t('register.area.placeholder')}
-                                errorKey={'area'}
-                                errors={formErrors}
-                                errorMessage={t('register.area.textHelper')}
-                            />
-                        )}
 
                         { loadingAreas && (
                             <ProgressSpinner style={{ width: '50px', height: '50px' }} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />

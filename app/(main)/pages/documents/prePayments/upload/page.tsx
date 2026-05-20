@@ -235,9 +235,35 @@ const UploadPrepayment = () => {
         return !Object.values(newErrors).some(Boolean)
     }
 
+    const validadteAmount = async () => {
+        try {
+            const route = constants.ROUTE_GET_VALIDATE_REFERENCE_BALANCE;
+            const response = await axios.post(constants.API_AXIOS_POST, {
+                route,
+                jsonData: {
+                    reference_id: oPrepay.references.length == 1 ? oPrepay.references[0].id : null,
+                    amount: oPrepay.amount,
+                    currency_id: oPrepay.oCurrency.id
+                }
+            });
+            if (response.status == 200) {
+                const data = response.data;
+                // showToast('success', data.data.message || 'Monto validado correctamente');
+                return true;
+            }
+        } catch (error: any) {
+            showToast('error', error.response?.data?.error || 'El monto excede el saldo disponible del documento de referencia');
+            return false;
+        }
+    }
+
     const handleSubmit = async () => {
         try {
             if (!validate('submit')) {
+                return;
+            }
+            const isValid = await validadteAmount();
+            if (!isValid) {
                 return;
             }
 
