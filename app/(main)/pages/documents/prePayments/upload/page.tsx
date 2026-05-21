@@ -243,11 +243,20 @@ const UploadPrepayment = () => {
                 jsonData: {
                     reference_id: oPrepay.references.length == 1 ? oPrepay.references[0].id : null,
                     amount: oPrepay.amount,
-                    currency_id: oPrepay.oCurrency.id
+                    currency_id: oPrepay.oCurrency.id,
+                    uploaded_by_buyer: oUser.isInternalUser ? true : false
                 }
             });
             if (response.status == 200) {
                 const data = response.data;
+                if (!data.data.success) {
+                    showToast('error', data.data.errors || 'El monto excede el saldo disponible del documento de referencia');
+                    return false;
+                } else {
+                    if (data.data.warnings) {
+                        showToast('warn', data.data.warnings || 'El monto excede el saldo disponible del documento de referencia, pero se permitirá la validación', 'Advertencia:');
+                    }
+                }
                 // showToast('success', data.data.message || 'Monto validado correctamente');
                 return true;
             }
