@@ -1534,7 +1534,7 @@ export const InvoiceDialog = ({
                 throw new Error(t('uploadDialog.errors.updateStatusError'));
             }
         } catch (error: any) {
-            showToast?.('error', error.response?.data?.error || 'Error al editar la factura');
+            showToast?.('error', error.response?.data?.error || 'Error al modificar la factura');
         } finally {
             setLoading?.(false);
         }
@@ -1576,13 +1576,13 @@ export const InvoiceDialog = ({
                 if (getDps) {
                     await getDps(getDpsParams);
                 }
-                setSuccessMessage('Factura editada');
+                setSuccessMessage('Factura modificada');
                 setResultUpload('success');
             } else {
-                new Error(`Error al editar la factura: ${response.statusText}`);
+                new Error(`Error al modificar la factura: ${response.statusText}`);
             }
         } catch (error: any) {
-            showToast?.('error', error.response?.data?.error || 'Error al editar la factura');
+            showToast?.('error', error.response?.data?.error || 'Error al modificar la factura');
         } finally {
             setLoading?.(false);
         }

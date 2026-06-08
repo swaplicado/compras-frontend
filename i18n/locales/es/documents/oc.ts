@@ -25,7 +25,7 @@ const oc = {
     dialog: {
         uploadTitle: "Carga de OC",
         viewTitle: "Orden de compra",
-        editTitle: "Editar OC",
+        editTitle: "Modificar OC",
         acceptedTitle: "OC",
         rejectedTitle: "OC",
         fields: {

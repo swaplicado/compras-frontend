@@ -190,15 +190,15 @@ const ConsultPaymentProgramded = () => {
 
             if (response.status === 200 || response.status === 201) {
                 await getLCrp();
-                setSuccessTitle('CRP editadó');
-                setSuccessMessage('Se editó el crp con exitó');
+                setSuccessTitle('CRP modificado');
+                setSuccessMessage('Se modificó el crp con éxito');
                 setShowing('animationSuccess');
             } else {
-                new Error(`Error al editar el CRP: ${response.statusText}`);
+                new Error(`Error al modificar el CRP: ${response.statusText}`);
             }
         } catch (error: any) {
-            setErrorTitle('Error al editar el CRP');
-            setErrorMessage(error.response?.data?.error || 'Error al editar el CRP');
+            setErrorTitle('Error al modificar el CRP');
+            setErrorMessage(error.response?.data?.error || 'Error al modificar el CRP');
         } finally {
             setLoading(false);
         }

@@ -234,7 +234,7 @@ const RejectedNC = () => {
                 setSuccessMessage(t('dialog.animationSuccess.editText'));
                 setShowing('animationSuccess');
             } else {
-                new Error(`Error al editar la nota de crédito: ${response.statusText}`);
+                new Error(`Error al modificar la nota de crédito: ${response.statusText}`);
             }
         } catch (error: any) {
             setErrorTitle(t('dialog.animationError.editTitle'));

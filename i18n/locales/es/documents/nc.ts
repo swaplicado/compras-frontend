@@ -32,7 +32,7 @@ const nc = {
     dialog: {
         uploadTitle: "Carga de NC",
         viewTitle: "Nota de crédito",
-        editTitle: "Editar NC",
+        editTitle: "Modificar NC",
         acceptedTitle: "NC",
         rejectedTitle: "NC",
         fields: {
@@ -157,8 +157,8 @@ const nc = {
             reviewAcceptedText: "La nota de crédito se ha aceptado correctamente.",
             reviewRejectedTitle: "Nota de crédito rechazado.",
             reviewRejectedText: "La nota de crédito se ha rechazado correctamente.",
-            editTitle: "Nota de crédito editada.",
-            editText: "La nota de crédito se ha editado correctamente.",
+            editTitle: "Nota de crédito modificada.",
+            editText: "La nota de crédito se ha modificado correctamente.",
             acceptAndSendToAuthTitle: "Nota de crédito aceptada y enviada a autorizar.",
             acceptAndSendToAuthText: "La nota de crédito se ha aceptado y enviado a autorizar correctamente.",
             authorizedTitle: "Nota de crédito autorizada.",
@@ -173,8 +173,8 @@ const nc = {
             reviewAcceptedText: "Ocurrió un error al aceptar la nota de crédito, vuelve a intentarlo más tarde.",
             reviewRejectedTitle: "Error al rechazar la nota de crédito.",
             reviewRejectedText: "Ocurrió un error al rechazar la nota de crédito, vuelve a intentarlo más tarde.",
-            editTitle: "Error al editar la nota de crédito.",
-            editText: "Ocurrió un error al editar la nota de crédito, vuelve a intentarlo más tarde.",
+            editTitle: "Error al modificar la nota de crédito.",
+            editText: "Ocurrió un error al modificar la nota de crédito, vuelve a intentarlo más tarde.",
             sendToAuthTitle: "Error al enviar a autorización la nota de crédito.",
             sendToAuthText: "Ocurrió un error al enviar la nota de crédito a autorizar.",
             authorizedTitle: "Error al autorizar la nota de crédito.",
@@ -210,8 +210,8 @@ const nc = {
             step4: "Para rechazar la NC debes ingresar un comentario con el motivo del rechazo, luego presiona el botón Rechazar."
         },
         editInstructions: {
-            header: "Para editar una nota de crédito, sigue estos pasos:",
-            step1: "Haz doble clic sobre el renglón correspondiente a la NC a editar, se abrirá el diálogo para editar los archivos de la NC.",
+            header: "Para modificar una nota de crédito, sigue estos pasos:",
+            step1: "Haz doble clic sobre el renglón correspondiente a la NC a modificar, se abrirá el diálogo para modificar los archivos de la NC.",
             step2: "En la parte inferior del diálogo se encuentra la lista de archivos cargados en la NC, esta lista se compone por una casilla de verificación seguido del nombre del archivo.",
             step3: "Para conservar un archivo deja marcado la casilla de verificación, para eliminarlo desmarca la casilla de verificación.",
             step4: "Para cargar nuevos archivos en la sección Archivos, presiona el botón Seleccionar para cargar nuevos archivos.",

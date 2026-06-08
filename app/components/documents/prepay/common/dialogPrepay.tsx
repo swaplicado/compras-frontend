@@ -904,7 +904,7 @@ export const DialogPrepay = ({
                                     </div>
                                     <div className='flex md:align-items-center col-2'>
                                         <RenderField
-                                            label={'Editar fecha pago'}
+                                            label={'Modificar fecha pago'}
                                             tooltip={''}
                                             value={oPrepayObj?.payment_date_edit}
                                             disabled={!isInReview}

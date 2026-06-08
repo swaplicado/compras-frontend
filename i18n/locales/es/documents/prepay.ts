@@ -33,7 +33,7 @@ const prepay = {
     dialog: {
         uploadTitle: "Proforma",
         viewTitle: "Proforma",
-        editTitle: "Editar proforma",
+        editTitle: "Modificar proforma",
         acceptedTitle: "Proforma",
         rejectedTitle: "Proforma",
         fields: {
@@ -187,8 +187,8 @@ const prepay = {
             reviewAcceptedText: "Ocurrió un error al aceptar la proforma, vuelve a intentarlo más tarde.",
             reviewRejectedTitle: "Error al rechazar la proforma.",
             reviewRejectedText: "Ocurrió un error al rechazar la proforma, vuelve a intentarlo más tarde.",
-            editTitle: "Error al editar la proforma.",
-            editText: "Ocurrió un error al editar la proforma, vuelve a intentarlo más tarde.",
+            editTitle: "Error al modificar la proforma.",
+            editText: "Ocurrió un error al modificar la proforma, vuelve a intentarlo más tarde.",
             sendToAuthTitle: "Error al enviar a autorización la proforma.",
             sendToAuthText: "Ocurrió un error al enviar la proforma a autorizar.",
             authorizedTitle: "Error al autorizar la proforma.",
@@ -224,8 +224,8 @@ const prepay = {
             step4: "Para rechazar la proforma debes ingresar un comentario con el motivo del rechazo, luego presiona el botón Rechazar."
         },
         editInstructions: {
-            header: "Para editar una proforma, sigue estos pasos:",
-            step1: "Haz doble clic sobre el renglón correspondiente a la proforma a editar, se abrirá el diálogo para editar los archivos de la proforma.",
+            header: "Para modificar una proforma, sigue estos pasos:",
+            step1: "Haz doble clic sobre el renglón correspondiente a la proforma a modificar, se abrirá el diálogo para modificar los archivos de la proforma.",
             step2: "En la parte inferior del diálogo se encuentra la lista de archivos cargados en la proforma, esta lista se compone por una casilla de verificación seguido del nombre del archivo.",
             step3: "Para conservar un archivo deja marcado la casilla de verificación, para eliminarlo desmarca la casilla de verificación.",
             step4: "Para cargar nuevos archivos en la sección Archivos, presiona el botón Seleccionar para cargar nuevos archivos.",
