@@ -735,7 +735,8 @@ export const FieldsDps = ({
                                         severity: 'warn',
                                         summary: 'Verifica selección',
                                         detail: `Asegúrate que el tipo "${value.name}" sea correcto.`,
-                                        life: 4000
+                                        life: constants.LIFE_TOAST_SHORT,
+                                        style: { '--toast-life': `${constants.LIFE_TOAST_SHORT}ms` } as React.CSSProperties
                                     });
                                 }
                             },

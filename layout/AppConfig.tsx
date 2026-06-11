@@ -61,14 +61,17 @@ const AppConfig = (props: AppConfigProps) => {
 
     return (
         <>
+            {/* Se quitó el botón de configuración para abrir la barra lateral de configuración, ya que se agregó una opción en el menú de perfil 
+                para acceder a las preferencias. Si deseas volver a agregar el botón, puedes descomentar el siguiente código: */}
+            {/*
             <button className="layout-config-button config-link" type="button" onClick={onConfigButtonClick}>
                 <i className="pi pi-cog"></i>
             </button>
-
+            */}
             <Sidebar visible={layoutState.configSidebarVisible} onHide={onConfigSidebarHide} position="right" className="layout-config-sidebar w-20rem">
                 {!props.simple && (
                     <>
-                        <h5>Scale</h5>
+                        <h5>Escala de la fuente</h5>
                         <div className="flex align-items-center">
                             <Button icon="pi pi-minus" type="button" onClick={decrementScale} rounded text className="w-2rem h-2rem mr-2" disabled={layoutConfig.scale === scales[0]}></Button>
                             <div className="flex gap-2 align-items-center">
@@ -79,35 +82,35 @@ const AppConfig = (props: AppConfigProps) => {
                             <Button icon="pi pi-plus" type="button" onClick={incrementScale} rounded text className="w-2rem h-2rem ml-2" disabled={layoutConfig.scale === scales[scales.length - 1]}></Button>
                         </div>
 
-                        <h5>Menu Type</h5>
+                        <h5>Tipo de Menú</h5>
                         <div className="flex">
                             <div className="field-radiobutton flex-1">
                                 <RadioButton name="menuMode" value={'static'} checked={layoutConfig.menuMode === 'static'} onChange={(e) => changeMenuMode(e)} inputId="mode1"></RadioButton>
-                                <label htmlFor="mode1">Static</label>
+                                <label htmlFor="mode1">Estático</label>
                             </div>
                             <div className="field-radiobutton flex-1">
                                 <RadioButton name="menuMode" value={'overlay'} checked={layoutConfig.menuMode === 'overlay'} onChange={(e) => changeMenuMode(e)} inputId="mode2"></RadioButton>
-                                <label htmlFor="mode2">Overlay</label>
+                                <label htmlFor="mode2">Superpuesto</label>
                             </div>
                         </div>
 
-                        <h5>Input Style</h5>
+                        <h5>Estilo de Campos</h5>
                         <div className="flex">
                             <div className="field-radiobutton flex-1">
                                 <RadioButton name="inputStyle" value={'outlined'} checked={layoutConfig.inputStyle === 'outlined'} onChange={(e) => changeInputStyle(e)} inputId="outlined_input"></RadioButton>
-                                <label htmlFor="outlined_input">Outlined</label>
+                                <label htmlFor="outlined_input">Bordeado</label>
                             </div>
                             <div className="field-radiobutton flex-1">
                                 <RadioButton name="inputStyle" value={'filled'} checked={layoutConfig.inputStyle === 'filled'} onChange={(e) => changeInputStyle(e)} inputId="filled_input"></RadioButton>
-                                <label htmlFor="filled_input">Filled</label>
+                                <label htmlFor="filled_input">Relleno</label>
                             </div>
                         </div>
 
-                        <h5>Ripple Effect</h5>
+                        <h5>Efecto de Onda (Ripple)</h5>
                         <InputSwitch checked={layoutConfig.ripple as boolean} onChange={(e) => changeRipple(e)}></InputSwitch>
                     </>
                 )}
-                <h5>PrimeOne Design</h5>
+                <h5>Diseño PrimeOne</h5>
                 <div className="grid">
                     <div className="col-3">
                         <button className="p-link w-2rem h-2rem" onClick={() => _changeTheme('lara-light-indigo', 'light')}>
@@ -171,7 +174,7 @@ const AppConfig = (props: AppConfigProps) => {
                     </div>
                 </div>
 
-                <h5>Bootstrap</h5>
+                <h5>Diseño Bootstrap</h5>
                 <div className="grid">
                     <div className="col-3">
                         <button className="p-link w-2rem h-2rem" onClick={() => _changeTheme('bootstrap4-light-blue', 'light')}>
@@ -195,7 +198,7 @@ const AppConfig = (props: AppConfigProps) => {
                     </div>
                 </div>
 
-                <h5>Material Design</h5>
+                <h5>Diseño Material</h5>
                 <div className="grid">
                     <div className="col-3">
                         <button className="p-link w-2rem h-2rem" onClick={() => _changeTheme('md-light-indigo', 'light')}>
@@ -219,7 +222,7 @@ const AppConfig = (props: AppConfigProps) => {
                     </div>
                 </div>
 
-                <h5>Material Design Compact</h5>
+                <h5>Diseño Material Compacto</h5>
                 <div className="grid">
                     <div className="col-3">
                         <button className="p-link w-2rem h-2rem" onClick={() => _changeTheme('mdc-light-indigo', 'light')}>

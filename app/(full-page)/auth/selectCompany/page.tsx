@@ -88,7 +88,8 @@ const SelectCompany = () => {
             severity: 'warn',
             summary: 'Error:',
             detail: message,
-            life: 10000
+            life: constants.LIFE_TOAST_MEDIUM,
+            style: { '--toast-life': `${constants.LIFE_TOAST_MEDIUM}ms` } as React.CSSProperties
         });
     };
 

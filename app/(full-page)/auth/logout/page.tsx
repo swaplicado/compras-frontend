@@ -7,6 +7,8 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import { Toast } from 'primereact/toast';
 import { useTranslation } from 'react-i18next';
+import constants from '@/app/constants/constants';
+
 
 axios.defaults.timeout = 45000;
 
@@ -42,7 +44,8 @@ const Logout = () => {
             severity: 'warn',
             summary: 'Error:',
             detail: message,
-            life: 10000
+            life: constants.LIFE_TOAST_MEDIUM,
+            style: { '--toast-life': `${constants.LIFE_TOAST_MEDIUM}ms` } as React.CSSProperties
         });
     };
 

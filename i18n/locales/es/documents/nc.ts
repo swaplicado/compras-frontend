@@ -1,20 +1,33 @@
 const nc = {
     titleAll: "Todas las NC",
+    titleAllTooltip: "Listado completo de todas las notas de crédito registradas en el sistema.",
+    
     titleUpload: "Cargar y revisar NC",
+    titleUploadTooltip: "Sección para cargar nuevas notas de crédito y gestionar las pendientes de validación.",
+    
     titleUploadProvider: "Cargar NC",
-    titleUploadTooltip: "Carga de notas de crédito",
+    titleUploadProviderTooltip: "Cargar una nueva nota de crédito para ser procesada.",
+    
     titleAccepted: "NC revisadas",
-    titleAcceptedTooltip: "Notas de crédito aceptadas",
+    titleAcceptedTooltip: "Notas de crédito que han sido validadas exitosamente.",
+    
     titleRejected: "NC rechazadas en la revisión",
-    titleRejectedTooltip: "Notas de crédito rechazadas",
+    titleRejectedTooltip: "Notas de crédito que presentaron inconsistencias y fueron rechazadas.",
+    
     titleAuthNc: "Autorizaciones de NC pendientes para mí",
+    titleAuthNcTooltip: "Notas de crédito que requieren tu validación final para proceder.",
+    
     titleAuthorizedNc: "NC autorizadas",
-    titleAuthorizedNcTooltip: "Notas de crédito autorizadas",
+    titleAuthorizedNcTooltip: "Notas de crédito que han completado satisfactoriamente el flujo de autorización.",
+    
     titleInProcessNc: "NC en autorización",
-    titleInProcessNcTooltip: "Notas de crédito en proceso de autorización",
-    titleRejectedNc: "NC rechazasas en la autorización",
-    titleRejectedNcTooltip: "Notas de crédito rechazadas",
+    titleInProcessNcTooltip: "Notas de crédito validadas, esperando la aprobación final de la autoridad correspondiente.",
+    
+    titleRejectedNc: "NC rechazadas en la autorización",
+    titleRejectedNcTooltip: "Notas de crédito que fueron devueltas durante el proceso de autorización.",
+    
     textBtnCreate: "Cargar NC",
+
     datatable: {
         columns: {
             priority: "Prioridad",
@@ -129,7 +142,7 @@ const nc = {
         },
         files: {
             label: "Archivos de la nota de crédito: *",
-            placeholderMultiple: "Suelta aquí los archivos para comenzar a cargarlos",
+            placeholderMultiple: "Suelte aquí los archivos para comenzar a cargarlos",
             placeholderSingle: "Suelte el archivo aquí para comenzar a cargarlo",
             helperTextFiles: "Selecciona los archivos de la nota de crédito.",
             helperTextPdf: "Debe cargar la representación impresa en PDF de la nota de crédito.",

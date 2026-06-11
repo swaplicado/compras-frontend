@@ -15,6 +15,8 @@ import { useTranslation } from 'react-i18next';
 import 'boxicons/css/boxicons.min.css';
 import { DialogManual } from '@/app/components/videoManual/dialogManual'
 import { Tooltip } from 'primereact/tooltip';
+import constants from '@/app/constants/constants';
+
 
 axios.defaults.timeout = 45000;
 
@@ -88,7 +90,8 @@ const LoginPage = () => {
             severity: 'warn',
             summary: 'Error:',
             detail: message,
-            life: 10000
+            life: constants.LIFE_TOAST_MEDIUM,
+            style: { '--toast-life': `${constants.LIFE_TOAST_MEDIUM}ms` } as React.CSSProperties
         });
     };
 

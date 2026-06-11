@@ -1973,7 +1973,7 @@ export const InvoiceDialog = ({
                             { lRefToValidateXml && lRefToValidateXml[0]?.id != 0 && dialogMode != 'create' && (
                                 <div className={`field col-12 md:col-12 mb-0 mt-2`}>
                                     <Divider align="center">
-                                        <h5>Datos de la referencia</h5>
+                                        <h5>Referencia(s)</h5>
                                     </Divider>
                                     <div className="p-fluid formgrid grid">{loadingReferenceData && <ProgressSpinner style={{ width: '50px', height: '50px' }} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />}</div>
                                     <div className="formgrid grid">
@@ -1993,6 +1993,11 @@ export const InvoiceDialog = ({
                                             }
                                             {lRefToValidateXml.map((item: any, index: number) => (
                                                 <div key={index}>
+                                                    <div className={`field col-12 md:col-12 mb-3`}>
+                                                        <Divider align="center">
+                                                            <h6>Datos de la referencia: {item.reference}</h6>
+                                                        </Divider>
+                                                    </div>
                                                     { lRefToValidateXml.length > 1 && (
                                                         <div className={`field col-12 md:col-12 mb-0`}>
                                                             <h6>{t('uploadDialog.CeCo.title')} {item.reference}</h6>
@@ -2148,7 +2153,7 @@ export const InvoiceDialog = ({
                                                         
                                                         <div style={{ overflowX: 'auto', width: '100%' }}>
                                                             <Divider align="center">
-                                                                <h6>Partidas referencia {item.reference}</h6>
+                                                                <h6>Partidas de la referencia</h6>
                                                             </Divider>
                                                             <TableEty
                                                                 lEtys={item?.jsonOc?.lEtys}
@@ -2281,7 +2286,7 @@ export const InvoiceDialog = ({
                                                     </div>
                                                     <div className='pb-5'>
                                                         <Divider align="center">
-                                                            <h6>Historial de autorizaciones de {item.reference}</h6>
+                                                            <h6>Historial de autorizaciones de la referencia</h6>
                                                         </Divider>
                                                         <HistoryAuth
                                                             lHistory={item.history}
@@ -2424,7 +2429,7 @@ export const InvoiceDialog = ({
                                             <Tooltip target=".custom-target-icon" />
                                             <i
                                                 className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                                                data-pr-tooltip={t('comments.tooltip')}
+                                                data-pr-tooltip={t('uploadDialog.comments.tooltip')}
                                                 data-pr-position="right"
                                                 data-pr-my="left center-2"
                                                 style={{ fontSize: '1rem', cursor: 'pointer' }}
@@ -2455,7 +2460,7 @@ export const InvoiceDialog = ({
                                                 <Tooltip target=".custom-target-icon" />
                                                 <i
                                                     className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                                                    data-pr-tooltip={t('comments.tooltip')}
+                                                    data-pr-tooltip={t('comments.tooltipYourComments')}
                                                     data-pr-position="right"
                                                     data-pr-my="left center-2"
                                                     style={{ fontSize: '1rem', cursor: 'pointer' }}

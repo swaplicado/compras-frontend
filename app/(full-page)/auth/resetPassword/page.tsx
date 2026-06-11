@@ -10,6 +10,8 @@ import { InputText } from 'primereact/inputtext';
 import { useTranslation } from 'react-i18next';
 import { Tooltip } from 'primereact/tooltip';
 import 'boxicons/css/boxicons.min.css';
+import constants from '@/app/constants/constants';
+
 
 const ResetPassword = () => {
     const { layoutConfig } = useContext(LayoutContext);
@@ -86,7 +88,8 @@ const ResetPassword = () => {
             severity: 'warn',
             summary: 'Error:',
             detail: message,
-            life: 10000
+            life: constants.LIFE_TOAST_MEDIUM,
+            style: { '--toast-life': `${constants.LIFE_TOAST_MEDIUM}ms` } as React.CSSProperties
         });
     };
 

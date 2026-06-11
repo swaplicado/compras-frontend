@@ -503,7 +503,7 @@ export const DialogPrepay = ({
                     content: {
                         style: {
                             position: 'relative',
-                            maxHeight: '70vh',
+                            maxHeight: '100%',
                             overflow: 'auto'
                         },
                         ref: dialogContentRef

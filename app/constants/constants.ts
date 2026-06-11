@@ -8,6 +8,11 @@ const constants = {
     //timeout para las peticiones axios (de momento no se usa)
     TIMEOUT: 5000,
 
+    //tiempo de vida de los toasts
+    LIFE_TOAST_LONG: 30000, 
+    LIFE_TOAST_MEDIUM: 10000,
+    LIFE_TOAST_SHORT: 5000,
+
     //Array de ids de roles
     ROLES: {
         ADMINISTRADOR_ID: 1,

@@ -112,3 +112,32 @@
       border-radius: 6px;
     }
   }
+
+  /* Animación para los avisos (TOASTS) */
+.p-toast {
+    .p-toast-message {
+        position: relative;
+        overflow: hidden;
+
+        /* Dibujamos la barra de progreso en la parte inferior */
+        &::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 5px; 
+            background-color: rgba(0, 0, 0, 0.25); 
+            /* Usamos una variable de CSS, con 10s como valor por defecto si falla algo */
+            animation: toast-progress var(--toast-life, 10s) linear forwards; 
+        }
+
+        &:hover::after {
+            animation-play-state: paused;
+        }
+    }
+}
+
+@keyframes toast-progress {
+    0% { width: 100%; }
+    100% { width: 0%; }
+}

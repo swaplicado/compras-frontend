@@ -4,7 +4,7 @@ const fileViewer = {
     noFile: "Archivo no disponible.",
     noPreview: "No podemos mostrar este archivo, descarga los archivos para poder visualizarlos.",
     noFiles: "Sin archivos para mostrar.",
-    fileCounter: "Mostrando {{current}} de {{total}} archivos",
+    fileCounter: "{{current}} - {{total}} archivos",
     loadError: "Error al mostrar el archivo."
 }
 

@@ -1,13 +1,22 @@
 const crp = {
     titleAll: "Todos los CRP",
+    titleAllTooltip: "Todos los CRP cargados en el sistema, sin importar su estatus actual.",
     titleUpload: "Cargar y revisar CRP",
+    titleUploadTooltip: "Cargar nuevos CRP y revisar los CRP pendientes de revisión.",
     titleUploadprovider: "Cargar CRP",
+    titleUploadproviderTooltip: "Cargar nuevos CRP.",
     titleAccepted: "CRP revisados",
+    titleAcceptedTooltip: "CRP que han sido aceptados en la revisión.",
     titleRejected: "CRP rechazados en la revisión",
+    titleRejectedTooltip: "CRP que han sido rechazados en la revisión.",
     titleAllAuth: "CRP en autorización",
+    titleAllAuthTooltip: "CRP que han sido aceptados en la revisión y están pendientes de autorización.",
     titleAuthorized: "CRP autorizados",
+    titleAuthorizedTooltip: "CRP que han sido autorizados.",
     titleRejectedAuth: "CRP rechazados en la autorización",
+    titleRejectedAuthTooltip: "CRP que han sido rechazados en la autorización.",
     titleMyAuth: "Autorizaciones de CRP pendientes para mí",
+    titleMyAuthTooltip: "CRP que han sido aceptados en la revisión y están pendientes de mi autorización.",
 
     textBtnCreate: "Cargar CRP",
     datatable: {
@@ -28,7 +37,7 @@ const crp = {
         rejectedTitle: "CRP",
         files: {
             label: "Archivos del comprobante de pago: *",
-            placeholderMultiple: "Suelta aquí los archivos para comenzar a cargarlos",
+            placeholderMultiple: "Suelte aquí los archivos para comenzar a cargarlos",
             placeholderSingle: "Suelte el archivo aquí para comenzar a cargarlo",
             helperTextFiles: "Selecciona los archivos del comprobante de pago.",
             helperTextPdf: "Debe cargar la representación impresa en PDF del comprobante de pago.",
@@ -49,7 +58,7 @@ const crp = {
             step5: "Selecciona los archivos asociados al comprobante de pago en el campo 'Archivos de comprobante de pago'.",
             step6: "Asegúrate de que los archivos no superen 5 MB cada uno y que en total no superen los 25 MB.",
             footer: `Puedes seleccionar varios archivos a la vez, pero asegúrate de que al menos uno sea un PDF.
-             Si seleccionas archivos que no cumplen con estos requisitos, se mostrará un mensaje de error.`
+             Si seleccionas archivos que no cumplen con estos requisitos, se mostrará un mensaje de error. `
         },
         uploadInstructionsPartner: {
             header: "Para cargar un comprobante de pagos, sigue estos pasos:",
