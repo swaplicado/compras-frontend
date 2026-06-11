@@ -734,3 +734,31 @@ Nuevas funcionalidades:
 - Se valida el monto de la proforma vs la referencia al cargar la proforma
 
 ----------------------------------------
+
+
+========================================
+RELEASE
+Fecha: 11-06-2026
+Autor: Rodrigo Abel Ayala Vázquez
+========================================
+
+Resumen:
+- Optimización masiva de la Experiencia de Usuario (UX) e Interfaz (UI) en todo el portal, mejorando la legibilidad, corrigiendo comportamientos visuales en modales
+  y estandarizando las alertas del sistema.
+
+Cambios:
+- Se limpiaron y homologaron textos en todo el sistema (corrección de verbos, acentos en "Área", eliminación de redundancias numéricas y traducciones de componentes en inglés).
+- Se mejoró la disposición (Layout) de la barra superior: reubicación del menú hamburguesa, ícono de preferencias, logotipo de empresa y separación del "Mes de trabajo" para evitar traslapes visuales.
+- Se optimizó el formulario de aceptar/rechazar facturas para que el número de referencia no se repita innecesariamente, limpiando la carga visual.
+- El panel de "Mostrar instrucciones" ahora se oculta automáticamente si no hay información que mostrar.
+
+Nuevas funcionalidades:
+- Estandarización Inteligente de Avisos (Toasts): Los mensajes emergentes ya no se acumulan infinitamente. Ahora tienen un tiempo de vida inteligente con una barra de progreso visual que se detiene si el usuario pasa el cursor por encima.
+
+Correcciones:
+- Se solucionó la pérdida de preferencias visuales al recargar la página (F5). Ahora el sistema recuerda si el usuario tenía activado el modo oscuro, el menú estático y el tamaño de la letra.
+- Se solucionó el problema crítico de diseño donde los formularios largos rebasaban la pantalla; ahora los modales se estiran y adaptan dinámicamente al tamaño del monitor (Scroll interno).
+- Se repararon los "Tooltips" (textos de ayuda al pasar el mouse) que aparecían rotos o con variables de código en los botones.
+- Se corrigió la alineación desfasada en el formulario de Notas de Crédito.
+
+----------------------------------------
