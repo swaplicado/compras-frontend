@@ -762,3 +762,17 @@ Correcciones:
 - Se corrigió la alineación desfasada en el formulario de Notas de Crédito.
 
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 16-06-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- Validación automatica de facturas de anticipo
+
+Nuevas funcionalidades:
+- Se valida si un XML es de anticipo para marcarse automaticamente
+
+----------------------------------------
