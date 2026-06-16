@@ -459,6 +459,12 @@ const Upload = () => {
                 const functionalAreasArray = Array.isArray(functionalAreas) ? functionalAreas : [functionalAreas];
                 let lAreas: any[] = [];
                 for (const item of data) {
+                    if (functionalAreasArray.length == 0) {
+                        lAreas.push({
+                            id: item.id,
+                            name: item.name
+                        });
+                    }
                     if (functionalAreasArray.includes(item.id)) {
                         lAreas.push({
                             id: item.id,
