@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     title: 'Portal de compras',
     description: '',
     icons: {
-        icon: '/aeth_logo.png'
+        icon: '/app_logo.png'
     }
 };
 

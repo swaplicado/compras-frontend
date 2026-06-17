@@ -19,7 +19,7 @@ export const metadata: Metadata = {
         ttl: 604800
     },
     icons: {
-        icon: '/aeth_logo.png'
+        icon: '/app_logo.png'
     }
 };
 

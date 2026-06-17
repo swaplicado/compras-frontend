@@ -99,7 +99,19 @@ const ResetPassword = () => {
                 loaderScreen()
             )}
             <div className='flex flex-column align-items-center justify-content-center md:w-8 lg:w-6 xl:w-6'>
-                <img src={`/layout/images/aeth_logo.png`} alt='' className='mb-5 w-6rem flex-shrink-0' />
+                
+                {/* Logo y nombre de la aplicación */}
+                <div className="flex flex-column align-items-center mb-5">
+                    <img src={tCommon('appLogo')} alt='AETH logo' className='w-6rem flex-shrink-0 mb-3' />
+                    
+                    <div className="inline-flex flex-column">
+                        <div className="border-top-2 surface-border w-full mb-2"></div>
+                        <span className="text-lg font-bold text-primary uppercase text-center white-space-nowrap" 
+                              style={{ letterSpacing: '2.5px' }}>
+                            {tCommon('appName')}
+                        </span>
+                    </div>
+                </div>
                 <div
                     style={{
                         borderRadius: '56px',

@@ -762,3 +762,24 @@ Correcciones:
 - Se corrigió la alineación desfasada en el formulario de Notas de Crédito.
 
 ----------------------------------------
+
+
+========================================
+RELEASE
+Fecha: 17-06-2026
+Autor: Rodrigo Abel Ayala Vázquez
+========================================
+
+Resumen:
+- Mejoras y arreglos en UI, parametrización de logo y nombre de la App.
+
+Cambios:
+- Inserción de nombre de la app de compras a las vistas principales.
+- Parametrización de el nombre de la aplicación (`appName`) y la ruta del logotipo (`appLogo`) 
+- Se activó `locale('es')` nativo de PrimeReact en el AppTopbar para traducir automáticamente los mensajes de "No results found" en todos los dropdowns del sistema.
+
+Correcciones:
+- Automatización del año de copyright en el pie de la página principal.
+- Corrección de tooltip en el diálogo de facturas.
+
+----------------------------------------
