@@ -9,6 +9,7 @@ import { Toast } from 'primereact/toast';
 import Cookies from 'js-cookie';
 import loaderScreen from '@/app/components/commons/loaderScreen';
 import axios from 'axios';
+import constants from '@/app/constants/constants';
 
 interface InputValue {
     name: string;
@@ -88,7 +89,8 @@ const SelectCompany = () => {
             severity: 'warn',
             summary: 'Error:',
             detail: message,
-            life: 10000
+            life: constants.LIFE_TOAST_MEDIUM,
+            style: { '--toast-life': `${constants.LIFE_TOAST_MEDIUM}ms` } as React.CSSProperties
         });
     };
 

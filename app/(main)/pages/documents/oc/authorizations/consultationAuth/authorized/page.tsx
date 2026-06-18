@@ -124,7 +124,8 @@ const AuthAuthorizedOC = () => {
             severity: type,
             summary: summaryText,
             detail: message,
-            life: 300000
+            life: constants.LIFE_TOAST_LONG,
+            style: { '--toast-life': `${constants.LIFE_TOAST_LONG}ms` } as React.CSSProperties
         });
     };
 
@@ -215,7 +216,7 @@ const AuthAuthorizedOC = () => {
                 <Tooltip target=".custom-target-icon" />
                 <i
                     className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                    data-pr-tooltip={t('programed.titleTooltip')}
+                    data-pr-tooltip={t('titleAuthorizedOcTooltip')}
                     data-pr-position="right"
                     data-pr-my="left center-2"
                     style={{ fontSize: '1rem', cursor: 'pointer' }}
@@ -312,23 +313,27 @@ const AuthAuthorizedOC = () => {
         configOcData(e.data);
         setDialogVisible(true);
         setLoadingHistoryAuth(true);
-        await getJsonOc({
-            doc_id: e.data.id,
-            setJsonOc: setJsonOc,
-            errorMessage: '',
-            showToast: showToast
-        })
+        if (e.data.authz_authorization_id != 1) {
+            await getJsonOc({
+                doc_id: e.data.id,
+                setJsonOc: setJsonOc,
+                errorMessage: '',
+                showToast: showToast
+            })
+            await getHistoryAuth({
+                setHistoryAuth: setLHistoryAuth,
+                external_id: e.data.id,
+                resource_type: constants.RESOURCE_TYPE_OC,
+                id_company: e.data.company_external_id,
+                showToast: showToast
+            });
+        }else {
+            showToast('info', 'Aun no se importan los datos de la OC', 'Aviso:')
+        }
         await getlUrlFilesDps({
             setLFiles,
             showToast,
             document_id: e.data.id
-        });
-        await getHistoryAuth({
-            setHistoryAuth: setLHistoryAuth,
-            external_id: e.data.id,
-            resource_type: constants.RESOURCE_TYPE_OC,
-            id_company: e.data.company_external_id,
-            showToast: showToast
         });
         setLoadingHistoryAuth(false);
         setLoadingFiles(false);
@@ -348,23 +353,27 @@ const AuthAuthorizedOC = () => {
         configOcData(data);
         setDialogVisible(true);
         setLoadingHistoryAuth(true);
-        await getJsonOc({
-            doc_id: data.id,
-            setJsonOc: setJsonOc,
-            errorMessage: '',
-            showToast: showToast
-        })
+        if (data.authz_authorization_id != 1) {
+            await getJsonOc({
+                doc_id: data.id,
+                setJsonOc: setJsonOc,
+                errorMessage: '',
+                showToast: showToast
+            })
+            await getHistoryAuth({
+                setHistoryAuth: setLHistoryAuth,
+                external_id: data.id,
+                resource_type: constants.RESOURCE_TYPE_OC,
+                id_company: data.company_external_id,
+                showToast: showToast
+            });
+        }else {
+            showToast('info', 'Aun no se importan los datos de la OC', 'Aviso:')
+        }
         await getlUrlFilesDps({
             setLFiles,
             showToast,
             document_id: data.id
-        });
-        await getHistoryAuth({
-            setHistoryAuth: setLHistoryAuth,
-            external_id: data.id,
-            resource_type: constants.RESOURCE_TYPE_OC,
-            id_company: data.company_external_id,
-            showToast: showToast
         });
         setLoadingHistoryAuth(false);
         setLoadingFiles(false);

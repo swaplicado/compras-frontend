@@ -29,7 +29,10 @@ export const RenderInfoButton = ({
     dialogManualHeaderText,
     lVideos
 }: renderInfoButtonProps) => {
-    if (!instructions || Object.keys(instructions).length === 0) {
+    if (
+        !instructions || 
+        (Array.isArray(instructions) && typeof instructions[0] === 'string') // Para el ['dialog.viewInstructions'] que regresa la libreria
+    ) {
         return null;
     }
 
@@ -43,8 +46,8 @@ export const RenderInfoButton = ({
                 severity="info" 
             />
             {showInfo && (
-                <div className="p-3 border-1 border-round border-gray-200 bg-white mb-3 surface-border surface-card">
-                    { lVideos.length > 0 && (
+                <div className="p-3 border-1 border-round border-gray-200 bg-white mb-3 surface-border surface-card mt-2">
+                    { lVideos && lVideos.length > 0 && (
                         <DialogManual 
                             visible={showManual} 
                             onHide={() => setShowManual(false)} 
@@ -57,27 +60,32 @@ export const RenderInfoButton = ({
                             } }
                         />
                     )}
-                    {Object.keys(instructions).map((key, index) => (
-                        <>
-                            <div key={index}>
-                                <h6>{instructions[key].header}</h6>
-                                <ul>
+                    {Object.keys(instructions).map((key, index) => {
+                        // Verificamos que el item sea realmente un objeto (por si vienen basuras de i18n)
+                        if (typeof instructions[key] !== 'object') return null;
+
+                        return (
+                            <React.Fragment key={index}>
+                                <div className="mb-2">
+                                    <h6 className="font-semibold text-700">{instructions[key].header}</h6>
+                                    <ul className="m-0 pl-3">
+                                        {Object.keys(instructions[key])
+                                            .filter((subKey) => subKey.startsWith('step'))
+                                            .map((subKey, subIndex) => (
+                                                <li key={subIndex} className="text-600 mb-1">{instructions[key][subKey]}</li>
+                                            ))}
+                                    </ul>
+                                </div>
+                                <div className="text-600 font-italic mt-2">
                                     {Object.keys(instructions[key])
-                                        .filter((subKey) => subKey.startsWith('step'))
-                                        .map((subKey, subIndex) => (
-                                            <li key={subIndex}>{instructions[key][subKey]}</li>
+                                        .filter((subKey) => subKey.startsWith('footer'))
+                                        .map((subKey) => (
+                                            instructions[key][subKey]
                                         ))}
-                                </ul>
-                            </div>
-                            <div>
-                                {Object.keys(instructions[key])
-                                    .filter((subKey) => subKey.startsWith('footer'))
-                                    .map((subKey, subIndex) => (
-                                        instructions[key][subKey]
-                                    ))}
-                            </div>
-                        </>
-                    ))}
+                                </div>
+                            </React.Fragment>
+                        )
+                    })}
                 </div>
             )}
         </div>

@@ -52,7 +52,8 @@ export default function UploadInvoicesDates() {
             severity: type,
             summary: summaryText,
             detail: message,
-            life: 300000
+            life: constants.LIFE_TOAST_LONG,
+            style: { '--toast-life': `${constants.LIFE_TOAST_LONG}ms` } as React.CSSProperties
         });
     };
 
@@ -399,19 +400,37 @@ export default function UploadInvoicesDates() {
                             </div>
                         )}
                         {isReadOnly && canEdit && !isProviderUser && (
-                            <div className="flex justify-content-end mb-3">
-                                <Button
-                                    label={editMode ? "Modo edición activo" : "Habilitar edición"}
-                                    icon={editMode ? "pi pi-lock-open" : "pi pi-lock"}
-                                    severity={editMode ? "success" : "secondary"}
-                                    outlined={!editMode}
-                                    onClick={() => {
-                                        if (editMode) {
-                                            setFechas(fechasOriginales); // restaurar datos
-                                        }
-                                        setEditMode(!editMode);
-                                    }}
-                                />
+                            <div className="flex justify-content-end mb-3 gap-2">
+                                {!editMode ? (
+                                    <Button
+                                        label="Habilitar modificación"
+                                        icon="pi pi-lock"
+                                        severity="secondary"
+                                        outlined
+                                        onClick={() => setEditMode(true)}
+                                    />
+                                ) : (
+                                    <>                                          
+                                        {/* Botón de Cancelar (Regresa la data a la original) */}
+                                        <Button
+                                            label="Cancelar"
+                                            icon="pi pi-times"
+                                            severity="danger"
+                                            outlined
+                                            onClick={() => {
+                                                setFechas(fechasOriginales); 
+                                                setEditMode(false);
+                                            }}
+                                        />
+
+                                        {/* Botón de Guardar (Llama a tu función de guardado) */}
+                                        <Button
+                                            label={tCommon('btnSave')}
+                                            icon="pi pi-save"
+                                            onClick={() => saveCalendar()}
+                                        />
+                                    </>
+                                )}
                             </div>
                         )}
                         <div className="grid">
@@ -442,7 +461,17 @@ export default function UploadInvoicesDates() {
                             ))}
                         </div>
                         {(!isReadOnly || editMode) && (
-                            <div className="flex justify-content-end mt-3">
+                            <div className="flex justify-content-end mt-3 gap-2">
+                                <Button
+                                    label="Cancelar"
+                                    icon="pi pi-times"
+                                    severity="danger"
+                                    outlined
+                                    onClick={() => {
+                                        setFechas(fechasOriginales);
+                                        setEditMode(false);
+                                    }}
+                                />
                                 <Button
                                     label={tCommon('btnSave')}
                                     icon="pi pi-save"

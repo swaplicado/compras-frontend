@@ -123,11 +123,12 @@ const Layout = ({ children }: ChildContainerProps) => {
         'p-ripple-disabled': !layoutConfig.ripple
     });
 
+    /* Ajustamos el top y height para que no se superponga con el AppTopbar */
     return (
         <React.Fragment>
             <div className={containerClass}>
                 <AppTopbar ref={topbarRef} />
-                <div ref={sidebarRef} className="layout-sidebar">
+                <div ref={sidebarRef} className="layout-sidebar" style={{ top: '5rem', height: 'calc(100vh - 5rem)'}}>  
                     <AppSidebar />
                 </div>
                 <div className="layout-main-container">

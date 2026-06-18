@@ -52,7 +52,7 @@ const commons = {
 
     datatable: {
         emptyMessage: "Sin datos para mostrar.",
-        currentPageReportTemplate: "Mostrando {first} a {last} de {totalRecords} registros",
+        currentPageReportTemplate: "{first} - {last} de {totalRecords} registros",
     }
 };
 

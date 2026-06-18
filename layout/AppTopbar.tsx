@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { classNames } from 'primereact/utils';
 import React, { forwardRef, useContext, useEffect, useImperativeHandle, useRef, useState } from 'react';
-import { AppTopbarRef } from '@/types';
+import { AppTopbarRef, LayoutState } from '@/types';
 import { LayoutContext } from './context/layoutcontext';
 import { Menu } from 'primereact/menu';
 import { Button } from 'primereact/button';
@@ -18,7 +18,7 @@ import { Calendar } from 'primereact/calendar';
 import { addLocale } from 'primereact/api';
 
 const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
-    const { layoutConfig, layoutState, onMenuToggle, showProfileSidebar, dateToWork, setDateToWork } = useContext(LayoutContext);
+    const { layoutConfig, layoutState, setLayoutState, onMenuToggle, showProfileSidebar, dateToWork, setDateToWork } = useContext(LayoutContext);
     const menubuttonRef = useRef(null);
     const topbarmenuRef = useRef(null);
     const topbarmenubuttonRef = useRef(null);
@@ -42,7 +42,9 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
             monthNames: ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'],
             monthNamesShort: ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'],
             today: 'Hoy',
-            clear: 'Limpiar'
+            clear: 'Limpiar',
+            emptyMessage: 'No se encontraron resultados',
+            emptyFilterMessage: 'No se encontraron resultados'
         });
         setLocaleReady(true);
     }, []);
@@ -52,6 +54,13 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
         {
             label: t('itemsProfile.label'),
             items: [
+                {
+                    label: 'Preferencias',
+                    icon: 'pi pi-cog',
+                    command: () => {
+                        setLayoutState((prevState: LayoutState) => ({ ...prevState, configSidebarVisible: true }));
+                    }
+                },
                 {
                     label: t('itemsProfile.changePassword'),
                     icon: 'pi pi-lock',
@@ -173,57 +182,57 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
     }, []);
 
     return (
-        <div className="layout-topbar">
+        <div className="layout-topbar" >
             { loading ? loaderScreen() : null }
             { displayConfirmationChangeCompany ? confirmChangeCompanyDialog() : null }
-            <Link href="/" className="layout-topbar-logo">
-                <img src={`/layout/images/aeth_logo.png`} alt="logo" />
-            </Link>
+            
+            <div className="flex align-items-center gap-3">
+                {/* Botón Hamburguesa primero */}
+                <button ref={menubuttonRef} type="button" className="p-link layout-menu-button layout-topbar-button m-0" onClick={onMenuToggle}>
+                    <i className="pi pi-bars" />
+                </button>
 
-            <button ref={menubuttonRef} type="button" className="p-link layout-menu-button layout-topbar-button" onClick={onMenuToggle}>
-                <i className="pi pi-bars" />
-            </button>
+                {/* Logo */}
+                <Link href="/" className="layout-topbar-logo" style={{ width: 'auto' }}>
+                    <img src={`/layout/images/aeth_logo.png`} alt="logo" style={{ height: '3rem' }} /> 
+                </Link>
+            </div>
 
             <button ref={topbarmenubuttonRef} type="button" className="p-link layout-topbar-menu-button layout-topbar-button" onClick={showProfileSidebar}>
                 <i className="pi pi-ellipsis-v" />
             </button>
             
-            <div className="layout-topbar-menu">
-                <div className="flex align-items-center justify-content-center text-2xl">
-                    <b>{nameUser}</b>
-                </div>
+            <div className="absolute top-50 left-50 hidden md:block" style={{ transform: 'translate(-50%, -50%)' }}>
+                <span className="text-xl font-bold text-700">{nameUser}</span>
             </div>
 
-            <div className="layout-topbar-calendar">
-                <div className="flex align-items-center justify-content-center">
-                    Mes de trabajo:
+            <div className="flex align-items-center ml-auto gap-4">
+                
+                {/* Calendario */}
+                <div className="layout-topbar-calendar flex align-items-center gap-2">
+                    <span className="font-medium text-600">Mes de trabajo:</span>
+                    {localeReady && (
+                        <Calendar 
+                            value={dateToWork} 
+                            onChange={ (e: any) => setDateToWork(e.value)}
+                            selectionMode={'single'}
+                            view="month" 
+                            dateFormat={ "MM/yy" } 
+                            locale="es"
+                            appendTo="self"
+                            inputStyle={{ padding: '0.5rem', width: '7rem', textAlign: 'center' }} 
+                        />
+                    )}
                 </div>
-                {localeReady && (
-                    <Calendar 
-                        value={dateToWork} 
-                        onChange={ (e: any) => setDateToWork(e.value)}
-                        selectionMode={'single'}
-                        view="month" 
-                        dateFormat={ "MM/yy" } 
-                        locale="es"
-                        appendTo="self"
-                    />
-                )}
-            </div>
 
-            <div ref={topbarmenuRef} className={classNames({ 'layout-topbar-menu-mobile-active': layoutState.profileSidebarVisible })}>
-                {/* <Menu model={itemsCompany} popup ref={menuCompany} id="popup_menu_right" popupAlignment="right" />
-                <button type="button" className="p-link layout-topbar-button" onClick={(event) => menuCompany.current?.toggle(event)}>
-                    <i className="pi pi-building"></i>
-                    <span>Empresa</span>
-                </button> */}
-
-                <Menu model={itemsProfile} popup ref={menuProfile} id="popup_menu_right" popupAlignment="right" />
-                <button type="button" className="p-link layout-topbar-button" onClick={(event) => menuProfile.current?.toggle(event)}>
-                    <i className="pi pi-user"></i>
-                    <span>Profile</span>
-                </button>
-
+                {/* Botón de Perfil */}
+                <div ref={topbarmenuRef} className={classNames({ 'layout-topbar-menu-mobile-active': layoutState.profileSidebarVisible })}>
+                    <Menu model={itemsProfile} popup ref={menuProfile} id="popup_menu_right" popupAlignment="right" />
+                    <button type="button" className="p-link layout-topbar-button m-0" onClick={(event) => menuProfile.current?.toggle(event)}>
+                        <i className="pi pi-user"></i>
+                        <span>Perfil</span>
+                    </button>
+                </div>
             </div>
         </div>
     );

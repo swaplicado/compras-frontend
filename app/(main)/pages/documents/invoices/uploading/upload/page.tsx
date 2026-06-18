@@ -148,7 +148,8 @@ const Upload = () => {
             severity: type,
             summary: summaryText,
             detail: message,
-            life: 300000
+            life: constants.LIFE_TOAST_LONG,
+            style: { '--toast-life': `${constants.LIFE_TOAST_LONG}ms` } as React.CSSProperties
         });
     };
 
@@ -459,6 +460,12 @@ const Upload = () => {
                 const functionalAreasArray = Array.isArray(functionalAreas) ? functionalAreas : [functionalAreas];
                 let lAreas: any[] = [];
                 for (const item of data) {
+                    if (functionalAreasArray.length == 0) {
+                        lAreas.push({
+                            id: item.id,
+                            name: item.name
+                        });
+                    }
                     if (functionalAreasArray.includes(item.id)) {
                         lAreas.push({
                             id: item.id,

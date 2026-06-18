@@ -57,7 +57,7 @@ export const TableReception = ({
     const isMobile = useIsMobile();
 
     useEffect(() => {
-        console.log(lPartners);
+        // console.log(lPartners);
         
     }, [lPartners])
 
@@ -214,7 +214,7 @@ export const TableReception = ({
                 <Column field="full_name" header="Nombre" sortable/>
                 <Column field="email" header="Email" sortable/>
                 <Column field="phone" header="Teléfono" sortable/>
-                <Column field="functional_area" header="Area" sortable/>
+                <Column field="functional_area" header="Área" sortable/>
                 <Column field="updated_at" header="Fecha" body={dateBodyTemplate} sortable/>
                 <Column field="authz_acceptance" header="Aceptación" body={statusAcceptanceDpsBodyTemplate} hidden={columnProps.authz_acceptance.hidden} sortable/>
                 <Column field="authz_authorization" header="Autorización" body={statusAuthDpsBodyTemplate} hidden={columnProps.authz_authorization.hidden} sortable/>

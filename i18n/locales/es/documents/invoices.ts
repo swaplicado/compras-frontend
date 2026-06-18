@@ -263,7 +263,7 @@ const invoices = {
         },
         files: {
             label: "Archivos de factura: *",
-            placeholderMultiple: "Suelta aquí los archivos para comenzar a cargarlos",
+            placeholderMultiple: "Suelte aquí los archivos para comenzar a cargarlos",
             placeholderSingle: "Suelte el archivo aquí para comenzar a cargarlo",
             helperTextFiles: "Selecciona los archivos de la factura.",
             helperTextPdf: "Debe cargar la representación impresa en PDF del comprobante.",
@@ -304,6 +304,7 @@ const invoices = {
             label: "Sem.:",
             placeholder: "Sem.",
             tooltip: "Número de semana de la factura.",
+            tooltipReview: "Número de semana de la factura."
         },
         is_advance: {
             label: "Es anticipo",
@@ -422,7 +423,7 @@ const invoices = {
             payment_percentage: "% pago",
             useCfdi: "Tipo"
         },
-        currentPageReportTemplate: "Mostrando {first} a {last} de {totalRecords} registros",
+        currentPageReportTemplate: "{first} - {last} de {totalRecords} facturas",
         emptyMessage: "Sin datos para mostrar.",   
     },
     helpText: {
@@ -430,6 +431,10 @@ const invoices = {
         buttonTooltip: "Ver tutorial de inicio de sesión",
         dialogHeader: "Manual de Usuario",
     },
+    comments: {
+            tooltip: "Comentarios de la autorización o rechazo de la factura.",
+            tooltipYourComments: "Tus comentarios del motivo de la autorización o rechazo* de la factura."
+        }
 }
 
 export default invoices;

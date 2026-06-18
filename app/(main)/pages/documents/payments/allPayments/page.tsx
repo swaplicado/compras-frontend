@@ -72,12 +72,13 @@ const ConsultPaymentProgramded = () => {
     }
 
 //*******FUNCIONES*******
-    const showToast = (type: 'success' | 'info' | 'warn' | 'error' = 'error', message: string, summaryText = 'Error:') => {
-        toast.current?.show({
+const showToast = (type: 'success' | 'info' | 'warn' | 'error' = 'error', message: string, summaryText = 'Error:') => {
+toast.current?.show({
             severity: type,
             summary: summaryText,
             detail: message,
-            life: 300000
+            life: constants.LIFE_TOAST_LONG,
+            style: { '--toast-life': `${constants.LIFE_TOAST_LONG}ms` } as React.CSSProperties
         });
     };
 

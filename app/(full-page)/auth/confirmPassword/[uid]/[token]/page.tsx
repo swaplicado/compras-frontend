@@ -11,6 +11,7 @@ import { Password } from 'primereact/password';
 import Lottie from 'lottie-react';
 import successAnimation from '@/public/layout/animations/Animation - success.json';
 import errorAnimation from '@/public/layout/animations/Animation - error.json';
+import constants from '@/app/constants/constants';
 
 const ResetPassword = () => {
     const { layoutConfig } = useContext(LayoutContext);
@@ -77,7 +78,8 @@ const ResetPassword = () => {
             severity: 'warn',
             summary: 'Error:',
             detail: message,
-            life: 10000
+            life: constants.LIFE_TOAST_SHORT,
+            style: { '--toast-life': `${constants.LIFE_TOAST_SHORT}ms` } as React.CSSProperties,
         });
     };
 

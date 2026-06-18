@@ -2,6 +2,7 @@ const oc = {
     titleAllOc: "Todas las OC",
     titleAllOcTooltip: "Todas las ordenes de compra",
     titleAuthOc: "Autorizaciones de OC pendientes para mí",
+    titleAuthOcTooltip: "Ordenes de compra pendientes de autorización para mi usuario",
     titleAuthorizedOc: "OC autorizadas",
     titleAuthorizedOcTooltip: "Ordenes de compra autorizadas",
     titleInProcessOc: "OC en autorización",
@@ -25,7 +26,7 @@ const oc = {
     dialog: {
         uploadTitle: "Carga de OC",
         viewTitle: "Orden de compra",
-        editTitle: "Editar OC",
+        editTitle: "Modificar OC",
         acceptedTitle: "OC",
         rejectedTitle: "OC",
         fields: {

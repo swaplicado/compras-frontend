@@ -123,7 +123,8 @@ const RejectedNC = () => {
             severity: type,
             summary: summaryText,
             detail: message,
-            life: 300000
+            life: constants.LIFE_TOAST_LONG,
+            style: { '--toast-life': `${constants.LIFE_TOAST_LONG}ms` } as React.CSSProperties
         });
     };
 
@@ -234,7 +235,7 @@ const RejectedNC = () => {
                 setSuccessMessage(t('dialog.animationSuccess.editText'));
                 setShowing('animationSuccess');
             } else {
-                new Error(`Error al editar la nota de crédito: ${response.statusText}`);
+                new Error(`Error al modificar la nota de crédito: ${response.statusText}`);
             }
         } catch (error: any) {
             setErrorTitle(t('dialog.animationError.editTitle'));
@@ -293,7 +294,7 @@ const RejectedNC = () => {
                 <Tooltip target=".custom-target-icon" />
                 <i
                     className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                    data-pr-tooltip={t('programed.titleTooltip')}
+                    data-pr-tooltip={t('titleRejectedTooltip')}
                     data-pr-position="right"
                     data-pr-my="left center-2"
                     style={{ fontSize: '1rem', cursor: 'pointer' }}

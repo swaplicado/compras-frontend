@@ -276,7 +276,7 @@ export const DialogCrp = ({
                     content: {
                         style: {
                             position: 'relative',
-                            maxHeight: '70vh',
+                            maxHeight: '100%',
                             overflow: 'auto'
                         },
                           ref: dialogContentRef
@@ -300,7 +300,7 @@ export const DialogCrp = ({
                     })}
 
                 {showing == 'body' && (
-                    <>
+                    <div className="flex-grow-1 flex flex-column">
                         <br />
                         {withHeader && (
                             <div className="p-fluid formgrid grid">
@@ -723,7 +723,7 @@ export const DialogCrp = ({
                                 )}
                             </>
                         )}
-                    </>
+                    </div>
                 )}
                 <div ref={setElementRef} data-observer-element className={''}></div>
             </Dialog>

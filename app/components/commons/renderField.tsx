@@ -37,6 +37,8 @@ interface renderFieldProps {
     textAreaRows?: number;
     withDateTemplate?: boolean;
     lDaysToPay?: any[];
+    emptyMessage?: string;
+    emptyFilterMessage?: string;
 }
 
 export const RenderField = (props: renderFieldProps) => {
@@ -81,6 +83,8 @@ export const RenderField = (props: renderFieldProps) => {
                                     disabled={props.disabled}
                                     readOnly={props.readonly}
                                     pt={props.passthrough}
+                                    emptyMessage={props.emptyMessage || 'No se encontraron resultados'}
+                                    emptyFilterMessage={props.emptyFilterMessage || 'No se encontraron resultados'}
                                 />
                                 {props.errors[props.errorKey] && <small className="p-error">{props.errorMessage}</small>}
                             </div>
@@ -112,6 +116,8 @@ export const RenderField = (props: renderFieldProps) => {
                                     showClear
                                     disabled={props.disabled}
                                     pt={props.passthrough}
+                                    emptyMessage={props.emptyMessage || 'No se encontraron resultados'}
+                                    emptyFilterMessage={props.emptyFilterMessage || 'No se encontraron resultados'}
                                 />
                                 {props.errors[props.errorKey] && <small className="p-error">{props.errorMessage}</small>}
                             </div>

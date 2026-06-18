@@ -215,12 +215,13 @@ export const DialogOc = ({
                 visible={visible} 
                 onHide={onHide} 
                 footer={footer} 
+                contentClassName="flex flex-column h-full"
                 pt={{ 
                     header: { className: 'pb-2 pt-2 border-bottom-1 surface-border' },
                     content: {
                         style: {
                             position: 'relative',
-                            maxHeight: '70vh',
+                            maxHeight: '100%',
                             overflow: 'auto'
                         },
                             ref: dialogContentRef
@@ -243,7 +244,7 @@ export const DialogOc = ({
                     action: onHide
                 })}
                 {showing == 'body' && (
-                    <>
+                    <div className="flex-grow-1 flex flex-column">
                         <br />
                         {withHeader && (
                             <div className="p-fluid formgrid grid">
@@ -768,7 +769,7 @@ export const DialogOc = ({
                                 )}
                             </>
                         )}
-                    </>
+                    </div>
                 )}
                 <div ref={setElementRef} data-observer-element className={''}></div>
             </Dialog>

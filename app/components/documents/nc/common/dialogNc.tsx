@@ -245,7 +245,7 @@ export const DialogNc = ({
                     content: {
                         style: {
                             position: 'relative',
-                            maxHeight: '70vh',
+                            maxHeight: '100%',
                             overflow: 'auto'
                         },
                             ref: dialogContentRef
@@ -268,7 +268,7 @@ export const DialogNc = ({
                     action: onHide
                 })}
                 {showing == 'body' && (
-                    <>
+                    <div className="flex-grow-1 flex flex-column">
                         <br />
                         {withHeader && (
                             <div className="p-fluid formgrid grid">
@@ -396,9 +396,11 @@ export const DialogNc = ({
                                                     <div className="">
                                                         <div className="col">
                                                             {oNc?.invoices.map((item: any, index: number) => (
-                                                                <div className="field grid" key={index}>
-                                                                    <label className="col-12 mb-2 md:col-7 md:mb-0 justify-content-end">Folio: {item.folio} | Monto aplicado:</label>
-                                                                    <div className="col-12 md:col-5">
+                                                                <div className="flex flex-column md:flex-row align-items-start md:align-items-center justify-content-start mb-3 gap-3" key={index}>
+                                                                    <label className="font-medium">
+                                                                        Folio: {item.folio} | Monto aplicado:
+                                                                    </label>
+                                                                    <div className="col-12 md:col-5 f justify-content-start">
                                                                         <InputNumber
                                                                             type="text"
                                                                             className={`w-full ${oNc?.invoices[index]?.error ? 'p-invalid' : ''}`}
@@ -757,7 +759,7 @@ export const DialogNc = ({
                                 )}
                             </>
                         )}
-                    </>
+                    </div>
                 )}
                 <div ref={setElementRef} data-observer-element className={''}></div>
             </Dialog>

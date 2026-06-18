@@ -503,7 +503,7 @@ export const DialogPrepay = ({
                     content: {
                         style: {
                             position: 'relative',
-                            maxHeight: '70vh',
+                            maxHeight: '100%',
                             overflow: 'auto'
                         },
                         ref: dialogContentRef
@@ -904,7 +904,7 @@ export const DialogPrepay = ({
                                     </div>
                                     <div className='flex md:align-items-center col-2'>
                                         <RenderField
-                                            label={'Editar fecha pago'}
+                                            label={'Modificar fecha pago'}
                                             tooltip={''}
                                             value={oPrepayObj?.payment_date_edit}
                                             disabled={!isInReview}

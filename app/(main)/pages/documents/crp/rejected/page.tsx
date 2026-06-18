@@ -93,7 +93,8 @@ const ConsultPaymentProgramded = () => {
             severity: type,
             summary: summaryText,
             detail: message,
-            life: 300000
+            life: constants.LIFE_TOAST_LONG,
+            style: { '--toast-life': `${constants.LIFE_TOAST_LONG}ms` } as React.CSSProperties
         });
     };
 
@@ -190,15 +191,15 @@ const ConsultPaymentProgramded = () => {
 
             if (response.status === 200 || response.status === 201) {
                 await getLCrp();
-                setSuccessTitle('CRP editadó');
-                setSuccessMessage('Se editó el crp con exitó');
+                setSuccessTitle('CRP modificado');
+                setSuccessMessage('Se modificó el crp con éxito');
                 setShowing('animationSuccess');
             } else {
-                new Error(`Error al editar el CRP: ${response.statusText}`);
+                new Error(`Error al modificar el CRP: ${response.statusText}`);
             }
         } catch (error: any) {
-            setErrorTitle('Error al editar el CRP');
-            setErrorMessage(error.response?.data?.error || 'Error al editar el CRP');
+            setErrorTitle('Error al modificar el CRP');
+            setErrorMessage(error.response?.data?.error || 'Error al modificar el CRP');
         } finally {
             setLoading(false);
         }
@@ -241,7 +242,7 @@ const ConsultPaymentProgramded = () => {
                 <Tooltip target=".custom-target-icon" />
                 <i
                     className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                    data-pr-tooltip={t('programed.titleTooltip')}
+                    data-pr-tooltip={t('titleRejectedTooltip')}
                     data-pr-position="right"
                     data-pr-my="left center-2"
                     style={{ fontSize: '1rem', cursor: 'pointer' }}

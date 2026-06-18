@@ -84,7 +84,7 @@ const orders = {
             payday: "Fecha de pago",
             currency: "Moneda",
         },
-        currentPageReportTemplate: "Mostrando {first} a {last} de {totalRecords} registros",
+        currentPageReportTemplate: "{first} - {last} de {totalRecords} órdenes",
         emptyMessage: "Sin datos para mostrar.",   
     }
 }
