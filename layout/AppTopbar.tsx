@@ -227,7 +227,7 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
                             dateFormat={ "MM/yy" } 
                             locale="es"
                             appendTo="self"
-                            inputStyle={{ padding: '0.5rem', width: '7rem', textAlign: 'center' }} 
+                            inputStyle={{ padding: '0.5rem', width: '10rem', textAlign: 'center' }} 
                         />
                     )}
                 </div>

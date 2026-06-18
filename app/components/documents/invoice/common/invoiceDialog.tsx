@@ -1282,7 +1282,7 @@ export const InvoiceDialog = ({
                 />
                 {  oValidUser.isInternalUser && (
                     <Button
-                        label={'Guardar y revisar'}
+                        label={'Cargar y revisar'}
                         icon="pi pi-upload"
                         severity="info"
                         onClick={handleSubmitAndReview}

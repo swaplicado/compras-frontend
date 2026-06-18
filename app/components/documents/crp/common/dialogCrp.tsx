@@ -349,7 +349,7 @@ export const DialogCrp = ({
                                         { (dialogMode == 'create' || dialogMode == 'edit') && (
                                             <RenderField
                                                 label={'Pago'}
-                                                tooltip={'pago'}
+                                                tooltip={'Pago'}
                                                 value={oCrp?.oPay}
                                                 disabled={lPaymentsExec?.length == 0}
                                                 mdCol={6}
@@ -367,9 +367,18 @@ export const DialogCrp = ({
                                         )}
                                         <RenderField
                                             label={'Area'}
-                                            tooltip={'Area'}
+                                            /* Tooltip dinamico */
+                                            tooltip={
+                                                dialogMode === 'view' 
+                                                    ? 'Área funcional' // Si solo está viendo, no mostramos mensaje de bloqueo
+                                                    : lAreas?.length === 1 
+                                                        ? 'Selección automática: Única área disponible para este pago' 
+                                                        : lAreas?.length === 0 
+                                                            ? 'Selecciona un pago primero para cargar las áreas' 
+                                                            : 'Área funcional' // Si está habilitado para elegir
+                                            }
                                             value={oCrp?.functional_area}
-                                            disabled={dialogMode == 'view' || lAreas?.length == 0}
+                                            disabled={dialogMode == 'view' || lAreas?.length == 0 || lAreas?.length == 1}
                                             mdCol={6}
                                             type={dialogMode == 'create' ? 'dropdown' : 'text'}
                                             onChange={(value) => {

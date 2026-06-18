@@ -783,3 +783,29 @@ Correcciones:
 - Corrección de tooltip en el diálogo de facturas.
 
 ----------------------------------------
+
+
+========================================
+RELEASE
+Fecha: 18-06-2026
+Autor: Rodrigo Abel Ayala Vázquez
+========================================
+
+Resumen:
+- Ajustes de interfaz de usuario en la barra superior, automatización en la selección de áreas para carga de CRP y corrección en el filtrado de empresas para la pantalla de CRP delegando la seguridad al backend.
+
+Cambios:
+- (AppTopbar) Se estableció un tamaño fijo para el selector de 'Mes de trabajo' para evitar desplazamientos horizontales en la interfaz cuando el nombre del mes es largo.
+- (Facturas) Se actualizó un label en el diálogo de facturas y se documentó un TODO en la vista principal para su futura refactorización.
+
+Nuevas funcionalidades:
+- (CRP) Auto-selección inteligente del "Área Funcional": Al seleccionar un pago, si solo existe un área asociada, el sistema la asigna en automático y bloquea el campo para agilizar la captura y prevenir errores.
+- (CRP) Tooltips dinámicos en el formulario: El campo de "Área" ahora informa al usuario el estado del control (ej. "Selección automática: Única área disponible" o "Selecciona un pago primero").
+
+Correcciones:
+- (CRP/Compañías) Se corrigió el filtrado de empresas en la carga de CRP. Se actualizó la utilidad global `getlCompanies` para incluir el envío del `user_id`, asegurando que la pantalla de CRP filtre y muestre correctamente solo las empresas autorizadas para el usuario desde el backend.
+
+Notas:
+- Queda pendiente realizar el refactor en el módulo de Facturas (marcado con TODO) para unificar la forma en que se obtienen las empresas filtradas por usuario.
+
+----------------------------------------

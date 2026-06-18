@@ -385,6 +385,16 @@ const ConsultPaymentProgramded = () => {
                 }
             }
             setLAreas(areas);
+
+            /* Autoseleccion de area */
+            if (areas.length === 1) {
+                // Si solo hay una opción, la seleccionamos automáticamente y quitamos el error
+                setOCrp((prev: any) => ({ ...prev, functional_area: areas[0] }));
+                setFormErrors((prev: any) => ({ ...prev, area: false }));
+            } else if (areas.length === 0 || (oCrp.functional_area && !areas.find(a => a.id === oCrp.functional_area.id))) {
+                // Si borraron el pago o el área que estaba ya no es válida, limpiamos el campo
+                setOCrp((prev: any) => ({ ...prev, functional_area: null }));
+            }
         }
     }, [oCrp?.oPay])
 
@@ -604,6 +614,7 @@ const ConsultPaymentProgramded = () => {
                 setLCompanies,
                 setLCompaniesFilter,
                 showToast,
+                user_id: oUser?.oUser?.id
             });
             if (oUser.isInternalUser) {
                 const canUpload = await getCanUploadFiles({
