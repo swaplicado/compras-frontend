@@ -35,6 +35,8 @@ interface validateXmlProps {
     disabled?: boolean | null;
     getReferences?: ((partner_id: string, company_partner_id: string) => void);
     setReferences?: React.Dispatch<React.SetStateAction<any>> | ((value: any) => void);
+    setIsAdvance?: React.Dispatch<React.SetStateAction<any>> | ((value: any) => void);
+    setOriginalIsAdvance?: React.Dispatch<React.SetStateAction<any>> | ((value: any) => void);
 }
 
 export const ValidateXml = ( { 
@@ -61,7 +63,9 @@ export const ValidateXml = ( {
     type = 0,
     disabled = null,
     getReferences,
-    setReferences
+    setReferences,
+    setIsAdvance,
+    setOriginalIsAdvance
 }: validateXmlProps ) => {
     const [totalSize, setTotalSize] = useState(0);
     const message = useRef<Messages>(null);
@@ -83,7 +87,7 @@ export const ValidateXml = ( {
             // formData.append('references', oRef[0]?.id != 0 ? JSON.stringify(oRef) : '[]');
             formData.append('complements', oRef[0]?.id != 0 ? JSON.stringify(oRef) : '[]');
             formData.append('user_id', user_id.toString());
-            formData.append('is_advance', isAdvance ? 'true' : 'false');
+            // formData.append('is_advance', isAdvance ? 'true' : 'false');
 
             const response = await axios.post(constants.API_AXIOS_POST, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
@@ -130,6 +134,8 @@ export const ValidateXml = ( {
                             payment_way: data.data.payment_way
                         }
                         setODps(oDps);
+                        setIsAdvance?.(data.data.is_advance);
+                        setOriginalIsAdvance?.(data.data.is_advance);
                     }
                     if (type == constants.XML_TYPE_FLETE || type == constants.XML_TYPE_COMPRA) {
                         setODps((prev: any) => ({ 
@@ -181,6 +187,8 @@ export const ValidateXml = ( {
     const hanldeRemoveFile = () => {
         setIsXmlValid?.(false);
         if (type != constants.XML_TYPE_FLETE) {
+            setIsAdvance?.(false);
+            setOriginalIsAdvance?.(false);
             setODps({
                 serie: "",
                 folio: "",

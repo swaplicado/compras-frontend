@@ -34,6 +34,7 @@ import { getCrpPending } from '@/app/(main)/utilities/documents/invoice/dps';
 import { getJsonOc } from "@/app/(main)/utilities/documents/oc/ocUtilities";
 import { TableEty } from '@/app/components/documents/oc/common/tableEty';
 import { RenderField } from '@/app/components/commons/renderField';
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 
 interface InvoiceDialogProps {
     visible: boolean;
@@ -257,6 +258,7 @@ export const InvoiceDialog = ({
     const btnToScroll = btnScroll(dialogContentRef, visibleElement);
     const [isAdvance, setIsAdvance] = useState<boolean>(false);
     const [oAdvance, setOAdvance] = useState<any>(null);
+    const [originalIsAdvance, setOriginalIsAdvance] = useState<boolean>(false);
 
     const renderField = (props: renderFieldProps) => (
         <>
@@ -1710,6 +1712,36 @@ export const InvoiceDialog = ({
         return notes;
     }
 
+    const dialogConfimChangeIsAdvance = (bAdvance: boolean) => {
+        
+        const accept = () => {
+            !bAdvance ? setOAdvance(null) : '';
+            setIsAdvance?.(bAdvance);
+        }
+        
+        const reject = () => {
+            return;
+        }
+
+        if (!originalIsAdvance || (bAdvance && originalIsAdvance)) {
+            accept();
+            return;
+        }
+
+        const header = "Atención";
+        const message = "Se detecto que el XML es de un anticipo ¿estas seguro de marcarlo como factura normal?";
+
+        confirmDialog({
+            message: message,
+            header: header,
+            icon: 'pi pi-exclamation-triangle',
+            acceptLabel: "Sí",
+            rejectLabel: "No",
+            accept,
+            reject
+        });
+    }
+
     return (
         <div className="flex justify-content-center">
             <Dialog
@@ -1730,6 +1762,7 @@ export const InvoiceDialog = ({
                 }}
                 style={{ width: isMobile ? '100%' : '70rem' }}
             >
+                {/* <ConfirmDialog /> */}
                 {animationSuccess({
                     show: resultUpload === 'success',
                     title: successTitle,
@@ -1928,46 +1961,6 @@ export const InvoiceDialog = ({
                                         </div>
                                     </div>
                                 </div>
-                            )}
-                            <div className="field col-12 md:col-2 align-content-center">
-                                <div className="col pt-2">
-                                    <Checkbox
-                                        inputId="is_advance"
-                                        name="is_advance"
-                                        value="is_advance"
-                                        onChange={(e: any) => {
-                                            setIsAdvance(e.checked);
-                                            !e.checked ? setOAdvance(null) : '';
-                                            xmlUploadRef.current?.clear();
-                                        }}
-                                        checked={ dialogMode == 'create' ? isAdvance : oDps?.is_advance }
-                                        disabled={dialogMode != 'create'}
-                                        tooltip={t('uploadDialog.is_advance.tooltip')}
-                                    />
-                                    <label htmlFor="is_advance" className="ml-2">
-                                        {t('uploadDialog.is_advance.label')}
-                                    </label>
-                                </div>
-                            </div>
-                            
-                            { (isAdvance || oDps?.is_advance) && (
-                                renderField({
-                                    label: t('uploadDialog.advance_application.label'),
-                                    tooltip: t('uploadDialog.advance_application.tooltip'),
-                                    value: dialogMode == 'create' ? oAdvance : oDps?.advance_application,
-                                    disabled: dialogMode != 'create' || !isAdvance,
-                                    mdCol: 4,
-                                    type: dialogMode == 'create' ? 'dropdown' : 'text',
-                                    onChange: (value) => {
-                                        setOAdvance(value);
-                                        setFormErrors((prev: any) => ({ ...prev, oAdvance: '' }));
-                                    },
-                                    options: lAdvance,
-                                    placeholder: 'Selecciona aplicación anticipo',
-                                    errorKey: 'oAdvance',
-                                    errors: formErrors,
-                                    errorMessage: 'Selecciona aplicación anticipo'
-                                })
                             )}
 
                             { lRefToValidateXml && lRefToValidateXml[0]?.id != 0 && dialogMode != 'create' && (
@@ -2335,6 +2328,8 @@ export const InvoiceDialog = ({
                                                 setLoadingValidateXml={setLoadingValidateXml}
                                                 showToast={showToast}
                                                 type={constants.XML_TYPE_INVOICE}
+                                                setIsAdvance={setIsAdvance}
+                                                setOriginalIsAdvance={setOriginalIsAdvance}
                                             />
                                         </div>
                                     </div>
@@ -2351,28 +2346,73 @@ export const InvoiceDialog = ({
                             )}
                         </div>
                         {(isXmlValid || (oProvider ? oProvider.country != constants.COUNTRIES.MEXICO_ID : false) || dialogMode == 'review' || dialogMode == 'authorization') && (
-                            <FieldsDps
-                                oDps={oDps}
-                                setODps={setODps}
-                                mode={modeFieldsDps}
-                                withHeaderDps={false}
-                                withBodyDps={true}
-                                withFooterDps={dialogMode == 'review' || dialogMode == 'authorization'}
-                                lPaymentMethod={lPaymentMethod}
-                                lCurrency={lCurrencies}
-                                footerMode={footerMode}
-                                errors={dialogMode == 'create' ? dpsErrors : reviewErrors}
-                                setErrors={dialogMode == 'create' ? setDpsErrors : setReviewErrors}
-                                lDaysToPay={lDaysToPay}
-                                loadingPartnerPaymentDay={loadingPartnerPaymentDay}
-                                partnerPaymentDay={partnerPaymentDay}
-                                withEditPaymentDay={withEditPaymentDay}
-                                lastPayDayOfYear={lastPayDayOfYear}
-                                withEditExpiredDate={withEditExpiredDate}
-                                isLocalPartner={ oProvider ? oProvider?.country == constants.COUNTRIES.MEXICO_ID : ( oDps?.oPartner ? oDps.oPartner.country == constants.COUNTRIES.MEXICO_ID : true ) }
-                                lOpex={lOpex}
-                                lProcessingType={lProcessingType}
-                            />
+                            <>
+                                <FieldsDps
+                                    oDps={oDps}
+                                    setODps={setODps}
+                                    mode={modeFieldsDps}
+                                    withHeaderDps={false}
+                                    withBodyDps={true}
+                                    withFooterDps={dialogMode == 'review' || dialogMode == 'authorization'}
+                                    lPaymentMethod={lPaymentMethod}
+                                    lCurrency={lCurrencies}
+                                    footerMode={footerMode}
+                                    errors={dialogMode == 'create' ? dpsErrors : reviewErrors}
+                                    setErrors={dialogMode == 'create' ? setDpsErrors : setReviewErrors}
+                                    lDaysToPay={lDaysToPay}
+                                    loadingPartnerPaymentDay={loadingPartnerPaymentDay}
+                                    partnerPaymentDay={partnerPaymentDay}
+                                    withEditPaymentDay={withEditPaymentDay}
+                                    lastPayDayOfYear={lastPayDayOfYear}
+                                    withEditExpiredDate={withEditExpiredDate}
+                                    isLocalPartner={ oProvider ? oProvider?.country == constants.COUNTRIES.MEXICO_ID : ( oDps?.oPartner ? oDps.oPartner.country == constants.COUNTRIES.MEXICO_ID : true ) }
+                                    lOpex={lOpex}
+                                    lProcessingType={lProcessingType}
+                                />
+                                <div className="p-fluid formgrid grid">
+
+                                    <div className="field col-12 md:col-2 align-content-center">
+                                        <div className="col pt-2">
+                                            <Checkbox
+                                                inputId="is_advance"
+                                                name="is_advance"
+                                                value="is_advance"
+                                                onChange={(e: any) => {
+                                                    // setIsAdvance(e.checked);
+                                                    // !e.checked ? setOAdvance(null) : '';
+                                                    dialogConfimChangeIsAdvance(e.checked);
+                                                }}
+                                                checked={ dialogMode == 'create' ? isAdvance : oDps?.is_advance }
+                                                disabled={dialogMode != 'create'}
+                                                tooltip={t('uploadDialog.is_advance.tooltip')}
+                                            />
+                                            <label htmlFor="is_advance" className="ml-2">
+                                                {t('uploadDialog.is_advance.label')}
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                    { (isAdvance || oDps?.is_advance) && (
+                                        renderField({
+                                            label: t('uploadDialog.advance_application.label'),
+                                            tooltip: t('uploadDialog.advance_application.tooltip'),
+                                            value: dialogMode == 'create' ? oAdvance : oDps?.advance_application,
+                                            disabled: dialogMode != 'create' || !isAdvance,
+                                            mdCol: 4,
+                                            type: dialogMode == 'create' ? 'dropdown' : 'text',
+                                            onChange: (value) => {
+                                                setOAdvance(value);
+                                                setFormErrors((prev: any) => ({ ...prev, oAdvance: '' }));
+                                            },
+                                            options: lAdvance,
+                                            placeholder: 'Selecciona aplicación anticipo',
+                                            errorKey: 'oAdvance',
+                                            errors: formErrors,
+                                            errorMessage: 'Selecciona aplicación anticipo'
+                                        })
+                                    )}
+                                </div>
+                            </>
                         )}
                         {(dialogMode == 'create' || dialogMode == 'edit') && (isXmlValid || (oProvider ? oProvider.country != constants.COUNTRIES.MEXICO_ID : false)) && (
                             <div className="field col-12 md:col-12">

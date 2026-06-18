@@ -809,3 +809,16 @@ Notas:
 - Queda pendiente realizar el refactor en el módulo de Facturas (marcado con TODO) para unificar la forma en que se obtienen las empresas filtradas por usuario.
 
 ----------------------------------------
+========================================
+RELEASE
+Fecha: 16-06-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- Validación automatica de facturas de anticipo
+
+Nuevas funcionalidades:
+- Se valida si un XML es de anticipo para marcarse automaticamente
+
+----------------------------------------
