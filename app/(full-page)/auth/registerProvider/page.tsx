@@ -812,6 +812,7 @@ const RegisterProvider = () => {
                                 </div>
                             </div>
                         )}
+                        { footerContent }
                     </div>
                 </div>
             </div>
