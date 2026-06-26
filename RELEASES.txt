@@ -836,3 +836,17 @@ Correcciones:
 - Se valida que se seleccione area antes de cargar una factura sin referencia.
 
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 26-06-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- Fix, consulta de historial de autorizaciones.
+
+Correcciones:
+- Solo se hace la peticion si authz_authorization_id es mayor a 1.
+
+----------------------------------------

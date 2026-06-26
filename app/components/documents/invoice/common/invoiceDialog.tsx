@@ -1113,7 +1113,7 @@ export const InvoiceDialog = ({
                 for (let i = 0; i<lReferencesDps.length; i++) {
                     try {
                         lReferencesDps[i].history = [];
-                        if (!lReferencesDps[i].external_id) {
+                        if (!lReferencesDps[i].external_id || !(lReferencesDps[i].jsonOc?.oWebAuthorization?.idAuthStatus > 1)) {
                             continue;
                         }
                         const route = constants.ROUTE_GET_HISTORY_AUTH;
@@ -1200,8 +1200,8 @@ export const InvoiceDialog = ({
         } else if (dialogMode == 'authorization') {
             setFooterMode('view');
         }
-
-        if (withHistoryAuth && visible) {
+        
+        if (withHistoryAuth && visible && oDps?.authz_authorization_id > 1) {
             getHistoryAuth?.();
         }
 
