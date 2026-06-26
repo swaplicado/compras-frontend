@@ -822,3 +822,17 @@ Nuevas funcionalidades:
 - Se valida si un XML es de anticipo para marcarse automaticamente
 
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 26-06-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- Fix, validación de area al cargar factura sin referencia.
+
+Correcciones:
+- Se valida que se seleccione area antes de cargar una factura sin referencia.
+
+----------------------------------------
