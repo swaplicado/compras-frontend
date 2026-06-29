@@ -422,8 +422,8 @@ export const InvoiceDialog = ({
             provider: !oProvider,
             company: !oCompany,
             reference: !oReference || oReference?.length == 0,
-            // area: oReference ? (oReference.id == '0' ? !oArea : false) : false,
-            area: false,
+            area: oReference ? (oReference[0].id == '0' ? !oArea : false) : false,
+            // area: false,
             files: (fileUploadRef.current?.getFiles().length || 0) === 0,
             includePdf: fileUploadRef.current?.getFiles().length || 0 > 0 ? !fileUploadRef.current?.getFiles().some((file: { type: string }) => file.type === 'application/pdf') : false,
             includeXml: false,
@@ -1113,7 +1113,7 @@ export const InvoiceDialog = ({
                 for (let i = 0; i<lReferencesDps.length; i++) {
                     try {
                         lReferencesDps[i].history = [];
-                        if (!lReferencesDps[i].external_id) {
+                        if (!lReferencesDps[i].external_id || !(lReferencesDps[i].jsonOc?.oWebAuthorization?.idAuthStatus > 1)) {
                             continue;
                         }
                         const route = constants.ROUTE_GET_HISTORY_AUTH;
@@ -1200,8 +1200,8 @@ export const InvoiceDialog = ({
         } else if (dialogMode == 'authorization') {
             setFooterMode('view');
         }
-
-        if (withHistoryAuth && visible) {
+        
+        if (withHistoryAuth && visible && oDps?.authz_authorization_id > 1) {
             getHistoryAuth?.();
         }
 
@@ -1284,7 +1284,7 @@ export const InvoiceDialog = ({
                 />
                 {  oValidUser.isInternalUser && (
                     <Button
-                        label={'Guardar y revisar'}
+                        label={'Cargar y revisar'}
                         icon="pi pi-upload"
                         severity="info"
                         onClick={handleSubmitAndReview}
@@ -2469,7 +2469,7 @@ export const InvoiceDialog = ({
                                             <Tooltip target=".custom-target-icon" />
                                             <i
                                                 className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                                                data-pr-tooltip={t('uploadDialog.comments.tooltip')}
+                                                data-pr-tooltip={t('uploadDialog.comments.tooltipAuthComments')}
                                                 data-pr-position="right"
                                                 data-pr-my="left center-2"
                                                 style={{ fontSize: '1rem', cursor: 'pointer' }}

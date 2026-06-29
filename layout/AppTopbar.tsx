@@ -15,7 +15,7 @@ import Cookies from 'js-cookie';
 import appConfig from '../appConfig.json';
 import { useTranslation } from 'react-i18next';
 import { Calendar } from 'primereact/calendar';
-import { addLocale } from 'primereact/api';
+import { addLocale, locale } from 'primereact/api';
 
 const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
     const { layoutConfig, layoutState, setLayoutState, onMenuToggle, showProfileSidebar, dateToWork, setDateToWork } = useContext(LayoutContext);
@@ -31,6 +31,7 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
     const [ nameUser, setNameUser ] = useState<any>(null);
     const [ roleUser, setRoleUser ] = useState<any>(null);
     const { t } = useTranslation('topBar');
+    const { t: tCommon } = useTranslation('common');
     const [localeReady, setLocaleReady] = useState(false);
     
     useEffect(() => {
@@ -46,6 +47,7 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
             emptyMessage: 'No se encontraron resultados',
             emptyFilterMessage: 'No se encontraron resultados'
         });
+        locale('es');
         setLocaleReady(true);
     }, []);
     
@@ -194,7 +196,12 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
 
                 {/* Logo */}
                 <Link href="/" className="layout-topbar-logo" style={{ width: 'auto' }}>
-                    <img src={`/layout/images/aeth_logo.png`} alt="logo" style={{ height: '3rem' }} /> 
+                    <img src={tCommon('appLogo')} alt="logo" style={{ height: '3rem' }} />
+                    {/* Nombre de la aplicación */}
+                    <span className="text-sm font-bold text-primary uppercase hidden md:block ml-2" 
+                          style={{ letterSpacing: '2.5px' }}>
+                        {tCommon('appName')}
+                    </span>
                 </Link>
             </div>
 
@@ -220,7 +227,7 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
                             dateFormat={ "MM/yy" } 
                             locale="es"
                             appendTo="self"
-                            inputStyle={{ padding: '0.5rem', width: '7rem', textAlign: 'center' }} 
+                            inputStyle={{ padding: '0.5rem', width: '10rem', textAlign: 'center' }} 
                         />
                     )}
                 </div>

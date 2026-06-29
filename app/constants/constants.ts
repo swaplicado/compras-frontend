@@ -15,7 +15,7 @@ const constants = {
 
     //Array de ids de roles
     ROLES: {
-        ADMINISTRADOR_ID: 1,
+        ADMINISTRADOR_ID: 6,
         COMPRADOR_ID: 2,
         CONTADOR_ID: 3,
         PAGADOR_ID: 4,
@@ -73,6 +73,7 @@ const constants = {
     ROUTE_GET_CAN_UPLOAD_INVOICE_WITHOUT_OC: '/transactions/can-upload-invoice-without-oc',
     ROUTE_GET_CAN_UPLOAD_DOCS: '/transactions/can-upload-docs',
     ROUTE_GET_VALIDATE_REFERENCE_BALANCE: '/transactions/validate-reference-balance/',
+    ROUTE_GET_USERS: '/transactions/users/list',
 
     ROUTE_COMPARE_FILES: '/pages/compareFiles/',
     ROUTE_SEE_FILES: '/pages/seeFiles/',
@@ -95,6 +96,8 @@ const constants = {
     ROUTE_POST_SAVE_DEADLINE: '/transactions/upload-deadline/create-or-update/',
     ROUTE_POST_VALIDATE_WAYBILL_SUPPLEMENT: '/transactions/documents/validate-waybill-supplement/',
     ROUTE_POST_GET_AVAILABLE_CREDIT_NOTE_TYPE: '/transactions/get-available-creditnote-type',
+    ROUTE_POST_CHANGE_PARTNER_PROCESSING_TYPE: '/transactions/partner-processing-type/',
+    ROUTE_POST_CHANGE_USER_UPLOAD_INVOICE_WITH_OUT_OC: '/transactions/invoice-without-oc-permission/',
 
     //Constantes de estados de las facturas
     REVIEW_ACCEPT: 'O',

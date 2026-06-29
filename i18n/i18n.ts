@@ -24,6 +24,7 @@ import esBulkInvoiceUpload from './locales/es/documents/bulkInvoiceUpload';
 import esPrepay from './locales/es/documents/prepay';
 import esAccountStatePdf from './locales/es/partners/accountStatePdf';
 import esUploadInvoicesDates from './locales/es/configurations/uploadInvoicesDates';
+import esConfigUsers from './locales/es/configurations/configUsers';
 
 i18n
   .use(initReactI18next)
@@ -54,6 +55,7 @@ i18n
         prepay: esPrepay,
         accountStatePdf: esAccountStatePdf,
         uploadInvoicesDates: esUploadInvoicesDates,
+        configUsers: esConfigUsers
       }
     },
     lng: "es",

@@ -6,18 +6,21 @@ interface getlCompaniesProps {
     setLCompanies?: React.Dispatch<React.SetStateAction<any[]>>;
     setLCompaniesFilter?: React.Dispatch<React.SetStateAction<any[]>>;
     showToast?: (type: 'success' | 'info' | 'warn' | 'error', message: string, summaryText?: string) => void;
+    user_id?: string | number; //ahora acepta el user
 }
 
 export const getlCompanies = async ({
     setLCompanies,
     setLCompaniesFilter,
     showToast,
+    user_id,
 }: getlCompaniesProps) => {
     try {
         const route = constants.ROUTE_GET_COMPANIES;
         const response = await axios.get(constants.API_AXIOS_GET, {
             params: {
-                route: route
+                route: route,
+                user_id: user_id
             }
         });
 

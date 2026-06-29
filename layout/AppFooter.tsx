@@ -10,7 +10,7 @@ const AppFooter = () => {
 
     return (
         <div className="layout-footer">
-            <span className="font-medium ml-6 "> <strong>{t('strongText')}</strong>{t('rightsReserved')}</span>
+            <span className="font-medium ml-6 "> <strong>{t('strongText', { year: new Date().getFullYear() })}</strong>{t('rightsReserved')}</span>
             <span className="font-medium ml-6">
                 <a href={t('websiteLink')} target='_blank' style={{color: 'black'}}>{t('website')}</a>
             </span>

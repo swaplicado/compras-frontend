@@ -1,4 +1,6 @@
 const commons = {
+    appName: "Portal de Compras",
+    appLogo: "/layout/images/app_logo.png",
     btnShowInstructions: "Mostrar instrucciones",
     btnHideInstructions: "Ocultar instrucciones",
     btnSelectFiles: "Seleccionar",

@@ -16,6 +16,7 @@ const Logout = () => {
     const router = useRouter();
     const toast = useRef<Toast>(null);
     const { t } = useTranslation('logout');
+    const { t: tCommon } = useTranslation('common');
 
     const handleLogout = async () => {
         try {
@@ -56,7 +57,17 @@ const Logout = () => {
     return (
         <div className="surface-ground flex align-items-center justify-content-center min-h-screen">
             <div className="text-center">
-                <img src="/layout/images/aeth_logo.png" alt="Logo" className="mb-5 w-6rem" />
+                <div className="flex flex-column align-items-center mb-5">
+                    <img src={tCommon('appLogo')} alt="Logo" className="w-6rem flex-shrink-0 mb-3" />
+                    
+                    <div className="inline-flex flex-column">
+                        <div className="border-top-2 surface-border w-full mb-2"></div>
+                        <span className="text-lg font-bold text-primary uppercase text-center white-space-nowrap" 
+                              style={{ letterSpacing: '2.5px' }}>
+                            {tCommon('appName')}
+                        </span>
+                    </div>
+                </div>
                 <h1 className="text-900 font-medium text-3xl mb-3">{t('title')}</h1>
                 <p className="text-600 text-lg mb-5">{t('texto')}</p>
                 <Button label={t('btnGotoLogin')} className="p-button-outlined" onClick={() => router.push('/auth/login')} />

@@ -20,6 +20,7 @@ import { Dropdown } from 'primereact/dropdown';
 import { MyToolbar } from '@/app/components/documents/invoice/common/myToolbar';
 import { DialogManual } from '@/app/components/videoManual/dialogManual'
 import { FlowAuthorizationDialog } from '@/app/components/documents/invoice/flowAuthorizationDialog';
+// import { getlCompanies } from '@/app/(main)/utilities/documents/common/companyUtils';
 
 interface reviewFormData {
     company: { id: string; name: string; fiscal_id: string; fiscal_regime_id: number };
@@ -295,6 +296,7 @@ const TableDemo = () => {
     };
 
     const getlCompanies = async () => {
+        //  TODO: comentar todo el try/catch para dejar el filtrado desde el backend linea: 571
         try {
             const route = constants.ROUTE_GET_COMPANIES;
             const response = await axios.get(constants.API_AXIOS_GET, {
@@ -566,6 +568,13 @@ const TableDemo = () => {
     useEffect(() => {
         const fetchReferences = async () => {
             setLoading(true);
+            // TODO: para dejar la filtracion en el backend
+            // await getlCompanies({
+            //     setLCompanies,
+            //     setLCompaniesFilter,
+            //     showToast,
+            //     user_id: oUser?.oUser?.id
+            // });
             initFilters();
 
             let groups = [];

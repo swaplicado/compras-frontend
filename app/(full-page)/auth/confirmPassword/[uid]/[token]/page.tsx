@@ -12,6 +12,7 @@ import Lottie from 'lottie-react';
 import successAnimation from '@/public/layout/animations/Animation - success.json';
 import errorAnimation from '@/public/layout/animations/Animation - error.json';
 import constants from '@/app/constants/constants';
+import { useTranslation } from 'react-i18next';
 
 const ResetPassword = () => {
     const { layoutConfig } = useContext(LayoutContext);
@@ -23,7 +24,7 @@ const ResetPassword = () => {
     const [ enterResetPassword, setEnterResetPassword ] = useState(false);
     const [ sendResultOk, setSendResultOk ] = useState(false);
     const [resultLottie, setResultLottie] = useState<'wait' | 'success' | 'error'>('wait');
-
+    const { t: tCommon } = useTranslation('common');
     const containerClassName = classNames('surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden, background-image', {
         'p-input-filled': layoutConfig.inputStyle === 'filled'
     });
@@ -96,7 +97,7 @@ const ResetPassword = () => {
                 loaderScreen()
             )}
             <div className='flex flex-column align-items-center justify-content-center'>
-                <img src={`/layout/images/aeth_logo.png`} alt='Sakai logo' className='mb-5 w-6rem flex-shrink-0' />
+                <img src={tCommon('appLogo')} alt='Sakai logo' className='mb-5 w-6rem flex-shrink-0' />
                 <div
                     style={{
                         borderRadius: '56px',
