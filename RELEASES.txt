@@ -850,3 +850,18 @@ Correcciones:
 - Solo se hace la peticion si authz_authorization_id es mayor a 1.
 
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 29-06-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- Pantalla de configuración de permisos de carga de facturas sin oc y carga masiva.
+
+Nuevas funcionalidades:
+- Configuración de que usuario puede cargar factura sin referencia.
+- Configuración de que proveedor puede cargar feltes y compras fruta.
+
+----------------------------------------
