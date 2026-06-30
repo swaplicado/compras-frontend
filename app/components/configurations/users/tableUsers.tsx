@@ -109,8 +109,8 @@ export const TableUsers = ({
                 <div className='flex justify-content-center'>
                     <ul>
                         {rowData.areas?.map((area: any) => (
-                            <li>
-                                <span key={area.id}>
+                            <li key={area.id}>
+                                <span>
                                     {area.name}
                                 </span>
                             </li>
