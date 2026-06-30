@@ -868,7 +868,7 @@ Nuevas funcionalidades:
 
 ========================================
 RELEASE
-Fecha: 30-06-2026z
+Fecha: 30-06-2026
 Autor: Adrián Alejandro Avilés Gómez
 ========================================
 
@@ -877,5 +877,19 @@ Resumen:
 
 Nuevas funcionalidades:
 - Configuración para configurar a que areas le salen un proveedor para cargar facturas.
+
+----------------------------------------
+
+========================================
+RELEASE
+Fecha: 30-06-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- Opcion de poner nombre de empresa en areas.
+
+Nuevas funcionalidades:
+- parametro para obtener la empresa de cada area
 
 ----------------------------------------

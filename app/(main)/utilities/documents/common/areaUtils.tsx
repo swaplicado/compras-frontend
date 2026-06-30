@@ -9,6 +9,7 @@ interface getlAreasProps {
     user_id?: any;
     company_id?: any;
     withOutCompany?: boolean;
+    include_company?: boolean;
 }
 
 export const getlAreas = async ({
@@ -16,7 +17,8 @@ export const getlAreas = async ({
     showToast,
     user_id,
     company_id,
-    withOutCompany
+    withOutCompany,
+    include_company
 }: getlAreasProps) => {
     try {
         const route = constants.ROUTE_GET_AREAS;
@@ -25,7 +27,8 @@ export const getlAreas = async ({
                 route: route,
                 user_id: user_id,
                 company_id: company_id,
-                withOutCompany: withOutCompany
+                withOutCompany: withOutCompany,
+                include_company: include_company
             }
         });
 
@@ -36,7 +39,7 @@ export const getlAreas = async ({
             for (const item of data) {
                 lAreas.push({
                     id: item.id,
-                    name: item.name
+                    name: !include_company ? item.name : item.name + ' - ' + item.company_name
                 });
             }
             setLAreas?.(lAreas);

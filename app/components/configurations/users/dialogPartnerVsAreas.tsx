@@ -96,6 +96,10 @@ export const DialogPartnerVsAreas = ({
                         targetHeader={t('dialogPartnerAreas.targetAreas')}
                         onChange={onChange}
                         itemTemplate={(item) => item.name}
+                        filter
+                        filterBy="name"
+                        sourceFilterPlaceholder="Buscar" 
+                        targetFilterPlaceholder="Buscar"
                     />
                 </div>
             </Dialog>

@@ -180,7 +180,8 @@ export default function Users() {
             await getlAreas({
                 setLAreas,
                 showToast: showToast,
-                withOutCompany: true
+                withOutCompany: true,
+                include_company: true
             })
         }
         fetch();
