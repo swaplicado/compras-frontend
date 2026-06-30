@@ -97,7 +97,7 @@ export async function GET(req: NextRequest) {
                     }
                 });
 
-                if (!params.company_id && !params.company && company) {
+                if (!params.company_id && !params.company && !params.withOutCompany && company) {
                     const parsed = JSON.parse(company?.value);
                     params.company_id = Array.isArray(parsed) ? parsed : [parsed];
                 }

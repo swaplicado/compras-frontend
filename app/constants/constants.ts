@@ -74,6 +74,7 @@ const constants = {
     ROUTE_GET_CAN_UPLOAD_DOCS: '/transactions/can-upload-docs',
     ROUTE_GET_VALIDATE_REFERENCE_BALANCE: '/transactions/validate-reference-balance/',
     ROUTE_GET_USERS: '/transactions/users/list',
+    ROUTE_GET_PARTNERS_VS_AREAS: '/transactions/partner-with-areas/',
 
     ROUTE_COMPARE_FILES: '/pages/compareFiles/',
     ROUTE_SEE_FILES: '/pages/seeFiles/',
@@ -98,6 +99,7 @@ const constants = {
     ROUTE_POST_GET_AVAILABLE_CREDIT_NOTE_TYPE: '/transactions/get-available-creditnote-type',
     ROUTE_POST_CHANGE_PARTNER_PROCESSING_TYPE: '/transactions/partner-processing-type/',
     ROUTE_POST_CHANGE_USER_UPLOAD_INVOICE_WITH_OUT_OC: '/transactions/invoice-without-oc-permission/',
+    ROUTE_POST_SET_PARTNER_AREAS: '/transactions/partner-areas-sync/',
 
     //Constantes de estados de las facturas
     REVIEW_ACCEPT: 'O',

@@ -1,19 +1,22 @@
 import React from "react";
 import axios from "axios";
 import constants from "@/app/constants/constants";
+import { BlockList } from "net";
 
 interface getlAreasProps {
     setLAreas?: React.Dispatch<React.SetStateAction<any[]>>;
     showToast?: (type: 'success' | 'info' | 'warn' | 'error', message: string, summaryText?: string) => void;
     user_id?: any;
-    company_id: any;
+    company_id?: any;
+    withOutCompany?: boolean;
 }
 
 export const getlAreas = async ({
     setLAreas,
     showToast,
     user_id,
-    company_id
+    company_id,
+    withOutCompany
 }: getlAreasProps) => {
     try {
         const route = constants.ROUTE_GET_AREAS;
@@ -21,7 +24,8 @@ export const getlAreas = async ({
             params: {
                 route: route,
                 user_id: user_id,
-                company_id: company_id
+                company_id: company_id,
+                withOutCompany: withOutCompany
             }
         });
 

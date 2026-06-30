@@ -8,11 +8,13 @@ import { Tooltip } from 'primereact/tooltip';
 import constants from "@/app/constants/constants";
 import loaderScreen from '@/app/components/commons/loaderScreen';
 import { TableUsers } from "@/app/components/configurations/users/tableUsers";
-import { getUsers, getPartners } from '@/app/(main)/utilities/configurations/configUtilities';
+import { getUsers, getPartners, getPartnersVsAreas } from '@/app/(main)/utilities/configurations/configUtilities';
 import axios from "axios";
-import {getOUser} from '@/app/(main)/utilities/user/common/userUtilities'
+import { getOUser } from '@/app/(main)/utilities/user/common/userUtilities'
+import { DialogPartnerVsAreas } from '@/app/components/configurations/users/dialogPartnerVsAreas';
+import { getlAreas } from '@/app/(main)/utilities/documents/common/areaUtils';
 
-const options = ['Sin referencia', 'Carga masiva'];
+const options = ['Sin referencia', 'Carga masiva', 'Proveedores Vs áreas'];
 
 export default function Users() {
     const { t } = useTranslation('configUsers');
@@ -21,6 +23,11 @@ export default function Users() {
     const [loading, setLoading] = useState<boolean>(false);
     const [optionConfig, setOptionConfig] = useState(options[0]);
     const [lUsers, setLUsers] = useState<Array<any>>([]);
+    const [lPartners, setLPartners] = useState<Array<any>>([]);
+    const [lPartnersAreas, setLPartnersAreas] = useState<Array<any>>([]);
+    const [lAreas, setLAreas] = useState<Array<any>>([]);
+    const [visiblePartnerAreas, setVisiblePartnerAreas] = useState<boolean>(false);
+    const [oPartner, setOPartner] = useState<any>({});
 
 //*******FUNCIONES*******
     const showToast = (type: 'success' | 'info' | 'warn' | 'error' = 'error', message: string, summaryText = 'Error:') => {
@@ -74,7 +81,7 @@ export default function Users() {
 
             if (response.status == 200) {
                 if (!value) {
-                    setLUsers(prev => prev.map(p =>
+                    setLPartners(prev => prev.map(p =>
                         p.id == partner_id ? {
                             ...p,
                             processing_types: p.processing_types.filter((item: any) => item.id != type_id)
@@ -84,7 +91,7 @@ export default function Users() {
                     const oProcessingType = {
                         "id": type_id
                     }
-                    setLUsers(prev => prev.map(p =>
+                    setLPartners(prev => prev.map(p =>
                         p.id == partner_id ? {
                             ...p,
                             processing_types: [...p.processing_types, oProcessingType]
@@ -95,6 +102,41 @@ export default function Users() {
             }
         } catch (error: any) {
             showToast('error', error.response.data.message || 'Error al actualizar el tipo de proceso del proveedor')
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const onEditPartnerArea = (rowData: any) => {
+        setOPartner(rowData);
+        setVisiblePartnerAreas(true);
+    }
+
+    const onSave = async (assignedAreas: any[], partner_id: number) => {
+        try {
+            setLoading(true);
+            
+            const areasIds: any[] = [];
+            assignedAreas.map((area: any) => areasIds.push(area.id));
+            const route = constants.ROUTE_POST_SET_PARTNER_AREAS;
+            const response = await axios.post(constants.API_AXIOS_POST, {
+                route,
+                jsonData: {
+                    partner_id: partner_id,
+                    areas: areasIds
+                }
+            })
+            if (response.status == 200) {
+                showToast('success', 'Áreas asignadas correctamente', 'Éxito');
+                await getPartnersVsAreas({
+                    setLPartners: setLPartnersAreas,
+                    showToast: showToast,
+                    errorMessage: 'Error al obtener los proveedores'
+                })
+                setVisiblePartnerAreas(false);
+            }
+        } catch (error: any) {
+            showToast('error', error.response.data.message || 'Error al asignar áreas al proveedor');
         } finally {
             setLoading(false);
         }
@@ -135,6 +177,11 @@ export default function Users() {
             if (!oUser?.oUser.groups.includes(constants.ROLES.ADMINISTRADOR_ID)) {
                 window.location.href = '/auth/logout';
             }
+            await getlAreas({
+                setLAreas,
+                showToast: showToast,
+                withOutCompany: true
+            })
         }
         fetch();
     }, [])
@@ -153,7 +200,7 @@ export default function Users() {
         const initBulkInvoices = async () => {
             setLoading(true);
             await getPartners({
-                setLPartners: setLUsers,
+                setLPartners: setLPartners,
                 is_deleted: false,
                 include_processing_types: true,
                 showToast: showToast,
@@ -161,11 +208,25 @@ export default function Users() {
             })
             setLoading(false);
         }
+
+        const initPartnersVsAreas = async () => {
+            setLoading(true);
+            await getPartnersVsAreas({
+                setLPartners: setLPartnersAreas,
+                showToast: showToast,
+                errorMessage: 'Error al obtener los proveedores'
+            })
+            setLoading(false);
+        }
+
         if (optionConfig == options[0]) {
             initWithOutReference();
         }
         if (optionConfig == options[1]) {
             initBulkInvoices();
+        }
+        if (optionConfig == options[2]) {
+            initPartnersVsAreas();
         }
     },[optionConfig])
 
@@ -176,14 +237,24 @@ export default function Users() {
                     {loading && loaderScreen()}
                     <Toast ref={toast} />
                     <Card header={headerCard} pt={{ content: { className: 'p-0' } }}>
+                    <DialogPartnerVsAreas
+                        lAreas={lAreas}
+                        visible={visiblePartnerAreas}
+                        onHide={() => setVisiblePartnerAreas(false)}
+                        oPartner={oPartner}
+                        onSave={onSave}
+                    />
                     <SelectButton value={optionConfig} onChange={(e) => setOptionConfig(e.value)} options={options} />
                     <br />
                     <TableUsers
                         lUsers={lUsers}
+                        lPartners={lPartners}
+                        lPartnersAreas={lPartnersAreas}
                         onTogglePermission={changewithOutReference}
                         options={options}
                         option={optionConfig}
                         onChangeProccessingType={changeProccessingType}
+                        onEdit={onEditPartnerArea}
                     />
                     </Card>
                 </div>

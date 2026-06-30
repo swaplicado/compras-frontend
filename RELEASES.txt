@@ -865,3 +865,17 @@ Nuevas funcionalidades:
 - Configuración de que proveedor puede cargar feltes y compras fruta.
 
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 30-06-2026z
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- Pantalla de configuración para asignar areas de proveedor.
+
+Nuevas funcionalidades:
+- Configuración para configurar a que areas le salen un proveedor para cargar facturas.
+
+----------------------------------------

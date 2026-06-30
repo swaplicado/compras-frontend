@@ -15,18 +15,24 @@ import { Checkbox } from "primereact/checkbox";
 
 interface TableUsersProps {
     lUsers: any[];
+    lPartners: any[];
+    lPartnersAreas: any[];
     onTogglePermission?: (user_id: number, value: boolean) => void;
     options: Array<any>;
     option: string;
     onChangeProccessingType?: (partner_id: number, value: boolean, type_id: number) => void;
+    onEdit: (rowData: any) => void;
 }
 
 export const TableUsers = ({
     lUsers,
+    lPartners,
+    lPartnersAreas,
     onTogglePermission,
     options,
     option,
-    onChangeProccessingType
+    onChangeProccessingType,
+    onEdit
 }: TableUsersProps) => {
     const [filters, setFilters] = useState<DataTableFilterMeta>({});
     const [tableLoading, setTableLoading] = useState(true);
@@ -97,6 +103,38 @@ export const TableUsers = ({
         )
     }
 
+    const areasTemplate = (rowData: any) => {
+        return (
+             rowData.areas?.length > 0 ? (
+                <div className='flex justify-content-center'>
+                    <ul>
+                        {rowData.areas?.map((area: any) => (
+                            <li>
+                                <span key={area.id}>
+                                    {area.name}
+                                </span>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            ) : ''
+        )
+    }
+
+    const editTemplate = (rowData: any) => {
+        return (
+            <div className='flex justify-content-center'>
+                <Button
+                    rounded
+                    icon="pi pi-pencil"
+                    severity='warning'
+                    size='small'
+                    onClick={() => onEdit(rowData)}
+                />
+            </div>
+        )
+    }
+
 //*********** INIT ***********
     useEffect(() => {
         const Init = async () => {
@@ -147,7 +185,7 @@ export const TableUsers = ({
 
             {option == options[1] && (
                 <DataTable
-                    value={lUsers}
+                    value={lPartners}
                     paginator
                     rowsPerPageOptions={constants.TABLE_ROWS}
                     className="p-datatable-gridlines"
@@ -167,10 +205,39 @@ export const TableUsers = ({
                 >
                     <Column field="id" header="id" hidden />
                     <Column field="fiscal_id" header={t('tablePartners.columns.fiscal_id')} />
-                    <Column field="trade_name" header={t('tablePartners.columns.trade_name')} />
+                    <Column field="full_name" header={t('tablePartners.columns.trade_name')} />
                     <Column field="email" header={t('tablePartners.columns.email')} />
                     <Column field="" header={t('tablePartners.columns.uploadFlete')} body={processingType_flete}/>
                     <Column field="" header={t('tablePartners.columns.uploadFruta')} body={processingType_compras} />
+                </DataTable>
+            )}
+
+            {option == options[2] && (
+                <DataTable
+                    value={lPartnersAreas}
+                    paginator
+                    rowsPerPageOptions={constants.TABLE_ROWS}
+                    className="p-datatable-gridlines"
+                    rows={constants.TABLE_DEFAULT_ROWS}
+                    showGridlines
+                    filters={filters}
+                    filterDisplay="menu"
+                    responsiveLayout="scroll"
+                    emptyMessage={tCommon('datatable.emptyMessage')}
+                    scrollable
+                    scrollHeight="40rem"
+                    selectionMode="single"
+                    metaKeySelection={false}
+                    paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+                    currentPageReportTemplate={tCommon('datatable.currentPageReportTemplate')}
+                    resizableColumns
+                    sortField="full_name" 
+                    sortOrder={1}
+                >
+                    <Column field="id" header="id" hidden />
+                    <Column field="full_name" header={t('tablePartnersAreas.columns.full_name')} />
+                    <Column field="areas" header={t('tablePartnersAreas.columns.areas')} body={areasTemplate} />
+                    <Column field="" header={t('tablePartnersAreas.columns.edit')} body={editTemplate} />
                 </DataTable>
             )}
         </>
