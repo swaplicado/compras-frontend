@@ -17,6 +17,17 @@ const configUsers = {
             uploadFlete: "Carga masiva de fletes",
             uploadFruta: "Carga masiva de compras fruta"
         }
+    },
+    tablePartnersAreas: {
+        columns: {
+            full_name: "proveedor",
+            areas: "Áreas asignadas",
+            edit: ""
+        }
+    },
+    dialogPartnerAreas: {
+        sourceAreas: "Areas para escoger",
+        targetAreas: "Áreas asignadas"
     }
 }
 

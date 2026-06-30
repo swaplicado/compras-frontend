@@ -137,3 +137,28 @@ export const getPartners = async (props: getPartnersProps) => {
         return false;
     }
 }
+
+interface getPartnersVsAreasProps {
+    setLPartners: React.Dispatch<React.SetStateAction<any[]>>;
+    showToast?: (type: 'success' | 'info' | 'warn' | 'error', message: string, summaryText?: string) => void;
+    errorMessage: string;
+}
+export const getPartnersVsAreas = async (props: getPartnersVsAreasProps) => {
+    try {
+        const route = constants.ROUTE_GET_PARTNERS_VS_AREAS;
+        const response = await axios.get(constants.API_AXIOS_GET, {
+            params: {
+                route: route
+            }
+        })
+
+        if (response.status == 200) {
+            const data = response.data.data || [];
+            let lPartners: any[] = data;
+            props.setLPartners(lPartners);
+        }
+    } catch (error: any) {
+        props.showToast?.('error', error.response?.data?.error || props.errorMessage, props.errorMessage);
+        return false;
+    }
+}
