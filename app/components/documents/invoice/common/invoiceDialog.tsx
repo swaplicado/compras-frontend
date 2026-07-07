@@ -1113,7 +1113,7 @@ export const InvoiceDialog = ({
                 for (let i = 0; i<lReferencesDps.length; i++) {
                     try {
                         lReferencesDps[i].history = [];
-                        if (!lReferencesDps[i].external_id || !(lReferencesDps[i].jsonOc?.oWebAuthorization?.idAuthStatus > 1)) {
+                        if (!lReferencesDps[i].external_id) {
                             continue;
                         }
                         const route = constants.ROUTE_GET_HISTORY_AUTH;
