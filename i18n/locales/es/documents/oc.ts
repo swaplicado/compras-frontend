@@ -182,7 +182,7 @@ const oc = {
                 placeholder: "",
                 tooltip: ""
             },
-            withOutMr: "Sin requisición",
+            withOutMr: "La referencia no tiene requisición de materiales",
             authzCommentsSubtitle: "Comentarios de autorización",
             filesSubtitles: "Archivos",
             authHistorySubtitle: "Historial de autorizaciones",

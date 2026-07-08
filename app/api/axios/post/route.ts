@@ -42,9 +42,9 @@ const getErrorMessage = (error: any): ErrorResponse => {
             case 404:
                 return { error: data?.error || 'Recurso no encontrado', status: 404 };
             case 500:
-                return { error: data?.error || 'Error en el servidor', status: 500 };
+                return { error: data?.error || 'Error interno, contacte a soporte', status: 500 };
             default:
-                return { error: data?.error || 'Error inesperado', status };
+                return { error: data?.error || 'Error interno, contacte a soporte', status };
         }
     }
 

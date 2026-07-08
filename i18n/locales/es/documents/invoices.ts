@@ -314,7 +314,7 @@ const invoices = {
             label: "Aplicación anticipo",
             tooltip: "Indica como vas a aplicar tu anticipo"
         },
-        invoiceWithOutOc: "No se seleccionó una OC",
+        invoiceWithOutOc: "No se seleccionó una referencia para esta factura",
         titleInvoiceWithOutOc: "No seleccionó una orden de compra para esta factura",
         expiredDate: {
             label: "Fecha vencimiento",
@@ -357,7 +357,15 @@ const invoices = {
             label: "Tipo contabilización",
             placeholder: "",
             tooltip: "Tipo contabilización",
-        }
+        },
+        references: {
+            title: "Referencias asociadas a la factura",
+            withOut: "Esta factura no tiene una referencia asociada.",
+            data: "Datos de la referencia: ",
+            etys: "Partidas de la referencia.",
+            historyAuth: "Historial de autorización de la referencia.",
+        },
+        validateToSat: "Validando CFDI ante el SAT"
     },
     errors: {
         getInvoicesError: "Error al obtener las facturas. Por favor, intenta nuevamente más tarde.",
@@ -432,9 +440,9 @@ const invoices = {
         dialogHeader: "Manual de Usuario",
     },
     comments: {
-            tooltip: "Comentarios de la autorización o rechazo de la factura.",
-            tooltipYourComments: "Tus comentarios del motivo de la autorización o rechazo* de la factura."
-        }
+        tooltip: "Comentarios de la autorización o rechazo de la factura.",
+        tooltipYourComments: "Tus comentarios del motivo de la autorización o rechazo* de la factura."
+    }
 }
 
 export default invoices;

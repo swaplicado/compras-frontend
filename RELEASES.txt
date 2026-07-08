@@ -893,3 +893,21 @@ Nuevas funcionalidades:
 - parametro para obtener la empresa de cada area
 
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 08-07-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- Cambios de texto de manejo de errores.
+
+Cambios:
+- Cambio de texto de manejo de errores en pantallas de carga.
+- Condición para no hacer consulta si la referencia no es OC.
+- Condición para no mostrar campos de OC en referencias que no son oc.
+
+Notas: Cambios solicitados por srgio flores
+
+----------------------------------------
