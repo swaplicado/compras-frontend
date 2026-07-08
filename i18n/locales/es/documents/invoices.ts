@@ -361,7 +361,8 @@ const invoices = {
         references: {
             title: "Referencias asociadas a la factura",
             withOut: "Esta factura no tiene una referencia asociada.",
-            data: "Datos de la referencia: ",
+            referenceData: "Datos de la referencia: ",
+            ticketData: "Datos del boleto: ",
             etys: "Partidas de la referencia.",
             historyAuth: "Historial de autorización de la referencia.",
         },
