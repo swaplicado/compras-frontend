@@ -250,12 +250,13 @@ const UploadPrepayment = () => {
             });
             if (response.status == 200) {
                 const data = response.data;
+                
                 if (!data.data.success) {
                     showToast('error', data.data.errors || 'El monto excede el saldo disponible del documento de referencia');
                     return false;
                 } else {
-                    if (data.data.warnings) {
-                        showToast('warn', data.data.warnings || 'El monto excede el saldo disponible del documento de referencia, pero se permitirá la validación', 'Advertencia:');
+                    if (data.data.warnings.length > 0) {
+                        showToast('warn', data?.data?.warnings || 'El monto excede el saldo disponible del documento de referencia, pero se permitirá la validación', 'Advertencia:');
                     }
                 }
                 // showToast('success', data.data.message || 'Monto validado correctamente');
@@ -272,6 +273,7 @@ const UploadPrepayment = () => {
             if (!validate('submit')) {
                 return;
             }
+            setLoading(true);
             const isValid = await validadteAmount();
             if (!isValid) {
                 return;
@@ -279,7 +281,6 @@ const UploadPrepayment = () => {
 
             const formData = new FormData();
             const files = fileUploadRef.current?.getFiles() || [];
-            setLoading(true);
 
             files.forEach((file: string | Blob) => {
                 formData.append('files', file);
@@ -352,9 +353,10 @@ const UploadPrepayment = () => {
             }
         } catch (error: any) {
             console.error('Error al subir la Proforma:', error);
-            setShowing('animationError');
+            // setShowing('animationError');
             setErrorTitle(t('dialog.animationError.uploadTitle'));
             setErrorMessage(error.response?.data?.error || t('dialog.animationError.uploadText'));
+            showToast?.('error', error.response?.data?.error);
         } finally {
             setLoading(false);
         }
@@ -421,7 +423,8 @@ const UploadPrepayment = () => {
                 setErrorTitle(t('dialog.animationError.reviewRejectedTitle'));
                 setErrorMessage(error.response?.data?.error || t('dialog.animationError.reviewRejectedText'));
             }
-            setShowing('animationError');
+            // setShowing('animationError');
+            showToast?.('error', error.response?.data?.error);
         } finally {
             setLoading(false);
         }
@@ -489,7 +492,8 @@ const UploadPrepayment = () => {
             console.error('Error al actualizar estado:', error);
             setErrorTitle(t('dialog.animationError.reviewAcceptedTitle'));
             setErrorMessage(error.response?.data?.error || t('dialog.animationError.reviewAcceptedText'));
-            setShowing('animationError');
+            // setShowing('animationError');
+            showToast?.('error', error.response?.data?.error);
         } finally {
             setLoading(false);
         }
@@ -508,7 +512,8 @@ const UploadPrepayment = () => {
         } catch (error: any) {
             setErrorTitle(t('dialog.animationError.sendToAuthTitle'));
             setErrorMessage(error.response?.data?.error || t('dialog.animationError.sendToAuthText'));
-            setShowing('animationError');
+            // setShowing('animationError');
+            showToast?.('error', error.response?.data?.error);
         } finally {
             setLoading(false);
         }

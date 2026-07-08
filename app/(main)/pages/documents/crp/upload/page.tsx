@@ -286,8 +286,9 @@ const ConsultPaymentProgramded = () => {
                 throw new Error('');
             }
         } catch (error: any) {
-            setShowing('animationError');
-            setErrorMessage('Error al cargar el CRP');
+            // setShowing('animationError');
+            setErrorMessage( error.response?.data?.error || 'Error al cargar el CRP');
+            showToast?.('error', error.response?.data?.error);
         } finally {
             setLoading(false);
         }
@@ -362,8 +363,9 @@ const ConsultPaymentProgramded = () => {
             }
         } catch (error: any) {
             console.error('Error al actualizar estado:', error);
-            setShowing('animationError');
-            setErrorMessage('Error al actualizar el CRP');
+            // setShowing('animationError');
+            setErrorMessage(error.response?.data?.error ||  'Error al actualizar el CRP');
+            showToast?.('error', error.response?.data?.error);
         } finally {
             setLoading?.(false);
         }

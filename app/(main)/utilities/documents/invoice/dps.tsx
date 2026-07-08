@@ -43,7 +43,8 @@ export const getDps = async ( props: getDpsProps  ) => {
                             account_tag: data[i].references[j].account_tag,
                             purchase_ticket_details: data[i].references[j].purchase_ticket_details ? data[i].references[j].purchase_ticket_details : null,
                             nature: data[i].references[j].nature,
-                            reference_document_id: data[i].references[j].reference_document_id
+                            reference_document_id: data[i].references[j].reference_document_id,
+                            document_ref_type: data[i].references[j].document_ref_type
                         });
                     }   
                 }

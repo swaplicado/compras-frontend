@@ -362,9 +362,10 @@ const UploadNC = () => {
                 throw new Error(t('uploadDialog.errors.uploadError'));
             }
         } catch (error: any) {
-            setShowing('animationError');
+            // setShowing('animationError');
             setErrorTitle(t('dialog.animationError.uploadTitle'));
             setErrorMessage(error.response?.data?.error || t('dialog.animationError.uploadText'));
+            showToast?.('error', error.response?.data?.error);
         } finally {
             setLoading(false);
         }
@@ -415,7 +416,8 @@ const UploadNC = () => {
                 setErrorTitle(t('dialog.animationError.reviewRejectedTitle'));
                 setErrorMessage(error.response?.data?.error || t('dialog.animationError.reviewRejectedText'));
             }
-            setShowing('animationError');
+            // setShowing('animationError');
+            showToast?.('error', error.response?.data?.error);
         } finally {
             setLoading(false);
         }
@@ -539,7 +541,8 @@ const UploadNC = () => {
         } catch (error: any) {
             setErrorTitle(t('dialog.animationError.sendToAuthTitle'));
             setErrorMessage(error.response?.data?.error || t('dialog.animationError.sendToAuthText'));
-            setShowing('animationError');
+            // setShowing('animationError');
+            showToast?.('error', error.response?.data?.error);
         } finally {
             setLoading(false);
         }

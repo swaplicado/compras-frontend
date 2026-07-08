@@ -639,7 +639,8 @@ export const InvoiceDialog = ({
         } catch (error: any) {
             console.error('Error al actualizar estado:', error);
             setErrorMessage(error.response?.data?.error || t('uploadDialog.errors.updateStatusError'));
-            setResultUpload('error');
+            // setResultUpload('error');
+            showToast?.('error', error.response?.data?.error);
         } finally {
             setLoading?.(false);
         }
@@ -776,8 +777,9 @@ export const InvoiceDialog = ({
         } catch (error: any) {
             console.error('Error al subir archivos:', error);
             setErrorMessage(error.response?.data?.error || t('uploadDialog.errors.uploadError'));
-            setResultUpload('error');
+            // setResultUpload('error');
             // getDps?.(getDpsParams);
+            showToast?.('error', error.response?.data?.error);
         } finally {
             setLoading?.(false);
         }
@@ -952,7 +954,8 @@ export const InvoiceDialog = ({
             } catch (error: any) {
                 console.error('Error al subir archivos:', error);
                 setErrorMessage(error.response?.data?.error || t('uploadDialog.errors.uploadError'));
-                setResultUpload('error');
+                //setResultUpload('error');
+                showToast?.('error', error.response?.data?.error);
             } finally {
                 setLoading?.(false);
             }
@@ -999,7 +1002,8 @@ export const InvoiceDialog = ({
         } catch (error: any) {
             console.error('Error al subir archivos:', error);
             setErrorMessage(error.response?.data?.error);
-            setResultUpload('error');
+            //setResultUpload('error');
+            showToast?.('error', error.response?.data?.error);
         } finally {
             setLoading?.(false);
         }
@@ -1113,7 +1117,7 @@ export const InvoiceDialog = ({
                 for (let i = 0; i<lReferencesDps.length; i++) {
                     try {
                         lReferencesDps[i].history = [];
-                        if (!lReferencesDps[i].external_id) {
+                        if (!lReferencesDps[i].external_id || (lReferencesDps[i].document_ref_type != 21 && lReferencesDps[i].document_ref_type != 22)) {
                             continue;
                         }
                         const route = constants.ROUTE_GET_HISTORY_AUTH;
@@ -1353,7 +1357,8 @@ export const InvoiceDialog = ({
             }
         } catch (error: any) {
             setErrorMessage(error.response?.data?.error || 'Factura autorizada');
-            setResultUpload('error');
+            //setResultUpload('error');
+            showToast?.('error', error.response?.data?.error);
         } finally {
             setLoading?.(false);
         }
@@ -1397,7 +1402,8 @@ export const InvoiceDialog = ({
             }
         } catch (error: any) {
             setErrorMessage(error.response?.data?.error || 'Error al rechazar la factura');
-            setResultUpload('error');
+            //setResultUpload('error');
+            showToast?.('error', error.response?.data?.error);
         } finally {
             setLoading?.(false);
         }
@@ -1436,7 +1442,8 @@ export const InvoiceDialog = ({
             }
         } catch (error: any) {
             setErrorMessage(error.response?.data?.error || 'Error al cancelar el proceso de autorización');
-            setResultUpload('error');
+            //setResultUpload('error');
+            showToast?.('error', error.response?.data?.error);
         } finally {
             setLoading?.(false);
         }
@@ -1966,7 +1973,7 @@ export const InvoiceDialog = ({
                             { lRefToValidateXml && lRefToValidateXml[0]?.id != 0 && dialogMode != 'create' && (
                                 <div className={`field col-12 md:col-12 mb-0 mt-2`}>
                                     <Divider align="center">
-                                        <h5>Referencia(s)</h5>
+                                        <h5>{t('uploadDialog.references.title')}</h5>
                                     </Divider>
                                     <div className="p-fluid formgrid grid">{loadingReferenceData && <ProgressSpinner style={{ width: '50px', height: '50px' }} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />}</div>
                                     <div className="formgrid grid">
@@ -1977,7 +1984,7 @@ export const InvoiceDialog = ({
                                                         <div className="col">
                                                             <span className="p-float-label">
                                                                 <div className="flex justify-content-center">
-                                                                    <div className="font-bold text-lg">Sin referencia</div>
+                                                                    <div className="font-bold text-lg">{t('uploadDialog.references.withOut')}</div>
                                                                 </div>
                                                             </span>
                                                         </div>
@@ -1988,7 +1995,7 @@ export const InvoiceDialog = ({
                                                 <div key={index}>
                                                     <div className={`field col-12 md:col-12 mb-3`}>
                                                         <Divider align="center">
-                                                            <h6>Datos de la referencia: {item.reference}</h6>
+                                                            <h6>{t('uploadDialog.references.data')}{item.reference}{item.document_ref_type}</h6>
                                                         </Divider>
                                                     </div>
                                                     { lRefToValidateXml.length > 1 && (
@@ -1997,20 +2004,24 @@ export const InvoiceDialog = ({
                                                         </div>
                                                     )}
                                                     <div className="grid" style={{ minWidth: 0 }}>
-                                                            {renderField({
-                                                                label: t('uploadDialog.nature.label'),
-                                                                tooltip: t('uploadDialog.nature.tooltip'),
-                                                                value: item.nature,
-                                                                disabled: true,
-                                                                mdCol: 3,
-                                                                type: 'textArea',
-                                                                onChange: () => null,
-                                                                options: [],
-                                                                placeholder: t('uploadDialog.nature.placeholder'),
-                                                                errorKey: '',
-                                                                errors: formErrors,
-                                                                errorMessage: ''
-                                                            })}
+                                                        { item.document_ref_type == 21 || item.document_ref_type == 22 && (
+                                                            <>
+                                                                {renderField({
+                                                                    label: t('uploadDialog.nature.label'),
+                                                                    tooltip: t('uploadDialog.nature.tooltip'),
+                                                                    value: item.nature,
+                                                                    disabled: true,
+                                                                    mdCol: 3,
+                                                                    type: 'textArea',
+                                                                    onChange: () => null,
+                                                                    options: [],
+                                                                    placeholder: t('uploadDialog.nature.placeholder'),
+                                                                    errorKey: '',
+                                                                    errors: formErrors,
+                                                                    errorMessage: ''
+                                                                })}
+                                                            </>
+                                                        )}
                                                             {renderField({
                                                                 label: t('uploadDialog.CeCo.concept.label'),
                                                                 tooltip: t('uploadDialog.CeCo.concept.tooltip'),
@@ -2025,266 +2036,276 @@ export const InvoiceDialog = ({
                                                                 errors: formErrors,
                                                                 errorMessage: ''
                                                             })}
-                                                            {renderField({
-                                                                label: t('uploadDialog.CeCo.cost_profit_center.label'),
-                                                                tooltip: t('uploadDialog.CeCo.cost_profit_center.tooltip'),
-                                                                value: item.cost_profit_center,
-                                                                disabled: true,
-                                                                mdCol: 6,
-                                                                type: 'textArea',
-                                                                onChange: () => null,
-                                                                options: [],
-                                                                placeholder: t('uploadDialog.CeCo.cost_profit_center.placeholder'),
-                                                                errorKey: '',
-                                                                errors: formErrors,
-                                                                errorMessage: ''
-                                                            })}
-                                                            {renderField({
-                                                                label: t('uploadDialog.CeCo.amount.label'),
-                                                                tooltip: t('uploadDialog.CeCo.amount.tooltip'),
-                                                                value: item.amount,
-                                                                disabled: true,
-                                                                mdCol: 3,
-                                                                type: 'number',
-                                                                onChange: () => null,
-                                                                options: [],
-                                                                placeholder: t('uploadDialog.CeCo.amount.placeholder'),
-                                                                errorKey: '',
-                                                                errors: formErrors,
-                                                                errorMessage: ''
-                                                            })}
 
-                                                            { item.purchase_ticket_details && (
-                                                                <>
-                                                                    {renderField({
-                                                                        label: t('uploadDialog.net_weight.label'),
-                                                                        tooltip: t('uploadDialog.net_weight.tooltip'),
-                                                                        value: item.purchase_ticket_details.net_weight,
-                                                                        disabled: true,
-                                                                        mdCol: 3,
-                                                                        type: 'text',
-                                                                        onChange: () => null,
-                                                                        options: [],
-                                                                        placeholder: '',
-                                                                        errorKey: '',
-                                                                        errors: formErrors,
-                                                                        errorMessage: ''
-                                                                    })}
-                                                                    {renderField({
-                                                                        label: t('uploadDialog.gross_weight.label'),
-                                                                        tooltip: t('uploadDialog.gross_weight.tooltip'),
-                                                                        value: item.purchase_ticket_details.gross_weight,
-                                                                        disabled: true,
-                                                                        mdCol: 3,
-                                                                        type: 'text',
-                                                                        onChange: () => null,
-                                                                        options: [],
-                                                                        placeholder: '',
-                                                                        errorKey: '',
-                                                                        errors: formErrors,
-                                                                        errorMessage: ''
-                                                                    })}
-                                                                    {renderField({
-                                                                        label: t('uploadDialog.productor_name.label'),
-                                                                        tooltip: t('uploadDialog.productor_name.tooltip'),
-                                                                        value: item.purchase_ticket_details.productor_name,
-                                                                        disabled: true,
-                                                                        mdCol: 6,
-                                                                        type: 'text',
-                                                                        onChange: () => null,
-                                                                        options: [],
-                                                                        placeholder: '',
-                                                                        errorKey: '',
-                                                                        errors: formErrors,
-                                                                        errorMessage: ''
-                                                                    })}
-                                                                    {renderField({
-                                                                        label: t('uploadDialog.purchase_origin_location.label'),
-                                                                        tooltip: t('uploadDialog.purchase_origin_location.tooltip'),
-                                                                        value: item.purchase_ticket_details.purchase_origin_location,
-                                                                        disabled: true,
-                                                                        mdCol: 6,
-                                                                        type: 'text',
-                                                                        onChange: () => null,
-                                                                        options: [],
-                                                                        placeholder: '',
-                                                                        errorKey: '',
-                                                                        errors: formErrors,
-                                                                        errorMessage: ''
-                                                                    })}
-                                                                    {renderField({
-                                                                        label: t('uploadDialog.purchase_origin_zone.label'),
-                                                                        tooltip: t('uploadDialog.purchase_origin_zone.tooltip'),
-                                                                        value: item.purchase_ticket_details.purchase_origin_zone,
-                                                                        disabled: true,
-                                                                        mdCol: 6,
-                                                                        type: 'text',
-                                                                        onChange: () => null,
-                                                                        options: [],
-                                                                        placeholder: '',
-                                                                        errorKey: '',
-                                                                        errors: formErrors,
-                                                                        errorMessage: ''
-                                                                    })}
-                                                                </>
-                                                            )}
+                                                        { item.document_ref_type == 21 || item.document_ref_type == 22 && (
+                                                            <>
+                                                                {renderField({
+                                                                    label: t('uploadDialog.CeCo.cost_profit_center.label'),
+                                                                    tooltip: t('uploadDialog.CeCo.cost_profit_center.tooltip'),
+                                                                    value: item.cost_profit_center,
+                                                                    disabled: true,
+                                                                    mdCol: 6,
+                                                                    type: 'textArea',
+                                                                    onChange: () => null,
+                                                                    options: [],
+                                                                    placeholder: t('uploadDialog.CeCo.cost_profit_center.placeholder'),
+                                                                    errorKey: '',
+                                                                    errors: formErrors,
+                                                                    errorMessage: ''
+                                                                })}
+                                                                {renderField({
+                                                                    label: t('uploadDialog.CeCo.amount.label'),
+                                                                    tooltip: t('uploadDialog.CeCo.amount.tooltip'),
+                                                                    value: item.amount,
+                                                                    disabled: true,
+                                                                    mdCol: 3,
+                                                                    type: 'number',
+                                                                    onChange: () => null,
+                                                                    options: [],
+                                                                    placeholder: t('uploadDialog.CeCo.amount.placeholder'),
+                                                                    errorKey: '',
+                                                                    errors: formErrors,
+                                                                    errorMessage: ''
+                                                                })}
+                                                            </>
+                                                        )}
 
-                                                            {renderField({
-                                                                label: 'Notas de la oc',
-                                                                tooltip: '',
-                                                                value: getDpsOcNotes(item.jsonOc?.lNotes),
-                                                                disabled: true,
-                                                                mdCol: 12,
-                                                                type: 'textArea',
-                                                                onChange: () => null,
-                                                                options: [],
-                                                                placeholder: '',
-                                                                errorKey: '',
-                                                                errors: formErrors,
-                                                                errorMessage: ''
-                                                            })}
-                                                        
-                                                        <div style={{ overflowX: 'auto', width: '100%' }}>
+                                                        { item.purchase_ticket_details && (
+                                                            <>
+                                                                {renderField({
+                                                                    label: t('uploadDialog.net_weight.label'),
+                                                                    tooltip: t('uploadDialog.net_weight.tooltip'),
+                                                                    value: item.purchase_ticket_details.net_weight,
+                                                                    disabled: true,
+                                                                    mdCol: 3,
+                                                                    type: 'text',
+                                                                    onChange: () => null,
+                                                                    options: [],
+                                                                    placeholder: '',
+                                                                    errorKey: '',
+                                                                    errors: formErrors,
+                                                                    errorMessage: ''
+                                                                })}
+                                                                {renderField({
+                                                                    label: t('uploadDialog.gross_weight.label'),
+                                                                    tooltip: t('uploadDialog.gross_weight.tooltip'),
+                                                                    value: item.purchase_ticket_details.gross_weight,
+                                                                    disabled: true,
+                                                                    mdCol: 3,
+                                                                    type: 'text',
+                                                                    onChange: () => null,
+                                                                    options: [],
+                                                                    placeholder: '',
+                                                                    errorKey: '',
+                                                                    errors: formErrors,
+                                                                    errorMessage: ''
+                                                                })}
+                                                                {renderField({
+                                                                    label: t('uploadDialog.productor_name.label'),
+                                                                    tooltip: t('uploadDialog.productor_name.tooltip'),
+                                                                    value: item.purchase_ticket_details.productor_name,
+                                                                    disabled: true,
+                                                                    mdCol: 6,
+                                                                    type: 'text',
+                                                                    onChange: () => null,
+                                                                    options: [],
+                                                                    placeholder: '',
+                                                                    errorKey: '',
+                                                                    errors: formErrors,
+                                                                    errorMessage: ''
+                                                                })}
+                                                                {renderField({
+                                                                    label: t('uploadDialog.purchase_origin_location.label'),
+                                                                    tooltip: t('uploadDialog.purchase_origin_location.tooltip'),
+                                                                    value: item.purchase_ticket_details.purchase_origin_location,
+                                                                    disabled: true,
+                                                                    mdCol: 6,
+                                                                    type: 'text',
+                                                                    onChange: () => null,
+                                                                    options: [],
+                                                                    placeholder: '',
+                                                                    errorKey: '',
+                                                                    errors: formErrors,
+                                                                    errorMessage: ''
+                                                                })}
+                                                                {renderField({
+                                                                    label: t('uploadDialog.purchase_origin_zone.label'),
+                                                                    tooltip: t('uploadDialog.purchase_origin_zone.tooltip'),
+                                                                    value: item.purchase_ticket_details.purchase_origin_zone,
+                                                                    disabled: true,
+                                                                    mdCol: 6,
+                                                                    type: 'text',
+                                                                    onChange: () => null,
+                                                                    options: [],
+                                                                    placeholder: '',
+                                                                    errorKey: '',
+                                                                    errors: formErrors,
+                                                                    errorMessage: ''
+                                                                })}
+                                                            </>
+                                                        )}
+
+                                                        { item.document_ref_type == 21 || item.document_ref_type == 22 && (
+                                                            <>
+                                                                {renderField({
+                                                                    label: 'Notas de la oc',
+                                                                    tooltip: '',
+                                                                    value: getDpsOcNotes(item.jsonOc?.lNotes),
+                                                                    disabled: true,
+                                                                    mdCol: 12,
+                                                                    type: 'textArea',
+                                                                    onChange: () => null,
+                                                                    options: [],
+                                                                    placeholder: '',
+                                                                    errorKey: '',
+                                                                    errors: formErrors,
+                                                                    errorMessage: ''
+                                                                })}
+                                                                <div style={{ overflowX: 'auto', width: '100%' }}>
+                                                                    <Divider align="center">
+                                                                        <h6>{t('uploadDialog.references.etys')}</h6>
+                                                                    </Divider>
+                                                                    <TableEty
+                                                                        lEtys={item?.jsonOc?.lEtys}
+                                                                        setOMaterialRequest={setOMaterialRequest}
+                                                                    />
+                                                                </div>
+                                                                <div className={`field col-12 md:col-12`}>
+                                                                
+                                                                <div className="p-fluid formgrid grid">
+                                                                    <Divider align="center">
+                                                                        <h6>{tOc('dialog.fields.materialRequestSubtitle')}</h6>
+                                                                    </Divider>
+                                                                    { oMaterialRequest && oMaterialRequest?.idMaterialRequest != 0 ? (
+                                                                        <>
+                                                                            <RenderField
+                                                                                label={tOc('dialog.fields.mrUser.label')}
+                                                                                tooltip={tOc('dialog.fields.mrUser.tooltip')}
+                                                                                value={oMaterialRequest?.mrUser}
+                                                                                disabled={true}
+                                                                                mdCol={3}
+                                                                                type={'text'}
+                                                                                onChange={() => {}}
+                                                                                options={[]}
+                                                                                placeholder={tOc('dialog.fields.folio.placeholder')}
+                                                                                errorKey={''}
+                                                                                errors={[]}
+                                                                                errorMessage={''}
+                                                                            />
+                                                                            <RenderField
+                                                                                label={tOc('dialog.fields.mrFolio.label')}
+                                                                                tooltip={tOc('dialog.fields.mrFolio.tooltip')}
+                                                                                value={oMaterialRequest?.mrFolio}
+                                                                                disabled={true}
+                                                                                mdCol={3}
+                                                                                type={'text'}
+                                                                                onChange={() => {}}
+                                                                                options={[]}
+                                                                                placeholder={tOc('dialog.fields.folio.placeholder')}
+                                                                                errorKey={''}
+                                                                                errors={[]}
+                                                                                errorMessage={''}
+                                                                            />
+                                                                            <RenderField
+                                                                                label={tOc('dialog.fields.mrDate.label')}
+                                                                                tooltip={tOc('dialog.fields.mrDate.tooltip')}
+                                                                                value={DateFormatter(oMaterialRequest?.mrDate)}
+                                                                                disabled={true}
+                                                                                mdCol={3}
+                                                                                type={'text'}
+                                                                                onChange={() => {}}
+                                                                                options={[]}
+                                                                                placeholder={tOc('dialog.fields.folio.placeholder')}
+                                                                                errorKey={''}
+                                                                                errors={[]}
+                                                                                errorMessage={''}
+                                                                            />
+                                                                            <RenderField
+                                                                                label={tOc('dialog.fields.mrPriority.label')}
+                                                                                tooltip={tOc('dialog.fields.mrPriority.tooltip')}
+                                                                                value={oMaterialRequest?.mrPriority}
+                                                                                disabled={true}
+                                                                                mdCol={3}
+                                                                                type={'text'}
+                                                                                onChange={() => {}}
+                                                                                options={[]}
+                                                                                placeholder={tOc('dialog.fields.folio.placeholder')}
+                                                                                errorKey={''}
+                                                                                errors={[]}
+                                                                                errorMessage={''}
+                                                                            />
+                                                                            <RenderField
+                                                                                label={tOc('dialog.fields.mrRequiredDate.label')}
+                                                                                tooltip={tOc('dialog.fields.mrRequiredDate.tooltip')}
+                                                                                value={DateFormatter(oMaterialRequest?.mrRequiredDate)}
+                                                                                disabled={true}
+                                                                                mdCol={3}
+                                                                                type={'text'}
+                                                                                onChange={() => {}}
+                                                                                options={[]}
+                                                                                placeholder={tOc('dialog.fields.folio.placeholder')}
+                                                                                errorKey={''}
+                                                                                errors={[]}
+                                                                                errorMessage={''}
+                                                                            />
+                                                                            <RenderField
+                                                                                label={tOc('dialog.fields.mrType.label')}
+                                                                                tooltip={tOc('dialog.fields.mrType.tooltip')}
+                                                                                value={oMaterialRequest?.mrType === 'C' ? 'Consumo' : 'Resurtido'}
+                                                                                disabled={true}
+                                                                                mdCol={3}
+                                                                                type={'text'}
+                                                                                onChange={() => {}}
+                                                                                options={[]}
+                                                                                placeholder={tOc('dialog.fields.folio.placeholder')}
+                                                                                errorKey={''}
+                                                                                errors={[]}
+                                                                                errorMessage={''}
+                                                                            />
+                                                                            <RenderField
+                                                                                label={tOc('dialog.fields.mrNotes.label')}
+                                                                                tooltip={tOc('dialog.fields.mrNotes.tooltip')}
+                                                                                value={getMrNotes()}
+                                                                                readonly={true}
+                                                                                mdCol={12}
+                                                                                type={'textArea'}
+                                                                                onChange={() => {}}
+                                                                                options={[]}
+                                                                                placeholder={tOc('dialog.fields.folio.placeholder')}
+                                                                                errorKey={''}
+                                                                                errors={[]}
+                                                                                errorMessage={''}
+                                                                            />
+                                                                        </>
+                                                                    ) : 
+                                                                    (
+                                                                        <div className="field col-12 md:col-12">
+                                                                            <div className="formgrid grid">
+                                                                                <div className="col">
+                                                                                    <span className="p-float-label">
+                                                                                        <div className="flex justify-content-center">
+                                                                                            <div className="font-bold text-lg">{tOc('dialog.fields.withOutMr')}</div>
+                                                                                        </div>
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                                </div>
+                                                            </>
+                                                        )}
+                                                    </div>
+                                                    { item.document_ref_type == 21 || item.document_ref_type == 22 && (
+                                                        <div className='pb-5'>
                                                             <Divider align="center">
-                                                                <h6>Partidas de la referencia</h6>
+                                                                <h6>{t('uploadDialog.references.historyAuth')}</h6>
                                                             </Divider>
-                                                            <TableEty
-                                                                lEtys={item?.jsonOc?.lEtys}
-                                                                setOMaterialRequest={setOMaterialRequest}
+                                                            <HistoryAuth
+                                                                lHistory={item.history}
                                                             />
                                                         </div>
-                                                        <div className={`field col-12 md:col-12`}>
-                                                        
-                                                        <div className="p-fluid formgrid grid">
-                                                            <Divider align="center">
-                                                                <h6>{tOc('dialog.fields.materialRequestSubtitle')}</h6>
-                                                            </Divider>
-                                                            { oMaterialRequest && oMaterialRequest?.idMaterialRequest != 0 ? (
-                                                                <>
-                                                                    <RenderField
-                                                                        label={tOc('dialog.fields.mrUser.label')}
-                                                                        tooltip={tOc('dialog.fields.mrUser.tooltip')}
-                                                                        value={oMaterialRequest?.mrUser}
-                                                                        disabled={true}
-                                                                        mdCol={3}
-                                                                        type={'text'}
-                                                                        onChange={() => {}}
-                                                                        options={[]}
-                                                                        placeholder={tOc('dialog.fields.folio.placeholder')}
-                                                                        errorKey={''}
-                                                                        errors={[]}
-                                                                        errorMessage={''}
-                                                                    />
-                                                                    <RenderField
-                                                                        label={tOc('dialog.fields.mrFolio.label')}
-                                                                        tooltip={tOc('dialog.fields.mrFolio.tooltip')}
-                                                                        value={oMaterialRequest?.mrFolio}
-                                                                        disabled={true}
-                                                                        mdCol={3}
-                                                                        type={'text'}
-                                                                        onChange={() => {}}
-                                                                        options={[]}
-                                                                        placeholder={tOc('dialog.fields.folio.placeholder')}
-                                                                        errorKey={''}
-                                                                        errors={[]}
-                                                                        errorMessage={''}
-                                                                    />
-                                                                    <RenderField
-                                                                        label={tOc('dialog.fields.mrDate.label')}
-                                                                        tooltip={tOc('dialog.fields.mrDate.tooltip')}
-                                                                        value={DateFormatter(oMaterialRequest?.mrDate)}
-                                                                        disabled={true}
-                                                                        mdCol={3}
-                                                                        type={'text'}
-                                                                        onChange={() => {}}
-                                                                        options={[]}
-                                                                        placeholder={tOc('dialog.fields.folio.placeholder')}
-                                                                        errorKey={''}
-                                                                        errors={[]}
-                                                                        errorMessage={''}
-                                                                    />
-                                                                    <RenderField
-                                                                        label={tOc('dialog.fields.mrPriority.label')}
-                                                                        tooltip={tOc('dialog.fields.mrPriority.tooltip')}
-                                                                        value={oMaterialRequest?.mrPriority}
-                                                                        disabled={true}
-                                                                        mdCol={3}
-                                                                        type={'text'}
-                                                                        onChange={() => {}}
-                                                                        options={[]}
-                                                                        placeholder={tOc('dialog.fields.folio.placeholder')}
-                                                                        errorKey={''}
-                                                                        errors={[]}
-                                                                        errorMessage={''}
-                                                                    />
-                                                                    <RenderField
-                                                                        label={tOc('dialog.fields.mrRequiredDate.label')}
-                                                                        tooltip={tOc('dialog.fields.mrRequiredDate.tooltip')}
-                                                                        value={DateFormatter(oMaterialRequest?.mrRequiredDate)}
-                                                                        disabled={true}
-                                                                        mdCol={3}
-                                                                        type={'text'}
-                                                                        onChange={() => {}}
-                                                                        options={[]}
-                                                                        placeholder={tOc('dialog.fields.folio.placeholder')}
-                                                                        errorKey={''}
-                                                                        errors={[]}
-                                                                        errorMessage={''}
-                                                                    />
-                                                                    <RenderField
-                                                                        label={tOc('dialog.fields.mrType.label')}
-                                                                        tooltip={tOc('dialog.fields.mrType.tooltip')}
-                                                                        value={oMaterialRequest?.mrType === 'C' ? 'Consumo' : 'Resurtido'}
-                                                                        disabled={true}
-                                                                        mdCol={3}
-                                                                        type={'text'}
-                                                                        onChange={() => {}}
-                                                                        options={[]}
-                                                                        placeholder={tOc('dialog.fields.folio.placeholder')}
-                                                                        errorKey={''}
-                                                                        errors={[]}
-                                                                        errorMessage={''}
-                                                                    />
-                                                                    <RenderField
-                                                                        label={tOc('dialog.fields.mrNotes.label')}
-                                                                        tooltip={tOc('dialog.fields.mrNotes.tooltip')}
-                                                                        value={getMrNotes()}
-                                                                        readonly={true}
-                                                                        mdCol={12}
-                                                                        type={'textArea'}
-                                                                        onChange={() => {}}
-                                                                        options={[]}
-                                                                        placeholder={tOc('dialog.fields.folio.placeholder')}
-                                                                        errorKey={''}
-                                                                        errors={[]}
-                                                                        errorMessage={''}
-                                                                    />
-                                                                </>
-                                                            ) : 
-                                                            (
-                                                                <div className="field col-12 md:col-12">
-                                                                    <div className="formgrid grid">
-                                                                        <div className="col">
-                                                                            <span className="p-float-label">
-                                                                                <div className="flex justify-content-center">
-                                                                                    <div className="font-bold text-lg">{tOc('dialog.fields.withOutMr')}</div>
-                                                                                </div>
-                                                                            </span>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                    </div>
-                                                    <div className='pb-5'>
-                                                        <Divider align="center">
-                                                            <h6>Historial de autorizaciones de la referencia</h6>
-                                                        </Divider>
-                                                        <HistoryAuth
-                                                            lHistory={item.history}
-                                                        />
-                                                    </div>
+                                                    )}
                                                 </div>
                                             ))}
                                         </div>
@@ -2340,7 +2361,7 @@ export const InvoiceDialog = ({
                         <div className="p-fluid formgrid grid">
                             {loadingValidateXml && (
                                 <div className="col-12 flex flex-column align-items-center">
-                                    <div>Validando CFDI ante el SAT</div>
+                                    <div>{t('uploadDialog.validateToSat')}</div>
                                     <ProgressSpinner style={{ width: '50px', height: '50px' }} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />
                                 </div>
                             )}
