@@ -1978,7 +1978,7 @@ export const InvoiceDialog = ({
                                     <div className="p-fluid formgrid grid">{loadingReferenceData && <ProgressSpinner style={{ width: '50px', height: '50px' }} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />}</div>
                                     <div className="formgrid grid">
                                         <div className="col" style={{ minWidth: 0 }}>
-                                            { lRefToValidateXml.length == 0 && 
+                                            { lRefToValidateXml.length == 0 && !loadingReferenceData && 
                                                 <div className="field col-12 md:col-12">
                                                     <div className="formgrid grid">
                                                         <div className="col">
@@ -1995,7 +1995,7 @@ export const InvoiceDialog = ({
                                                 <div key={index}>
                                                     <div className={`field col-12 md:col-12 mb-3`}>
                                                         <Divider align="center">
-                                                            <h6>{t('uploadDialog.references.data')}{item.reference}{item.document_ref_type}</h6>
+                                                            <h6>{(item.document_ref_type == 22 || item.document_ref_type == 21) ? t('uploadDialog.references.referenceData') : t('uploadDialog.references.ticketData')}{item.reference}</h6>
                                                         </Divider>
                                                     </div>
                                                     { lRefToValidateXml.length > 1 && (
@@ -2027,7 +2027,7 @@ export const InvoiceDialog = ({
                                                                 tooltip: t('uploadDialog.CeCo.concept.tooltip'),
                                                                 value: item.concepts,
                                                                 disabled: true,
-                                                                mdCol: 3,
+                                                                mdCol: (item.document_ref_type == 21 || item.document_ref_type == 22) ? 3 :  12,
                                                                 type: 'textArea',
                                                                 onChange: () => null,
                                                                 options: [],
