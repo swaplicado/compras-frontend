@@ -2414,8 +2414,27 @@ export const InvoiceDialog = ({
                                 </div>
                             </>
                         )}
+                        {/* Aviso para proveedores extranjeros de cargar primero el PDF de la factura para que sea bien identificado */}
                         {(dialogMode == 'create' || dialogMode == 'edit') && (isXmlValid || (oProvider ? oProvider.country != constants.COUNTRIES.MEXICO_ID : false)) && (
                             <div className="field col-12 md:col-12">
+                                { dialogMode === 'create' && oProvider && oProvider.country != constants.COUNTRIES.MEXICO_ID && (
+                                    <div className="bg-blue-50 border-1 border-blue-200 text-blue-700 p-3 border-round mb-4 flex align-items-start gap-3 shadow-1">
+                                        <i className="pi pi-info-circle text-2xl mt-1"></i>
+                                        <div className="flex flex-column">
+                                            <span className="font-bold mb-1">
+                                                {t('uploadDialog.foreignWarning.title')}
+                                            </span>
+                                            <span className="text-sm line-height-3">
+                                                {t('uploadDialog.foreignWarning.descriptionPart1')} <b>{t('uploadDialog.foreignWarning.descriptionHighlight')}</b> {t('uploadDialog.foreignWarning.descriptionPart2')} 
+                                                <span className="font-bold mx-1">
+                                                    {t('uploadDialog.foreignWarning.documentName')}
+                                                </span>{t('uploadDialog.foreignWarning.descriptionPart3')} 
+                                                <br/>
+                                                {t('uploadDialog.foreignWarning.footerPart1')} <b>{t('uploadDialog.foreignWarning.footerHighlight')}</b> {t('uploadDialog.foreignWarning.footerPart2')}
+                                            </span>
+                                        </div>
+                                    </div>
+                                )}
                                 <div className="formgrid grid">
                                     <div className="col">
                                         <label>Archivos</label>

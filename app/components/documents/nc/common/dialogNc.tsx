@@ -177,6 +177,9 @@ export const DialogNc = ({
 
         const noDocument = value?.some((item: any) => item.id == 0);
         if (noDocument) {
+
+            showToast?.('warn', 'No se pueden registrar Notas de Crédito sin una factura de referencia.', 'Aviso');
+            setLOptionsApplicationTypeNc([]);
             value = [{
                 id: 0,
                 name: 'Sin referencia',
@@ -229,6 +232,20 @@ export const DialogNc = ({
                     setIsXmlValid(true);
                     setEditableBodyFields?.(true);
                 }
+                else {
+                    // Si se cambia a proveedor mexicano, reestablecer los valores y limpiamos
+                    setIsXmlValid(false);
+                    setEditableBodyFields?.(false);
+                    setONc?.((prev: any) => ({ ...prev, invoices: [], application_type: null }));
+                    setLOptionsApplicationTypeNc([]);
+                }
+            }
+            // Si se limpia el proveedoor, reestablecer los valores y limpiamos
+            else {
+                setIsXmlValid(false);
+                setEditableBodyFields?.(false);
+                setONc?.((prev: any) => ({ ...prev, invoices: [], application_type: null }));
+                setLOptionsApplicationTypeNc([]);
             }
         }
     }, [oNc?.partner])
@@ -625,6 +642,24 @@ export const DialogNc = ({
 
                                 { (dialogMode == 'create') && (
                                     <div className="field col-12 md:col-12">
+                                        { dialogMode === 'create' && oNc?.partner && oNc?.partner?.country != constants.COUNTRIES.MEXICO_ID && (
+                                            <div className="bg-blue-50 border-1 border-blue-200 text-blue-700 p-3 border-round mb-4 mt-3 flex align-items-start gap-3 shadow-1">
+                                                <i className="pi pi-info-circle text-2xl mt-1"></i>
+                                                <div className="flex flex-column">
+                                                    <span className="font-bold mb-1">
+                                                        {t('dialog.foreignWarning.title')}
+                                                    </span>
+                                                    <span className="text-sm line-height-3">
+                                                        {t('dialog.foreignWarning.descriptionPart1')} <b>{t('dialog.foreignWarning.descriptionHighlight')}</b> {t('dialog.foreignWarning.descriptionPart2')} 
+                                                        <span className="font-bold mx-1">
+                                                            {t('dialog.foreignWarning.documentName')}
+                                                        </span>{t('dialog.foreignWarning.descriptionPart3')} 
+                                                        <br/>
+                                                        {t('dialog.foreignWarning.footerPart1')} <b>{t('dialog.foreignWarning.footerHighlight')}</b> {t('dialog.foreignWarning.footerPart2')}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        )}
                                         <div className="formgrid grid">
                                             <div className="col">
                                                 <label>Archivos</label>
@@ -632,7 +667,7 @@ export const DialogNc = ({
                                                 <Tooltip target=".custom-target-icon" />
                                                 <i
                                                     className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                                                    data-pr-tooltip={t('uploadDialog.files.tooltip')}
+                                                    data-pr-tooltip={t('dialog.files.tooltip')}
                                                     data-pr-position="right"
                                                     data-pr-my="left center-2"
                                                     style={{ fontSize: '1rem', cursor: 'pointer' }}
