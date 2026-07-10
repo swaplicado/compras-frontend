@@ -48,6 +48,17 @@ const nc = {
         editTitle: "Modificar NC",
         acceptedTitle: "NC",
         rejectedTitle: "NC",
+        foreignWarning: {
+            title: "Aviso para Proveedores Extranjeros",
+            descriptionPart1: "Por favor, asegúrese de cargar",
+            descriptionHighlight: "primero",
+            descriptionPart2: "el PDF principal de su",
+            documentName: "Nota de Crédito",
+            descriptionPart3: ".",
+            footerPart1: "El documento que quede",
+            footerHighlight: "hasta arriba",
+            footerPart2: "en la lista será registrado como el oficial, y los demás se guardarán como anexos."
+        },
         fields: {
             company: {
                 label: "Empresa:",

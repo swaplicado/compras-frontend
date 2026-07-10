@@ -31,6 +31,8 @@ const partners = {
         step5: "Para rechazar al proveedor debes ingresar un comentario con el motivo del rechazo, luego presiona el botón Rechazar."
     },
     register: {
+        title: "Solicitud de alta de nuevo proveedor",
+        updateTitle: "Actualización de solicitud de alta de proveedor",
         importantNote: "Antes de comenzar, asegúrate de saber a cuál empresa y área funcional debes dirigir esta solicitud.",
         titleproviderCompany: {
             label: "Empresa y área funcional a proveer inicialmente",
@@ -94,7 +96,7 @@ const partners = {
             label: "Apellido(s)",
             tooltip: "Apellido o apellidos del contacto",
             placeholder: "",
-            textHelper: "Ingresas apellido(s)"
+            textHelper: "Ingresa apellido(s)"
         },
         phone: {
             label: "Teléfono",
@@ -144,6 +146,23 @@ const partners = {
             placeholder: "",
             textHelper: "Ingresa código postal"
         },
+        compliance: {
+            title: "Documentación de cumplimiento legal",
+            tooltip: "Deposite los archivos requeridos. El peso total sumado no debe exceder 40 MB.",
+            optionalBadge: "Opcional",
+            maxWeight: "Peso máximo"
+        },
+        alerts: {
+            unitSizeTitle: "Archivo muy pesado:",
+            fileSizeDetail:  "El archivo \"{{name}}\" pesa {{size}}, superando el límite máximo por archivo ({{limit}}).",
+            imageSizeDetail: "El archivo \"{{name}}\" pesa {{size}}, superando el límite máximo por archivo ({{limit}}).",
+            totalSizeTitle: "Bandeja llena:",
+            totalSizeDetail: "No se puede adjuntar \"{{name}}\". El total de los documentos superaría el límite de 40 MB.",
+            formIncompleteTitle: "Formulario incompleto:",
+            formIncompleteDetail: "Por favor complete todos los campos en rojo del formulario.",
+            expediteIncompleteTitle: "Expediente incompleto:",
+            expediteIncompleteDetail: "Faltan documentos obligatorios por adjuntar en las casillas marcadas con asterisco."
+        },
         authz_acceptance_notes: {
             label: "Notas aceptación/rechazo",
             tooltip: "Notas aceptación/rechazo",
@@ -159,32 +178,57 @@ const partners = {
         files: {
             label: "Archivos a cargar",
             labelListFiles: "Archivos del expediente del proveedor",
+            labelRequestFiles: "Carga de favor los siguientes archivos:",
+            labelAdditionalFiles: "Archivos adicionales",
+            labelKeepFiles: "Selecciona los archivos que deseas conservar",
+            buttonLabelKeepFiles: "Archivo anterior conservado",
             tooltip: "Archivos del expediente del proveedor",
             tooltipListFiles: "Archivos necesarios para verificar la información e integrar el expediente del proveedor",
+            tooltipKeepFiles: "Estos archivos son los que se cargaron en su solicitud anterior, \nseleccione los que deseé conservar en su solicitud actual",
             placeholder: "",
             textHelper: ""
         },
         listFiles: {
             file1: {
                 name: 'Opinión del Cumplimiento de Obligaciones Fiscales',
-                description: 'Documento reciente (máximo 1 mes) emitido por la autoridad fiscal donde se indica si estás al corriente de tus obligaciones. En México, puedes obtenerlo desde tu buzón tributario del SAT.'
+                description: 'Documento reciente (máximo 1 mes) emitido por la autoridad fiscal donde se indica si estás al corriente de tus obligaciones. En México, puedes obtenerlo desde tu buzón tributario del SAT.',
+                descriptionSummary: 'Documento reciente (máximo 1 mes).'
             },
             file2: {
                 name: 'Constancia de Situación Fiscal (CSF)',
-                description: 'Documento reciente (máximo 1 mes) emitido por la autoridad fiscal donde se muestra tu razón social o nombre, RFC o ID fiscal, domicilio y régimen fiscal. En México, puedes obtenerlo desde tu buzón tributario del SAT.'
+                description: 'Documento reciente (máximo 1 mes) emitido por la autoridad fiscal donde se muestra tu razón social o nombre, RFC o ID fiscal, domicilio y régimen fiscal. En México, puedes obtenerlo desde tu buzón tributario del SAT.',
+                descriptionSummary: 'Documento reciente (máximo 1 mes).'
             },
             file3: {
                 name: 'Comprobante de domicilio',
-                description: 'Sube un recibo de servicios reciente (máximo 3 meses) donde se muestre tu razón social o nombre y domicilio fiscal. Puede ser de electricidad, agua, gas, teléfono o un estado de cuenta bancario.'
+                description: 'Sube un recibo de servicios reciente (máximo 3 meses) donde se muestre tu razón social o nombre y domicilio fiscal. Puede ser de electricidad, agua, gas, teléfono o un estado de cuenta bancario.',
+                descriptionSummary: 'Documento reciente (máximo 3 meses).'
+
             },
             file4: {
                 name: 'Carátula del estado de cuenta bancario',
-                description: 'Sube la carátula del estado de cuenta bancario de la cuenta en la que deseas recibir tus pagos, que sea reciente (máximo 3 meses). Solo necesitamos la parte donde aparecen el nombre de la institución financiera, tu razón social o nombre, número de cuenta bancaria y Clave Bancaria Estándar (ClaBE) y moneda. Omite saldos y movimientos.'
+                description: 'Sube la carátula del estado de cuenta bancario de la cuenta en la que deseas recibir tus pagos, que sea reciente (máximo 3 meses). Solo necesitamos la parte donde aparecen el nombre de la institución financiera, tu razón social o nombre, número de cuenta bancaria y Clave Bancaria Estándar (ClaBE) y moneda. Omite saldos y movimientos.',
+                descriptionSummary: 'Documento reciente (máximo 3 meses).'
             },
             file5: {
                 name: 'Carta de confirmación de datos proporcionados',
-                description: 'Es un documento en formato libre, firmado de manera autógrafa, donde confirmas que la información proporcionada es correcta, verídica y que está actualizada.'
+                description: 'Es un documento en formato libre, firmado de manera autógrafa, donde confirmas que la información proporcionada es correcta, verídica y que está actualizada.',
+                descriptionSummary: 'Formato libre, con firma autógrafa.'
             }
+        },
+        extraFiles: {
+            label: "Archivos adicionales",
+            tooltip: "Puede adjuntar más archivos, mientras que el tamaño total no supere el límite.",
+            placeholder: "Arrastre aquí actas, identificaciones u otros documentos complementarios."
+        },
+        success: {
+            title: "Solicitud enviada",
+            text: "Su solicitud ha sido procesada con éxito, espere a que se te notifique cuando tu cuenta quede aceptada.",
+            buttonLabel: "Ir a login"
+        },
+        updated: {
+            title: "Solicitud actualizada y enviada",
+            text: "Su solicitud ha sido actualizada con éxito, espere a que se te notifique cuando tu cuenta quede aceptada."
         }
     }
 }
