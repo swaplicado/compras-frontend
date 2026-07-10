@@ -909,6 +909,10 @@ Cambios:
 - Condición para no mostrar campos de OC en referencias que no son oc.
 
 Notas: Cambios solicitados por srgio flores
+----------------------------------------
+
+========================================
+RELEASE
 Fecha: 10-07-2026
 Autor: Rodrigo Abel Ayala Vázquez
 ========================================
@@ -935,4 +939,19 @@ Correcciones:
 - Refinamiento de redacción en los Toasts de error para mejorar la retroalimentación al usuario.
 - Limpieza de formulario de carga de NC al quitar o cambiar el proveedor extranjero.
 
+----------------------------------------
+
+========================================
+RELEASE
+Fecha: 10-07-2026
+Autor: Edwin Carmona
+========================================
+
+Resumen:
+- En autorización de OC, se muestran CC de la Requisición si esta existe.
+
+Cambios:
+- Cambio de archivo que muestra la OC, si la Requisición está presente no se muestra el CC de la OC.
+
+Notas: PDC-889
 ----------------------------------------
