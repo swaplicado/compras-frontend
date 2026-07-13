@@ -12,13 +12,14 @@ interface tableEtyProps {
     lEtys: any[];
     oMaterialREquest?: any;
     setOMaterialRequest?: React.Dispatch<React.SetStateAction<any>>;
+    showToast?: (type: 'success' | 'info' | 'warn' | 'error', message: string, summaryText?: string) => void;
 }
 
 export const TableEty = ({ 
     lEtys,
     oMaterialREquest,
-    setOMaterialRequest
-
+    setOMaterialRequest,
+    showToast
 }: tableEtyProps) => {
     const { t } = useTranslation('oc');
     const { t: tCommon } = useTranslation('common');
@@ -33,13 +34,22 @@ export const TableEty = ({
         }
     }, [lEtys]);
 
+    const showDialogUnitPrice = (row: any) => {
+        if (row?.lItemHistory[0]?.priceUnitary) {
+            setOItemH(row.lItemHistory[0]);
+            setVisible(true);
+        } else {
+            showToast?.('info', t('dialog.tableItemHistory.no_previous_price'), 'Info');
+        }
+    }
+
     const variationTemplate = (row: any) => {
         return (
             <Button
                 type="button"
                 icon="pi pi-list"
                 size="small"
-                onClick={() => { setOItemH(row.lItemHistory[0]); setVisible(true)}}
+                onClick={() => { showDialogUnitPrice(row); }}
             />
         )
     }
@@ -47,7 +57,9 @@ export const TableEty = ({
     const prevPriceTemplate = (row: any) => {
         return (
             <>
-                {FormateadorMonetario(row.prevPrice)}
+                { row?.lItemHistory[0]?.priceUnitary ? (
+                    FormateadorMonetario(row?.lItemHistory[0]?.priceUnitary)
+                ): 'N/A'}
             </>
         )
     }
@@ -86,6 +98,13 @@ export const TableEty = ({
             </>
         )
     }
+    const currencyTemplate = (row: any) => {
+        return (
+            <>
+                MXN
+            </>
+        )
+    }
 
     const dialogVariationFooter = 
         <div className="flex flex-column md:flex-row justify-content-between gap-2">
@@ -113,20 +132,24 @@ export const TableEty = ({
                             <td>{ oItemH?.concept }</td>
                         </tr>
                         <tr>
-                            <td className="font-bold">Precio un. actual</td>
+                            <td className="font-bold">Precio un. actual (ML)</td>
                             <td>{ FormateadorMonetario(oItemH?.currentPriceUnitary) + ' MXN'}</td>
                         </tr>
                         <tr>
-                            <td className="font-bold">Precio un. anterior</td>
+                            <td className="font-bold">Precio un. anterior (ML)</td>
                             <td>
                                 { oItemH?.priceUnitary && oItemH?.currencySymbol && (
-                                    FormateadorMonetario(oItemH?.priceUnitary) + ' ' + oItemH?.currencySymbol 
+                                    FormateadorMonetario(oItemH?.priceUnitary) + ' MXN' 
                                 )}
                             </td>
                         </tr>
                         <tr>
-                            <td className="font-bold">% Variación</td>
-                            <td>{ FormateadorMonetario(oItemH?.percentage) }</td>
+                            <td className="font-bold">Precio un. anterior (MD)</td>
+                            <td>{ FormateadorMonetario(oItemH?.priceUnitaryCur) + ' ' + oItemH?.currencySymbol}</td>
+                        </tr>
+                        <tr>
+                            <td className="font-bold">Variación</td>
+                            <td>{ FormateadorMonetario(oItemH?.percentage) + "%" }</td>
                         </tr>
                         <tr>
                             <td className="font-bold">Cantidad</td>
@@ -143,6 +166,10 @@ export const TableEty = ({
                         <tr>
                             <td className="font-bold">Factura</td>
                             <td>{ !! oItemH?.numFact ? oItemH?.numFact : '' }</td>
+                        </tr>
+                        <tr>
+                            <td className="font-bold">Moneda factura anterior</td>
+                            <td>{ oItemH?.currencySymbol }</td>
                         </tr>
                         <tr>
                             <td className="font-bold">Fecha</td>
@@ -184,7 +211,7 @@ export const TableEty = ({
                 <Column field="taxCharged" header={t('dialog.tableEtys.columns.transferred_tax')} body={taxChargedTemplate} />
                 <Column field="taxRetained" header={t('dialog.tableEtys.columns.withheld_tax')} body={taxRetainedTemplate} />
                 <Column field="total" header={t('dialog.tableEtys.columns.total')} body={totalTemplate} />
-                <Column field="currency" header={t('dialog.tableEtys.columns.currency')} />
+                <Column field="currency" header={t('dialog.tableEtys.columns.currency')} body={currencyTemplate} />
                 <Column field="costCenter" header={t('dialog.tableEtys.columns.center_cost')} />
             </DataTable>
         </>

@@ -16,6 +16,7 @@ import { animationSuccess, animationError } from '@/app/components/commons/anima
 import { btnScroll } from '@/app/(main)/utilities/commons/useScrollDetection';
 import { useIntersectionObserver } from 'primereact/hooks';
 import { InputNumber } from 'primereact/inputnumber';
+import { InputText } from 'primereact/inputtext';
 import { Divider } from 'primereact/divider';
 import { FieldsEditAcceptance } from '@/app/components/documents/invoice/fieldsEditAcceptance';
 import { TableEty } from '@/app/components/documents/oc/common/tableEty';
@@ -128,6 +129,11 @@ export const DialogOc = ({
         files: false,
     });
     const [oMaterialRequest, setOMaterialRequest] = useState<any>(null);
+    const costCenterItems = oMaterialRequest?.lCostCenter ?? [];
+    const costCenterItemClass = costCenterItems.length <= 1 ? 'col-12 md:col-12' : 'col-12 md:col-6';
+    const costCenterEntries = oMaterialRequest?.lEtys?.filter((oReqEty: any) => oReqEty.idCostCenter > 0) ?? [];
+    const costCenterEntryClass = costCenterEntries.length <= 1 ? 'col-12 md:col-12' : 'col-12 md:col-6';
+    const hasCostCenter = costCenterEntries.length > 0;
 
     //const para el boton de scroll al final
     const [elementRef, setElementRef] = useState<HTMLDivElement | null>(null);
@@ -353,7 +359,7 @@ export const DialogOc = ({
                                     errors={formErrors}
                                     errorMessage={''}
                                 />
-                                <RenderField
+                                {(!oMaterialRequest || oMaterialRequest?.idMaterialRequest == 0) && <RenderField
                                     label={t('dialog.fields.CeCo.cost_profit_center.label')}
                                     tooltip={t('dialog.fields.CeCo.cost_profit_center.tooltip')}
                                     value={oOc?.cost_profit_center}
@@ -366,7 +372,72 @@ export const DialogOc = ({
                                     errorKey={''}
                                     errors={formErrors}
                                     errorMessage={''}
-                                />
+                                />}
+
+                                {costCenterItems.length > 0 && (
+                                    <>
+                                        <div className="field col-12 md:col-12 mb-3">
+                                            <Divider align="center">
+                                                <h6>{t('dialog.fields.CeCo.cost_profit_center_req.label')}</h6>
+                                            </Divider>
+                                        </div>
+                                        {costCenterItems.map((oCc: any) => (
+                                            <div key={oCc.idCostCenter} className={`field ${costCenterItemClass}`}>
+                                                <RenderField
+                                                    label={''}
+                                                    tooltip={t('dialog.fields.CeCo.cost_profit_center.tooltip')}
+                                                    value={oCc.costCenter + ' - ' + (oCc.percentage * 100) + '%'}
+                                                    readonly={!editableBodyFields}
+                                                    mdCol={12}
+                                                    type={'textArea'}
+                                                    onChange={() => null}
+                                                    options={[]}
+                                                    placeholder={oCc.costCenter + ' - ' + (oCc.percentage * 100) + '%'}
+                                                    errorKey={''}
+                                                    errors={formErrors}
+                                                    errorMessage={''}
+                                                />
+                                            </div>
+                                        ))}
+                                        {/* <div className="field col-12 md:col-12 mb-3">
+                                            <Divider align="center">
+                                            </Divider>
+                                        </div> */}
+                                    </>
+                                )}
+                                {hasCostCenter ? (
+                                    <>
+                                        <div className="field col-12 md:col-12 mb-3">
+                                            <Divider align="center">
+                                                <h6>{t('dialog.fields.CeCo.cost_profit_center_req_ety.label')}</h6>
+                                            </Divider>
+                                        </div>
+                                        {costCenterEntries.map((oReqEty: any, index: number) => (
+                                            <div key={`${oReqEty.itemKey}-${index}`} className={`field ${costCenterEntryClass}`}>
+                                                {oReqEty.idCostCenter > 0 && (
+                                                <RenderField
+                                                    label={''}
+                                                    tooltip={t('dialog.fields.CeCo.cost_profit_center_req_ety.tooltip')}
+                                                    value={oReqEty.itemKey + ' - ' + oReqEty.itemName + ' / ' + oReqEty.costCenter + ' - ' + '100%'}
+                                                    readonly={true}
+                                                    mdCol={12}
+                                                    type={'textArea'}
+                                                    onChange={() => null}
+                                                    options={[]}
+                                                    placeholder={oReqEty.itemKey + ' - ' + oReqEty.itemName}
+                                                    errorKey={''}
+                                                    errors={formErrors}
+                                                    errorMessage={''}
+                                                />
+                                                )}
+                                            </div>
+                                        ))}
+                                        {/* <div className="field col-12 md:col-12 mb-3">
+                                            <Divider align="center">
+                                            </Divider>
+                                        </div> */}
+                                    </>
+                                ) : null}
 
                                 <RenderField
                                     label={t('dialog.fields.folio.label')}
@@ -563,6 +634,7 @@ export const DialogOc = ({
                             <TableEty
                                 lEtys={oOc?.jsonOc?.lEtys}
                                 setOMaterialRequest={setOMaterialRequest}
+                                showToast={showToast}
                             />
                         </div>
                         <div className="p-fluid formgrid grid">

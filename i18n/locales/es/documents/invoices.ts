@@ -1,5 +1,3 @@
-import { Tooltip } from "chart.js";
-
 const invoices = {
     titleAllInvoices: "Todas las facturas",
     titleAllInvoicesTooltip: "Pantalla para ver todas las facturas",
@@ -47,10 +45,21 @@ const invoices = {
             step3: "Coloca el monto que se aplicará a cada referencia.",
             step4: "Ingresa la serie (si aplica) y el folio de la factura en formato serie-folio si no aplica la serie solo ingresa folio.",
             step5: "Ingresa el resto de campos de la factura, recuerda que los campos marcados con un * son obligatorios.",
-            step6: "Selecciona los archivos asociados a la factura en el campo 'Archivos de factura'.",
+            step6: "Selecciona los archivos asociados en el campo 'Archivos de factura'. IMPORTANTE: El primer archivo PDF que cargues debe ser tu Factura Comercial.",
             step7: "Asegúrate de que los archivos no superen 5 MB cada uno y que en total no superen los 25 MB.",
             footer: `Puedes seleccionar varios archivos a la vez, pero asegúrate de que al menos uno sea un PDF.
              Si seleccionas archivos que no cumplen con estos requisitos, se mostrará un mensaje de error.`
+        },
+        foreignWarning:{
+            title: "Aviso para Proveedores Extranjeros",
+            descriptionPart1: "Por favor, asegúrese de cargar",
+            descriptionHighlight: "primero",
+            descriptionPart2: "el PDF principal de su",
+            documentName: "Factura",
+            descriptionPart3: ".",
+            footerPart1: "El documento que quede",
+            footerHighlight: "hasta arriba",
+            footerPart2: "en la lista será registrado como el oficial, y los demás se guardarán como anexos."
         },
         reviewInstructions: {
             header: "Para revisar una factura, sigue estos pasos:",
@@ -265,6 +274,9 @@ const invoices = {
             label: "Archivos de factura: *",
             placeholderMultiple: "Suelte aquí los archivos para comenzar a cargarlos",
             placeholderSingle: "Suelte el archivo aquí para comenzar a cargarlo",
+            maxUnitLimit: "Límite máximo por archivo:",
+            invalidFileTypeDetail: "El formato del archivo \"{{name}}\" no está permitido.",
+            invalidFileSizeDetail: "El archivo \"{{name}}\" supera el peso máximo individual permitido ({{size}}).",
             helperTextFiles: "Selecciona los archivos de la factura.",
             helperTextPdf: "Debe cargar la representación impresa en PDF del comprobante.",
             helperTextXml: "Debe cargar un archivo XML.",

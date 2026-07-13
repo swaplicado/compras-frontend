@@ -130,6 +130,16 @@ const oc = {
                     label: "Centros costo",
                     placeholder: "Centros costo",
                     tooltip: "Centros costo"
+                },
+                cost_profit_center_req: {
+                    label: "Centros costo de la requisición",
+                    placeholder: "Centros costo de la requisición",
+                    tooltip: "Centros costo de la requisición. En la requisición puede venir más de un CC."
+                },
+                cost_profit_center_req_ety: {
+                    label: "Centros costo de las partidas de la requisición",
+                    placeholder: "Centros costo de las partidas de la requisición",
+                    tooltip: "Centros costo de las partidas de la requisición. Si la partida tiene CC se toma ese por encima del encabezado."
                 }
             },
             account_tag: {
@@ -216,7 +226,8 @@ const oc = {
                 lastProvider: "Proveedor",
                 numFact: "Factura",
                 lastPurchaseDate: "Fecha",
-            }
+            },
+            no_previous_price: "Sin precio anterior",
         },
         animationSuccess: {
             authorizedTitle: "Orden de compra autorizada.",

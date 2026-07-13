@@ -5,6 +5,7 @@ import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
 import { Messages } from 'primereact/messages';
 import { Tooltip } from 'primereact/tooltip';
+import { Message } from 'primereact/message';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import { CustomFileUpload } from '@/app/components/documents/invoice/customFileUpload';

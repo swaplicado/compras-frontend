@@ -909,5 +909,63 @@ Cambios:
 - Condición para no mostrar campos de OC en referencias que no son oc.
 
 Notas: Cambios solicitados por srgio flores
+----------------------------------------
+
+========================================
+RELEASE
+Fecha: 10-07-2026
+Autor: Rodrigo Abel Ayala Vázquez
+========================================
+
+Resumen:
+- Reestructuración integral del registro y edición de solicitud de proveedores, mejoras en el componente de carga de archivos y optimización de UX en dialogo NC.
+
+Cambios:
+- Creación de las constantes `maxFilesSizeProv` y `maxUnitImage` para habilitar y gestionar los nuevos límites de subida (40MB totales y 10MB por imagen).
+- Incorporación de nuevas claves y textos de traducción (i18n).
+- Rediseño completo del componente `customFileUpload`: nueva zona Drop, rediseño del template de lista y barra de progreso con cambio dinámico de color en sobrecarga.
+
+Nuevas funcionalidades:
+- Modificación de contenedor de carga genérico a 5 slots de documentos estrictamente identificados y 1 slot para anexos, estructurando la data desde el origen hacia el backend.
+- Validación dinámica internacional: el slot de "Opinión de Cumplimiento" (OCOF) se vuelve opcional al seleccionar un país extranjero.
+- Adición de un Toast informativo al bloquear el panel "Tipo de Aplicación" si no hay factura de referencia en la carga de NC.
+- Implementación de banderas para emitir un único Toast por categoría (peso unitario, peso total, extensión) durante cargas masivas.
+- Bloqueo automático de seguridad en slots de expediente cuando el usuario decide conservar un archivo existente durante la edición.
+- Evaluación individual en lotes: los archivos válidos se retienen y procesan exitosamente aunque el lote contenga archivos inválidos.
+- Aviso para proveedores extranjeros en la carga de facturas y NC para que carguen primero el PDF principal del documento.
+
+Correcciones:
+- Implementación del método `recalculateActualSize` en `customFileUpload` para garantizar la sincronización precisa del peso acumulado al agregar/remover archivos.
+- Refinamiento de redacción en los Toasts de error para mejorar la retroalimentación al usuario.
+- Limpieza de formulario de carga de NC al quitar o cambiar el proveedor extranjero.
+
+----------------------------------------
+
+========================================
+RELEASE
+Fecha: 10-07-2026
+Autor: Edwin Carmona
+========================================
+
+Resumen:
+- En autorización de OC, se muestran CC de la Requisición si esta existe.
+
+Cambios:
+- Cambio de archivo que muestra la OC, si la Requisición está presente no se muestra el CC de la OC.
+
+Notas: PDC-889
+----------------------------------------
+
+========================================
+RELEASE
+Fecha: 13-07-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- Fix, mostrar precio anterior de OC.
+
+Correcciones:
+- no se mostraba precio anterior de oc en la tabla ety
 
 ----------------------------------------
