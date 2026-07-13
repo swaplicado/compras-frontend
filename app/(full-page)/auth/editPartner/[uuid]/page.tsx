@@ -535,6 +535,9 @@ const RegisterProvider = () => {
             const fileTypeToPreserve = lFiles.find(f => f.id === e.value.id)?.file_type_id;
             if (fileTypeToPreserve) {
                 setLegalFiles(prev => ({...prev, [fileTypeToPreserve]: null}));
+                if (fileUploadRefs == null) {
+                    return;
+                }
                 if (fileUploadRefs?.current[fileTypeToPreserve]) {
                     fileUploadRefs?.current[fileTypeToPreserve].clear();
                 }
