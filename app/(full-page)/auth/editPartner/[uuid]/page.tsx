@@ -535,8 +535,8 @@ const RegisterProvider = () => {
             const fileTypeToPreserve = lFiles.find(f => f.id === e.value.id)?.file_type_id;
             if (fileTypeToPreserve) {
                 setLegalFiles(prev => ({...prev, [fileTypeToPreserve]: null}));
-                if (fileUploadRefs.current[fileTypeToPreserve]) {
-                    fileUploadRefs.current[fileTypeToPreserve].clear();
+                if (fileUploadRefs?.current[fileTypeToPreserve]) {
+                    fileUploadRefs?.current[fileTypeToPreserve].clear();
                 }
             }
         } else {
@@ -808,7 +808,7 @@ const RegisterProvider = () => {
     
                                                                             if (candidate.size > slot.limitBytes) {
                                                                                 showToast('error', t(`register.alerts.${slot.errorKey}`, { name: candidate.name, size: formatBytes(candidate.size), limit: slot.limitHuman }), t('register.alerts.unitSizeTitle'));
-                                                                                fileUploadRefs.current[slot.id]?.clear();
+                                                                                fileUploadRefs?.current[slot.id]?.clear();
                                                                                 return;
                                                                             }
     
@@ -818,7 +818,7 @@ const RegisterProvider = () => {
     
                                                                             if ((runningSum + candidate.size) > MAX_TOTAL_BYTES) {
                                                                                 showToast('error', t('register.alerts.totalSizeDetail', {name: candidate.name}), t('register.alerts.totalSizeTitle'));
-                                                                                fileUploadRefs.current[slot.id]?.clear();
+                                                                                fileUploadRefs?.current[slot.id]?.clear();
                                                                                 return;
                                                                             }
     
