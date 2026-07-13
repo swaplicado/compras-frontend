@@ -536,7 +536,7 @@ const RegisterProvider = () => {
             if (fileTypeToPreserve) {
                 setLegalFiles(prev => ({...prev, [fileTypeToPreserve]: null}));
                 if (fileUploadRefs?.current?.[fileTypeToPreserve]) {
-                    fileUploadRefs.current[fileTypeToPreserve].clear();
+                    fileUploadRefs?.current?.[fileTypeToPreserve]?.clear();
                 }
             }
         } else {
