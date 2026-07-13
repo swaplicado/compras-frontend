@@ -58,7 +58,7 @@ export const TableEty = ({
         return (
             <>
                 { row?.lItemHistory[0]?.priceUnitary ? (
-                    FormateadorMonetario(row?.lItemHistory[0]?.priceUnitary) + ' ' + row?.lItemHistory[0]?.currencySymbol 
+                    FormateadorMonetario(row?.lItemHistory[0]?.priceUnitary)
                 ): 'N/A'}
             </>
         )
@@ -98,6 +98,13 @@ export const TableEty = ({
             </>
         )
     }
+    const currencyTemplate = (row: any) => {
+        return (
+            <>
+                MXN
+            </>
+        )
+    }
 
     const dialogVariationFooter = 
         <div className="flex flex-column md:flex-row justify-content-between gap-2">
@@ -125,20 +132,24 @@ export const TableEty = ({
                             <td>{ oItemH?.concept }</td>
                         </tr>
                         <tr>
-                            <td className="font-bold">Precio un. actual</td>
+                            <td className="font-bold">Precio un. actual (ML)</td>
                             <td>{ FormateadorMonetario(oItemH?.currentPriceUnitary) + ' MXN'}</td>
                         </tr>
                         <tr>
-                            <td className="font-bold">Precio un. anterior</td>
+                            <td className="font-bold">Precio un. anterior (ML)</td>
                             <td>
                                 { oItemH?.priceUnitary && oItemH?.currencySymbol && (
-                                    FormateadorMonetario(oItemH?.priceUnitary) + ' ' + oItemH?.currencySymbol 
+                                    FormateadorMonetario(oItemH?.priceUnitary) + ' MXN' 
                                 )}
                             </td>
                         </tr>
                         <tr>
-                            <td className="font-bold">% Variación</td>
-                            <td>{ FormateadorMonetario(oItemH?.percentage) }</td>
+                            <td className="font-bold">Precio un. anterior (MD)</td>
+                            <td>{ FormateadorMonetario(oItemH?.priceUnitaryCur) + ' ' + oItemH?.currencySymbol}</td>
+                        </tr>
+                        <tr>
+                            <td className="font-bold">Variación</td>
+                            <td>{ FormateadorMonetario(oItemH?.percentage) + "%" }</td>
                         </tr>
                         <tr>
                             <td className="font-bold">Cantidad</td>
@@ -155,6 +166,10 @@ export const TableEty = ({
                         <tr>
                             <td className="font-bold">Factura</td>
                             <td>{ !! oItemH?.numFact ? oItemH?.numFact : '' }</td>
+                        </tr>
+                        <tr>
+                            <td className="font-bold">Moneda factura anterior</td>
+                            <td>{ oItemH?.currencySymbol }</td>
                         </tr>
                         <tr>
                             <td className="font-bold">Fecha</td>
@@ -196,7 +211,7 @@ export const TableEty = ({
                 <Column field="taxCharged" header={t('dialog.tableEtys.columns.transferred_tax')} body={taxChargedTemplate} />
                 <Column field="taxRetained" header={t('dialog.tableEtys.columns.withheld_tax')} body={taxRetainedTemplate} />
                 <Column field="total" header={t('dialog.tableEtys.columns.total')} body={totalTemplate} />
-                <Column field="currency" header={t('dialog.tableEtys.columns.currency')} />
+                <Column field="currency" header={t('dialog.tableEtys.columns.currency')} body={currencyTemplate} />
                 <Column field="costCenter" header={t('dialog.tableEtys.columns.center_cost')} />
             </DataTable>
         </>
