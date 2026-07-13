@@ -634,6 +634,7 @@ export const DialogOc = ({
                             <TableEty
                                 lEtys={oOc?.jsonOc?.lEtys}
                                 setOMaterialRequest={setOMaterialRequest}
+                                showToast={showToast}
                             />
                         </div>
                         <div className="p-fluid formgrid grid">

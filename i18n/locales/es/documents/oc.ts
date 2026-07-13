@@ -226,7 +226,8 @@ const oc = {
                 lastProvider: "Proveedor",
                 numFact: "Factura",
                 lastPurchaseDate: "Fecha",
-            }
+            },
+            no_previous_price: "Sin precio anterior",
         },
         animationSuccess: {
             authorizedTitle: "Orden de compra autorizada.",

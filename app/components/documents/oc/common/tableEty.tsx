@@ -12,13 +12,14 @@ interface tableEtyProps {
     lEtys: any[];
     oMaterialREquest?: any;
     setOMaterialRequest?: React.Dispatch<React.SetStateAction<any>>;
+    showToast?: (type: 'success' | 'info' | 'warn' | 'error', message: string, summaryText?: string) => void;
 }
 
 export const TableEty = ({ 
     lEtys,
     oMaterialREquest,
-    setOMaterialRequest
-
+    setOMaterialRequest,
+    showToast
 }: tableEtyProps) => {
     const { t } = useTranslation('oc');
     const { t: tCommon } = useTranslation('common');
@@ -33,13 +34,22 @@ export const TableEty = ({
         }
     }, [lEtys]);
 
+    const showDialogUnitPrice = (row: any) => {
+        if (row?.lItemHistory[0]?.priceUnitary) {
+            setOItemH(row.lItemHistory[0]);
+            setVisible(true);
+        } else {
+            showToast?.('info', t('dialog.tableItemHistory.no_previous_price'), 'Info');
+        }
+    }
+
     const variationTemplate = (row: any) => {
         return (
             <Button
                 type="button"
                 icon="pi pi-list"
                 size="small"
-                onClick={() => { setOItemH(row.lItemHistory[0]); setVisible(true)}}
+                onClick={() => { showDialogUnitPrice(row); }}
             />
         )
     }
@@ -47,7 +57,9 @@ export const TableEty = ({
     const prevPriceTemplate = (row: any) => {
         return (
             <>
-                {FormateadorMonetario(row.prevPrice)}
+                { row?.lItemHistory[0]?.priceUnitary ? (
+                    FormateadorMonetario(row?.lItemHistory[0]?.priceUnitary) + ' ' + row?.lItemHistory[0]?.currencySymbol 
+                ): 'N/A'}
             </>
         )
     }

@@ -2168,6 +2168,7 @@ export const InvoiceDialog = ({
                                                                     <TableEty
                                                                         lEtys={item?.jsonOc?.lEtys}
                                                                         setOMaterialRequest={setOMaterialRequest}
+                                                                        showToast={showToast}
                                                                     />
                                                                 </div>
                                                                 <div className={`field col-12 md:col-12`}>
