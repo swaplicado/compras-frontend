@@ -859,7 +859,7 @@ const RegisterProvider = () => {
                                             multiple={true}
                                             allowedExtensions={constants.allowedExtensions}
                                             allowedExtensionsNames={constants.allowedExtensionsNames}
-                                            emptyPlaceholder={t('register.extraFiles.placeholder', 'Arrastre aquí actas, identificaciones u otros documentos complementarios')}
+                                            // emptyPlaceholder={t('register.extraFiles.placeholder', 'Arrastre aquí actas, identificaciones u otros documentos complementarios')}
                                             
                                             onFileSelect={() => {
                                                 setTimeout(() => {
