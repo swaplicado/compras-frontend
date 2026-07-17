@@ -21,6 +21,7 @@ import { findCurrency, findFiscalRegime, findPaymentMethod, findUseCfdi } from '
 import { SelectButton } from 'primereact/selectbutton';
 import { InputNumber } from 'primereact/inputnumber';
 import { HistoryAuth } from '@/app/components/documents/invoice/historyAuth';
+import { getlAreas } from '@/app/(main)/utilities/documents/common/areaUtils';
 
 interface DialogPrepay {
     visible: boolean;
@@ -78,6 +79,9 @@ interface DialogPrepay {
     isInAuth?: boolean;
     lDaysToPay?: any[];
     setShowing?: React.Dispatch<React.SetStateAction<any>>;
+    canUploadWithOutReference?: boolean;
+    lGlobalAreas?: any[];
+    setLGlobalAreas?: React.Dispatch<React.SetStateAction<any>>;
 }
 
 export const DialogPrepay = ({
@@ -133,7 +137,10 @@ export const DialogPrepay = ({
     showAuthComments,
     isInAuth,
     lDaysToPay = [],
-    setShowing
+    setShowing,
+    canUploadWithOutReference = false,
+    lGlobalAreas,
+    setLGlobalAreas
 }: DialogPrepay) => {
     const { t } = useTranslation('prepay');
     const { t: tCommon } = useTranslation('common');
@@ -169,7 +176,7 @@ export const DialogPrepay = ({
             <div className="formgrid grid">
                 <div className="col">
                     <label>{label}</label>
-                    <RenderField value={value} disabled={disabled} mdCol={12} type="dropdown" onChange={onChange} options={options} placeholder={placeholder} errorKey={errorKey} errors={errors} errorMessage={errorMessage} label="" tooltip="" />
+                    <RenderField value={value} disabled={disabled} mdCol={12} type="dropdown" onChange={onChange} options={options} placeholder={placeholder} errorKey={errorKey} errors={formErrors} errorMessage={errorMessage} label="" tooltip="" />
                 </div>
             </div>
         </div>
@@ -355,6 +362,16 @@ export const DialogPrepay = ({
                 //     });
                 // }
 
+                if (canUploadWithOutReference) {
+                    lRefs.push({
+                        id: 0,
+                        name: 'Sin referencia',
+                        is_covered: 0,
+                        functional_area_id: null,
+                        amount: 0
+                    });
+                }
+
                 for (const item of data) {
                     lRefs.push({
                         id: item.id,
@@ -385,6 +402,11 @@ export const DialogPrepay = ({
         const fetch = async () => {
             if (oPrepayObj?.company && oPrepayObj?.partner) {
                 await getlReferences(oPrepayObj.company.id, oPrepayObj.partner.id);
+                await getlAreas({
+                            setLAreas: setLGlobalAreas,
+                            showToast,
+                            company_id: oPrepayObj?.company.external_id
+                        });
             } else {
                 setLReferences([]);
             }
@@ -576,7 +598,7 @@ export const DialogPrepay = ({
                                             oSelectedReference,
                                             lReferences,
                                             lReferences.length > 0 ? t('dialog.fields.reference.placeholder') : t('dialog.fields.reference.placeholderEmpty'),
-                                            'reference',
+                                            'references',
                                             t('dialog.fields.reference.helperText'),
                                             (value) => handleSelectReferenceLocal(value),
                                             !lReferences || lReferences.length == 0
@@ -591,7 +613,7 @@ export const DialogPrepay = ({
                                         lAreas || [],
                                         (lAreas?.length || 0) > 0 ? t('dialog.fields.areas.placeholder') : t('dialog.fields.areas.placeholderEmpty'),
                                         'area',
-                                        t('dialog.fields.areas.helperText'),
+                                        'Selecciona una área',
                                         (value) => handleSelectAreaLocal(value),
                                         !lAreas || lAreas.length == 0 || dialogMode === 'view'
                                     )

@@ -32,6 +32,7 @@ import DateFormatter from '@/app/components/commons/formatDate';
 import { useContext } from 'react';
 import { LayoutContext } from '@/layout/context/layoutcontext';
 import { getCanUploadFiles } from '@/app/(main)/utilities/documents/common/checkCanUploadFiles';
+import { getCanUploadWithOutReference } from '@/app/(main)/utilities/documents/invoice/dps';
 
 const UploadPrepayment = () => {
     const [startDate, setStartDate] = useState<string>('');
@@ -108,6 +109,7 @@ const UploadPrepayment = () => {
     const [editableBodyFields, setEditableBodyFields] = useState<boolean>(false);
     const [canUploadFiles, setCanUploadFiles] = useState<boolean>(false);
     const [canShowBtnCreate, setCanShowBtnCreate] = useState<boolean>(true);
+    const [canUploadWithOutReference, setCanUploadWithOutReference] = useState<boolean>(false);
 
     const isMobile = useIsMobile();
 
@@ -212,13 +214,13 @@ const UploadPrepayment = () => {
             newErrors = {
                 company: !oPrepay.company,
                 partner: !oPrepay.partner,
-                references: !oPrepay.references,
+                references: oPrepay?.references?.length == 0,
                 xmlFile: false,
                 folio: !oPrepay.folio,
                 date: !oPrepay.date,
                 amount: !oPrepay.amount,
                 currency: !oPrepay.oCurrency,
-                area: oPrepay?.references.length > 1 ? !oPrepay.area : false,
+                area: (oPrepay?.references.length > 1 || oPrepay?.references?.[0]?.id == 0) ? !oPrepay.area : false,
                 files: (fileUploadRef.current?.getFiles().length || 0) === 0,
                 includePdf: fileUploadRef.current?.getFiles().length || 0 > 0 ? !fileUploadRef.current?.getFiles().some((file: { type: string }) => file.type === 'application/pdf') : false,
             }
@@ -274,9 +276,11 @@ const UploadPrepayment = () => {
                 return;
             }
             setLoading(true);
-            const isValid = await validadteAmount();
-            if (!isValid) {
-                return;
+            if (oPrepay?.references?.length > 1) {
+                const isValid = await validadteAmount();
+                if (!isValid) {
+                    return;
+                }
             }
 
             const formData = new FormData();
@@ -744,6 +748,12 @@ const UploadPrepayment = () => {
             setUserFunctionalAreas(user_functional_areas);
             setOUser(oUser);
             setDateFilter(dateToWork);
+            await getCanUploadWithOutReference({
+                        userId: oUser?.oUser.id,
+                        setCanUploadWithOutReference,
+                        errorMessage: "",
+                        showToast
+                    });
         }
         fetch();
     }, [])
@@ -892,6 +902,9 @@ const UploadPrepayment = () => {
                         setEditableBodyFields={setEditableBodyFields}
                         lDaysToPay={lDaysToPay}
                         setShowing={setShowing}
+                        canUploadWithOutReference={canUploadWithOutReference}
+                        lGlobalAreas={lGlobalAreas}
+                        setLGlobalAreas={setLGlobalAreas}
                     />
                     { oUser?.isInternalUser && (
                         <FlowAuthorizationDialog 
