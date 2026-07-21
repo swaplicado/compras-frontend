@@ -852,3 +852,20 @@ Correcciones:
 - Limpieza de formulario de carga de NC al quitar o cambiar el proveedor extranjero.
 
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 21-07-2026
+Autor: Rodrigo Abel Ayala Vázquez
+========================================
+
+Resumen:
+- Corrección crítica de rendimiento y sincronización en el módulo de recepción masiva de facturas.
+
+Cambios:
+- Se bloqueó la carga múltiple de PDFs de facturas de fletes y compras.
+
+Correcciones:
+-  Se resolvieron bucles de renderizado infinito mediante frenos de estado.
+
+----------------------------------------
