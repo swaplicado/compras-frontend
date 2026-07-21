@@ -187,6 +187,7 @@ const BulkInvoiceUpload = () => {
     
     const setPdfTotalSizeForIndex = (index: number) => (totalSize: number) => {
         setPdfTotalSize((prev) => {
+            if (prev[index] === totalSize) return prev; //  Si el peso es el mismo, cancela el re-render
             const newArray = [...prev];
             newArray[index] = totalSize;
             return newArray;
@@ -218,6 +219,7 @@ const BulkInvoiceUpload = () => {
     };
     const setFilesTotalSizeForIndex = (index: number) => (totalSize: number) => {
         setFilesTotalSize((prev) => {
+            if (prev[index] === totalSize) return prev; //  Si el peso es el mismo, cancela el re-render
             const newArray = [...prev];
             newArray[index] = totalSize;
             return newArray;
@@ -780,7 +782,7 @@ const BulkInvoiceUpload = () => {
                                             </label>
                                             &nbsp;
                                             <Tooltip target=".custom-target-icon" />
-                                            <i className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge" data-pr-tooltip={''} data-pr-position="right" data-pr-my="left center-2" style={{ fontSize: '1rem', cursor: 'pointer' }}></i>
+                                            <i className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge" data-pr-tooltip={'Archivo PDF de la factura'} data-pr-position="right" data-pr-my="left center-2" style={{ fontSize: '1rem', cursor: 'pointer' }}></i>
                                             <CustomFileUpload
                                                 key={`pdf-${invoiceKeys[index]}`}
                                                 fileUploadRef={pdfUploadRefs[index]}
@@ -789,7 +791,7 @@ const BulkInvoiceUpload = () => {
                                                 errors={pdfErrorsArray[index]}
                                                 setErrors={setPdfErrorsForIndex(index)}
                                                 message={message}
-                                                multiple={true}
+                                                multiple={false}
                                                 allowedExtensions={['application/pdf']}
                                                 allowedExtensionsNames={'application/pdf'}
                                                 maxFilesSize={constants.maxFilesSize}
@@ -805,7 +807,7 @@ const BulkInvoiceUpload = () => {
                                             <label>Archivos adicionales:</label>
                                             &nbsp;
                                             <Tooltip target=".custom-target-icon" />
-                                            <i className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge" data-pr-tooltip={''} data-pr-position="right" data-pr-my="left center-2" style={{ fontSize: '1rem', cursor: 'pointer' }}></i>
+                                            <i className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge" data-pr-tooltip={'Archivos adicionales'} data-pr-position="right" data-pr-my="left center-2" style={{ fontSize: '1rem', cursor: 'pointer' }}></i>
                                             <CustomFileUpload
                                                 key={`files-${invoiceKeys[index]}`}
                                                 fileUploadRef={filesUploadRefs[index]}

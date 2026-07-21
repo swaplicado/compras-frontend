@@ -53,18 +53,20 @@ export const CustomFileUpload = ({
     const { t } = useTranslation('invoices');
     const { t: tCommon } = useTranslation('common');
 
-    // Recalculate totalSize based on actual files when component mounts or re-renders
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            const currentFiles = fileUploadRef.current?.getFiles() || [];
-            const actualTotalSize = currentFiles.reduce((sum, file) => sum + (file.size || 0), 0);
-            if (actualTotalSize !== totalSize && actualTotalSize > 0) {
-                setTotalSize(actualTotalSize);
+    // recalcular el peso al quitar o limpiar archivos
+    const recalculateActualSize = () => {
+        setTimeout(() => {
+            const currentFiles = fileUploadRef?.current?.getFiles() || [];
+            const actualTotal = currentFiles.reduce((sum, file) => sum + (file.size || 0), 0);
+            if (typeof setTotalSize === 'function') {
+                setTotalSize(actualTotal);
             }
-        }, 100);
+        }, 10);
+    };
 
-        return () => clearTimeout(timer);
-    }, [fileUploadRef?.current]);
+    useEffect(() => {
+        recalculateActualSize();
+    }, []);
 
     const chooseOptions = {
         icon: 'pi pi-folder-open',
