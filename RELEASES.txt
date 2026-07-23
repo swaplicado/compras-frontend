@@ -1000,6 +1000,7 @@ Cambios:
 - Se agregó condición para los casos en que la validación de varias facturas solo se muestre el modal de advertencias cuando hay alguna que no pase la validación y en caso de no haber ninguna con error muestre toast de exito.
 
 Correcciones:
--  Se saneó el envío de datos al backend forzando valores válidos para BD (null, 0, "") en lugar de undefined, asegurando el guardado exitoso de las facturas.
+- Se saneó el envío de datos al backend forzando valores válidos para BD (null, 0, "") en lugar de undefined, asegurando el guardado exitoso de las facturas.
+- Validación para prevenir crash en UI al iterar errores de validación XML.
 
 ----------------------------------------

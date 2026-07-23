@@ -54,11 +54,15 @@ export const XmlWarnings = ( props: XmlWarningsProps ) => {
                             <label>{t('uploadDialog.xml_errors.label')}</label>
                             &nbsp;
                             <ul>
-                                {props.xmlValidateErrors.errors.map((errors: any, index: number) => (
+                                {(Array.isArray(props.xmlValidateErrors?.errors) 
+                                    ? props.xmlValidateErrors.errors 
+                                    : props.xmlValidateErrors?.errors 
+                                        ? [props.xmlValidateErrors.errors] 
+                                        : []
+                                ).map((error: any, index: number) => (
                                     <li key={index} className="col-12 md:col-12 text-red-500">
                                         <i className='pi pi-times' style={{color: 'red'}}></i>
-                                        &nbsp;&nbsp;
-                                        {errors}
+                                        &nbsp;&nbsp;{error}
                                     </li>
                                 ))}
                             </ul>
