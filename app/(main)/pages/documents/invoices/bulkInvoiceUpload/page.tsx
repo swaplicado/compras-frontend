@@ -446,8 +446,12 @@ const BulkInvoiceUpload = () => {
     }
 
     const handleValidateXmlVsTicket = async () => {
-        let lErrors = [];
+        let lErrors: any[] = [];
+        let hasAnyWarning = false; // Bandera para decidir entre Toast o Modal
+
         for (let i = 0; i < lDps.length; i++) {
+            let currentInvoiceWarnings: any[] = []; // Mensajes de esta fila
+
             try {
                 setLoadingDpsArray((prev) => {
                     const newArray = [...prev];
@@ -463,11 +467,7 @@ const BulkInvoiceUpload = () => {
                     formData.append('files', file);
                 });
 
-                let lReferences = JSON.stringify(lDps[i]?.reference?.map((ref: any, index: number) => {
-                                        return (
-                                            ref.id
-                                        )
-                                    }))
+                let lReferences = JSON.stringify(lDps[i]?.reference?.map((ref: any) => ref.id));
 
                 formData.append('references', lReferences);
                 formData.append('route', route);
@@ -483,23 +483,27 @@ const BulkInvoiceUpload = () => {
                         newArray[i].xmlVsTicket = data.warnings;
                         newArray[i].sendxmlVsTicket = true;
                         return newArray;
-                    })
+                    });
 
-                    if (data.warnings.length > 0) {
+                    if (data.warnings && data.warnings.length > 0) {
+                        // Hubo inconsistencias en esta factura
                         setXmlErrorsArray((prev) => {
                             const newArray = [...prev];
                             newArray[i].extraWarnings = data.warnings
                             return newArray;
                         });
 
-                        lErrors.push(data.warnings);
-                    }
+                        const warningsList = Array.isArray(data.warnings) ? data.warnings : [data.warnings];
+                        currentInvoiceWarnings.push(...warningsList);
+                        hasAnyWarning = true;
+                    } 
 
                 } else {
                     throw new Error(t('uploadDialog.errors.uploadError'));
                 }
             } catch (error: any) {
-                lErrors.push([error.response?.data?.error || 'Error al validar los datos del boleto contra el XML']);
+                currentInvoiceWarnings.push(error.response?.data?.error || 'Error al validar los datos del boleto contra el XML');
+                hasAnyWarning = true;
             } finally {
                 setLoadingDpsArray((prev) => {
                     const newArray = [...prev];
@@ -507,11 +511,21 @@ const BulkInvoiceUpload = () => {
                     return newArray;
                 });
             }
+            
+            lErrors.push(currentInvoiceWarnings);
         }
+        
         checkAllDpsValidateXmlVsTicket();
         setMessageDialogErrors(lErrors);
-        setDialogType('warning');
-        setShowDialogErrors(true);
+        
+        if (hasAnyWarning) {
+            // Si al menos una factura tuvo un detalle, abrimos el modal para el reporte completo
+            setDialogType('warning');
+            setShowDialogErrors(true);
+        } else {
+            // Si todo fue perfecto, mostramos Toast y dejamos que el usuario guarde
+            showToast('success', 'Validación exitosa.', 'Éxito');
+        }
     }
 
     const checkAllDpsValidateXmlVsTicket = useCallback(() => {
@@ -595,15 +609,16 @@ const BulkInvoiceUpload = () => {
                     partner: lDps[i].partner_id,
                     series: serie,
                     number: number,
-                    date: lDps[i].date ? moment(lDps[i].date).format('YYYY-MM-DD') : moment(new Date).format('YYYY-MM-DD'),
-                    currency: lDps[i].oCurrency?.id || '',
+                    date: lDps[i].date ? moment(lDps[i].date).format('YYYY-MM-DD') : moment(new Date()).format('YYYY-MM-DD'),
+                    currency: lDps[i].oCurrency?.id || null,
                     amount: lDps[i].amount,
                     exchange_rate: lDps[i].exchange_rate ? lDps[i].exchange_rate : 0,
-                    payment_method: lDps[i].oPaymentMethod?.id || '',
-                    payment_way: lDps[i].payment_way || '',
-                    fiscal_use: lDps[i].oUseCfdi?.id || '',
-                    issuer_tax_regime: lDps[i].oIssuer_tax_regime ? lDps[i].oIssuer_tax_regime.id : '',
-                    receiver_tax_regime: lDps[i].oReceiver_tax_regime ? lDps[i].oReceiver_tax_regime.id : '',
+                    payment_method: lDps[i].oPaymentMethod?.id || null,
+                    payment_way: lDps[i].payment_way || null,
+                    fiscal_use: lDps[i].oUseCfdi?.id || null,
+                    issuer_tax_regime: lDps[i].oIssuer_tax_regime?.id || null,
+                    receiver_tax_regime: lDps[i].oReceiver_tax_regime?.id || null,
+                    
                     uuid: lDps[i].uuid || '',
                     functional_area: area_id,
                     notes: lDps[i].notes,
