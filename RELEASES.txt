@@ -869,3 +869,20 @@ Correcciones:
 -  Se resolvieron bucles de renderizado infinito mediante frenos de estado.
 
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 23-07-2026
+Autor: Rodrigo Abel Ayala Vázquez
+========================================
+
+Resumen:
+- Optimización de alertas en validación masiva y prevención de Errores 500 al guardar facturas.
+
+Cambios:
+- Se agregó condición para los casos en que la validación de varias facturas solo se muestre el modal de advertencias cuando hay alguna que no pase la validación y en caso de no haber ninguna con error muestre toast de exito.
+
+Correcciones:
+-  Se saneó el envío de datos al backend forzando valores válidos para BD (null, 0, "") en lugar de undefined, asegurando el guardado exitoso de las facturas.
+
+----------------------------------------

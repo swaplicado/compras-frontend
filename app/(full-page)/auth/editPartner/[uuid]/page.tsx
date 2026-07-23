@@ -12,7 +12,6 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import loaderScreen from '@/app/components/commons/loaderScreen';
 import { useTranslation } from 'react-i18next';
-import 'boxicons/css/boxicons.min.css';
 import { DialogManual } from '@/app/components/videoManual/dialogManual';
 import { Tooltip } from 'primereact/tooltip';
 import { Card } from 'primereact/card';
