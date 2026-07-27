@@ -991,6 +991,7 @@ export const DialogPrepay = ({
                                         disabled={!isInReview}
                                         mdCol={12}
                                         type={'textArea'}
+                                        maxLength={250}
                                         onChange={(value) => {
                                             setOPrepayFn?.((prev: any) => ({ ...prev, payment_instructions: value }));
                                             setFormErrors?.((prev: any) => ({ ...prev, payment_instructions: false }));

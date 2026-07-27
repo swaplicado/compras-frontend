@@ -1043,6 +1043,7 @@ const BulkInvoiceUpload = () => {
                                                             return newArray;
                                                         });
                                                     }}
+                                                    maxLength={250}
                                                     placeholder={''}
                                                     errorKey={'payment_notes'}
                                                     errors={{}}

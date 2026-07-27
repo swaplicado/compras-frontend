@@ -35,6 +35,8 @@ interface renderFieldProps {
     checkboxKey?: string | number;
     passthrough?: any;
     textAreaRows?: number;
+    minLength?: number;
+    maxLength?: number;
     withDateTemplate?: boolean;
     lDaysToPay?: any[];
     emptyMessage?: string;
@@ -140,6 +142,7 @@ export const RenderField = (props: renderFieldProps) => {
                                     readOnly={props.readonly} 
                                     className={`w-full ${props.errors[props.errorKey] ? 'p-invalid' : ''}`} 
                                     disabled={props.disabled}
+                                    minLength={props.minLength}
                                     onChange={(e) => {
                                         props.onChange?.(e.target.value);
                                     }}
@@ -198,7 +201,8 @@ export const RenderField = (props: renderFieldProps) => {
                                     id="comments"
                                     rows={props.textAreaRows || 3}
                                     cols={30}
-                                    maxLength={constants.MAX_LENGTH_TEXT_AREA}
+                                    minLength={props.minLength}
+                                    maxLength={props.maxLength ?? constants.MAX_LENGTH_TEXT_AREA}
                                     className={`w-full ${props.errors[props.errorKey] ? 'p-invalid' : ''}`}
                                     value={props.value || ''}
                                     readOnly={props.readonly}
