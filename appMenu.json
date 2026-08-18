@@ -415,11 +415,6 @@
                             "label": "Catálogo",
                             "icon": "pi pi-list",
                             "to": "/pages/partners/catalog"
-                        },
-                        {
-                            "label": "Proveedores y zonas",
-                            "icon": "pi pi-fw pi-map-marker",
-                            "to": "/pages/partners/suppliersZones"
                         }
                     ]
                 }

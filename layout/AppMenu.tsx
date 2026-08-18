@@ -45,6 +45,11 @@ const AppMenu = () => {
                             "label": "Usuarios",
                             "icon": "bx bx-user",
                             "to": "/pages/configurations/users"
+                        },
+                        {
+                            "label": "Proveedores y zonas",
+                            "icon": "pi pi-fw pi-map-marker",
+                            "to": "/pages/partners/suppliersZones"
                         }
                     ]
                 })
