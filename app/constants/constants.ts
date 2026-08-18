@@ -32,6 +32,8 @@ const constants = {
     ROUTE_GET_REFERENCES: '/transactions/references/by-partner/',
     ROUTE_GET_CURRENCIES: '/transactions/currencies/',
     ROUTE_GET_FISCAL_REGIMES: '/transactions/fiscal-regimes/',
+    ROUTE_GET_SUPPLIERS: '/transactions/suppliers/',
+    ROUTE_GET_SUPPLIER_ZONES: '/transactions/supplier-zones/',
     ROUTE_GET_URL_FILES_DPS: '/transactions/documents/signed-urls/',
     ROUTE_GET_PAYMENT_METHODS: '/transactions/payment-methods/',
     ROUTE_GET_USE_CFDI: '/transactions/cfdi-uses/',
@@ -75,6 +77,8 @@ const constants = {
     ROUTE_GET_VALIDATE_REFERENCE_BALANCE: '/transactions/validate-reference-balance/',
     ROUTE_GET_USERS: '/transactions/users/list',
     ROUTE_GET_PARTNERS_VS_AREAS: '/transactions/partner-with-areas/',
+
+    ROUTE_GET_DOCUMENT_EXTRA_DATA: '/transactions/extra-data/',
 
     ROUTE_COMPARE_FILES: '/pages/compareFiles/',
     ROUTE_SEE_FILES: '/pages/seeFiles/',

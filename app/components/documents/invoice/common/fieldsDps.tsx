@@ -37,6 +37,8 @@ interface FieldsDpsProps {
     withEditExpiredDate?: boolean;
     isLocalPartner?: boolean;
     lOpex?: any[];
+    lSuppliers?: any[];
+    lZones?: any[];
     lProcessingType?: any[];
 }
 
@@ -81,6 +83,8 @@ export const FieldsDps = ({
     withEditExpiredDate = false,
     isLocalPartner = true,
     lOpex = [],
+    lSuppliers = [],
+    lZones = [],
     lProcessingType = []
 }: FieldsDpsProps) => {
     const { t } = useTranslation('invoices');
@@ -752,6 +756,51 @@ export const FieldsDps = ({
                             valueTemplate: processingTypeTemplate
                         })}
                     </div>
+                    {oDps?.supplier_data && (
+                        <div className="p-fluid formgrid grid">
+                            {renderField({
+                                label: 'Alias de proveedor',
+                                tooltip: '',
+                                value: footerMode == 'view'
+                                    ? (oDps?.supplier_data?.supplier_name || 'Sin proveedor')
+                                    : oDps?.supplier_data?.supplier_id, // dropdown usa el id
+                                onChange: (value) => {
+                                    setODps((prev: any) => ({
+                                        ...prev,
+                                        supplier_data: { ...prev.supplier_data, supplier_id: value }
+                                    }));
+                                },
+                                disabled: footerMode == 'view',
+                                mdCol: 4,
+                                type: footerMode != 'edit' ? 'text' : 'dropdown',
+                                placeholder: '',
+                                errors: errors,
+                                errorKey: '',
+                                errorMessage: '',
+                                lOptions: lSuppliers
+                            })}
+                            {renderField({
+                                label: 'Zona fruta',
+                                tooltip: '',
+                                value: footerMode == 'view'
+                                    ? (oDps?.supplier_data?.supplier_zone_name || 'Sin zona')
+                                    : oDps?.supplier_data?.supplier_zone_id,
+                                onChange: (value) => {
+                                    setODps((prev: any) => ({
+                                        ...prev,
+                                        supplier_data: { ...prev.supplier_data, supplier_zone_id: value }
+                                    }));
+                                },
+                                disabled: footerMode == 'view',
+                                mdCol: 4,
+                                type: footerMode != 'edit' ? 'text' : 'dropdown',
+                                placeholder: '',
+                                errors: errors,
+                                errorKey: '',
+                                errorMessage: '',
+                                lOptions: lZones
+                            })}
+                        </div>)}
                     <Divider align="center">
                         <h5>Datos del pago</h5>
                     </Divider>
