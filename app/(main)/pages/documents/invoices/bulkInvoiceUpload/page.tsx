@@ -1065,7 +1065,7 @@ const BulkInvoiceUpload = () => {
                                                         label={t('supplier.label')}
                                                         tooltip={t('supplier.tooltip')}
                                                         value={lDps[index]?.supplier || 0}
-                                                        disabled={false}
+                                                        disabled={isEditable(index)}
                                                         mdCol={12}
                                                         type={'dropdown'}
                                                         onChange={(value) => {
@@ -1087,7 +1087,7 @@ const BulkInvoiceUpload = () => {
                                                         label={t('zone.label')}
                                                         tooltip={t('zone.tooltip')}
                                                         value={lDps[index]?.zone || 0}
-                                                        disabled={false}
+                                                        disabled={isEditable(index)}
                                                         mdCol={12}
                                                         type={'dropdown'}
                                                         onChange={(value) => {
