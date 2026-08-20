@@ -134,11 +134,11 @@ const Upload = () => {
             disabledBtn = moment(actualDate).isAfter(limitDate);
         }
 
-        // if (!disabledBtn && !oValidUser.isInternalUser) {
-        //     if (!crpPending?.authorized) {
-        //         disabledBtn = true;
-        //     }
-        // }
+        if (!disabledBtn && !oValidUser.isInternalUser) {
+             if (!crpPending?.authorized) {
+                 disabledBtn = true;
+             }
+        }
 
         return disabledBtn;
     }
