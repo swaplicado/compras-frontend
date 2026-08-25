@@ -68,7 +68,7 @@ export const CustomFileUpload = ({
     // recalcular el peso al quitar o limpiar archivos
     const recalculateActualSize = () => {
         setTimeout(() => {
-            const currentFiles = fileUploadRef.current?.getFiles() || [];
+            const currentFiles = fileUploadRef?.current?.getFiles() || [];
             const actualTotal = currentFiles.reduce((sum, file) => sum + (file.size || 0), 0);
             if (typeof setTotalSize === 'function') {
                 setTotalSize(actualTotal);
@@ -78,7 +78,7 @@ export const CustomFileUpload = ({
 
     useEffect(() => {
         recalculateActualSize();
-    }, [fileUploadRef?.current]);
+    }, []);
 
     const chooseOptions = {
         icon: 'pi pi-folder-open',

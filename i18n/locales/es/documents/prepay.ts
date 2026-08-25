@@ -50,12 +50,12 @@ const prepay = {
             company: {
                 label: "Empresa:",
                 placeholder: "Empresa",
-                tooltip: "Empresa"
+                tooltip: "Selecciona la empresa a la que pertenece la proforma."
             },
             partner: {
                 label: "Proveedor:",
                 placeholder: "Proveedor",
-                tooltip: "Proveedor"
+                tooltip: "Selecciona el proveedor asociado a la proforma."
             },
             lInvoices: {
                 label: "Facturas:",
@@ -65,18 +65,55 @@ const prepay = {
             lAreas: {
                 label: "Área:",
                 placeholder: "Área",
-                tooltip: "Área"
+                tooltip: "Selecciona una área para la proforma."
             },
-            date: {
-                label: "Fecha",
-                placeholder: "Fecha",
-                tooltip: "Fecha"
+            
+            dataPrepeyment: {
+                date: {
+                    label: "Fecha",
+                    placeholder: "Fecha",
+                    tooltip: "Esta es la fecha de emisión de la proforma."
+                },
+                folio: {
+                    label: "Folio",
+                    placeholder: "Folio (Identificador del pago)",
+                    tooltip: "Identificador de la proforma."
+                },
+                amount: {
+                    label: "Monto",
+                    placeholder: "Monto",
+                    tooltip: "Este es el monto monetario de la proforma."
+                },
+                currency: {
+                    label: "Moneda",
+                    placeholder: "Moneda",
+                    tooltip: "Esta es la moneda (divisa) de la proforma."
+                }
             },
-            folio: {
-                label: "Folio",
-                placeholder: "Folio (Identificador del pago)",
-                tooltip: "Identificador del registro"
+
+            dataReference: {
+                date: {
+                    label: "Fecha",
+                    placeholder: "Fecha",
+                    tooltip: "Esta es la fecha de emisión de la referencia."
+                },
+                folio: {
+                    label: "Folio",
+                    placeholder: "Folio (Identificador de la referencia)",
+                    tooltip: "Identificador del la referencia."
+                },
+                amount: {
+                    label: "Monto",
+                    placeholder: "Monto",
+                    tooltip: "Este es el monto monetario de la referencia."
+                },
+                currency: {
+                    label: "Moneda",
+                    placeholder: "Moneda",
+                    tooltip: "Esta es la moneda (divisa) de la referencia."
+                }
             },
+
             uuid: {
                 label: "UUID",
                 placeholder: "UUID",
@@ -85,7 +122,7 @@ const prepay = {
             files: {
                 label: "Archivos",
                 placeholder: "Archivos",
-                tooltip: "Archivos"
+                tooltip: "Selecciona los archivos de la proforma."
             },
             partner_fiscal_id: {
                 label: "RFC del emisor",
@@ -106,16 +143,6 @@ const prepay = {
                 label: "Régimen fiscal del emisor",
                 placeholder: "Régimen fiscal del emisor",
                 tooltip: "Régimen fiscal del emisor"
-            },
-            amount: {
-                label: "Monto",
-                placeholder: "Monto",
-                tooltip: "Monto"
-            },
-            currency: {
-                label: "Moneda",
-                placeholder: "Moneda",
-                tooltip: "Moneda"
             },
             exchange_rate: {
                 label: "Tipo de cambio",
@@ -199,21 +226,21 @@ const prepay = {
         uploadInstructions: {
             header: "Para cargar una proforma, sigue estos pasos:",
             step1: "Presiona el botón Cargar proforma para abrir el diálogo para cargar la proforma.",
-            step2: "Selecciona empresa y proveedor para obtener la lista de facturas a seleccionar.",
-            step3: "Selecciona las facturas de la proforma.",
-            step4: "Si seleccionas más de una factura, debes seleccionar el área al cual es dirigida la proforma y el monto de cada factura asociada a la proforma.",
-            step5: "Selecciona el XML de la proforma para su validación, en cuanto selecciones el XML de la proforma este se validará automáticamente.",
-            step6: "Una vez validado y que no se encuentren errores se deben cargar los demás archivos de la proforma como son el PDF, el nombre del PDF de la proforma debe ser el mismo que el del XML.",
+            step2: "Selecciona empresa y proveedor para obtener la lista de ordenes de compra a seleccionar.",
+            step3: "Selecciona las ordenes de compra de la proforma.",
+            step4: "Si seleccionas más de una orden de compra, debes seleccionar el área al cual es dirigida la proforma y el monto de cada orden de compra asociada a la proforma.",
+            step5: "Debes llenar los campos de los DATOS PROFORMA:.",
+            step6: "Debes cargar los archivos de la proforma como son el PDF.",
             step7: "Ya que se tengan todos los archivos seleccionados, presiona el botón Cargar para cargar la proforma.",
         },
         uploadInstructionsPartner: {
             header: "Para cargar una proforma, sigue estos pasos:",
             step1: "Presiona el botón Cargar proforma para abrir el diálogo para cargar la proforma.",
-            step2: "Selecciona empresa para obtener la lista de facturas a seleccionar.",
-            step3: "Selecciona las facturas de la proforma.",
-            step4: "Si seleccionas más de una factura, debes seleccionar el área al cual es dirigida la proforma y el monto de cada factura asociada a la proforma.",
-            step5: "Selecciona el XML de la proforma para su validación, en cuanto selecciones el XML de la proforma este se validará automáticamente.",
-            step6: "Una vez validado y que no se encuentren errores se deben cargar los demás archivos de la proforma como son el PDF, el nombre del PDF de la proforma debe ser el mismo que el del XML.",
+            step2: "Selecciona empresa para obtener la lista de ordenes de compra a seleccionar.",
+            step3: "Selecciona las ordenes de compra de la proforma.",
+            step4: "Si seleccionas más de una orden de compra, debes seleccionar el área al cual es dirigida la proforma y el monto de cada orden de compra asociada a la proforma.",
+            step5: "Debes llenar los campos de los DATOS PROFORMA:.",
+            step6: "Debes cargar los archivos de la proforma como son el PDF.",
             step7: "Ya que se tengan todos los archivos seleccionados, presiona el botón Cargar para cargar la proforma.",
         },
         reviewInstructions: {

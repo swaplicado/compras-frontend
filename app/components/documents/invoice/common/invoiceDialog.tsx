@@ -35,6 +35,9 @@ import { getJsonOc } from "@/app/(main)/utilities/documents/oc/ocUtilities";
 import { TableEty } from '@/app/components/documents/oc/common/tableEty';
 import { RenderField } from '@/app/components/commons/renderField';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
+import { getlSuppliers } from '@/app/(main)/utilities/documents/common/suppliersUtils';
+import { getlZones } from '@/app/(main)/utilities/documents/common/zonesUtils';
+import { getDocumentExtraData } from './documentExtraDatautils';
 
 interface InvoiceDialogProps {
     visible: boolean;
@@ -91,6 +94,8 @@ interface InvoiceDialogProps {
     handlePassToReview?: (e: any) => Promise<any>;
     withEditExpiredDate?: boolean;
     lOpex?: any[];
+    lSuppliers?: any[];
+    lZones?: any[];
     lProcessingType?: any[];
     canEditAcceptance?: boolean
 }
@@ -250,6 +255,8 @@ export const InvoiceDialog = ({
     const [crpPending, setCrpPending] = useState<any>({});
     const [loadingReferenceData, setLoadingReferenceData] = useState<boolean>(false);
     const [oMaterialRequest, setOMaterialRequest] = useState<any>(null);
+    const [lSuppliers, setLSuppliers] = useState<any[]>([]);
+    const [lZones, setLZones] = useState<any[]>([]);
 
     //const para el boton de scroll al final
     const [elementRef, setElementRef] = useState<HTMLDivElement | null>(null);
@@ -1191,6 +1198,7 @@ export const InvoiceDialog = ({
             setTimeout(() => {
                 if (visible) {
                     getlUrlFilesDps();
+                    getDocumentExtraData({ document_id: oDps?.id_dps, setODps, showToast });
                 }
             }, 200);
         }
@@ -1503,9 +1511,20 @@ export const InvoiceDialog = ({
 
     useEffect(() => {
         if (isEdit) {
-            if (typeEdit == 'acceptance') {
-                getlFilesNames();
-            }
+            const fetchData = async () => {
+                const promises: Promise<any>[] = [
+                    getlSuppliers({ setLSuppliers: setLSuppliers, showToast: showToast }),
+                    getlZones({ setLZones: setLZones, showToast: showToast })
+                ];
+
+                if (typeEdit == 'acceptance') {
+                    promises.push(getlFilesNames());
+                }
+
+                await Promise.all(promises);
+            };
+
+            fetchData();
         }
     }, [isEdit, typeEdit]);
 
@@ -2389,6 +2408,8 @@ export const InvoiceDialog = ({
                                     withEditExpiredDate={withEditExpiredDate}
                                     isLocalPartner={ oProvider ? oProvider?.country == constants.COUNTRIES.MEXICO_ID : ( oDps?.oPartner ? oDps.oPartner.country == constants.COUNTRIES.MEXICO_ID : true ) }
                                     lOpex={lOpex}
+                                    lSuppliers={lSuppliers}
+                                    lZones={lZones}
                                     lProcessingType={lProcessingType}
                                 />
                                 <div className="p-fluid formgrid grid">

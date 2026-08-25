@@ -310,8 +310,8 @@ export const DialogCrp = ({
                                     </Divider>
                                 }
                                 <RenderField
-                                    label={'Empresa'}
-                                    tooltip={'Empresa'}
+                                    label={t('dialog.fields.company.label')}
+                                    tooltip={t('dialog.fields.company.tooltip')}
                                     value={oCrp?.oCompany}
                                     disabled={dialogMode == 'view' || dialogMode == 'edit'}
                                     mdCol={6}
@@ -320,15 +320,15 @@ export const DialogCrp = ({
                                         setOCrp?.((prev: any) => ({ ...prev, oCompany: value }));
                                     }}
                                     options={lCompanies}
-                                    placeholder={'Selecciona empresa'}
+                                    placeholder={t('dialog.fields.company.placeholder')}
                                     errorKey={''}
                                     errors={formErrors}
                                     errorMessage={''}
                                 />
                                 { !oUser?.isProvider && (
                                     <RenderField
-                                        label={"Proveedor"}
-                                        tooltip={"Proveedor"}
+                                        label={t('dialog.fields.partner.label')}
+                                        tooltip={t('dialog.fields.partner.tooltip')}
                                         value={oCrp?.oProvider}
                                         disabled={dialogMode == 'view' || dialogMode == 'edit'}
                                         mdCol={6}
@@ -337,7 +337,7 @@ export const DialogCrp = ({
                                             setOCrp?.((prev: any) => ({ ...prev, oProvider: value }));
                                         }}
                                         options={lProviders}
-                                        placeholder={"Selecciona proveedor"}
+                                        placeholder={t('dialog.fields.partner.placeholder')}
                                         errorKey={"pay"}
                                         errors={formErrors}
                                         errorMessage={"Seleccione pago"}
@@ -348,8 +348,8 @@ export const DialogCrp = ({
                                     <>
                                         { (dialogMode == 'create' || dialogMode == 'edit') && (
                                             <RenderField
-                                                label={'Pago'}
-                                                tooltip={'Pago'}
+                                                label={t('dialog.fields.payment.label')}
+                                                tooltip={t('dialog.fields.payment.tooltip')}
                                                 value={oCrp?.oPay}
                                                 disabled={lPaymentsExec?.length == 0}
                                                 mdCol={6}
@@ -359,23 +359,23 @@ export const DialogCrp = ({
                                                     handleSelectPayment(value);
                                                 }}
                                                 options={lPaymentsExec}
-                                                placeholder={'Selecciona pago'}
+                                                placeholder={t('dialog.fields.payment.placeholder')}
                                                 errorKey={''}
                                                 errors={formErrors}
                                                 errorMessage={''}
                                             />
                                         )}
                                         <RenderField
-                                            label={'Area'}
+                                            label={t('dialog.fields.area.label')}
                                             /* Tooltip dinamico */
                                             tooltip={
                                                 dialogMode === 'view' 
-                                                    ? 'Área funcional' // Si solo está viendo, no mostramos mensaje de bloqueo
+                                                    ? t('dialog.fields.area.tooltipSimple') // Si solo está viendo, no mostramos mensaje de bloqueo
                                                     : lAreas?.length === 1 
-                                                        ? 'Selección automática: Única área disponible para este pago' 
+                                                        ? t('dialog.fields.area.tooltipAuto') 
                                                         : lAreas?.length === 0 
-                                                            ? 'Selecciona un pago primero para cargar las áreas' 
-                                                            : 'Área funcional' // Si está habilitado para elegir
+                                                            ? t('dialog.fields.area.tooltipSelect')
+                                                            : t('dialog.fields.area.tooltipSimple') // Si está habilitado para elegir
                                             }
                                             value={oCrp?.functional_area}
                                             disabled={dialogMode == 'view' || lAreas?.length == 0 || lAreas?.length == 1}
@@ -386,7 +386,7 @@ export const DialogCrp = ({
                                                 setFormErrors?.((prev: any) => ({ ...prev, area: false }));
                                             }}
                                             options={lAreas}
-                                            placeholder={'Selecciona area'}
+                                            placeholder={t('dialog.fields.area.placeholder')}
                                             errorKey={'area'}
                                             errors={formErrors}
                                             errorMessage={'Selecciona area'}
@@ -410,6 +410,16 @@ export const DialogCrp = ({
                                     <div className={`field col-12 md:col-12`}>
                                         <div className="formgrid grid">
                                             <div className="col">
+                                                <label>XML:</label>
+                                                &nbsp;
+                                                <Tooltip target=".custom-target-icon" />
+                                                <i
+                                                    className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
+                                                    data-pr-tooltip={t('dialog.fields.xml_file.tooltip')}
+                                                    data-pr-position="right"
+                                                    data-pr-my="left center-2"
+                                                    style={{ fontSize: '1rem', cursor: 'pointer' }}
+                                                ></i>
                                                 <ValidateXmlCrp
                                                     xmlUploadRef={xmlUploadRef}
                                                     oCompany={oCrp?.oCompany}
@@ -439,8 +449,8 @@ export const DialogCrp = ({
                         {withBody && isXmlValid && (dialogMode == 'create' || dialogMode == 'edit' || dialogMode == 'view') && (
                             <div className="p-fluid formgrid grid">
                                 <RenderField
-                                    label={"RFC emisor:"}
-                                    tooltip={"RFC emisor:"}
+                                    label={t('dialog.fields.partner_fiscal_id.label')}
+                                    tooltip={t('dialog.fields.partner_fiscal_id.tooltip')}
                                     value={oCrp?.rfc_issuer}
                                     disabled={true}
                                     mdCol={6}
@@ -449,15 +459,15 @@ export const DialogCrp = ({
                                         setOCrp?.((prev: any) => ({ ...prev, rfc_issuer: value }));
                                     }}
                                     options={[]}
-                                    placeholder={""}
+                                    placeholder={t('dialog.fields.partner_fiscal_id.placeholder')}
                                     errorKey={""}
                                     errors={formErrors}
                                     errorMessage={""}
                                 />
 
                                 <RenderField
-                                    label={"Régimen fiscal emisor:"}
-                                    tooltip={"Régimen fiscal emisor:"}
+                                    label={t('dialog.fields.issuer_tax_regime.label')}
+                                    tooltip={t('dialog.fields.issuer_tax_regime.tooltip')}
                                     value={`${oCrp?.tax_regime_issuer?.name}`}
                                     disabled={true}
                                     mdCol={6}
@@ -466,15 +476,15 @@ export const DialogCrp = ({
                                         setOCrp?.((prev: any) => ({ ...prev, tax_regime_issuer: value }));
                                     }}
                                     options={[]}
-                                    placeholder={""}
+                                    placeholder={t('dialog.fields.issuer_tax_regime.placeholder')}
                                     errorKey={""}
                                     errors={formErrors}
                                     errorMessage={""}
                                 />
 
                                 <RenderField
-                                    label={"RFC receptor:"}
-                                    tooltip={"RFC receptor:"}
+                                    label={t('dialog.fields.company_fiscal_id.label')}
+                                    tooltip={t('dialog.fields.company_fiscal_id.tooltip')}
                                     value={oCrp?.rfc_receiver}
                                     disabled={true}
                                     mdCol={6}
@@ -483,15 +493,15 @@ export const DialogCrp = ({
                                         setOCrp?.((prev: any) => ({ ...prev, rfc_receiver: value }));
                                     }}
                                     options={[]}
-                                    placeholder={""}
+                                    placeholder={t('dialog.fields.company_fiscal_id.placeholder')}
                                     errorKey={""}
                                     errors={formErrors}
                                     errorMessage={""}
                                 />
 
                                 <RenderField
-                                    label={"Régimen fiscal receptor:"}
-                                    tooltip={"Régimen fiscal receptor:"}
+                                    label={t('dialog.fields.receiver_tax_regime.label')}
+                                    tooltip={t('dialog.fields.receiver_tax_regime.tooltip')}
                                     value={`${oCrp?.tax_regime_receiver?.name}`}
                                     disabled={true}
                                     mdCol={6}
@@ -500,15 +510,15 @@ export const DialogCrp = ({
                                         setOCrp?.((prev: any) => ({ ...prev, tax_regime_receiver: value }));
                                     }}
                                     options={[]}
-                                    placeholder={""}
+                                    placeholder={t('dialog.fields.receiver_tax_regime.placeholder')}
                                     errorKey={""}
                                     errors={formErrors}
                                     errorMessage={""}
                                 />
 
                                 <RenderField
-                                    label={"Folio:"}
-                                    tooltip={"Folio:"}
+                                    label={t('dialog.fields.folio.label')}
+                                    tooltip={t('dialog.fields.folio.tooltip')}
                                     value={oCrp?.folio}
                                     disabled={true}
                                     mdCol={6}
@@ -517,15 +527,15 @@ export const DialogCrp = ({
                                         setOCrp?.((prev: any) => ({ ...prev, folio: value }));
                                     }}
                                     options={[]}
-                                    placeholder={""}
+                                    placeholder={t('dialog.fields.folio.placeholder')}
                                     errorKey={""}
                                     errors={formErrors}
                                     errorMessage={""}
                                 />
 
                                 <RenderField
-                                    label={"Fecha:"}
-                                    tooltip={"Fecha:"}
+                                    label={t('dialog.fields.folio.label')}
+                                    tooltip={t('dialog.fields.folio.label')}
                                     value={oCrp?.xml_date}
                                     disabled={true}
                                     mdCol={6}
@@ -535,7 +545,7 @@ export const DialogCrp = ({
                                         setOCrp?.((prev: any) => ({ ...prev, xml_date: value }));
                                     }}
                                     options={[]}
-                                    placeholder={""}
+                                    placeholder={t('dialog.fields.folio.placeholder')}
                                     errorKey={""}
                                     errors={formErrors}
                                     errorMessage={""}
