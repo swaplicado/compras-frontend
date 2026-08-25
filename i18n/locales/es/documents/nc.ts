@@ -63,32 +63,32 @@ const nc = {
             company: {
                 label: "Empresa:",
                 placeholder: "Empresa",
-                tooltip: "Empresa"
+                tooltip: "Selecciona la empresa a la que pertenece la NC."
             },
             partner: {
                 label: "Proveedor:",
                 placeholder: "Proveedor",
-                tooltip: "Proveedor"
+                tooltip: "Selecciona el proveedor asociado a la NC."
             },
             lInvoices: {
                 label: "Facturas:",
                 placeholder: "Facturas",
-                tooltip: "Facturas"
+                tooltip: "Selecciona una factura para la NC."
             },
             lAreas: {
                 label: "Área:",
                 placeholder: "Área",
-                tooltip: "Área"
+                tooltip: "Selecciona una área para la factura."
             },
             date: {
                 label: "Fecha",
                 placeholder: "Fecha",
-                tooltip: "Fecha"
+                tooltip: "Esta es la fecha de emisión de la NC."
             },
             folio: {
                 label: "Folio",
                 placeholder: "Folio",
-                tooltip: "Folio"
+                tooltip: "Este es el folio asociado a la NC."
             },
             uuid: {
                 label: "UUID",
@@ -98,42 +98,42 @@ const nc = {
             files: {
                 label: "Archivos",
                 placeholder: "Archivos",
-                tooltip: "Archivos"
+                tooltip: "Selecciona los archivos de la NC"
             },
             partner_fiscal_id: {
                 label: "RFC del emisor",
                 placeholder: "RFC del emisor",
-                tooltip: "RFC del emisor"
+                tooltip: "Este es el RFC del emisor de la NC"
             },
             company_fiscal_id: {
                 label: "RFC del receptor",
                 placeholder: "RFC del receptor",
-                tooltip: "RFC del receptor"
+                tooltip: "Este es el RFC del receptor de la NC."
             },
             receiver_tax_regime: {
                 label: "Régimen fiscal del receptor",
                 placeholder: "Régimen fiscal del receptor",
-                tooltip: "Régimen fiscal del receptor"
+                tooltip: "Este es el régimen fiscal del receptor de la NC."
             },
             issuer_tax_regime: {
                 label: "Régimen fiscal del emisor",
                 placeholder: "Régimen fiscal del emisor",
-                tooltip: "Régimen fiscal del emisor"
+                tooltip: "Este es el régimen fiscal del emisor de la NC."
             },
             amount: {
                 label: "Monto",
                 placeholder: "Monto",
-                tooltip: "Monto"
+                tooltip: "Este es el monto monetario de la NC."
             },
             currency: {
                 label: "Moneda",
                 placeholder: "Moneda",
-                tooltip: "Moneda"
+                tooltip: "Esta es la moneda (divisa) de la NC."
             },
             exchange_rate: {
                 label: "Tipo de cambio",
                 placeholder: "Tipo de cambio",
-                tooltip: "Tipo de cambio"
+                tooltip: "Este es la taza de cambio de la NC."
             },
             authz_acceptance_notes: {
                 label: "Comentarios de aceptación/rechazo:",
@@ -148,7 +148,7 @@ const nc = {
             application_type: {
                 label: "Tipo aplicación",
                 placeholder: "Tipo aplicación",
-                tooltip: "Tipo aplicación"
+                tooltip: "Este es el tipo de aplicación contable de la NC."
             }
         },
         files: {

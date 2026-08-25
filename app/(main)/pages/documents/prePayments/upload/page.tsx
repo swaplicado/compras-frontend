@@ -341,7 +341,7 @@ const UploadPrepayment = () => {
             formData.append('user_id', oUser.oUser.id);
             formData.append('route', route);
             formData.append('document', JSON.stringify(document));
-            formData.append('references', JSON.stringify(oPrepay.references));
+            formData.append('references', oPrepay.references[0]?.id == 0 ? JSON.stringify([]) : JSON.stringify(oPrepay.references));
 
             const response = await axios.post(constants.API_AXIOS_POST, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }

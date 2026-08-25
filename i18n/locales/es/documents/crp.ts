@@ -1,3 +1,5 @@
+import payments from "./payments";
+
 const crp = {
     titleAll: "Todos los CRP",
     titleAllTooltip: "Todos los CRP cargados en el sistema, sin importar su estatus actual.",
@@ -35,6 +37,68 @@ const crp = {
         editTitle: "Modificar CRP",
         acceptedTitle: "CRP",
         rejectedTitle: "CRP",
+        fields: {
+            company: {
+                label: "Empresa: *",
+                placeholder: "Selecciona la empresa",
+                helperText: "Selecciona la empresa a la que pertenece el comprobante de pago.",
+                tooltip: "Selecciona la empresa a la que pertenece el comprobante de pago.",
+            },
+            partner: {
+                label: "Proveedor: *",
+                placeholder: "Selecciona el proveedor",
+                helperText: "Selecciona el proveedor al que pertenece el comprobante de pago.",
+                tooltip: "Selecciona el proveedor al que pertenece el comprobante de pago.",
+            },
+            payment: {
+                label: "Pagos: *",
+                placeholder: "Selecciona los pagos",
+                helperText: "Selecciona los pagos a los que pertenece el comprobante de pago.",
+                tooltip: "Selecciona los pagos a los que pertenece el comprobante de pago.",
+            },
+            area: {
+                label: "Área: *",
+                placeholder: "Selecciona el área",
+                helperText: "Selecciona el área a la que pertenece el comprobante de pago.",
+                tooltipSimple: "Área funcional.",
+                tooltipAuto: "Selección automática: Única área disponible para este pago.",
+                tooltipSelect: "Selecciona un pago primero para cargar las áreas.",
+            },
+            partner_fiscal_id: {
+                label: "RFC del emisor",
+                placeholder: "RFC del emisor",
+                tooltip: "Este es el RFC del emisor del comprobante de pago."
+            },
+            company_fiscal_id: {
+                label: "RFC del receptor",
+                placeholder: "RFC del receptor",
+                tooltip: "Este es el RFC del receptor del comprobante de pago."
+            },
+            receiver_tax_regime: {
+                label: "Régimen fiscal del receptor",
+                placeholder: "Régimen fiscal del receptor",
+                tooltip: "Este es el régimen fiscal del receptor de la NC."
+            },
+            issuer_tax_regime: {
+                label: "Régimen fiscal del emisor",
+                placeholder: "Régimen fiscal del emisor",
+                tooltip: "Este es el régimen fiscal del emisor de la NC."
+            },
+            folio: {
+                label: "Folio",
+                placeholder: "Folio",
+                tooltip: "Este es el folio asociado al comprobante de pago."
+            },
+            date: {
+                label: "Fecha",
+                placeholder: "Fecha",
+                tooltip: "Esta es la fecha de emisión del comprobante de pago."
+            },
+            xml_file: {
+                label: "XML: *",
+                tooltip: "Archivo XML del comprobante de pago."
+            }
+        },
         files: {
             label: "Archivos del comprobante de pago: *",
             placeholderMultiple: "Suelte aquí los archivos para comenzar a cargarlos",
@@ -62,12 +126,11 @@ const crp = {
         },
         uploadInstructionsPartner: {
             header: "Para cargar un comprobante de pagos, sigue estos pasos:",
-            step1: "Selecciona un proveedor.",
-            step2: "Selecciona uno o varios pagos.",
-            step3: "Selecciona el XML del comprobante de pago para su validación, en cuanto selecciones el xml este se validará automáticamente.",
-            step4: "Una vez validado el XML, se mostrarán las observaciones del archivo que pudiera contener marcados con un signo de advetencia amarillo, si no contiene errores criticos marcados en rojo y con una X, se mostrarán los campos del archivo XML para que pueda continuar.",
-            step5: "Selecciona los archivos asociados al comprobante de pago en el campo 'Archivos de comprobante de pago'.",
-            step6: "Asegúrate de que los archivos no superen 5 MB cada uno y que en total no superen los 25 MB.",
+            step1: "Selecciona uno o varios pagos.",
+            step2: "Selecciona el XML del comprobante de pago para su validación, en cuanto selecciones el xml este se validará automáticamente.",
+            step3: "Una vez validado el XML, se mostrarán las observaciones del archivo que pudiera contener marcados con un signo de advetencia amarillo, si no contiene errores criticos marcados en rojo y con una X, se mostrarán los campos del archivo XML para que pueda continuar.",
+            step4: "Selecciona los archivos asociados al comprobante de pago en el campo 'Archivos de comprobante de pago'.",
+            step5: "Asegúrate de que los archivos no superen 5 MB cada uno y que en total no superen los 25 MB.",
             footer: `Puedes seleccionar varios archivos a la vez, pero asegúrate de que al menos uno sea un PDF.
              Si seleccionas archivos que no cumplen con estos requisitos, se mostrará un mensaje de error.`   
         },

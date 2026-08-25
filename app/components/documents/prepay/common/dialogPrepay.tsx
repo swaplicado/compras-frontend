@@ -630,35 +630,35 @@ export const DialogPrepay = ({
                                     <h6>DATOS DE LA REFERENCIA:</h6>
                                 </div>
                                 <RenderField
-                                    label={t('dialog.fields.folio.label')}
-                                    tooltip={t('dialog.fields.folio.tooltip')}
+                                    label={t('dialog.fields.dataReference.folio.label')}
+                                    tooltip={t('dialog.fields.dataReference.folio.tooltip')}
                                     value={dialogMode == 'create' ? oSelectedReference?.name : oSelectedReference?.reference}
                                     disabled={true}
                                     mdCol={3}
                                     type={'text'}
                                     options={[]}
-                                    placeholder={t('dialog.fields.folio.placeholder')}
+                                    placeholder={t('dialog.fields.dataReference.folio.placeholder')}
                                     errorKey={'folio'}
                                     errors={[]}
                                     errorMessage={''}
                                 />
                                 <RenderField
-                                    label={t('dialog.fields.date.label')}
-                                    tooltip={t('dialog.fields.date.tooltip')}
+                                    label={t('dialog.fields.dataReference.date.label')}
+                                    tooltip={t('dialog.fields.dataReference.date.tooltip')}
                                     value={dialogMode == 'create' ? toDate(oSelectedReference?.date) : DateFormatter(oSelectedReference?.date)}
                                     disabled={true}
                                     mdCol={3}
                                     type={editableBodyFields ? 'calendar' : 'text'}
                                     inputRef={inputCalendarRefToSelectReference}
                                     options={[]}
-                                    placeholder={t('dialog.fields.date.placeholder')}
+                                    placeholder={t('dialog.fields.dataReference.date.placeholder')}
                                     errorKey={'date'}
                                     errors={[]}
                                     errorMessage={''}
                                 />
                                 <RenderField
-                                    label={t('dialog.fields.amount.label')}
-                                    tooltip={t('dialog.fields.amount.tooltip')}
+                                    label={t('dialog.fields.dataReference.amount.label')}
+                                    tooltip={t('dialog.fields.dataReference.amount.tooltip')}
                                     value={oSelectedReference?.amount}
                                     disabled={true}
                                     mdCol={3}
@@ -668,19 +668,19 @@ export const DialogPrepay = ({
                                         setFormErrors?.((prev: any) => ({ ...prev, amount: false }));
                                     }}
                                     options={[]}
-                                    placeholder={t('dialog.fields.amount.placeholder')}
+                                    placeholder={t('dialog.fields.dataReference.amount.placeholder')}
                                     errorKey={'amount'}
                                     errors={[]}
                                     errorMessage={''}
                                 />
                                 <RenderField
-                                    label={t('dialog.fields.currency.label')}
-                                    tooltip={t('dialog.fields.currency.tooltip')}
+                                    label={t('dialog.fields.dataReference.currency.label')}
+                                    tooltip={t('dialog.fields.dataReference.currency.tooltip')}
                                     value={dialogMode == 'create' ? oSelectedReference?.currency_code : (oSelectedReference?.currency?.code ? oSelectedReference?.currency?.code : oSelectedReference?.currency_code) }
                                     disabled={true}
                                     mdCol={3}
                                     type={'text'}
-                                    placeholder={t('dialog.fields.currency.placeholder')}
+                                    placeholder={t('dialog.fields.dataReference.currency.placeholder')}
                                     errorKey={'currency'}
                                     errors={[]}
                                     errorMessage={''}
@@ -693,8 +693,8 @@ export const DialogPrepay = ({
                                     <h6>DATOS PROFORMA:</h6>
                                 </div>
                                 <RenderField
-                                    label={t('dialog.fields.folio.label')}
-                                    tooltip={t('dialog.fields.folio.tooltip')}
+                                    label={t('dialog.fields.dataPrepeyment.folio.label')}
+                                    tooltip={t('dialog.fields.dataPrepeyment.folio.tooltip')}
                                     value={oPrepayObj?.folio}
                                     disabled={!editableBodyFields}
                                     mdCol={3}
@@ -704,14 +704,14 @@ export const DialogPrepay = ({
                                         setFormErrors?.((prev: any) => ({ ...prev, folio: false }));
                                     }}
                                     options={[]}
-                                    placeholder={t('dialog.fields.folio.placeholder')}
+                                    placeholder={t('dialog.fields.dataPrepeyment.folio.placeholder')}
                                     errorKey={'folio'}
                                     errors={formErrors}
                                     errorMessage={'Ingresa folio'}
                                 />
                                 <RenderField
-                                    label={t('dialog.fields.date.label')}
-                                    tooltip={t('dialog.fields.date.tooltip')}
+                                    label={t('dialog.fields.dataPrepeyment.date.label')}
+                                    tooltip={t('dialog.fields.dataPrepeyment.date.tooltip')}
                                     value={editableBodyFields ? oPrepayObj?.date : oPrepayObj?.dateFormatted}
                                     disabled={!editableBodyFields}
                                     mdCol={3}
@@ -722,14 +722,14 @@ export const DialogPrepay = ({
                                         setFormErrors?.((prev: any) => ({ ...prev, date: false }));
                                     }}
                                     options={[]}
-                                    placeholder={t('dialog.fields.date.placeholder')}
+                                    placeholder={t('dialog.fields.dataPrepeyment.date.placeholder')}
                                     errorKey={'date'}
                                     errors={formErrors}
                                     errorMessage={'Selecciona fecha'}
                                 />
                                 <RenderField
-                                    label={t('dialog.fields.amount.label')}
-                                    tooltip={t('dialog.fields.amount.tooltip')}
+                                    label={t('dialog.fields.dataPrepeyment.amount.label')}
+                                    tooltip={t('dialog.fields.dataPrepeyment.amount.tooltip')}
                                     value={oPrepayObj?.amount}
                                     disabled={!editableBodyFields}
                                     mdCol={3}
@@ -739,14 +739,14 @@ export const DialogPrepay = ({
                                         setFormErrors?.((prev: any) => ({ ...prev, amount: false }));
                                     }}
                                     options={[]}
-                                    placeholder={t('dialog.fields.amount.placeholder')}
+                                    placeholder={t('dialog.fields.dataPrepeyment.amount.placeholder')}
                                     errorKey={'amount'}
                                     errors={formErrors}
                                     errorMessage={'Ingresa monto'}
                                 />
                                 <RenderField
-                                    label={t('dialog.fields.currency.label')}
-                                    tooltip={t('dialog.fields.currency.tooltip')}
+                                    label={t('dialog.fields.dataPrepeyment.currency.label')}
+                                    tooltip={t('dialog.fields.dataPrepeyment.currency.tooltip')}
                                     value={editableBodyFields ? oPrepayObj?.oCurrency : oPrepayObj?.currency_code}
                                     disabled={!editableBodyFields}
                                     mdCol={3}
