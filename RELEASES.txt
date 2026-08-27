@@ -1004,3 +1004,17 @@ Correcciones:
 - Validación para prevenir crash en UI al iterar errores de validación XML.
 
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 27-08-2026
+Autor: Rodrigo Abel Ayala Vázquez
+========================================
+
+Resumen:
+- Arreglo de inputs de porcentajes y números.
+
+Cambios:
+- Se arregló que cuando el input no tenga un valor o sea cero al tener el foco se quede en blanco.
+
+----------------------------------------

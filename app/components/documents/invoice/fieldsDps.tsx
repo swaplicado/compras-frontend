@@ -1,3 +1,4 @@
+// VERSIÓN OBSOLETA
 import React, { useEffect, useRef, useState } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Tooltip } from 'primereact/tooltip';

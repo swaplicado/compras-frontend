@@ -3,7 +3,7 @@ import { Tooltip } from 'primereact/tooltip';
 import { InputText } from 'primereact/inputtext';
 import { useTranslation } from 'react-i18next';
 import { Divider } from 'primereact/divider';
-import { InputNumber } from 'primereact/inputnumber';
+import { CustomInputNumber } from '@/app/components/commons/customInputNumber';
 import { SelectButton } from 'primereact/selectbutton';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { Dropdown } from 'primereact/dropdown';
@@ -316,15 +316,16 @@ export const FieldsDps = ({
                             <Tooltip target=".custom-target-icon" />
                             <i className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge" data-pr-tooltip={props.tooltip} data-pr-position="right" data-pr-my="left center-2" style={{ fontSize: '1rem', cursor: 'pointer' }}></i>
                             <div>
-                                <InputNumber
+                                <CustomInputNumber
                                     type="text"
                                     className={`w-full`}
-                                    value={props.value || ''}
+                                    value={(props.value === '' || props.value === null || props.value === undefined) ? null : Number(props.value)}
                                     disabled={props.disabled}
                                     maxLength={50}
                                     minFractionDigits={props.digits ? props.digits : 2}
                                     maxFractionDigits={props.digits ? props.digits : 2}
                                     inputClassName="text-right"
+                                    placeholder={props.placeholder}
                                     onChange={(e) => props.onChange?.(e.value)}
                                 />
                             </div>
@@ -850,7 +851,7 @@ export const FieldsDps = ({
                                     ></i>
                                     <div className="p-inputgroup flex-1">
                                         <span className="p-inputgroup-addon">%</span>
-                                        <InputNumber
+                                        <CustomInputNumber
                                             placeholder="Porcentaje"
                                             disabled={footerMode == 'view'}
                                             value={oDps?.payment_percentage}
@@ -879,7 +880,7 @@ export const FieldsDps = ({
                                         data-pr-my="left center-2"
                                         style={{ fontSize: '1rem', cursor: 'pointer' }}
                                     ></i>
-                                    <InputNumber
+                                    <CustomInputNumber
                                         placeholder="Monto"
                                         disabled={footerMode == 'view'}
                                         value={oDps?.payment_amount}
