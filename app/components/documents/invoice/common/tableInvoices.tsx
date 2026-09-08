@@ -10,6 +10,7 @@ import { Button } from 'primereact/button';
 import { useTranslation } from 'react-i18next';
 import { MyToolbar } from '@/app/components/documents/invoice/common/myToolbar';
 import { useIsMobile } from '@/app/components/commons/screenMobile';
+import { getAccountingNature } from '@/app/(main)/utilities/commons/accountingUtils';
 import moment from 'moment';
 import { OverlayPanel } from 'primereact/overlaypanel';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
@@ -354,38 +355,56 @@ export const TableInvoices = ({
     };
 
     //*********** TEMPLATES DE TABLA ***********
-    const useCfdiTemplate = (rowData: any) => {
-        const lCfdis = constants.USE_CFDI_ACTIVO_FIJO;
 
-        const renderActivoFijo = (
-            <div className="flex align-items-center justify-content-center">
-                <Tooltip target=".custom-target-icon" />
-                <span 
-                    className="custom-target-icon bg-blue-400 border-circle w-2rem h-2rem flex align-items-center justify-content-center text-white-alpha-90"
-                    data-pr-tooltip={'Activo fijo'}
-                    data-pr-position="right"
-                    data-pr-my="left center-2"
-                >
-                    AF
-                </span>
-            </div>
-        );
-        const renderGasto = (
-            <div className="flex align-items-center justify-content-center">
-                <Tooltip target=".custom-target-icon" />
-                <span 
-                    className="custom-target-icon bg-yellow-500 border-circle w-2rem h-2rem flex align-items-center justify-content-center text-white-alpha-90"
-                    data-pr-tooltip={'Gasto'}
-                    data-pr-position="right"
-                    data-pr-my="left center-2"
-                >
-                    G
-                </span>
-            </div>
-        );
+    const accountingTypeTemplate = (rowData: any) => {
+        let nature = rowData.nature || ''; // para cuando se agregue la naturaleza del documento
+        let concepts = rowData.concepts || ''; // para cuando se agreguen los conceptos del documento
+        const lCfdis = rowData.useCfdi || '';
 
-        return lCfdis.includes(rowData.useCfdi) ? renderActivoFijo : renderGasto;
+        // Extraemos naturaleza y conceptos de las referencias del documento
+        if (rowData?.lReferences && Array.isArray(rowData.lReferences) && rowData.lReferences.length > 0) {
+        const refConcepts = rowData.lReferences.map((ref: any) => ref.concepts || '').join(',');
+        concepts = `${concepts},${refConcepts}`;
+
+        const refNatures = rowData.lReferences.map((ref: any) => ref.nature || '').join(',');
+        nature = `${nature},${refNatures}`;
     }
+
+        // Obtenemos la naturaleza contable y si hay conflicto entre la orden de compra y el CFDI
+        const { finalType, hasConflict, orderType, cfdiType } = getAccountingNature(nature, concepts, lCfdis);
+
+        // Configurar el Tooltip dinámico según la naturaleza y si hay conflicto
+        let tooltipText = finalType === 'AF' 
+            ? constants.ACTIVO_FIJO 
+            : constants.GASTO;
+
+        if (hasConflict) {
+            const ocText = orderType === 'AF' ? constants.ACTIVO_FIJO : constants.GASTO;
+            const cfText = cfdiType === 'AF' ? constants.ACTIVO_FIJO : constants.GASTO;
+            tooltipText = `Tipo de egreso: ${ocText}, aunque el CFDI indique ${cfText}.`;
+        }
+
+        // Renderizar el badge con alerta visual condicional
+        const uniqueId = rowData.id_dps;
+
+        return (
+            <div className="flex align-items-center justify-content-center relative" style={{ width: '40px', height: '40px', margin: '0 auto' }}>
+                <Tooltip target={`.icon-accounting-${uniqueId}`} />
+                <span
+                    className={`icon-accounting-${uniqueId} ${finalType === 'AF' ? 'bg-blue-400' : 'bg-yellow-500'} border-circle w-2rem h-2rem flex align-items-center justify-content-center text-white-alpha-90 cursor-pointer ${hasConflict ? 'border-2 border-red-500' : ''}`}
+                    data-pr-tooltip={tooltipText}
+                    data-pr-position="left"
+                >
+                    {finalType}
+                </span>
+                
+                {/* Si hay conflicto mostramos un ícono de advertencia */}
+                {hasConflict && (
+                    <i className="pi pi-exclamation-triangle text-red-500 absolute" style={{ top: '0px', right: '0px', fontSize: '0.9rem', borderRadius: '50%' }}></i>
+                )}
+            </div>
+        );
+    };
 
     const processingTypeTemplate = (rowData: any) => {
         const icon = rowData.processing_icon;
@@ -883,7 +902,8 @@ export const TableInvoices = ({
                 <Column field="currencyCode" header={t('invoicesTable.columns.currencyCode')} footer={t('invoicesTable.columns.currencyCode')} sortable />
                 <Column field="payday" header={t('invoicesTable.columns.payday')} footer={t('invoicesTable.columns.payday')} body={payDayBodyTemplate} sortable />
                 <Column field="payment_percentage" header={t('invoicesTable.columns.payment_percentage')} footer={t('invoicesTable.columns.payment_percentage')} />
-                <Column field="useCfdi" header={t('invoicesTable.columns.useCfdi')} footer={t('invoicesTable.columns.useCfdi')} body={useCfdiTemplate} />
+                {/* <Column field="useCfdi" header={t('invoicesTable.columns.useCfdi')} footer={t('invoicesTable.columns.useCfdi')} body={useCfdiTemplate} /> */}
+                <Column field="useCfdi" header={t('invoicesTable.columns.useCfdi')} footer={t('invoicesTable.columns.useCfdi')} body={accountingTypeTemplate} />
                 <Column field="processing_icon" header="Carga" footer="Carga" body={processingTypeTemplate} />
                 <Column field="acceptance" header={t('invoicesTable.columns.acceptance')} footer={t('invoicesTable.columns.acceptance')} body={statusAcceptanceDpsBodyTemplate} sortable hidden={ columnsProps?.acceptance.hidden } />
                 <Column field="actors_of_action" header={'Usuario en turno'} footer={'Usuario en turno'} body={actorsOfActionBody} sortable hidden={ columnsProps?.actors_of_action.hidden } />

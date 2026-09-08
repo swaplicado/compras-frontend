@@ -18,6 +18,7 @@ const oc = {
             amount: "Monto",
             currency_code: "Moneda",
             date: "Fecha",
+            accounting_type: "Tipo",
             authz_acceptance_name: "Aceptación",
             authz_authorization_name: "Autorización",
             files: "Archivos"

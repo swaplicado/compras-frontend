@@ -3,7 +3,8 @@ import { Tooltip } from 'primereact/tooltip';
 import { Dropdown } from 'primereact/dropdown';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { InputText } from 'primereact/inputtext';
-import { InputNumber } from 'primereact/inputnumber';
+// import { InputNumber } from 'primereact/inputnumber';
+import { CustomInputNumber } from '@/app/components/commons/customInputNumber';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { Calendar, CalendarDateTemplateEvent } from 'primereact/calendar';
 import DateFormatter from '@/app/components/commons/formatDate';
@@ -164,10 +165,10 @@ export const RenderField = (props: renderFieldProps) => {
                             <Tooltip target=".custom-target-icon" />
                             <i className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge" data-pr-tooltip={props.tooltip} data-pr-position="right" data-pr-my="left center-2" style={{ fontSize: '1rem', cursor: 'pointer' }}></i>
                             <div>
-                                <InputNumber 
+                                <CustomInputNumber 
                                     type="text" 
                                     className={`w-full ${props.errors[props.errorKey] ? 'p-invalid' : ''}`} 
-                                    value={props.value || ''} 
+                                    value={(props.value === '' || props.value === null || props.value === undefined) ? null : Number(props.value)}
                                     readOnly={props.readonly} 
                                     disabled={props.disabled} 
                                     maxLength={50} 

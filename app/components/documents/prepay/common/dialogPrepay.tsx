@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import constants from '@/app/constants/constants';
 import { CustomFileViewer } from '@/app/components/documents/invoice/fileViewer';
 import { CustomFileUpload } from '@/app/components/documents/invoice/customFileUpload';
+import { getAccountingNature } from '@/app/(main)/utilities/commons/accountingUtils';
 import { FileUpload } from 'primereact/fileupload';
 import { Messages } from 'primereact/messages';
 import axios from 'axios';
@@ -513,10 +514,44 @@ export const DialogPrepay = ({
         setOPrepayFn?.((prev: any) => ({ ...prev, area: value }));
     }
 
+    // Evaluación de tipo de egreso en la cabecera del Dialog
+    let nature = oPrepayObj?.nature || '';
+    let concepts = oPrepayObj?.concepts || '';
+
+    // Extraemos conceptos de las referencias de la proforma (si existen)
+    if (oPrepayObj?.references && Array.isArray(oPrepayObj.references) && oPrepayObj.references.length > 0) {
+        const refConcepts = oPrepayObj.references.map((ref: any) => ref.concepts || '').join(',');
+        concepts = `${concepts},${refConcepts}`;
+
+        const refNature = oPrepayObj.references.map((ref: any) => ref.nature || '').join(',');
+        nature = `${nature},${refNature}`;
+    }
+
+    const { finalType } = getAccountingNature(nature, concepts);
+    const isActivoFijo = finalType === 'AF';
+
+    const customHeader = (
+        <div className="flex align-items-center gap-3">
+            <span>{headerTitle}</span>
+            {oPrepayObj && (concepts || nature) && (
+                <div className="flex align-items-center">
+                    <Tooltip target=".icon-header-accounting" />
+                    <span
+                        className={`icon-header-accounting ${isActivoFijo ? 'bg-blue-400' : 'bg-yellow-500'} border-circle w-2rem h-2rem flex align-items-center justify-content-center text-white text-base shadow-1 cursor-pointer`}
+                        data-pr-tooltip={isActivoFijo ? constants.ACTIVO_FIJO : constants.GASTO}
+                        data-pr-position="right"
+                    >
+                        {finalType}
+                    </span>
+                </div>
+            )}
+        </div>
+    );
+
     return (
         <div className="flex justify-content-center">
             <Dialog
-                header={headerTitle}
+                header={customHeader}
                 visible={visible}
                 onHide={onHide}
                 footer={footer}

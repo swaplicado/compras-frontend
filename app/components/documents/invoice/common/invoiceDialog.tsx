@@ -22,6 +22,7 @@ import { CustomFileViewer } from '@/app/components/documents/invoice/fileViewer'
 import { getExtensionFileByName } from '@/app/(main)/utilities/files/fileValidator';
 import DateFormatter from '@/app/components/commons/formatDate';
 import { animationSuccess, animationError } from '@/app/components/commons/animationResponse';
+import { getAccountingNature } from '@/app/(main)/utilities/commons/accountingUtils';
 import { XmlWarnings } from '@/app/components/documents/invoice/common/xmlWarnings';
 import { FieldsEditAcceptance } from '@/app/components/documents/invoice/fieldsEditAcceptance';
 import { HistoryAuth } from '@/app/components/documents/invoice/historyAuth';
@@ -1768,10 +1769,62 @@ export const InvoiceDialog = ({
         });
     }
 
+    // Evaluación de tipo de egreso en la cabecera del Dialog
+    let nature = oDps?.nature || ''; // para cuando se agregue la naturaleza del documento
+    let concepts = oDps?.concepts || ''; // para cuando se agreguen los conceptos del documento
+    const lCfdiUse = oDps?.useCfdi || '';
+
+    // Extraemos naturaleza y conceptos de las referencias del documento
+    if (oDps?.lReferences && Array.isArray(oDps.lReferences) && oDps.lReferences.length > 0) {
+        const refConcepts = oDps.lReferences.map((ref: any) => ref.concepts || '').join(',');
+        concepts = `${concepts},${refConcepts}`;
+
+        const refNature = oDps.lReferences.map((ref: any) => ref.nature || '').join(',');
+        nature = `${nature},${refNature}`;
+    }
+
+
+    const { finalType, hasConflict, orderType, cfdiType } = getAccountingNature(nature, concepts, lCfdiUse);
+    const isActivoFijo = finalType === 'AF';
+
+    // Tooltip dinámico para la cabecera
+    let headerTooltip = isActivoFijo ? constants.ACTIVO_FIJO : constants.GASTO;
+    if (hasConflict) {
+        const ocText = orderType === 'AF' ? constants.ACTIVO_FIJO : constants.GASTO;
+        const cfText = cfdiType === 'AF' ? constants.ACTIVO_FIJO : constants.GASTO;
+        headerTooltip = `Tipo de egreso: ${ocText} aunque el CFDI indique ${cfText}.`;
+    }
+
+    const headerTitle = dialogMode === 'create' ? t('uploadDialog.headerCreate') : t('uploadDialog.headerReview');
+    const isExistingDocument = dialogMode !== 'create' && Boolean(oDps?.id || oDps?.id_dps);
+
+    const customHeader = (
+        <div className="flex align-items-center gap-3">
+            <span>{headerTitle}</span>
+            {isExistingDocument && oDps && (
+                <div className="flex align-items-center relative" style={{ width: '35px', height: '35px' }}>
+                    <Tooltip target=".icon-header-accounting" />
+                    <span
+                        className={`icon-header-accounting ${isActivoFijo ? 'bg-blue-400' : 'bg-yellow-500'} border-circle w-2rem h-2rem flex align-items-center justify-content-center text-white text-base shadow-1 cursor-pointer ${hasConflict ? 'border-2 border-red-500' : ''}`}
+                        data-pr-tooltip={headerTooltip}
+                        data-pr-position="right"
+                    >
+                        {finalType}
+                    </span>
+                    
+                    {/* Indicador defensivo (Mini-Badge de alerta) superpuesto con el nuevo diseño profesional */}
+                    {hasConflict && (
+                         <i className="pi pi-exclamation-triangle text-red-500 absolute" style={{ top: '0px', right: '0px', fontSize: '0.9rem', borderRadius: '50%' }}></i>
+                    )}
+                </div>
+            )}
+        </div>
+    );
+
     return (
         <div className="flex justify-content-center">
             <Dialog
-                header={dialogMode == 'create' ? t('uploadDialog.headerCreate') : t('uploadDialog.headerReview')}
+                header={customHeader}
                 visible={visible}
                 onHide={onHide}
                 footer={footerContent}

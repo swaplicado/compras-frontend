@@ -241,6 +241,13 @@ const constants = {
     //Uso de cfdi de activo fijo
     USE_CFDI_ACTIVO_FIJO: ['I01', 'I02', 'I03', 'I04', 'I05', 'I06', 'I07', 'I08'],
 
+    //Prefijos de claves de conceptos de activo fijo
+    PREFIXES_ACTIVO_FIJO: ['ADI', 'AEC', 'AED', 'AET', 'AMCP', 'AME', 'AMU', 'AMM', 'ATE'],
+
+    //Constantes de tipo de egreso
+    ACTIVO_FIJO: 'ACTIVO FIJO',
+    GASTO: 'GASTO',
+
     //Valores para el filtro de activo fijo
     USE_CFDI_ACTIVO_FIJO_FILTER_OPTIONS: [
         { label: 'Todos', value: 'all' },

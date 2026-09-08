@@ -20,6 +20,7 @@ import { ValidateNcXml } from '@/app/components/documents/nc/common/ValidNcXml';
 import { Divider } from 'primereact/divider';
 import { FieldsEditAcceptance } from '@/app/components/documents/invoice/fieldsEditAcceptance';
 import { getlOptionsApplicationTypeNc } from '@/app/(main)/utilities/documents/nc/ncUtilities';
+import { CustomInputNumber } from '@/app/components/commons/customInputNumber';
 
 interface DialogNc {
     visible: boolean;
@@ -418,7 +419,7 @@ export const DialogNc = ({
                                                                         Folio: {item.folio} | Monto aplicado:
                                                                     </label>
                                                                     <div className="col-12 md:col-5 f justify-content-start">
-                                                                        <InputNumber
+                                                                        <CustomInputNumber
                                                                             type="text"
                                                                             className={`w-full ${oNc?.invoices[index]?.error ? 'p-invalid' : ''}`}
                                                                             value={oNc?.invoices[index]?.amountNc}
