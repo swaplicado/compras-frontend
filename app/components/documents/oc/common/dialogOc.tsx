@@ -5,6 +5,7 @@ import { ProgressSpinner } from 'primereact/progressspinner';
 import { RenderField } from '@/app/components/commons/renderField';
 import { useTranslation } from 'react-i18next';
 import { formatCurrency } from '@/app/(main)/utilities/documents/common/currencyUtils';
+import { getAccountingNature } from '@/app/(main)/utilities/commons/accountingUtils';
 import constants from '@/app/constants/constants';
 import { CustomFileViewer } from '@/app/components/documents/invoice/fileViewer';
 import { CustomFileUpload } from '@/app/components/documents/invoice/customFileUpload';
@@ -214,10 +215,51 @@ export const DialogOc = ({
         }
     }, [oOc?.partner])
 
+    // Evaluación de si el documento se contabilizará como activo fijo o gasto, segun su naturaleza o sus conceptos
+
+    const nature = oOc?.nature || '';
+    const concepts = oOc?.concepts || '';
+
+    const { finalType } = getAccountingNature(nature, concepts);
+    const isActivoFijo = finalType === 'AF';
+
+    // Modificación de header para mostrar ícono de activo fijo o gasto
+
+    const customHeader = (
+        <div className="flex align-items-center gap-3">
+            <span>{headerTitle}</span>
+            {oOc && (
+                isActivoFijo ? (
+                    <div className="flex align-items-center">
+                        <Tooltip target=".icon-af-header" />
+                        <span
+                            className="icon-af-header bg-blue-400 border-circle w-2rem h-2rem flex align-items-center justify-content-center text-white text-base shadow-1 cursor-pointer"
+                            data-pr-tooltip={constants.ACTIVO_FIJO}
+                            data-pr-position="right"
+                        >
+                            AF
+                        </span>
+                    </div>
+                ) : (
+                    <div className="flex align-items-center">
+                        <Tooltip target=".icon-g-header" />
+                        <span
+                            className="icon-g-header bg-yellow-500 border-circle w-2rem h-2rem flex align-items-center justify-content-center text-white text-base shadow-1 cursor-pointer"
+                            data-pr-tooltip={constants.GASTO}
+                            data-pr-position="right"
+                        >
+                            G
+                        </span>
+                    </div>
+                )
+            )}
+        </div>
+    );
+
     return (
         <div className="flex justify-content-center">
             <Dialog 
-                header={headerTitle} 
+                header={customHeader}
                 visible={visible} 
                 onHide={onHide} 
                 footer={footer} 

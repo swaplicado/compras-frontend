@@ -1018,3 +1018,16 @@ Cambios:
 - Se arregló que cuando el input no tenga un valor o sea cero al tener el foco se quede en blanco.
 
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 08-09-2026
+Autor: Rodrigo Abel Ayala Vázquez
+========================================
+
+Resumen:
+- Clarificación del tipo de egreso en tablas y diálogos.
+
+Cambios:
+- Se adaptó el ícono de "Tipo" de la tabla de facturas, en los diálogos y tablas de Órdenes de compra, Facturas y Proformas.
+- Se establecieron reglas para el tipo de egreso que tendrá la compra, dependiendo de su naturaleza, conceptos y, en caso de tener CFDI, su Uso de CFDI.

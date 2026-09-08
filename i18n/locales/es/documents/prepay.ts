@@ -26,6 +26,7 @@ const prepay = {
             currency_code: "Moneda",
             date: "Fecha",
             authz_acceptance_name: "Aceptación",
+            accounting_type: "Tipo",
             authz_authorization_name: "Autorización",
             files: "Archivos"
         }

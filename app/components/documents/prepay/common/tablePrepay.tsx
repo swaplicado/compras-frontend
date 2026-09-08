@@ -7,7 +7,9 @@ import { Column } from 'primereact/column';
 import { Dropdown } from 'primereact/dropdown';
 import { useTranslation } from 'react-i18next';
 import { MyToolbar } from '@/app/components/documents/invoice/common/myToolbar';
+import { getAccountingNature } from '@/app/(main)/utilities/commons/accountingUtils';
 import { useIsMobile } from '@/app/components/commons/screenMobile';
+import { Tooltip } from 'primereact/tooltip';
 import { type } from 'node:os';
 import { OverlayPanel } from 'primereact/overlaypanel';
 import { Button } from 'primereact/button';
@@ -126,6 +128,50 @@ export const TablePrepayments = ({
     };
 
 //*********** TEMPLATES DE TABLA ***********
+
+    const accountingTypeTemplate = (rowData: any) => {
+        let nature = rowData.nature || '';
+        let concepts = rowData.concepts || '';
+
+        if (rowData.references && Array.isArray(rowData.references) && rowData.references.length > 0) {
+            const refConcepts = rowData.references.map((ref: any) => ref.concepts || '').join(',');
+            concepts = `${concepts},${refConcepts}`;
+
+            const refNature = rowData.references.map((ref: any) => ref.nature || '').join(',');
+            nature = `${nature},${refNature}`;
+        }
+
+        const { finalType } = getAccountingNature(nature, concepts);
+        
+        if (finalType === 'AF') {
+            return (
+                <div className="flex align-items-center justify-content-center">
+                    <Tooltip target={`.icon-af-${rowData.id}`} />
+                    <span
+                        className={`icon-af-${rowData.id} bg-blue-400 border-circle w-2rem h-2rem flex align-items-center justify-content-center text-white-alpha-90 cursor-pointer shadow-1`}
+                        data-pr-tooltip={constants.ACTIVO_FIJO}
+                        data-pr-position="left"
+                    >
+                        AF
+                    </span>
+                </div>
+            );
+        }
+
+        return (
+            <div className="flex align-items-center justify-content-center">
+                <Tooltip target={`.icon-gasto-${rowData.id}`} />
+                <span
+                    className={`icon-gasto-${rowData.id} bg-yellow-500 border-circle w-2rem h-2rem flex align-items-center justify-content-center text-white-alpha-90 cursor-pointer shadow-1`}
+                    data-pr-tooltip={constants.GASTO}
+                    data-pr-position="left"
+                >
+                    G
+                </span>
+            </div>
+        );
+    };
+
     const companyFilterTemplate = () => {
         return (
             <Dropdown 
@@ -325,6 +371,7 @@ export const TablePrepayments = ({
                 <Column field="amount" header={t('datatable.columns.amount')} footer={t('datatable.columns.amount')} dataType="numeric" body={amountBodyTemplate} sortable/>
                 <Column field="currency_code" header={t('datatable.columns.currency_code')} footer={t('datatable.columns.currency_code')} sortable/>
                 <Column field="date" header={t('datatable.columns.date')} footer={t('datatable.columns.date')} body={dateBodyTemplate} sortable/>
+                <Column field="accounting_type" header={t('datatable.columns.accounting_type')} footer={t('datatable.columns.accounting_type')} body={accountingTypeTemplate} sortable/>
                 <Column field="authz_acceptance_name" header={t('datatable.columns.authz_acceptance_name')} footer={t('datatable.columns.authz_acceptance_name')} body={statusAcceptanceBodyTemplate} sortable hidden={ columnsProps?.authz_acceptance_name.hidden }/>
                 <Column field="actors_of_action" header={'Usuario en turno'} footer={'Usuario en turno'} body={actorsOfActionBody} sortable hidden={ columnsProps?.actors_of_action.hidden } />
                 <Column field="authz_authorization_name" header={t('datatable.columns.authz_authorization_name')} footer={t('datatable.columns.authz_authorization_name')} body={statusAuthBodyTemplate} sortable hidden={ columnsProps?.authz_authorization_name.hidden } />

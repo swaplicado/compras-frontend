@@ -7,6 +7,8 @@ import { Column } from 'primereact/column';
 import { Dropdown } from 'primereact/dropdown';
 import { useTranslation } from 'react-i18next';
 import { MyToolbar } from '@/app/components/documents/invoice/common/myToolbar';
+import { Tooltip } from 'primereact/tooltip';
+import { getAccountingNature } from '@/app/(main)/utilities/commons/accountingUtils';
 import { useIsMobile } from '@/app/components/commons/screenMobile';
 import { type } from 'node:os';
 import { OverlayPanel } from 'primereact/overlaypanel';
@@ -120,6 +122,43 @@ export const TableOc = ({
     };
 
 //*********** TEMPLATES DE TABLA ***********
+
+    const accountingTypeTemplate = (rowData: any) => {
+        const nature = rowData.nature || '';
+        let concepts = rowData.concepts || '';
+
+        // Obtenemos la naturaleza contable
+        const { finalType } = getAccountingNature(nature, concepts);
+        
+        if (finalType === 'AF') {
+            return (
+                <div className="flex align-items-center justify-content-center">
+                    <Tooltip target=".icon-af" />
+                    <span
+                        className="icon-af bg-blue-400 border-circle w-2rem h-2rem flex align-items-center justify-content-center text-white-alpha-90 cursor-pointer"
+                        data-pr-tooltip={constants.ACTIVO_FIJO}
+                        data-pr-position="left"
+                    >
+                        AF
+                    </span>
+                </div>
+            );
+        }
+
+        return (
+            <div className="flex align-items-center justify-content-center">
+                <Tooltip target=".icon-gasto" />
+                <span
+                    className="icon-gasto bg-yellow-500 border-circle w-2rem h-2rem flex align-items-center justify-content-center text-white-alpha-90 cursor-pointer"
+                    data-pr-tooltip={constants.GASTO}
+                    data-pr-position="left"
+                >
+                    G
+                </span>
+            </div>
+        );
+    };
+
     const companyFilterTemplate = () => {
         return (
             <Dropdown 
@@ -322,6 +361,7 @@ export const TableOc = ({
                 <Column field="amount" header={t('datatable.columns.amount')} footer={t('datatable.columns.amount')} dataType="numeric" body={amountBodyTemplate} sortable/>
                 <Column field="currency_code" header={t('datatable.columns.currency_code')} footer={t('datatable.columns.currency_code')} sortable/>
                 <Column field="date" header={t('datatable.columns.date')} footer={t('datatable.columns.date')} body={dateBodyTemplate} sortable/>
+                <Column field="accounting_type" header={t('datatable.columns.accounting_type')} footer={t('datatable.columns.accounting_type')} body={accountingTypeTemplate} sortable/>
                 <Column field="authz_acceptance_name" header={t('datatable.columns.authz_acceptance_name')} footer={t('datatable.columns.authz_acceptance_name')} body={statusAcceptanceBodyTemplate} sortable hidden={ columnsProps?.authz_acceptance_name.hidden } />
                 <Column field="authz_authorization_name" header={t('datatable.columns.authz_authorization_name')} footer={t('datatable.columns.authz_authorization_name')} body={statusAuthBodyTemplate} sortable/>
                 <Column field="actors_of_action" header={'Usuario en turno'} footer={'Usuario en turno'} body={actorsOfActionBody} sortable />
