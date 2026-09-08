@@ -1796,10 +1796,12 @@ export const InvoiceDialog = ({
     }
 
     const headerTitle = dialogMode === 'create' ? t('uploadDialog.headerCreate') : t('uploadDialog.headerReview');
+    const isExistingDocument = dialogMode !== 'create' && Boolean(oDps?.id || oDps?.id_dps);
+
     const customHeader = (
         <div className="flex align-items-center gap-3">
             <span>{headerTitle}</span>
-            {oDps && (
+            {isExistingDocument && oDps && (
                 <div className="flex align-items-center relative" style={{ width: '35px', height: '35px' }}>
                     <Tooltip target=".icon-header-accounting" />
                     <span
