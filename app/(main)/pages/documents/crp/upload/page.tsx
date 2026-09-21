@@ -153,15 +153,15 @@ const ConsultPaymentProgramded = () => {
                     oCompany,
                     oProvider
                 });
-                if (oUser.isInternalUser) {
-                    setLPaymentsExec((prev: any) => [{ 
-                        id: 0,
-                        name: 'Sin referencia',
-                        functional_area__id: '',
-                        functional_area__name: ''
-                     }
-                     , ...prev]);
-                }
+                // if (oUser.isInternalUser) {
+                //     setLPaymentsExec((prev: any) => [{ 
+                //         id: 0,
+                //         name: 'Sin referencia',
+                //         functional_area__id: '',
+                //         functional_area__name: ''
+                //      }
+                //      , ...prev]);
+                // }
                 
                 await getlAreas({
                     setLAreas: setLGlobalAreas,
