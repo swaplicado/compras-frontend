@@ -177,7 +177,7 @@ export const DialogNc = ({
         }
 
         const noDocument = value?.some((item: any) => item.id == 0);
-        let selectedArea = null;
+        let selectedArea: any = null;
 
         if (noDocument) {
 
