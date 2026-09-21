@@ -177,13 +177,15 @@ export const DialogNc = ({
         }
 
         const noDocument = value?.some((item: any) => item.id == 0);
+        let selectedArea = null;
+
         if (noDocument) {
 
-            showToast?.('warn', 'No se pueden registrar Notas de Crédito sin una factura de referencia.', 'Aviso');
+            showToast?.('warn', t('dialog.noReferenceWarning'), t('common:notice'));
             setLOptionsApplicationTypeNc([]);
             value = [{
                 id: 0,
-                name: 'Sin referencia',
+                name: t('dialog.noReference'),
                 folio: '',
                 date: '',
                 amount: 0,
@@ -192,16 +194,37 @@ export const DialogNc = ({
                 functional_area__id: '',
                 functional_area__name: ''
             }];
-        }
+            selectedArea = null;
+        }else {
+            if (value && value.length === 1) {
+                const refAreaId = value[0]?.functional_area__id;
+                const refAreaName = value[0]?.functional_area__name;
 
-        if (value.length > 0) {
-            await getlOptionsApplicationTypeNc({
+                if (refAreaId) {
+                    // Buscamos el objeto completo dentro del catálogo lAreas
+                    const areaCompleta = lAreas?.find((area: any) => area.id === refAreaId);
+                    selectedArea = areaCompleta || { id: refAreaId, name: refAreaName };
+                }
+            } else {
+                // Si son 2 o más facturas, el área queda limpia para selección manual
+                selectedArea = null;
+            }
+
+            if (value.length > 0) {
+                await getlOptionsApplicationTypeNc({
                     setLOptionsApplicationTypeNc: setLOptionsApplicationTypeNc,
                     setLoadingApplicationType: setLoadingApplicationType,
                     invoice_ids: value.map((item: any) => item.id)
                 });
+            }
         }
-        setONc?.((prev: any) => ({ ...prev, invoices: value }));
+
+        // Actualizamos oNc con las facturas y el área funcional correspondiente
+        setONc?.((prev: any) => ({
+            ...prev,
+            invoices: value,
+            functional_area: selectedArea !== undefined ? selectedArea : prev.functional_area
+        }));
     }
 
 //****INIT****/
@@ -385,23 +408,27 @@ export const DialogNc = ({
                                             </div>
                                         }
                                         
-                                        {oNc?.invoices && ((oNc?.invoices?.length > 1 || dialogMode == 'view') || (oNc?.invoices[0]?.id == 0))  && (
-                                            <RenderField
-                                                label={t('dialog.fields.lAreas.label')}
-                                                tooltip={t('dialog.fields.lAreas.tooltip')}
-                                                value={oNc?.area}
-                                                disabled={dialogMode == 'view' || dialogMode == 'edit'}
-                                                mdCol={6}
-                                                type={dialogMode == 'create' ? 'dropdown' : 'text'}
-                                                onChange={(value) => {
-                                                    setONc?.((prev: any) => ({ ...prev, area: value }));
-                                                    setFormErrors?.((prev: any) => ({ ...prev, area: false }));
-                                                }}
-                                                options={lAreas}
-                                                placeholder={t('dialog.fields.lAreas.placeholder')}
-                                                errorKey={'area'}
-                                                errors={formErrors}
-                                                errorMessage={'Selecciona un área'}
+                                        {oNc?.invoices && ((oNc?.invoices?.length > 0 || dialogMode == 'view') || (oNc?.invoices[0]?.id == 0))  && (
+                                            <RenderField 
+                                                label={t('dialog.fields.lAreas.label')} 
+                                                tooltip={t('dialog.fields.lAreas.tooltip')} 
+                                                value={
+                                                    dialogMode === 'create' 
+                                                        ? oNc?.functional_area 
+                                                        : (oNc?.area || oNc?.functional_area_name || lAreas?.find((a: any) => a.id === oNc?.functional_area_id)?.name || '')
+                                                } 
+                                                disabled={dialogMode == 'view' || dialogMode == 'edit'} 
+                                                mdCol={6} 
+                                                type={dialogMode == 'create' ? 'dropdown' : 'text'} 
+                                                onChange={(value) => { 
+                                                    setONc?.((prev: any) => ({ ...prev, functional_area: value, area: value })); 
+                                                    setFormErrors?.((prev: any) => ({ ...prev, area: false })); 
+                                                }} 
+                                                options={lAreas} 
+                                                placeholder={t('dialog.fields.lAreas.placeholder')} 
+                                                errorKey={'area'} 
+                                                errors={formErrors} 
+                                                errorMessage={'Selecciona un área'} 
                                             />
                                         )}
                                         {oNc?.invoices && (oNc?.invoices?.length > 1 || dialogMode == 'view') && (

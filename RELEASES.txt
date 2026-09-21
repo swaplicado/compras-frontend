@@ -1031,3 +1031,18 @@ Resumen:
 Cambios:
 - Se adaptó el ícono de "Tipo" de la tabla de facturas, en los diálogos y tablas de Órdenes de compra, Facturas y Proformas.
 - Se establecieron reglas para el tipo de egreso que tendrá la compra, dependiendo de su naturaleza, conceptos y, en caso de tener CFDI, su Uso de CFDI.
+
+----------------------------------------
+
+========================================
+RELEASE
+Fecha: 21-09-2026
+Autor: Rodrigo Abel Ayala Vázquez
+========================================
+
+Resumen:
+- Mostrar área funcional en documentos aunque tengan referencia
+
+Cambios:
+- Se modificó que durante la captura de facturas o notas de crédito, al seleccionar una referencia también se muestre el área de dicha referencia.
+- Ahora cuando se visualiza la factura o la nota de crédito, se muestra el área funcional del documento aunque tenga referencia.

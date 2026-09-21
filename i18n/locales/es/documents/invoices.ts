@@ -366,7 +366,7 @@ const invoices = {
             tooltip: "Aquí va el origen del insumo indicado en el boleto",
         },
         nature: {
-            label: "Tipo contabilización",
+            label: "Tipo contabilización:",
             placeholder: "",
             tooltip: "Tipo contabilización",
         },

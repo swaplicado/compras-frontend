@@ -39,6 +39,7 @@ import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { getlSuppliers } from '@/app/(main)/utilities/documents/common/suppliersUtils';
 import { getlZones } from '@/app/(main)/utilities/documents/common/zonesUtils';
 import { getDocumentExtraData } from './documentExtraDatautils';
+import { CustomInputNumber } from '@/app/components/commons/customInputNumber';
 
 interface InvoiceDialogProps {
     visible: boolean;
@@ -400,7 +401,7 @@ export const InvoiceDialog = ({
                             <Tooltip target=".custom-target-icon" />
                             <i className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge" data-pr-tooltip={props.tooltip} data-pr-position="right" data-pr-my="left center-2" style={{ fontSize: '1rem', cursor: 'pointer' }}></i>
                             <div>
-                                <InputNumber type="text" className={`w-full`} value={props.value || ''} disabled={props.disabled} maxLength={50} minFractionDigits={props.digits ? props.digits : 2} maxFractionDigits={props.digits ? props.digits : 2} inputClassName="text-right" />
+                                <CustomInputNumber type="text" className={`w-full`} value={props.value || ''} disabled={props.disabled} maxLength={50} minFractionDigits={props.digits ? props.digits : 2} maxFractionDigits={props.digits ? props.digits : 2} inputClassName="text-right" />
                             </div>
                         </div>
                     </div>
@@ -552,6 +553,7 @@ export const InvoiceDialog = ({
         if (noReference) {
             setOReference([lReferences[0]]);
             setLRefToValidateXml([lReferences[0]]);
+            setOArea(null);
         } else {
             setOReference(oReference);
             for (let i = 0; i < oReference.length; i++) {
@@ -559,7 +561,7 @@ export const InvoiceDialog = ({
                     id: oReference[i].id,
                     amount: 0,
                     reference: oReference[i].name,
-                    functional_area_id: oReference[i].functional_area_id
+                    functional_area_id: oReference[i].functional_area
                 });
                 lrefErrors.push({
                     id: oReference[i].id,
@@ -568,9 +570,24 @@ export const InvoiceDialog = ({
             }
             setLRefToValidateXml(lref);
             setLRefErrors(lrefErrors);
+
+            // Asignamos automáticamente el área funcional que viene en la referencia seleccionada
+            if (oReference && oReference.length == 1) {
+                const refAreaId = oReference[0]?.functional_area_id;
+
+                if (refAreaId) {
+                    const areaCompleta = lAreas.find((area: any) => area.id === refAreaId);
+                    setOArea(areaCompleta || { id: refAreaId, name: "Área no encontrada en catálogo" });
+                } else {
+                    // Si la referencia no trae área, la dejamos vacía
+                    setOArea(null);
+                }
+            }else {
+                setOArea(null);
+            }
         }
 
-        setOArea(null);
+        // setOArea(null);
         setFormErrors((prev: any) => ({ ...prev, reference: false }));
     };
 
@@ -1951,7 +1968,7 @@ export const InvoiceDialog = ({
                                     label: t('uploadDialog.reference.label'),
                                     tooltip: t('uploadDialog.reference.tooltip'),
                                     value: dialogMode == 'create' ? oReference : oDps?.reference ? oDps.reference : t('uploadDialog.invoiceWithOutOc'),
-                                    mySyle: (dialogMode == 'review' || dialogMode == 'view') ? (oDps?.reference ? '' : { borderColor: 'red', borderWidth: '2px', fontWeight: 'bold', color: 'black' }) : '',
+                                    mySyle: (dialogMode == 'review' || dialogMode == 'view') ? (oDps?.reference ? '' : { borderColor: 'red', borderWidth: '2px', fontWeight: 'bold' }) : '',
                                     disabled: !lReferences || lReferences.length == 0 || dialogMode === 'view' || dialogMode === 'review',
                                     mdCol: dialogMode == 'create' ? 4 : 6,
                                     type: dialogMode == 'create' ? 'multiselect' : 'text',
@@ -1994,11 +2011,15 @@ export const InvoiceDialog = ({
                                       </ul>
                                   )}
 
-                            {(oReference ? (oReference[0]?.id == '0' || oReference.length > 1) || (dialogMode == 'review' && oDps?.reference == '') : false) &&
+                            {/* {(oReference ? (oReference[0]?.id == '0' || oReference.length > 1) || (dialogMode == 'review' && oDps?.reference == '') : false) && */}
+                            {(dialogMode === 'review' || dialogMode === 'view' || (oReference && oReference.length > 0)) &&
                                 renderField({
                                     label: t('uploadDialog.areas.label'),
                                     tooltip: t('uploadDialog.areas.tooltip'),
-                                    value: dialogMode == 'create' ? oArea : oDps.functional_area,
+                                    //value: dialogMode == 'create' ? oArea : oDps.functional_area,
+                                     value: dialogMode === 'create' 
+                                         ? oArea 
+                                         : (lAreas.find((a: any) => a.id === oDps?.functional_area)?.name || oDps?.functional_area || ''),
                                     disabled: !lAreas || lAreas.length == 0 || dialogMode == 'review',
                                     mdCol: 6,
                                     type: dialogMode == 'create' ? 'dropdown' : 'text',
@@ -2020,7 +2041,7 @@ export const InvoiceDialog = ({
                                                 <div className="field grid" key={index}>
                                                     <label className="col-12 mb-2 md:col-3 md:mb-0 justify-content-end">{item.reference}:</label>
                                                     <div className="col-12 md:col-9">
-                                                        <InputNumber
+                                                        <CustomInputNumber
                                                             type="text"
                                                             className={`w-full ${lRefErrors[index]?.error ? 'p-invalid' : ''}`}
                                                             value={lRefToValidateXml[index]?.amount}
