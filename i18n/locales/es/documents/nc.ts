@@ -48,6 +48,8 @@ const nc = {
         editTitle: "Modificar NC",
         acceptedTitle: "NC",
         rejectedTitle: "NC",
+        noReference: "Sin referencia",
+        noReferenceWarning: "No se pueden registrar Notas de Crédito sin una factura de referencia.",
         foreignWarning: {
             title: "Aviso para Proveedores Extranjeros",
             descriptionPart1: "Por favor, asegúrese de cargar",

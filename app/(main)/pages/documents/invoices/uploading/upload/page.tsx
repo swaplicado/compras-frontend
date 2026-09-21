@@ -225,7 +225,7 @@ const Upload = () => {
                         id: item.id,
                         name: item.reference,
                         is_covered: item.is_covered,
-                        functional_area_id: item.functional_area_id,
+                        functional_area_id: item.functional_area,
                         amount: item.amount,
                         concepts: item.concepts,
                         cost_profit_center: item.cost_profit_center,

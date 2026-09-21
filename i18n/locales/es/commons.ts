@@ -28,6 +28,7 @@ const commons = {
     active: "Activo",
     inactive: "Inactivo",
     important: "Importante",
+    notice: "Aviso",
     last3Months: "Últimos 3 meses",
 
     btnReload: "Recargar",
