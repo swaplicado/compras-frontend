@@ -95,7 +95,8 @@ export const getCRP = async (props: getCRPProps) => {
                     serie: data[i].series,
                     status: data[i].status,
                     uuid: data[i].uuid, //tabla
-                    receiver_tax_regime: data[i].receiver_tax_regime
+                    receiver_tax_regime: data[i].receiver_tax_regime,
+                    priority: data[i].priority
                 });
             }
 

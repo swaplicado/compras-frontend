@@ -128,7 +128,7 @@ export const DialogCrp = ({
     const message = useRef<Messages>(null);
     const [loadingValidateXml, setLoadingValidateXml] = useState(false);
     const [expandedRows, setExpandedRows] = useState<any>(null);
-
+    const [lWarnings, setlWarnings] = useState<any>([]);
     //const para el boton de scroll al final
     const [elementRef, setElementRef] = useState<HTMLDivElement | null>(null);
     const visibleElement = useIntersectionObserver({ current: elementRef });
@@ -237,6 +237,33 @@ export const DialogCrp = ({
         const fetch = async () => {
             clean?.();
         };
+        const fetchWarnings = async () => {
+            try {
+                const route = "/transactions/documents/" + oCrp.id + "/warnings/";
+                const response = await axios.get(constants.API_AXIOS_GET, {
+                    params: {
+                        route: route,
+                    }
+                });
+
+                if (response.status === 200) {
+                    const data = response.data.data || [];
+                    
+                    let lWarnings: any[] = [];
+                    for (const item of data) {
+                        const warnings = item.warning;
+                        for ( const sWarn of warnings.warnings) {
+                            lWarnings.push(sWarn);
+                        }
+                    }
+                    setlWarnings(lWarnings);
+                } else {
+                    throw new Error(`${t('errors.getUrlsFilesError')}: ${response.statusText}`);
+                }
+            } catch (error) {
+                
+            }
+        };
 
         if (!visible) {
             fetch();
@@ -250,6 +277,9 @@ export const DialogCrp = ({
                     country: oUser.oProvider.country
                 }
                 setOCrp?.((prev: any) => ({ ...prev, oProvider: oProvider }));
+            }
+            if (isInAuth){
+                fetchWarnings();
             }
         }
     }, [visible]);
@@ -410,16 +440,6 @@ export const DialogCrp = ({
                                     <div className={`field col-12 md:col-12`}>
                                         <div className="formgrid grid">
                                             <div className="col">
-                                                <label>XML:</label>
-                                                &nbsp;
-                                                <Tooltip target=".custom-target-icon" />
-                                                <i
-                                                    className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                                                    data-pr-tooltip={t('dialog.fields.xml_file.tooltip')}
-                                                    data-pr-position="right"
-                                                    data-pr-my="left center-2"
-                                                    style={{ fontSize: '1rem', cursor: 'pointer' }}
-                                                ></i>
                                                 <ValidateXmlCrp
                                                     xmlUploadRef={xmlUploadRef}
                                                     oCompany={oCrp?.oCompany}
@@ -662,8 +682,35 @@ export const DialogCrp = ({
                                 </div>
                             </div>
                         )}
+                        {(isInAuth == true) && lWarnings.length > 0 && (
+                            <div className="field col-12 md:col-12">
+                                <div className="formgrid grid">
+                                    <div className="col">
+                                    <label>{t('Observaciones del XML:')}</label>
+                                        &nbsp;
+                                        <Tooltip target=".custom-target-icon" />
+                                        <i
+                                            className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
+                                            data-pr-tooltip={t('Observaciones del archivo XML del comprobante de pago.')}
+                                            data-pr-position="right"
+                                            data-pr-my="left center-2"
+                                            style={{ fontSize: '1rem', cursor: 'pointer' }}
+                                        ></i>
+                                        <ul>
+                                            { lWarnings.map((warning: any, index: number) => (
+                                                <li key={index}>
+                                                    <i className='bx bxs-error' style={{color: '#FFD700'}}></i>
+                                                    &nbsp;&nbsp;
+                                                    {warning}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
 
-                        { (dialogMode == 'view' || dialogMode == 'edit') && (
+                        {/* { (dialogMode == 'view' || dialogMode == 'edit') && (
                             <RenderField
                                 label={'Comentarios de aceptación/rechazo:'}
                                 tooltip={'Comentarios de aceptación/rechazo:'}
@@ -680,7 +727,7 @@ export const DialogCrp = ({
                                 errors={formErrors}
                                 errorMessage={'Ingrese comentario para rechazar'}
                             />
-                        )}
+                        )} */}
 
                         { showAuthComments && (
                             <RenderField

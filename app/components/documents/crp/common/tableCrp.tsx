@@ -147,6 +147,17 @@ export const TableCrp = ({
         )
     };
 
+    const priorityTemplate = (rowData: any) => {
+        return (
+            <div className="flex justify-content-center align-items-center">
+                { rowData.priority ? 
+                    <i className="pi pi-exclamation-circle text-red-500" ></i>
+                : 
+                    <i className="pi pi-exclamation-circle text-gray-500"></i>}
+            </div>
+        );
+    };
+
     const appDateBodyTemplate = (rowData: any) => {
         return DateFormatter(rowData.date);
     };
@@ -229,7 +240,7 @@ export const TableCrp = ({
                 onRowClick={(e) => (handleRowClick?.(e))}
                 onRowDoubleClick={(e) => (handleDoubleClick?.(e))}
                 metaKeySelection={false}
-                sortField="benef_trade_name"
+                sortField="priority"
                 sortOrder={-1}
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                 currentPageReportTemplate={tCommon('datatable.currentPageReportTemplate')}
@@ -244,6 +255,7 @@ export const TableCrp = ({
                 <Column field="oPartner" header="oPartner" hidden />
                 <Column field="authz_acceptance_notes" header="authz_acceptance_notes" hidden />
                 <Column field="authz_authorization_notes" header="authz_authorization_notes" hidden />
+                <Column field="priority" header="Prioridad" body={priorityTemplate} footer="Prioridad" sortable />
                 <Column field="company" header={t('datatable.columns.company')} footer={t('datatable.columns.company')} hidden={ columnsProps?.company.hidden } />
                 <Column field="provider_full_name" header="Proveedor" footer="Proveedor" />
                 <Column field="date" header={t('datatable.columns.date')} footer={t('datatable.columns.date')} body={appDateBodyTemplate} hidden={ columnsProps?.date.hidden } />
