@@ -21,7 +21,12 @@ export const getCalendarToUploadinvoice = async (props: getCalendarToUploadinvoi
         })
 
         if (response.status == 200) {
-            const data = response.data.data || [];
+            // Extraer el array correctamente manejando el anidamiento doble
+            const rawData = response.data.data;
+            const data = Array.isArray(rawData) 
+                ? rawData 
+                : (Array.isArray(rawData?.data) ? rawData.data : []);
+
             let calendar: any[] = [];
 
             for (let i = 0; i < data.length; i++) {

@@ -1062,3 +1062,16 @@ Cambios:
 - Se coloca en la vista de aprobación de CRP, los warnings del XML para facilitar la autorización o rechazo.
 
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 24-09-2026
+Autor: Cesar Orozco
+========================================
+
+Resumen:
+- Lectura de información de deadline desde el backend.
+
+Cambios:
+- Lectura de información de deadline desde el backend.
+----------------------------------------
