@@ -1046,3 +1046,19 @@ Resumen:
 Cambios:
 - Se modificó que durante la captura de facturas o notas de crédito, al seleccionar una referencia también se muestre el área de dicha referencia.
 - Ahora cuando se visualiza la factura o la nota de crédito, se muestra el área funcional del documento aunque tenga referencia.
+
+----------------------------------------
+
+========================================
+RELEASE
+Fecha: 24-09-2026
+Autor: Cesar Orozco
+========================================
+
+Resumen:
+- Se coloca en la vista de aprobación de CRP, los warnings del XML para facilitar la autorización o rechazo.
+
+Cambios:
+- Se coloca en la vista de aprobación de CRP, los warnings del XML para facilitar la autorización o rechazo.
+
+----------------------------------------
