@@ -16,12 +16,12 @@ export const XmlWarnings = ( props: XmlWarningsProps ) => {
                 <div className="field col-12 md:col-12">
                     <div className="formgrid grid">
                         <div className="col">
-                            <label>{t('uploadDialog.xml_warnings.tooltip')}</label>
+                            <label>{t('uploadDialog.xml_warnings.label')}</label>
                             &nbsp;
                             <Tooltip target=".custom-target-icon" />
                             <i
                                 className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                                data-pr-tooltip={t('uploadDialog.xml_warnings.label')}
+                                data-pr-tooltip={t('uploadDialog.xml_warnings.tooltip')}
                                 data-pr-position="right"
                                 data-pr-my="left center-2"
                                 style={{ fontSize: '1rem', cursor: 'pointer' }}
@@ -53,6 +53,14 @@ export const XmlWarnings = ( props: XmlWarningsProps ) => {
                         <div className="col">
                             <label>{t('uploadDialog.xml_errors.label')}</label>
                             &nbsp;
+                            <Tooltip target=".custom-target-icon" />
+                            <i
+                                className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
+                                data-pr-tooltip={t('uploadDialog.xml_errors.tooltip')}
+                                data-pr-position="right"
+                                data-pr-my="left center-2"
+                                style={{ fontSize: '1rem', cursor: 'pointer' }}
+                            ></i>
                             <ul>
                                 {(Array.isArray(props.xmlValidateErrors?.errors) 
                                     ? props.xmlValidateErrors.errors 

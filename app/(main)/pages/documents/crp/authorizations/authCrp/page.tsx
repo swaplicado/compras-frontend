@@ -1,4 +1,4 @@
-//CRP ACEPTADAS
+//CRP pendientes para mí
 'use client';
 import React, {useEffect, useState, useRef} from "react";
 import constants from '@/app/constants/constants';
@@ -27,6 +27,8 @@ import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { getlFiscalRegime } from '@/app/(main)/utilities/documents/common/fiscalRegimeUtils';
 import { useContext } from 'react';
 import { LayoutContext } from '@/layout/context/layoutcontext';
+import { RenderInfoButton } from "@/app/components/commons/instructionsButton";
+
 
 const ConsultPaymentProgramded = () => {
     const [startDate, setStartDate] = useState<string>('');
@@ -75,6 +77,8 @@ const ConsultPaymentProgramded = () => {
     const [loadingFileNames, setLoadingFileNames] = useState<boolean>(false);
     const [lFilesNames, setLFilesNames] = useState<any[]>([]);
     const [lFilesToEdit, setLFilesToEdit] = useState<any[]>([]);
+    const [showInfo, setShowInfo] = useState<boolean>(false);
+	const [showManual, setShowManual] = useState<boolean>(false);
 
     const isMobile = useIsMobile();
 
@@ -232,7 +236,7 @@ const ConsultPaymentProgramded = () => {
     }
 
     const dialogHeaderTitle = () => {
-        let title = t('dialog.viewTitle');
+        let title = t('dialog.authHeader');
 
         return title;
     }
@@ -463,12 +467,39 @@ const ConsultPaymentProgramded = () => {
         }
     }, [userFunctionalAreas, oUser])
 
+    const getObjectIntruction = () => {
+        
+        const authCrp = t(`viewInstructions.authCrp`, { returnObjects: true });
+        let instructions: any[] = [];
+        instructions.push(authCrp);
+
+        if (!instructions || Object.keys(instructions).length === 0) {
+            return null;
+        }
+
+        return instructions;
+    }
+
+
     return (
         <div className="grid">
             <div className="col-12">
                 {loading && loaderScreen()}
                 <Toast ref={toast} />
                 <Card header={headerCard} pt={{ content: { className: 'p-0' } }}>
+                    <RenderInfoButton
+                        instructions={getObjectIntruction()}
+                        showInfo={showInfo}
+                        setShowInfo={setShowInfo}
+                        showManual={showManual}
+                        setShowManual={setShowManual}
+                        btnShowInstructionsText={tCommon('btnShowInstructions')}
+                        btnHideInstructionsText={tCommon('btnHideInstructions')}
+                        dialogManualBtnLabelText={tCommon('btnHelpVideos')}
+                        dialogManualBtnTooltipText={tCommon('btnHelpVideos')}
+                        dialogManualHeaderText={tCommon('btnHelpVideos')}
+                        lVideos={[]}
+                    />
                     <DialogCrp
                         visible={visible}
                         onHide={() =>  setDialogVisible(false)}

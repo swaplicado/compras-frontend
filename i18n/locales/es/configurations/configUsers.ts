@@ -1,6 +1,11 @@
 const configUsers = {
     title: "Configuración de usuarios",
     titleTooltip: "Configuración de carga de facturas sin referencia y carga masiva de facturas",
+    options: {
+        withoutRef: "Sin referencia",
+        bulkUpload: "Carga masiva",
+        partnersVsAreas: "Proveedores vs áreas",
+    },
     tableUser: {
         columns: {
             username: "Usuario",
@@ -20,15 +25,24 @@ const configUsers = {
     },
     tablePartnersAreas: {
         columns: {
-            full_name: "proveedor",
+            full_name: "Proveedor",
             areas: "Áreas asignadas",
             edit: ""
         }
     },
     dialogPartnerAreas: {
-        sourceAreas: "Areas para escoger",
+        sourceAreas: "Áreas para escoger",
         targetAreas: "Áreas asignadas"
+    },
+    responses: {
+        success: "Permiso actualizado correctamente",
+        successPartnerAreas: "Áreas asignadas correctamente",
+        errorGetUsers: "Error al obtener los usuarios",
+        errorGetPartners: "Error al obtener los proveedores",
+        errorUpdateUserPermission: "Error al actualizar el permiso del usuario",
+        errorUpdateProcessingType: "Error al actualizar el tipo de proceso del proveedor",
+        errorAssignPartnerAreas: "Error al asignar áreas al proveedor"
     }
-}
+};
 
 export default configUsers;

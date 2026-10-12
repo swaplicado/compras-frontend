@@ -497,7 +497,7 @@ const UploadPrepayment = () => {
                 <Tooltip target=".custom-target-icon" />
                 <i
                     className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                    data-pr-tooltip={t('titleRejected')}
+                    data-pr-tooltip={t('titleRejectedTooltip')}
                     data-pr-position="right"
                     data-pr-my="left center-2"
                     style={{ fontSize: '1rem', cursor: 'pointer' }}
@@ -589,7 +589,7 @@ const UploadPrepayment = () => {
 
     const handleDoubleClick = async (e: DataTableRowClickEvent) => {
         if (oUser.isInternalUser) {
-            setIsReview(true);
+            setIsReview(false);
         } else {
             setIsReview(false);
         }
@@ -742,17 +742,11 @@ const UploadPrepayment = () => {
     }, [userFunctionalAreas, oUser, startDate, endDate])
 
     const getObjectIntruction = () => {
-        const uploadInstructions = JSON.parse(JSON.stringify(t(`dialog.uploadInstructions`, { returnObjects: true })));
-        const uploadInstructionsPartner = JSON.parse(JSON.stringify(t(`dialog.uploadInstructionsPartner`, { returnObjects: true })));
-        const reviewInstructions = JSON.parse(JSON.stringify(t(`dialog.reviewInstructions`, { returnObjects: true })));
-
+        const deleteInstructions = JSON.parse(JSON.stringify(t(`dialog.deleteInstructions`, { returnObjects: true })));
+        
         let instructions: any[] = [];
-        if (oUser?.isInternalUser) {
-            instructions.push(uploadInstructions);
-            instructions.push(reviewInstructions);
-        } else {
-            instructions.push(uploadInstructionsPartner);
-        }
+        
+        instructions.push(deleteInstructions);
 
         if (!instructions || Object.keys(instructions).length === 0) {
             return null;
@@ -792,12 +786,12 @@ const UploadPrepayment = () => {
             const id_dps = rowData.id;
             const folio = rowData.folio;
             confirmDialog({
-                message: '¿Quieres eliminar esta nota de crédito: ' + folio + '?',
-                header: 'Confirma eliminación',
+                message: t('confirmations.deleteRejected.message', { folio }),
+                header: t('confirmations.deleteRejected.header'),
                 icon: 'pi pi-info-circle',
                 acceptClassName: 'p-button-danger',
-                acceptLabel: 'Si',
-                rejectLabel: 'No',
+                acceptLabel: tCommon('btnYes'),
+                rejectLabel: tCommon('btnNo'),
                 accept: () => accept(id_dps),
                 reject: () => reject(id_dps)
             });
@@ -844,14 +838,27 @@ const UploadPrepayment = () => {
                         dialogManualHeaderText={"Videos de ayuda"}
                         lVideos={[]}
                     /> */}
+                    <RenderInfoButton
+                        instructions={getObjectIntruction()}
+                        showInfo={showInfo}
+                        setShowInfo={setShowInfo}
+                        showManual={showManual}
+                        setShowManual={setShowManual}
+                        btnShowInstructionsText={tCommon('btnShowInstructions')}
+                        btnHideInstructionsText={tCommon('btnHideInstructions')}
+                        dialogManualBtnLabelText={tCommon('btnHelpVideos')}
+                        dialogManualBtnTooltipText={tCommon('btnHelpVideos')}
+                        dialogManualHeaderText={tCommon('btnHelpVideos')}
+                        lVideos={[]}
+                    />
                     <DialogPrepay
                         visible={visible}
                         onHide={() => setDialogVisible(false)}
                         isMobile={isMobile}
                         footerContent={dialogFooterContent}
                         headerTitle={dialogHeaderTitle()}
-                        oNc={oPrepay}
-                        setONc={setOPrepay}
+                        oPrepay={oPrepay}
+                        setOPrepay={setOPrepay}
                         dialogMode={dialogMode}
                         showToast={showToast}
                         setLoading={setLoading}

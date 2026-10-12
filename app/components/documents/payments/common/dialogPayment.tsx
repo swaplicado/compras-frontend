@@ -261,7 +261,7 @@ export const DialogPayment = ({
                     })} */}
                     {RenderField({
                         label: t('dialog.amount'),
-                        tooltip: t('dialog.amount'),
+                        tooltip: t('dialog.amountTooltip'),
                         value: oPayment?.amount,
                         disabled: true,
                         mdCol: 3,
@@ -419,7 +419,7 @@ export const DialogPayment = ({
                 
                 <div>
                     <Divider align="center">
-                        <h5>Partidas del pago</h5>
+                        <h5>{t('dialog.payments_entries_title')}</h5>
                     </Divider>
                     <DataTable
                         value={lEntries}

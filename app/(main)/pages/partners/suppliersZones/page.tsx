@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Card } from 'primereact/card';
 import { TabView, TabPanel } from 'primereact/tabview';
 import { DataTable } from 'primereact/datatable';
+import { useTranslation } from 'react-i18next';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
@@ -20,6 +21,8 @@ const emptyZone = { id: undefined as number | undefined, zone_name: '', sort_ord
 export default function SuppliersZonesCatalog() {
     const toast = useRef<Toast>(null);
     const [loading, setLoading] = useState(false);
+    const { t } = useTranslation('partners');
+    const { t: tCommon } = useTranslation('common');
 
     const [lSuppliers, setLSuppliers] = useState<any[]>([]);
     const [supplierDialogVisible, setSupplierDialogVisible] = useState(false);
@@ -82,16 +85,25 @@ export default function SuppliersZonesCatalog() {
 
     const confirmDeleteSupplier = (rowData: any) => {
         confirmDialog({
-            message: `¿Deseas eliminar el proveedor "${rowData.provider_name}"?`,
-            header: 'Confirmar eliminación',
+            message: t('confirmations.deleteSupplier.message', {
+                providerName: rowData.provider_name
+            }),
+            header: t('confirmations.deleteSupplier.header'),
             icon: 'pi pi-exclamation-triangle',
-            acceptLabel: 'Sí',
-            rejectLabel: 'No',
+            acceptLabel: tCommon('btnYes'),
+            rejectLabel: tCommon('btnNo'),
             accept: async () => {
                 setLoading(true);
-                const ok = await deleteSupplier({ id: rowData.id, showToast });
-                if (ok) await loadSuppliers();
-                setLoading(false);
+                try {
+                    const ok = await deleteSupplier({
+                        id: rowData.id,
+                        showToast
+                    });
+
+                    if (ok) await loadSuppliers();
+                } finally {
+                    setLoading(false);
+                }
             }
         });
     };
@@ -141,16 +153,25 @@ export default function SuppliersZonesCatalog() {
 
     const confirmDeleteZone = (rowData: any) => {
         confirmDialog({
-            message: `¿Deseas eliminar la zona "${rowData.zone_name}"?`,
-            header: 'Confirmar eliminación',
+            message: t('confirmations.deleteZone.message', {
+                zoneName: rowData.zone_name
+            }),
+            header: t('confirmations.deleteZone.header'),
             icon: 'pi pi-exclamation-triangle',
-            acceptLabel: 'Sí',
-            rejectLabel: 'No',
+            acceptLabel: tCommon('btnYes'),
+            rejectLabel: tCommon('btnNo'),
             accept: async () => {
                 setLoading(true);
-                const ok = await deleteZone({ id: rowData.id, showToast });
-                if (ok) await loadZones();
-                setLoading(false);
+                try {
+                    const ok = await deleteZone({
+                        id: rowData.id,
+                        showToast
+                    });
+
+                    if (ok) await loadZones();
+                } finally {
+                    setLoading(false);
+                }
             }
         });
     };

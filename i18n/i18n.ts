@@ -7,6 +7,7 @@ import esLogin from './locales/es/auth/login';
 import esInvoices from './locales/es/documents/invoices';
 import esOrders from './locales/es/documents/orders';
 import common from './locales/es/commons';
+import home from './locales/es/home';
 import esTopBar from './locales/es/topBar/topBar';
 import esChangePassword from './locales/es/changePassword/changePassword';
 import esFooter from './locales/es/footer/footer';
@@ -38,6 +39,7 @@ i18n
         invoices: esInvoices,
         orders: esOrders,
         common: common,
+        home: home,
         topBar: esTopBar,
         changePassword: esChangePassword,
         footer: esFooter,

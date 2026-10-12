@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Dialog } from 'primereact/dialog';
 import { Tooltip } from 'primereact/tooltip';
 import { ProgressSpinner } from 'primereact/progressspinner';
+import { OverlayPanel } from 'primereact/overlaypanel';
 import { RenderField } from '@/app/components/commons/renderField';
 import { useTranslation } from 'react-i18next';
 import { formatCurrency } from '@/app/(main)/utilities/documents/common/currencyUtils';
@@ -22,6 +23,7 @@ import { Divider } from 'primereact/divider';
 import { FieldsEditAcceptance } from '@/app/components/documents/invoice/fieldsEditAcceptance';
 import { TableEty } from '@/app/components/documents/oc/common/tableEty';
 import { HistoryAuth } from '@/app/components/documents/invoice/historyAuth';
+import { Button } from 'primereact/button';
 
 interface DialogOc {
     visible: boolean;
@@ -256,6 +258,9 @@ export const DialogOc = ({
         </div>
     );
 
+    // Referencia para el OverlayPanel
+    const op = useRef<OverlayPanel>(null);
+
     return (
         <div className="flex justify-content-center">
             <Dialog 
@@ -263,7 +268,6 @@ export const DialogOc = ({
                 visible={visible} 
                 onHide={onHide} 
                 footer={footer} 
-                contentClassName="flex flex-column h-full"
                 pt={{ 
                     header: { className: 'pb-2 pt-2 border-bottom-1 surface-border' },
                     content: {
@@ -291,6 +295,38 @@ export const DialogOc = ({
                     buttonLabel: tCommon('btnClose'),
                     action: onHide
                 })}
+
+                {/*---------- Botón de autorización de OC -------------- */}
+                {(isInAuth) && (
+                    <div className="flex justify-content-end px-3">
+                        <Button 
+                            type="button" 
+                            icon="bx bx-info-circle" 
+                            label={t('dialog.howToAuth')}
+                            className="p-button-text p-button-sm p-button-info" 
+                            onClick={(e) => op.current?.toggle(e)}
+                        />
+                    </div>
+                )}
+                <OverlayPanel ref={op} showCloseIcon style={{ width: isMobile ? '100%' : '500px' }} appendTo={null}>
+                    <div className="p-3">
+                        {/* Instrucciones de autorizacion */}
+                        <h5 className="mt-0 mb-3">{t('dialog.authorizationInstructions.header')}</h5>
+                        <ul className="pl-3 m-0" style={{ lineHeight: '1.5' }}>
+                            {Object.keys(t('dialog.authorizationInstructions', { returnObjects: true }) || {})
+                                .filter(key => key.startsWith('step'))
+                                .map((key, i) => (
+                                    <li key={i} className="mb-2">
+                                        {t(`dialog.authorizationInstructions.${key}`)}
+                                    </li>
+                                ))
+                            }
+                        </ul>
+                        <p className="mt-3 mb-0 text-sm font-italic text-secondary" style={{ whiteSpace: 'pre-line' }}>
+                            {t('dialog.authorizationInstructions.footer')}
+                        </p>
+                    </div>
+                </OverlayPanel>
                 {showing == 'body' && (
                     <div className="flex-grow-1 flex flex-column">
                         <br />
@@ -374,15 +410,15 @@ export const DialogOc = ({
                             <div className="p-fluid formgrid grid">
                                 
                                 <RenderField
-                                    label={t('dialog.fields.nanture.label')}
-                                    tooltip={t('dialog.fields.nanture.tooltip')}
+                                    label={t('dialog.fields.nature.label')}
+                                    tooltip={t('dialog.fields.nature.tooltip')}
                                     value={oOc?.nature}
                                     readonly={!editableBodyFields}
                                     mdCol={3}
                                     type={'textArea'}
                                     onChange={() => null}
                                     options={[]}
-                                    placeholder={t('dialog.fields.nanture.placeholder')}
+                                    placeholder={t('dialog.fields.nature.placeholder')}
                                     errorKey={''}
                                     errors={formErrors}
                                     errorMessage={''}
@@ -415,7 +451,7 @@ export const DialogOc = ({
                                     errors={formErrors}
                                     errorMessage={''}
                                 />}
-
+                                {/* Centros de costo de la requisición a nivel de encabezado */}
                                 {costCenterItems.length > 0 && (
                                     <>
                                         <div className="field col-12 md:col-12 mb-3">
@@ -427,7 +463,7 @@ export const DialogOc = ({
                                             <div key={oCc.idCostCenter} className={`field ${costCenterItemClass}`}>
                                                 <RenderField
                                                     label={''}
-                                                    tooltip={t('dialog.fields.CeCo.cost_profit_center.tooltip')}
+                                                    tooltip={t('dialog.fields.CeCo.cost_profit_center_req.tooltip')}
                                                     value={oCc.costCenter + ' - ' + (oCc.percentage * 100) + '%'}
                                                     readonly={!editableBodyFields}
                                                     mdCol={12}
@@ -518,7 +554,7 @@ export const DialogOc = ({
                                 />
                                 <RenderField
                                     label={t('dialog.fields.account_tag.label')}
-                                    tooltip={''}
+                                    tooltip={t('dialog.fields.account_tag.tooltip')}
                                     value={oOc.account_tag}
                                     disabled={!editableBodyFields}
                                     mdCol={3}
@@ -535,7 +571,7 @@ export const DialogOc = ({
                                 />
                                 <RenderField
                                     label={t('dialog.fields.fiscal_use.label')}
-                                    tooltip={''}
+                                    tooltip={t('dialog.fields.fiscal_use.tooltip')}
                                     value={oOc.fiscal_use}
                                     disabled={true}
                                     mdCol={3}

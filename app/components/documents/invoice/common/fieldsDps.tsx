@@ -21,6 +21,7 @@ interface FieldsDpsProps {
     oDps: any;
     setODps: React.Dispatch<React.SetStateAction<any>>;
     mode: 'edit' | 'view';
+    dialogMode?: string;
     footerMode?: 'edit' | 'view';
     withHeaderDps?: boolean;
     withBodyDps?: boolean;
@@ -66,7 +67,8 @@ interface renderFieldProps {
 export const FieldsDps = ({ 
     oDps, 
     setODps, 
-    mode, 
+    mode,
+    dialogMode,
     withHeaderDps = true, 
     withBodyDps = true, 
     withFooterDps = true, 
@@ -318,7 +320,7 @@ export const FieldsDps = ({
                             <div>
                                 <CustomInputNumber
                                     type="text"
-                                    className={`w-full`}
+                                    className={`w-full ${props.errors?.[props.errorKey] ? 'p-invalid' : ''}`}
                                     value={(props.value === '' || props.value === null || props.value === undefined) ? null : Number(props.value)}
                                     disabled={props.disabled}
                                     maxLength={50}
@@ -328,6 +330,9 @@ export const FieldsDps = ({
                                     placeholder={props.placeholder}
                                     onChange={(e) => props.onChange?.(e.value)}
                                 />
+                                {props.errors?.[props.errorKey] && (
+                                    <small className="p-error">{props.errorMessage}</small>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -371,7 +376,7 @@ export const FieldsDps = ({
                             <div>
                                 <Calendar
                                     value={props.value || ''}
-                                    className={`w-full ${props.errors?.xml_date ? 'p-invalid' : ''}`}
+                                    className={`w-full ${props.errors?.[props.errorKey] ? 'p-invalid' : ''}`}
                                     placeholder="Fecha de emisión"
                                     onChange={(e) => props.onChange?.(e.value)}
                                     showIcon
@@ -389,6 +394,9 @@ export const FieldsDps = ({
                                         }
                                     }}
                                 />
+                                {props.errors?.[props.errorKey] && (
+                                    <small className="p-error">{props.errorMessage}</small>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -439,12 +447,14 @@ export const FieldsDps = ({
                 setErrors?.((prev: any) => ({ ...prev, payday: false }));
             } else {
                 confirmDialog({
-                    message: '¿Quieres poner : ' + DateFormatter(value) + ' como día de pago?',
-                    header: 'Confirma día',
+                    message: t('confirmations.confirmPaymentDay.message', {
+                        date: DateFormatter(value)
+                    }),
+                    header: t('confirmations.confirmPaymentDay.header'),
                     icon: 'pi pi-info-circle',
                     acceptClassName: 'p-button-primary',
-                    acceptLabel: 'Sí',
-                    rejectLabel: 'No',
+                    acceptLabel: tCommon('btnYes'),
+                    rejectLabel: tCommon('btnNo'),
                     accept: () => accept(value),
                     reject: () => reject(),
                     closable: false
@@ -521,7 +531,7 @@ export const FieldsDps = ({
             {withBodyDps && (
                 <div className="p-fluid formgrid grid">
                     <Divider align="center">
-                        <h5>Datos de la factura</h5>
+                        <h5>{t('uploadDialog.invoiceData.title')}</h5>
                     </Divider>
                     { oDps?.week && (
                         renderField({
@@ -538,7 +548,7 @@ export const FieldsDps = ({
                     )}
                     {renderField({
                         label: t('uploadDialog.folio.label'),
-                        tooltip: t('uploadDialog.folio.tooltipReview'),
+                        tooltip: dialogMode == 'create' ? t('uploadDialog.folio.tooltip') : t('uploadDialog.folio.tooltipReview'),
                         value: oDps?.folio,
                         onChange: (value) => setODps((prev: any) => ({ ...prev, folio: value })),
                         disabled: mode == 'view',
@@ -547,7 +557,7 @@ export const FieldsDps = ({
                         placeholder: '',
                         errorKey: 'folio',
                         errors: errors,
-                        errorMessage: 'Ingresa folio'
+                        errorMessage: t('uploadDialog.folio.helperText')
                     })}
                     {renderField({
                         label: t('uploadDialog.xml_date.label'),
@@ -558,7 +568,9 @@ export const FieldsDps = ({
                         type: mode == 'view' ? 'text' : 'calendar',
                         onChange: (value) => setODps((prev: any) => ({ ...prev, date: value })),
                         placeholder: '',
-                        errorKey: ''
+                        errorKey: 'date',
+                        errors: errors,
+                        errorMessage: t('uploadDialog.xml_date.helperText')
                     })}
                     { isLocalPartner && (
                         <>
@@ -581,8 +593,8 @@ export const FieldsDps = ({
                                 }
                             })}
                             {renderField({
-                                label: 'Forma pago',
-                                tooltip: 'Forma pago',
+                                label: t('uploadDialog.paymentForm.label'),
+                                tooltip: t('uploadDialog.paymentForm.tooltip'),
                                 value: oDps?.payment_way,
                                 disabled: mode == 'view',
                                 mdCol: 2,
@@ -652,8 +664,10 @@ export const FieldsDps = ({
                         mdCol: 3,
                         type: 'number',
                         placeholder: '',
-                        errorKey: '',
-                        onChange: (value) => setODps((prev: any) => ({ ...prev, amount: value }))
+                        onChange: (value) => setODps((prev: any) => ({ ...prev, amount: value })),
+                        errorKey: 'amount',
+                        errors: errors,
+                        errorMessage: t('uploadDialog.amount.helperText')
                     })}
                     {renderField({
                         label: t('uploadDialog.currency.label'),
@@ -663,9 +677,11 @@ export const FieldsDps = ({
                         mdCol: 2,
                         type: mode == 'view' ? 'text' : 'dropdown',
                         placeholder: t('uploadDialog.currency.placeholder'),
-                        errorKey: '',
                         lOptions: lCurrency,
-                        onChange: (value) => setODps((prev: any) => ({ ...prev, currency: value?.name, oCurrency: value }))
+                        onChange: (value) => setODps((prev: any) => ({ ...prev, currency: value?.name, oCurrency: value })),
+                        errorKey: 'currency', 
+                        errors: errors,
+                        errorMessage: ''
                     })}
                     { isLocalPartner && (
                         renderField({
@@ -686,8 +702,8 @@ export const FieldsDps = ({
             {withFooterDps && (
                 <>
                     {renderField({
-                        label: t('uploadDialog.aceptNotes.label'),
-                        tooltip: t('uploadDialog.aceptNotes.tooltip'),
+                        label: t('uploadDialog.acceptNotes.label'),
+                        tooltip: t('uploadDialog.acceptNotes.tooltip'),
                         value: oDps?.notes,
                         onChange: (value) => {setODps((prev: any) => ({ ...prev, notes: value })); setErrors?.((prev: any) => ({ ...prev, notes: false }));},
                         disabled: footerMode == 'view',
@@ -696,13 +712,13 @@ export const FieldsDps = ({
                         placeholder: '',
                         errors: errors,
                         errorKey: 'notes',
-                        errorMessage: 'Ingresa la descripción',
+                        errorMessage: t('uploadDialog.acceptNotes.helperText'),
                         labelClass: 'opacity-100 text-blue-600'
                     })}
                     <div className="p-fluid formgrid grid">
                         {renderField({
-                            label: 'Etiqueta contable',
-                            tooltip: '',
+                            label: t('uploadDialog.account_tag.label'),
+                            tooltip: t('uploadDialog.account_tag.tooltip'),
                             value: footerMode == 'edit' ? oDps?.account_tag : ( footerMode == 'view' ? ( oDps?.account_tag ? oDps?.account_tag : 'Sin etiqueta' ) : oDps?.account_tag ),
                             onChange: (value) => {
                                 setODps((prev: any) => ({ ...prev, account_tag: value }));
@@ -717,8 +733,8 @@ export const FieldsDps = ({
                             lOptions: lOpex
                         })}
                         {renderField({
-                            label: 'Tipo de carga',
-                            tooltip: '',
+                            label: t('uploadDialog.type_load.label'),
+                            tooltip: t('uploadDialog.type_load.tooltip'),
                             value: footerMode == 'edit'
                                 ? (oDps?.oProcessingType || null)
                                 : (
@@ -803,12 +819,12 @@ export const FieldsDps = ({
                             })}
                         </div>)}
                     <Divider align="center">
-                        <h5>Datos del pago</h5>
+                        <h5>{t('uploadDialog.paymentData.title')}</h5>
                     </Divider>
                     <div className="p-fluid formgrid grid">
                         {renderField({
-                            label: 'Días de crédito:',
-                            tooltip: '',
+                            label: t('uploadDialog.creditDays.label'),
+                            tooltip: t('uploadDialog.creditDays.tooltip'),
                             value: oDps?.oPartner?.credit_days,
                             onChange: () => {},
                             disabled: true,
@@ -875,7 +891,7 @@ export const FieldsDps = ({
                                     <Tooltip target=".custom-target-icon" />
                                     <i
                                         className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                                        data-pr-tooltip={t('uploadDialog.amountOption.tooltip')}
+                                        data-pr-tooltip={dialogMode === 'authorization' ? t('uploadDialog.amountOption.tooltipReview') : t('uploadDialog.amountOption.tooltip')}
                                         data-pr-position="right"
                                         data-pr-my="left center-2"
                                         style={{ fontSize: '1rem', cursor: 'pointer' }}
@@ -1122,7 +1138,7 @@ export const FieldsDps = ({
                         })}
 
                         <Divider align="center">
-                            <h5>Comentarios de la revisión</h5>
+                            <h5>{t('comments.reviewTitle')}</h5>
                         </Divider>
 
                         {renderField({

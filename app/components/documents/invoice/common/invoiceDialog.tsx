@@ -1,3 +1,4 @@
+// FACTURAS , AUTORIZADAS,
 import React, { useState, useEffect, useRef, isValidElement } from 'react';
 import { Dialog } from 'primereact/dialog';
 import { Tooltip } from 'primereact/tooltip';
@@ -29,6 +30,7 @@ import { HistoryAuth } from '@/app/components/documents/invoice/historyAuth';
 import { ToggleButton } from 'primereact/togglebutton';
 import { Checkbox } from 'primereact/checkbox';
 import { MultiSelect } from 'primereact/multiselect';
+import { OverlayPanel } from 'primereact/overlaypanel';
 import { btnScroll } from '@/app/(main)/utilities/commons/useScrollDetection';
 import { useIntersectionObserver } from 'primereact/hooks';
 import { getCrpPending } from '@/app/(main)/utilities/documents/invoice/dps';
@@ -179,6 +181,7 @@ export const InvoiceDialog = ({
     lProcessingType = [],
     canEditAcceptance = false
 }: InvoiceDialogProps) => {
+    const op = useRef<OverlayPanel>(null);
     const [oCompany, setOCompany] = useState<any>(null);
     const [oProvider, setOProvider] = useState<any>(null);
     const [oReference, setOReference] = useState<any[]>([]);
@@ -268,6 +271,10 @@ export const InvoiceDialog = ({
     const [isAdvance, setIsAdvance] = useState<boolean>(false);
     const [oAdvance, setOAdvance] = useState<any>(null);
     const [originalIsAdvance, setOriginalIsAdvance] = useState<boolean>(false);
+
+    const isBuyer = oValidUser?.isInternalUser;
+    const isMexican = oProvider ? oProvider.country == constants.COUNTRIES.MEXICO_ID : false;
+    const uploadInvoiceInstructions = isMexican ? 'uploadDialog.uploadInstructions' : 'uploadDialog.uploadInstructionsForForeign'; // instrucciones de carga dinámico
 
     const renderField = (props: renderFieldProps) => (
         <>
@@ -431,8 +438,7 @@ export const InvoiceDialog = ({
             provider: !oProvider,
             company: !oCompany,
             reference: !oReference || oReference?.length == 0,
-            area: oReference ? (oReference[0].id == '0' ? !oArea : false) : false,
-            // area: false,
+            area: oReference ? (oReference[0]?.id == '0' ? !oArea : false) : false,
             files: (fileUploadRef.current?.getFiles().length || 0) === 0,
             includePdf: fileUploadRef.current?.getFiles().length || 0 > 0 ? !fileUploadRef.current?.getFiles().some((file: { type: string }) => file.type === 'application/pdf') : false,
             includeXml: false,
@@ -442,38 +448,39 @@ export const InvoiceDialog = ({
         };
         setFormErrors(newFormErrors);
 
-        const newDpsErros = {};
+        let dpsErrors: any = {};
+        
         if (!isXmlValid && oProvider?.country != constants.COUNTRIES.MEXICO_ID) {
-            const newDpsErros = {
-                folio: oDps.folio?.trim() == '',
-                date: oDps.date == '',
+            dpsErrors = {
+                folio: !oDps?.folio || String(oDps.folio).trim() === '',
+                date: !oDps?.date,
                 payment_method: false,
-                provider_rfc: oDps.provider_rfc?.trim() === '',
+                provider_rfc: !oDps?.provider_rfc || String(oDps.provider_rfc).trim() === '',
                 issuer_tax_regime: false,
-                company_rfc: oDps.company_rfc?.trim() === '',
-                receiver_tax_regime: oDps.receiver_tax_regime ? false : true,
+                company_rfc: !oDps?.company_rfc || String(oDps.company_rfc).trim() === '',
+                receiver_tax_regime: !oDps?.receiver_tax_regime,
                 useCfdi: false,
-                amount: oDps.amount ? false : true,
-                currency: oDps.currency ? false : true,
-                exchange_rate: oDps.exchange_rate ? false : true
+                amount: !oDps?.amount,
+                currency: !oDps?.currency && !oDps?.oCurrency,
+                exchange_rate: !oDps?.exchange_rate && oDps?.currency !== 'MXN'
             };
-            setDpsErrors(newDpsErros);
         } else {
-            const newDpsErros = {
-                folio: false,
-                date: false,
+            dpsErrors = {
+                folio: !oDps?.folio || String(oDps.folio).trim() === '',
+                date: !oDps?.date,
                 payment_method: false,
                 provider_rfc: false,
                 issuer_tax_regime: false,
                 company_rfc: false,
                 receiver_tax_regime: false,
                 useCfdi: false,
-                amount: false,
-                currency: false,
+                amount: !oDps?.amount,
+                currency: !oDps?.currency && !oDps?.oCurrency,
                 exchange_rate: false
             };
-            setDpsErrors(newDpsErros);
         }
+        
+        setDpsErrors(dpsErrors);
 
         const newFileErrors = {
             files: (fileUploadRef.current?.getFiles().length || 0) === 0,
@@ -489,7 +496,7 @@ export const InvoiceDialog = ({
             showToast?.('info', t('uploadDialog.files.helperTextPdf'));
         }
 
-        return !Object.values(newFormErrors).some(Boolean) && !Object.values(newDpsErros).some(Boolean) && !Object.values(newFileErrors).some(Boolean);
+        return !Object.values(newFormErrors).some(Boolean) && !Object.values(dpsErrors).some(Boolean) && !Object.values(newFileErrors).some(Boolean);
     };
 
     const handleSelectCompany = async (oCompany: any) => {
@@ -604,7 +611,7 @@ export const InvoiceDialog = ({
                 setIsRejected(true);
                 if (!oDps.authz_acceptance_notes.trim()) {
                     setReviewErrors?.((prev: any) => ({ ...prev, rejectComments: true }));
-                    showToast?.('info', 'Ingresa un comentario de rechazo de la factura');
+                    showToast?.('info', t('uploadDialog.rejectComments.toast'));
                     return;
                 }
             }
@@ -612,19 +619,19 @@ export const InvoiceDialog = ({
             if (reviewOption == constants.REVIEW_ACCEPT) {
                 if (oDps.lReferences.length < 1 && !oDps.notes.trim()) {
                     setReviewErrors?.((prev: any) => ({ ...prev, notes: true }));
-                    showToast?.('info', 'Ingresa descripción de la factura');
+                    showToast?.('info', t('uploadDialog.acceptNotes.toast'));
                     return;
                 }
 
                 if (!oDps.payday && oDps.payment_percentage > 0) {
                     setReviewErrors?.((prev: any) => ({ ...prev, payday: true }));
-                    showToast?.('info', 'Ingresa una fecha de pago de la factura');
+                    showToast?.('info', t('uploadDialog.payDay.toast'));
                     return;
                 }
 
                 if (oDps.is_edit_payment_date && !oDps.notes_manual_payment_date) {
                     setReviewErrors?.((prev: any) => ({ ...prev, notes_manual_payment_date: true }));
-                    showToast?.('info', 'Ingresa comentario de cambio de fecha');
+                    showToast?.('info', t('uploadDialog.notes_manual_payment_date.toast'));
                     return;
                 }
             }
@@ -1171,7 +1178,7 @@ export const InvoiceDialog = ({
                             lReferencesDps[i].history = history;
                             
                         } else {
-                            throw new Error(`Error al obtener el historial de autorización: ${response.statusText}`);
+                            throw new Error(`${t('errors.getAuthorizationHistoryError')} ${response.statusText}`);
                         }
                     } catch (error: any) {
                         // showToast?.('error', error.response?.data?.error || 'Error al obtener el historial de autorización', 'Error al obtener el historial de autorización');
@@ -1438,7 +1445,7 @@ export const InvoiceDialog = ({
     const handleCancelFlowAuth = async () => {
         try {
             if (!oDps.auth_notes) {
-                showToast?.('info', 'Debes ingresar comentarios de la cancelación', 'Info');
+                showToast?.('info', t('comments.cancelAuthorizationError'), 'Info');
                 return;
             }
 
@@ -1458,13 +1465,13 @@ export const InvoiceDialog = ({
             });
 
             if (response.status === 200) {
-                setSuccessMessage('Se ha cancelado el proceso de autorización, tu factura ha apasado a la pantalla de "carga de facturas"');
+                setSuccessMessage(t('uploadDialog.cancelFlowAuth.successMessage'));
                 setResultUpload('success');
                 if (getDps) {
                     await getDps(getDpsParams);
                 }
             } else {
-                throw new Error(`Error al cancelar el proceso de autorización: ${response.statusText}`);
+                throw new Error(t('uploadDialog.cancelFlowAuth.errorMessage') + `${response.statusText}`);
             }
         } catch (error: any) {
             setErrorMessage(error.response?.data?.error || 'Error al cancelar el proceso de autorización');
@@ -1653,7 +1660,7 @@ export const InvoiceDialog = ({
                 {btnToScroll}
                 <div className="flex flex-column md:flex-row justify-content-between gap-2">
                     <Button label={tCommon('btnClose')} icon="bx bx-x" onClick={onHide} severity="secondary" disabled={loading} />
-                    <Button label={'Cancelar proceso de autorización'} icon="bx bx-stop-circle" onClick={() => handleCancelFlowAuth()} autoFocus disabled={loading} severity="warning" />
+                    <Button label={t('uploadDialog.cancelFlowAuth.labelButton')} icon="bx bx-stop-circle" onClick={() => handleCancelFlowAuth()} autoFocus disabled={loading} severity="warning" />
                 </div>
             </>
         ) : (
@@ -1772,15 +1779,12 @@ export const InvoiceDialog = ({
             return;
         }
 
-        const header = "Atención";
-        const message = "Se detecto que el XML es de un anticipo ¿estas seguro de marcarlo como factura normal?";
-
         confirmDialog({
-            message: message,
-            header: header,
+            message: t('confirmations.confirmMarkNormalInvoice.message'),
+            header: t('confirmations.confirmMarkNormalInvoice.header'),
             icon: 'pi pi-exclamation-triangle',
-            acceptLabel: "Sí",
-            rejectLabel: "No",
+            acceptLabel: tCommon('btnYes'),
+            rejectLabel: tCommon('btnNo'),
             accept,
             reject
         });
@@ -1812,7 +1816,15 @@ export const InvoiceDialog = ({
         headerTooltip = `Tipo de egreso: ${ocText} aunque el CFDI indique ${cfText}.`;
     }
 
-    const headerTitle = dialogMode === 'create' ? t('uploadDialog.headerCreate') : t('uploadDialog.headerReview');
+    const headerTitles: Record<string, string> = {
+        create: t('uploadDialog.headerCreate'),
+        review: t('uploadDialog.headerReview'),
+        view: t('uploadDialog.headerView'),
+        edit: t('uploadDialog.headerEdit'),
+        authorization: t('uploadDialog.headerAuthorization')
+    };
+
+    const headerTitle = headerTitles[dialogMode] || '';
     const isExistingDocument = dialogMode !== 'create' && Boolean(oDps?.id || oDps?.id_dps);
 
     const customHeader = (
@@ -1828,8 +1840,6 @@ export const InvoiceDialog = ({
                     >
                         {finalType}
                     </span>
-                    
-                    {/* Indicador defensivo (Mini-Badge de alerta) superpuesto con el nuevo diseño profesional */}
                     {hasConflict && (
                          <i className="pi pi-exclamation-triangle text-red-500 absolute" style={{ top: '0px', right: '0px', fontSize: '0.9rem', borderRadius: '50%' }}></i>
                     )}
@@ -1850,7 +1860,7 @@ export const InvoiceDialog = ({
                     content: {
                         style: {
                             position: 'relative',
-                            maxHeight: '70vh',
+                            maxHeight: '100%',
                             overflow: 'auto'
                         },
                         ref: dialogContentRef
@@ -1858,6 +1868,85 @@ export const InvoiceDialog = ({
                 }}
                 style={{ width: isMobile ? '100%' : '70rem' }}
             >
+                {/* Botón de ayuda para cargar facturas, solo visible durante la carga, la revisión  */}
+                {(dialogMode === 'create' || 
+                 (dialogMode === 'review' && oDps?.acceptance === 'pendiente') || 
+                 (dialogMode === 'authorization' && oDps?.authorization === 'en proceso')) && (
+                    <div className="flex justify-content-end">
+                        <Button 
+                            type="button" 
+                            icon="bx bx-info-circle" 
+                            label={dialogMode === 'create' ? t('uploadDialog.btnHowUploadInvoice') : dialogMode === 'review' ? t('uploadDialog.btnHowReviewInvoice') : t('uploadDialog.btnHowAuthInvoice')}
+                        className="p-button-text p-button-sm p-button-info" 
+                        onClick={(e) => op.current?.toggle(e)}
+                        />
+                    </div>
+                )}
+                {/* Panel de ayuda  */}
+                <OverlayPanel ref={op} showCloseIcon style={{ width: '500px' }} appendTo={null}>
+                    <div className="p-3">
+                        {dialogMode === 'create' ? (
+                            // --- Instrucciones de carga: ---
+                            (isBuyer && !oProvider) ? (
+                                // Mensaje cuando es comprador y aún no selecciona proveedor:
+                                <div className="text-center p-2">
+                                    <i className="bx bx-info-circle text-4xl text-blue-500 mb-3 block"></i>
+                                    <h5 className="m-0 mb-2">{t('uploadDialog.provider.placeholder')}</h5>
+                                    <p className="m-0 text-secondary">{t('uploadDialog.selectProviderForHelp')}</p>
+                                </div>
+                            ) : (
+                                // Instrucciones:
+                                <>
+                                    <h5 className="mt-0 mb-3">{t(`${uploadInvoiceInstructions}.header`)}</h5>
+                                    <ul className="pl-3 m-0" style={{ lineHeight: '1.5' }}>
+                                        <li className="mb-2">{t(`${uploadInvoiceInstructions}.step1`)}</li>
+                                        <li className="mb-2">{t(`${uploadInvoiceInstructions}.step2`)}</li>
+                                        <li className="mb-2">{t(`${uploadInvoiceInstructions}.step3`)}</li>
+                                        <li className="mb-2">{t(`${uploadInvoiceInstructions}.step4`)}</li>
+                                        <li className="mb-2">{t(`${uploadInvoiceInstructions}.step5`)}</li>
+                                        <li className="mb-2">{t(`${uploadInvoiceInstructions}.step6`)}</li>
+                                        
+                                        {/* El step7 solo existe en uploadInstructionsForForeign, lo condicionamos */}
+                                        {!isMexican && <li className="mb-2">{t(`${uploadInvoiceInstructions}.step7`)}</li>}
+                                    </ul>
+                                    <p className="mt-3 mb-0 text-sm font-italic text-secondary" style={{ whiteSpace: 'pre-line' }}>
+                                        {t(`${uploadInvoiceInstructions}.footer`)}
+                                    </p>
+                                </>
+                            )
+                        ) : dialogMode === 'review' ? (
+                            // --- Instrucciones de revisión: ---
+                            <>
+                                <h5 className="mt-0 mb-3">{t('uploadDialog.reviewInstructions.header')}</h5>
+                                <ul className="pl-3 m-0" style={{ lineHeight: '1.5' }}>
+                                    <li className="mb-2">{t('uploadDialog.reviewInstructions.step1')}</li>
+                                    <li className="mb-2">{t('uploadDialog.reviewInstructions.step2')}</li>
+                                    <li className="mb-2">{t('uploadDialog.reviewInstructions.step3')}</li>
+                                    <li className="mb-2">{t('uploadDialog.reviewInstructions.step4')}</li>
+                                </ul>
+                                <p className="mt-3 mb-0 text-sm font-italic text-secondary" style={{ whiteSpace: 'pre-line' }}>
+                                    {t('uploadDialog.reviewInstructions.footer')}
+                                </p>
+                            </> 
+                        ) : dialogMode === 'authorization' ? (
+                            // --- Instrucciones de autorización: ---
+                            <>
+                                <h5 className="mt-0 mb-3">{t('uploadDialog.authInstructions.header')}</h5>
+                                <ul className="pl-3 m-0" style={{ lineHeight: '1.5' }}>
+                                    <li className="mb-2">{t('uploadDialog.authInstructions.step1')}</li>
+                                    <li className="mb-2">{t('uploadDialog.authInstructions.step2')}</li>
+                                    <li className="mb-2">{t('uploadDialog.authInstructions.step3')}</li>
+                                    <li className="mb-2">{t('uploadDialog.authInstructions.step4')}</li>
+                                </ul>
+                                <p className="mt-3 mb-0 text-sm font-italic text-secondary" style={{ whiteSpace: 'pre-line' }}>
+                                    {t('uploadDialog.authInstructions.footer')}
+                                </p>
+                            </>
+                        ) : null
+                        }
+                    </div>
+                </OverlayPanel>
+
                 {/* <ConfirmDialog /> */}
                 {animationSuccess({
                     show: resultUpload === 'success',
@@ -1881,12 +1970,12 @@ export const InvoiceDialog = ({
                                 <>
                                     {renderField({
                                         label: t('uploadDialog.folio.label'),
-                                        tooltip: t('uploadDialog.folio.tooltipReview'),
+                                        tooltip: dialogMode == 'create' ? t('uploadDialog.folio.tooltip') : t('uploadDialog.folio.tooltipReview'),
                                         value: oDps?.folio,
                                         disabled: true,
-                                        mdCol: 2,
+                                        mdCol: 2, 
                                         type: 'text',
-                                        placeholder: '',
+                                        placeholder: 'uploadDialog.folio.placeholder',
                                         errorKey: 'folio',
                                         errors: errors,
                                         errorMessage: ''
@@ -1980,11 +2069,11 @@ export const InvoiceDialog = ({
                                     errorMessage: t('uploadDialog.reference.helperText'),
                                     renderRightItem: {
                                         item: (
-                                            <div className="pt-4">
+                                            <div className="pt-5 align-items-center flex white-space-nowrap" style={{ marginLeft: '-1rem' }}>
                                                 <Checkbox
-                                                    inputId="ingredient1"
-                                                    name="pizza"
-                                                    value="Cheese"
+                                                    inputId="allReferencesCheckbox"
+                                                    name="allReferences"
+                                                    // value="Cheese"
                                                     onChange={(e: any) => {
                                                         setFilterReferences(e.checked);
                                                         setOReference([]);
@@ -1992,7 +2081,13 @@ export const InvoiceDialog = ({
                                                     checked={filterReferences}
                                                     disabled={!lReferences || lReferences.length == 0}
                                                 />
-                                                <label className="ml-2">{t('uploadDialog.reference.checkboxLabel')}</label>
+                                                <label htmlFor="allReferencesCheckbox" className="ml-2 mr-2">
+                                                    {t('uploadDialog.reference.checkboxAllReferences')}
+                                                </label>
+                                                <i className="info-icon-references bx bx-help-circle p-text-secondary p-overlay-badge" style={{ fontSize: '1rem', cursor: 'pointer' }}></i>
+                                                <Tooltip target=".info-icon-references" position="top">
+                                                    <p className="m-0">{t('uploadDialog.reference.tooltipcheckboxAllReferences')}</p>
+                                                </Tooltip>
                                             </div>
                                         ),
                                         mdCol: 2
@@ -2088,27 +2183,27 @@ export const InvoiceDialog = ({
                                                 <div key={index}>
                                                     <div className={`field col-12 md:col-12 mb-3`}>
                                                         <Divider align="center">
-                                                            <h6>{(item.document_ref_type == 22 || item.document_ref_type == 21) ? t('uploadDialog.references.referenceData') : t('uploadDialog.references.ticketData')}{item.reference}</h6>
+                                                            <h6>{(item.document_ref_type == 22 || item.document_ref_type == 21) ? t('uploadDialog.references.referenceData') : t('uploadDialog.references.ticketData')} &nbsp;<strong>{item.reference}</strong></h6>
                                                         </Divider>
                                                     </div>
-                                                    { lRefToValidateXml.length > 1 && (
+                                                    {/* { lRefToValidateXml.length > 1 && (
                                                         <div className={`field col-12 md:col-12 mb-0`}>
-                                                            <h6>{t('uploadDialog.CeCo.title')} {item.reference}</h6>
+                                                            <h6>{t('uploadDialog.referenceData.title')} {item.reference}</h6>
                                                         </div>
-                                                    )}
+                                                    )} */}
                                                     <div className="grid" style={{ minWidth: 0 }}>
                                                         { item.document_ref_type == 21 || item.document_ref_type == 22 && (
                                                             <>
                                                                 {renderField({
-                                                                    label: t('uploadDialog.nature.label'),
-                                                                    tooltip: t('uploadDialog.nature.tooltip'),
+                                                                    label: t('uploadDialog.referenceData.nature.label'),
+                                                                    tooltip: t('uploadDialog.referenceData.nature.tooltip'),
                                                                     value: item.nature,
                                                                     disabled: true,
                                                                     mdCol: 3,
                                                                     type: 'textArea',
                                                                     onChange: () => null,
                                                                     options: [],
-                                                                    placeholder: t('uploadDialog.nature.placeholder'),
+                                                                    placeholder: t('uploadDialog.referenceData.nature.placeholder'),
                                                                     errorKey: '',
                                                                     errors: formErrors,
                                                                     errorMessage: ''
@@ -2116,15 +2211,15 @@ export const InvoiceDialog = ({
                                                             </>
                                                         )}
                                                             {renderField({
-                                                                label: t('uploadDialog.CeCo.concept.label'),
-                                                                tooltip: t('uploadDialog.CeCo.concept.tooltip'),
+                                                                label: t('uploadDialog.referenceData.concept.label'),
+                                                                tooltip: t('uploadDialog.referenceData.concept.tooltip'),
                                                                 value: item.concepts,
                                                                 disabled: true,
                                                                 mdCol: (item.document_ref_type == 21 || item.document_ref_type == 22) ? 3 :  12,
                                                                 type: 'textArea',
                                                                 onChange: () => null,
                                                                 options: [],
-                                                                placeholder: t('uploadDialog.CeCo.concept.placeholder'),
+                                                                placeholder: t('uploadDialog.referenceData.concept.placeholder'),
                                                                 errorKey: '',
                                                                 errors: formErrors,
                                                                 errorMessage: ''
@@ -2133,29 +2228,29 @@ export const InvoiceDialog = ({
                                                         { item.document_ref_type == 21 || item.document_ref_type == 22 && (
                                                             <>
                                                                 {renderField({
-                                                                    label: t('uploadDialog.CeCo.cost_profit_center.label'),
-                                                                    tooltip: t('uploadDialog.CeCo.cost_profit_center.tooltip'),
+                                                                    label: t('uploadDialog.referenceData.cost_profit_center.label'),
+                                                                    tooltip: t('uploadDialog.referenceData.cost_profit_center.tooltip'),
                                                                     value: item.cost_profit_center,
                                                                     disabled: true,
                                                                     mdCol: 6,
                                                                     type: 'textArea',
                                                                     onChange: () => null,
                                                                     options: [],
-                                                                    placeholder: t('uploadDialog.CeCo.cost_profit_center.placeholder'),
+                                                                    placeholder: t('uploadDialog.referenceData.cost_profit_center.placeholder'),
                                                                     errorKey: '',
                                                                     errors: formErrors,
                                                                     errorMessage: ''
                                                                 })}
                                                                 {renderField({
-                                                                    label: t('uploadDialog.CeCo.amount.label'),
-                                                                    tooltip: t('uploadDialog.CeCo.amount.tooltip'),
+                                                                    label: t('uploadDialog.referenceData.amount.label'),
+                                                                    tooltip: t('uploadDialog.referenceData.amount.tooltip'),
                                                                     value: item.amount,
                                                                     disabled: true,
                                                                     mdCol: 3,
                                                                     type: 'number',
                                                                     onChange: () => null,
                                                                     options: [],
-                                                                    placeholder: t('uploadDialog.CeCo.amount.placeholder'),
+                                                                    placeholder: t('uploadDialog.referenceData.amount.placeholder'),
                                                                     errorKey: '',
                                                                     errors: formErrors,
                                                                     errorMessage: ''
@@ -2238,11 +2333,11 @@ export const InvoiceDialog = ({
                                                             </>
                                                         )}
 
-                                                        { item.document_ref_type == 21 || item.document_ref_type == 22 && (
+                                                        { item.document_ref_type == constants.REFERENCE_TYPE_GOC || item.document_ref_type == constants.REFERENCE_TYPE_OC && (
                                                             <>
                                                                 {renderField({
-                                                                    label: 'Notas de la oc',
-                                                                    tooltip: '',
+                                                                    label: t('uploadDialog.referenceData.notes.label'),
+                                                                    tooltip: t('uploadDialog.referenceData.notes.tooltip'),
                                                                     value: getDpsOcNotes(item.jsonOc?.lNotes),
                                                                     disabled: true,
                                                                     mdCol: 12,
@@ -2414,17 +2509,25 @@ export const InvoiceDialog = ({
                                     <div className="formgrid grid">
                                         <div className="col">
                                             <label>
-                                                XML: <span className="font-italic">Debe seleccionar una referencia para cargar el XML</span>{' '}
+                                                {t('uploadDialog.xml_file.label')}
+                                                {(!oReference || oReference.length === 0) && (
+                                                    <span className="font-italic">{t('uploadDialog.xml_file.requireReference')}</span>
+                                                )}
                                             </label>
-                                            &nbsp;
-                                            <Tooltip target=".custom-target-icon" />
-                                            <i
-                                                className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                                                data-pr-tooltip={''}
-                                                data-pr-position="right"
-                                                data-pr-my="left center-2"
-                                                style={{ fontSize: '1rem', cursor: 'pointer' }}
-                                            ></i>
+
+                                            {(!oReference || oReference.length === 0) && (
+                                                <>
+                                                    &nbsp;
+                                                    <Tooltip target=".custom-target-icon" />
+                                                    <i
+                                                        className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
+                                                        data-pr-tooltip={t('uploadDialog.xml_file.requireReferenceTooltip')}
+                                                        data-pr-position="right"
+                                                        data-pr-my="left center-2"
+                                                        style={{ fontSize: '1rem', cursor: 'pointer' }}
+                                                    ></i>
+                                                </>
+                                            )}
                                             <ValidateXml
                                                 xmlUploadRef={xmlUploadRef}
                                                 oCompany={oCompany}
@@ -2466,6 +2569,7 @@ export const InvoiceDialog = ({
                                     oDps={oDps}
                                     setODps={setODps}
                                     mode={modeFieldsDps}
+                                    dialogMode={dialogMode}
                                     withHeaderDps={false}
                                     withBodyDps={true}
                                     withFooterDps={dialogMode == 'review' || dialogMode == 'authorization'}
@@ -2522,10 +2626,10 @@ export const InvoiceDialog = ({
                                                 setFormErrors((prev: any) => ({ ...prev, oAdvance: '' }));
                                             },
                                             options: lAdvance,
-                                            placeholder: 'Selecciona aplicación anticipo',
+                                            placeholder: t('uploadDialog.advance_application.placeholder'),
                                             errorKey: 'oAdvance',
                                             errors: formErrors,
-                                            errorMessage: 'Selecciona aplicación anticipo'
+                                            errorMessage: t('uploadDialog.advance_application.errorMessage')
                                         })
                                     )}
                                 </div>
@@ -2554,7 +2658,7 @@ export const InvoiceDialog = ({
                                 )}
                                 <div className="formgrid grid">
                                     <div className="col">
-                                        <label>Archivos</label>
+                                        <label>{t('uploadDialog.files.label')}</label>
                                         &nbsp;
                                         <Tooltip target=".custom-target-icon" />
                                         <i
@@ -2577,8 +2681,8 @@ export const InvoiceDialog = ({
                                             maxFilesSize={constants.maxFilesSize}
                                             maxFileSizeForHuman={constants.maxFileSizeForHuman}
                                             maxUnitFileSize={constants.maxUnitFile}
-                                            errorMessages={{
-                                                invalidFileType: t('uploadDialog.files.invalidFileType'),
+                                            errorMessages={{ 
+                                                invalidFileType: t('uploadDialog.files.invalidFileType', { extensions: constants.allowedExtensionsLabel }),
                                                 invalidAllFilesSize: t('uploadDialog.files.invalidAllFilesSize'),
                                                 invalidFileSize: t('uploadDialog.files.invalidFileSize'),
                                                 invalidFileSizeMessageSummary: t('uploadDialog.files.invalidFileSizeMessageSummary'),
@@ -2595,17 +2699,17 @@ export const InvoiceDialog = ({
                         {(dialogMode == 'authorization' || isReviewAuth) && (
                             <>
                                 <Divider align="center">
-                                    <h5>Comentarios de la autorización</h5>
+                                    <h5>{t('comments.authorizationTitle')}</h5>
                                 </Divider>
                                 <div className={`field col-12 md:col-12`}>
                                     <div className="formgrid grid">
                                         <div className="col">
-                                            <label data-pr-tooltip="" className='text-blue-600'>Comentarios de la autorización</label>
+                                            <label data-pr-tooltip="" className='text-blue-600'>{t('comments.authorizationLabel')}</label>
                                             &nbsp;
                                             <Tooltip target=".custom-target-icon" />
                                             <i
                                                 className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                                                data-pr-tooltip={t('uploadDialog.comments.tooltipAuthComments')}
+                                                data-pr-tooltip={t('comments.authorizationTooltip')}
                                                 data-pr-position="right"
                                                 data-pr-my="left center-2"
                                                 style={{ fontSize: '1rem', cursor: 'pointer' }}
@@ -2631,12 +2735,12 @@ export const InvoiceDialog = ({
                                     <div className={`field col-12 md:col-12`}>
                                         <div className="formgrid grid">
                                             <div className="col">
-                                                <label data-pr-tooltip="" className='text-blue-600'>Tus comentarios de la autorización</label>
+                                                <label data-pr-tooltip="" className='text-blue-600'>{t('comments.yourAuthorizationCommentsLabel')}</label>
                                                 &nbsp;
                                                 <Tooltip target=".custom-target-icon" />
                                                 <i
                                                     className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                                                    data-pr-tooltip={t('comments.tooltipYourComments')}
+                                                    data-pr-tooltip={t('comments.tooltipYourAuthorizationComments')}
                                                     data-pr-position="right"
                                                     data-pr-my="left center-2"
                                                     style={{ fontSize: '1rem', cursor: 'pointer' }}
@@ -2654,7 +2758,7 @@ export const InvoiceDialog = ({
                                                             setODps((prev: any) => ({ ...prev, auth_notes: e.target.value }));
                                                         }}
                                                     />
-                                                    {authErrors.auth_notes && <small className="p-error">Ingresa comentarios para rechazar</small>}
+                                                    {authErrors.auth_notes && <small className="p-error">{t('comments.yourAuthorizationCommentsError')}</small>}
                                                 </div>
                                             </div>
                                         </div>
@@ -2667,12 +2771,12 @@ export const InvoiceDialog = ({
                             <div className={`field col-12 md:col-12`}>
                                 <div className="formgrid grid">
                                     <div className="col">
-                                        <label data-pr-tooltip="" className='opacity-100 text-blue-600'>Comentarios para cancelación:</label>
+                                        <label data-pr-tooltip="" className='opacity-100 text-blue-600'>{t('comments.cancelAuthorizationLabel')}</label>
                                         &nbsp;
                                         <Tooltip target=".custom-target-icon" />
                                         <i
                                             className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                                            data-pr-tooltip={'Ingresa comentarios para cancelar'}
+                                            data-pr-tooltip={t('comments.cancelAuthorizationTooltip')}
                                             data-pr-position="right"
                                             data-pr-my="left center-2"
                                             style={{ fontSize: '1rem', cursor: 'pointer' }}
@@ -2690,7 +2794,7 @@ export const InvoiceDialog = ({
                                                     setODps((prev: any) => ({ ...prev, auth_notes: e.target.value }));
                                                 }}
                                             />
-                                            {authErrors.auth_notes && <small className="p-error">Ingresa comentarios para cancelar</small>}
+                                            {authErrors.auth_notes && <small className="p-error">{t('comments.cancelAuthorizationError')}</small>}
                                         </div>
                                     </div>
                                 </div>
@@ -2700,7 +2804,7 @@ export const InvoiceDialog = ({
                         {(dialogMode == 'view' || dialogMode == 'review' || dialogMode == 'authorization') &&
                             <>
                                 <Divider align="center">
-                                    <h5>Archivos de la factura</h5>
+                                    <h5>{t('invoiceFiles.title')}</h5>
                                 </Divider>
                                 {(!loadingUrlsFiles ? (
                                     <CustomFileViewer lFiles={lUrlFiles} withBtnCompare={true} urlCompare={constants.ROUTE_COMPARE_FILES + oDps?.id_dps + '/' + (oDps?.reference ? 1 : 0)}/>
@@ -2738,12 +2842,12 @@ export const InvoiceDialog = ({
                             <div className="field col-12 md:col-12">
                                 <div className="formgrid grid">
                                     <div className="col">
-                                        <label>Archivos adicionales</label>
+                                        <label>{t('aditionalInvoiceFiles.label')}</label>
                                         &nbsp;
                                         <Tooltip target=".custom-target-icon" />
                                         <i
                                             className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                                            data-pr-tooltip={t('uploadDialog.files.tooltip')}
+                                            data-pr-tooltip={t('aditionalInvoiceFiles.tooltip')}
                                             data-pr-position="right"
                                             data-pr-my="left center-2"
                                             style={{ fontSize: '1rem', cursor: 'pointer' }}
@@ -2776,15 +2880,20 @@ export const InvoiceDialog = ({
                             </div>
                         )}
 
-                        {withHistoryAuth &&
-                            oValidUser.isInternalUser &&
-                            (loadingHistoryAuth ? (
+                        {withHistoryAuth && oValidUser.isInternalUser && (
+                            loadingHistoryAuth ? (
                                 <div className="flex justify-content-center">
                                     <ProgressSpinner style={{ width: '50px', height: '50px' }} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />
                                 </div>
                             ) : (
-                                <HistoryAuth lHistory={lHistoryAuth} />
-                            ))}
+                                <>
+                                    <Divider align="center">
+                                        <h5 className="m-0">{t('invoiceAuthHistory.title')}</h5>
+                                    </Divider>
+                                    <HistoryAuth lHistory={lHistoryAuth} />
+                                </>
+                            )
+                        )}
                     </>
                 )}
                 <div ref={setElementRef} data-observer-element className={''}></div>

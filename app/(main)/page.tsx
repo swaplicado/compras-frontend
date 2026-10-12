@@ -2,6 +2,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import loaderScreen from '@/app/components/commons/loaderScreen';
 import { Toast } from 'primereact/toast';
+import { useTranslation } from 'react-i18next';
 import Cookies from 'js-cookie';
 import constants from '@/app/constants/constants';
 import axios from 'axios';
@@ -29,6 +30,7 @@ const Dashboard = () => {
         n_crp_pending_auth: 0
     });
     const toast = useRef<Toast>(null);
+    const { t } = useTranslation('home');
     const [panelDocs, setPanelDocs] = useState(false);
     const [panelCn, setPanelCn] = useState(false);
     const [panelPayments, setPanelPayments] = useState(false);
@@ -104,7 +106,7 @@ const Dashboard = () => {
             
             <h6 style={{color: '#583aceff'}}>
                 &nbsp;<i className="pi pi-info-circle" style={{ fontSize: '1rem', color: '#583aceff' }}></i>&nbsp;
-            Haz click en cualquier tarjeta para ir al menú</h6>
+            {t('instruction')}</h6>
             {/* Documentos */}
             {panelDocs ? (
                 <div className="mb-4">
@@ -112,16 +114,16 @@ const Dashboard = () => {
                         <div className="w-2rem h-2rem flex align-items-center justify-content-center bg-primary-100 border-round mr-3">
                             <i className="pi pi-folder text-primary-500 text-xl"></i>
                         </div>
-                        <h3 className="text-900 font-medium m-0 text-base">Ordenes de compra</h3>
+                        <h3 className="text-900 font-medium m-0 text-base">{t('sections.purchaseOrders')}</h3>
                     </div>
                     <div className="grid">
                         {oPanelData.n_oc_pending_auth > -1 ? (
                             <div className="col-12 lg:col-6 xl:col-3">
                                 <div onClick={() => redirectToMenu('/pages/documents/oc/authorizations/consultationAuth/inProcess')} className="card mb-0" 
-                                style={{ paddingBottom: '0.5rem' }}>
+                                style={{ paddingBottom: '0.5rem', cursor: 'pointer' }}>
                                     <div className="flex justify-content-between mb-3">
                                         <div>
-                                            <span className="block text-500 font-medium mb-3">Ordenes de compra en autorización</span>
+                                            <span className="block text-500 font-medium mb-3">{t('cards.purchaseOrdersPendingAuth')}</span>
                                             <div className="text-900 font-medium text-xl">{oPanelData.n_oc_pending_auth}</div>
                                         </div>
                                         <div className="flex align-items-center justify-content-center bg-blue-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
@@ -140,15 +142,15 @@ const Dashboard = () => {
                         <div className="w-2rem h-2rem flex align-items-center justify-content-center bg-primary-100 border-round mr-3">
                             <i className="pi pi-folder text-primary-500 text-xl"></i>
                         </div>
-                        <h3 className="text-900 font-medium m-0 text-base">Facturas</h3>
+                        <h3 className="text-900 font-medium m-0 text-base">{t('sections.invoices')}</h3>
                     </div>
                     <div className="grid">
                         {oPanelData.n_invoice_pending_accept > -1 ? (
                             <div className="col-12 lg:col-6 xl:col-3">
-                                <div onClick={() => redirectToMenu('/pages/documents/invoices/uploading/upload')} className="card mb-0" style={{ paddingBottom: '0.5rem' }}>
+                                <div onClick={() => redirectToMenu('/pages/documents/invoices/uploading/upload')} className="card mb-0" style={{ paddingBottom: '0.5rem', cursor: 'pointer' }}>
                                     <div className="flex justify-content-between mb-3">
                                         <div>
-                                            <span className="block text-500 font-medium mb-3">Facturas por revisar</span>
+                                            <span className="block text-500 font-medium mb-3">{t('cards.invoicesPendingReview')}</span>
                                             <div className="text-900 font-medium text-xl">{oPanelData.n_invoice_pending_accept}</div>
                                         </div>
                                         <div className="flex align-items-center justify-content-center bg-blue-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
@@ -161,10 +163,10 @@ const Dashboard = () => {
                         {oPanelData.n_invoice_pending_auth > -1 ? (
                             <div className="col-12 lg:col-6 xl:col-3">
                                 <div onClick={() => redirectToMenu('/pages/documents/invoices/authorizations/myFunctionalAreaAuthorizations/inAuthorization')} className="card mb-0" 
-                                style={{ paddingBottom: '0.5rem' }}>
+                                style={{ paddingBottom: '0.5rem', cursor: 'pointer' }}>
                                     <div className="flex justify-content-between mb-3">
                                         <div>
-                                            <span className="block text-500 font-medium mb-3">Facturas en autorización</span>
+                                            <span className="block text-500 font-medium mb-3">{t('cards.invoicesPendingAuth')}</span>
                                             <div className="text-900 font-medium text-xl">{oPanelData.n_invoice_pending_auth}</div>
                                         </div>
                                         <div className="flex align-items-center justify-content-center bg-blue-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
@@ -184,15 +186,15 @@ const Dashboard = () => {
                         <div className="w-2rem h-2rem flex align-items-center justify-content-center bg-primary-100 border-round mr-3">
                             <i className="pi pi-credit-card text-primary-500 text-xl"></i>
                         </div>
-                        <h3 className="text-900 font-medium m-0 text-base">Notas de crédito</h3>
+                        <h3 className="text-900 font-medium m-0 text-base">{t('sections.creditNotes')}</h3>
                     </div>
                     <div className="grid">
                         {oPanelData.n_cn_pending_accept > -1 ? (
                             <div className="col-12 lg:col-6 xl:col-3">
-                                <div onClick={() => redirectToMenu('/pages/documents/nc/upload')} className="card mb-0" style={{ paddingBottom: '0.5rem' }}>
+                                <div onClick={() => redirectToMenu('/pages/documents/nc/upload')} className="card mb-0" style={{ paddingBottom: '0.5rem', cursor: 'pointer' }}>
                                     <div className="flex justify-content-between mb-3">
                                         <div>
-                                            <span className="block text-500 font-medium mb-3">NC por revisar de {moment().format('MMMM')}</span>
+                                            <span className="block text-500 font-medium mb-3">{t('cards.creditNotesPendingReview', { month: moment().format('MMMM') })}</span>
                                             <div className="text-900 font-medium text-xl">{oPanelData.n_cn_pending_accept}</div>
                                         </div>
                                         <div className="flex align-items-center justify-content-center bg-blue-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
@@ -226,15 +228,15 @@ const Dashboard = () => {
                         <div className="w-2rem h-2rem flex align-items-center justify-content-center bg-primary-100 border-round mr-3">
                             <i className="pi pi-folder text-primary-500 text-xl"></i>
                         </div>
-                        <h3 className="text-900 font-medium m-0 text-base">Proformas</h3>
+                        <h3 className="text-900 font-medium m-0 text-base">{t('sections.proformas')}</h3>
                     </div>
                     <div className="grid">
                         {oPanelData.n_prepeyment_pending_accept > -1 ? (
                             <div className="col-12 lg:col-6 xl:col-3">
-                                <div onClick={() => redirectToMenu('/pages/documents/prePayments/upload')} className="card mb-0" style={{ paddingBottom: '0.5rem' }}>
+                                <div onClick={() => redirectToMenu('/pages/documents/prePayments/upload')} className="card mb-0" style={{ paddingBottom: '0.5rem', cursor: 'pointer' }}>
                                     <div className="flex justify-content-between mb-3">
                                         <div>
-                                            <span className="block text-500 font-medium mb-3">Proformas por revisar</span>
+                                            <span className="block text-500 font-medium mb-3">{t('cards.proformasPendingReview')}</span>
                                             <div className="text-900 font-medium text-xl">{oPanelData.n_prepeyment_pending_accept}</div>
                                         </div>
                                         <div className="flex align-items-center justify-content-center bg-blue-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
@@ -247,10 +249,10 @@ const Dashboard = () => {
                         {oPanelData.n_prepeyment_pending_auth > -1 ? (
                             <div className="col-12 lg:col-6 xl:col-3">
                                 <div onClick={() => redirectToMenu('/pages/documents/prePayments/authorizations/consultAuth/inAuthorization')} className="card mb-0" 
-                                style={{ paddingBottom: '0.5rem' }}>
+                                style={{ paddingBottom: '0.5rem', cursor: 'pointer' }}>
                                     <div className="flex justify-content-between mb-3">
                                         <div>
-                                            <span className="block text-500 font-medium mb-3">Proformas en autorización</span>
+                                            <span className="block text-500 font-medium mb-3">{t('cards.proformasPendingAuth')}</span>
                                             <div className="text-900 font-medium text-xl">{oPanelData.n_prepeyment_pending_auth}</div>
                                         </div>
                                         <div className="flex align-items-center justify-content-center bg-blue-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
@@ -270,15 +272,15 @@ const Dashboard = () => {
                         <div className="w-2rem h-2rem flex align-items-center justify-content-center bg-primary-100 border-round mr-3">
                             <i className="pi pi-money-bill text-primary-500 text-xl"></i>
                         </div>
-                        <h3 className="text-900 font-medium m-0 text-base">Pagos</h3>
+                        <h3 className="text-900 font-medium m-0 text-base">{t('sections.payments')}</h3>
                     </div>
                     <div className="grid">
                         {oPanelData.n_payment_pending_check > -1 ? (
                             <div className="col-12 lg:col-6 xl:col-3">
-                                <div onClick={() => redirectToMenu('/pages/documents/payments/executed')} className="card mb-0" style={{ paddingBottom: '0.5rem' }}>
+                                <div onClick={() => redirectToMenu('/pages/documents/payments/executed')} className="card mb-0" style={{ paddingBottom: '0.5rem', cursor: 'pointer' }}>
                                     <div className="flex justify-content-between mb-3">
                                         <div>
-                                            <span className="block text-500 font-medium mb-3">Pagos por comprobar de {moment().format('MMMM')}</span>
+                                            <span className="block text-500 font-medium mb-3">{t('cards.paymentsPendingCheck', { month: moment().format('MMMM') })}</span>
                                             <div className="text-900 font-medium text-xl">{oPanelData.n_payment_pending_check}</div>
                                         </div>
                                         <div className="flex align-items-center justify-content-center bg-blue-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
@@ -298,15 +300,15 @@ const Dashboard = () => {
                         <div className="w-2rem h-2rem flex align-items-center justify-content-center bg-primary-100 border-round mr-3">
                             <i className="pi pi-briefcase text-primary-500 text-xl"></i>
                         </div>
-                        <h3 className="text-900 font-medium m-0 text-base">CRP</h3>
+                        <h3 className="text-900 font-medium m-0 text-base">{t('sections.crp')}</h3>
                     </div>
                     <div className="grid">
                         {oPanelData.n_crp_pending_accept > -1 ? (
                             <div className="col-12 lg:col-6 xl:col-3">
-                                <div onClick={() => redirectToMenu('/pages/documents/crp/upload')} className="card mb-0" style={{ paddingBottom: '0.5rem' }}>
+                                <div onClick={() => redirectToMenu('/pages/documents/crp/upload')} className="card mb-0" style={{ paddingBottom: '0.5rem', cursor: 'pointer' }}>
                                     <div className="flex justify-content-between mb-3">
                                         <div>
-                                            <span className="block text-500 font-medium mb-3">CRP por revisar de {moment().format('MMMM')}</span>
+                                            <span className="block text-500 font-medium mb-3">{t('cards.crpPendingReview', { month: moment().format('MMMM') })}</span>
                                             <div className="text-900 font-medium text-xl">{oPanelData.n_crp_pending_accept}</div>
                                         </div>
                                         <div className="flex align-items-center justify-content-center bg-blue-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
@@ -318,10 +320,10 @@ const Dashboard = () => {
                         ) : ''}
                         {oPanelData.n_crp_pending_auth > -1 ? (
                             <div className="col-12 lg:col-6 xl:col-3">
-                                <div onClick={() => redirectToMenu('/pages/documents/crp/authorizations/consultationAuth/inProcess')} className="card mb-0" style={{ paddingBottom: '0.5rem' }}>
+                                <div onClick={() => redirectToMenu('/pages/documents/crp/authorizations/consultationAuth/inProcess')} className="card mb-0" style={{ paddingBottom: '0.5rem', cursor: 'pointer' }}>
                                     <div className="flex justify-content-between mb-3">
                                         <div>
-                                            <span className="block text-500 font-medium mb-3">CRP en autorización de {moment().format('MMMM')}</span>
+                                            <span className="block text-500 font-medium mb-3">{t('cards.crpPendingAuth', { month: moment().format('MMMM') })}</span>
                                             <div className="text-900 font-medium text-xl">{oPanelData.n_crp_pending_auth}</div>
                                         </div>
                                         <div className="flex align-items-center justify-content-center bg-blue-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
@@ -341,15 +343,15 @@ const Dashboard = () => {
                         <div className="w-2rem h-2rem flex align-items-center justify-content-center bg-primary-100 border-round mr-3">
                             <i className="pi pi-users text-primary-500 text-xl"></i>
                         </div>
-                        <h3 className="text-900 font-medium m-0 text-base">Proveedores</h3>
+                        <h3 className="text-900 font-medium m-0 text-base">{t('sections.providers')}</h3>
                     </div>
                     <div className="grid">
                         {oPanelData.n_provider_pending_accept > -1 ? (
                             <div className="col-12 lg:col-6 xl:col-3">
-                                <div onClick={() => redirectToMenu('/pages/partners/reception')} className="card mb-0" style={{ paddingBottom: '0.5rem' }}>
+                                <div onClick={() => redirectToMenu('/pages/partners/reception')} className="card mb-0" style={{ paddingBottom: '0.5rem', cursor: 'pointer' }}>
                                     <div className="flex justify-content-between mb-3">
                                         <div>
-                                            <span className="block text-500 font-medium mb-3">Proveedores por revisar</span>
+                                            <span className="block text-500 font-medium mb-3">{t('cards.providersPendingReview')}</span>
                                             <div className="text-900 font-medium text-xl">{oPanelData.n_provider_pending_accept}</div>
                                         </div>
                                         <div className="flex align-items-center justify-content-center bg-blue-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
@@ -361,10 +363,10 @@ const Dashboard = () => {
                         ) : ''}
                         {oPanelData.n_provider_pending_auth > -1 ? (
                             <div className="col-12 lg:col-6 xl:col-3">
-                                <div onClick={() => redirectToMenu('/pages/partners/authorization/consultationAuth/inAuthorization')} className="card mb-0" style={{ paddingBottom: '0.5rem' }}>
+                                <div onClick={() => redirectToMenu('/pages/partners/authorization/consultationAuth/inAuthorization')} className="card mb-0" style={{ paddingBottom: '0.5rem', cursor: 'pointer' }}>
                                     <div className="flex justify-content-between mb-3">
                                         <div>
-                                            <span className="block text-500 font-medium mb-3">Proveedores en autorización</span>
+                                            <span className="block text-500 font-medium mb-3">{t('cards.providersPendingAuth')}</span>
                                             <div className="text-900 font-medium text-xl">{oPanelData.n_provider_pending_auth}</div>
                                         </div>
                                         <div className="flex align-items-center justify-content-center bg-blue-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>

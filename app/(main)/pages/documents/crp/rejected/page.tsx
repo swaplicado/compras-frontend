@@ -424,12 +424,12 @@ const ConsultPaymentProgramded = () => {
             const id_dps = rowData.id;
             const folio = rowData.folio;
             confirmDialog({
-                message: '¿Quieres eliminar este CRP: ' + folio + '?',
-                header: 'Confirma eliminación',
+                message: t('confirmations.deleteRejected.message', { folio }),
+                header: t('confirmations.deleteRejected.header'),
                 icon: 'pi pi-info-circle',
                 acceptClassName: 'p-button-danger',
-                acceptLabel: 'Si',
-                rejectLabel: 'No',
+                acceptLabel: tCommon('btnYes'),
+                rejectLabel: tCommon('btnNo'),
                 accept: () => accept(id_dps),
                 reject: () => reject(id_dps)
             });

@@ -135,8 +135,11 @@ const constants = {
     maxFilesSizeProvForHuman: '40 MB',
     allowedExtensions: ['application/pdf', 'text/xml', 'image/png', 'image/jpg', 'image/jpeg', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
     allowedExtensionsNames: 'application/pdf, text/xml, image/png, image/jpg, image/jpeg, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    allowedExtensionsLabel: 'PDF, XML, PNG, JPG, JEPG, XLS, XLSX',
     allowedExtensionsPrepay: ['application/pdf', 'text/xml', 'image/png', 'image/jpg', 'image/jpeg'],
     allowedExtensionsNamesPrepay: 'application/pdf, text/xml, image/png, image/jpg, image/jpeg',
+    allowedExtensionsLabelPrepay: 'PDF, XML, PNG, JPG, JEPG',
+    allowedExtensionXmlLabel: 'XML',
     maxUnitFile: 5 * 1024 * 1024,
     maxUnitFileForHuman: '5 MB',
     maxUnitImage: 10 * 1024 * 1024,
@@ -227,6 +230,7 @@ const constants = {
     XML_TYPE_COMPRA: 5,
 
     //Tipos de referencia
+    REFERENCE_TYPE_GOC: 21,
     REFERENCE_TYPE_OC: 22,
     REFERENCE_TYPE_TICKET: 91,
 

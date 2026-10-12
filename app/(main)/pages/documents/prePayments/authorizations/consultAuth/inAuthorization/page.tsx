@@ -422,7 +422,7 @@ const AcceptedPrepayment = () => {
             });
 
             if (response.status == 200) {
-                showToast('success', 'Registro enviado a autorizar', 'Realizado');
+                showToast('success', tCommon('success.sendAuth'), 'Realizado');
                 await getLPrepayments();
             } else {
                 throw new Error('');
@@ -452,12 +452,12 @@ const AcceptedPrepayment = () => {
                 const id_dps = oPrepay.id;
                 const folio = oPrepay.folio;
                 confirmDialog({
-                    message: '¿Quieres enviar a autorizar: ' + folio + '?',
-                    header: 'Confirma envío de autorización',
+                    message: t('confirmations.sendToAuthorization.message', { folio }),
+                    header: t('confirmations.sendToAuthorization.header'),
                     icon: 'pi pi-info-circle',
                     acceptClassName: 'p-button-primary',
-                    acceptLabel: 'Si',
-                    rejectLabel: 'No',
+                    acceptLabel: tCommon('btnYes'),
+                    rejectLabel: tCommon('btnNo'),
                     accept: () => accept(),
                     reject: () => reject()
                 });
@@ -618,12 +618,12 @@ const AcceptedPrepayment = () => {
             }}
         >
             <h3 className="m-0 text-900 font-medium">
-                {t('titleInProcessNc')}
+                {t('titleInProcessPrepay')}
                 &nbsp;&nbsp;
                 <Tooltip target=".custom-target-icon" />
                 <i
                     className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                    data-pr-tooltip={t('titleInProcessNcTooltip')}
+                    data-pr-tooltip={t('titleInProcessPrepayTooltip')}
                     data-pr-position="right"
                     data-pr-my="left center-2"
                     style={{ fontSize: '1rem', cursor: 'pointer' }}
@@ -865,16 +865,12 @@ const AcceptedPrepayment = () => {
     }, [userFunctionalAreas, oUser])
 
     const getObjectIntruction = () => {
-        const uploadInstructions = JSON.parse(JSON.stringify(t(`dialog.uploadInstructions`, { returnObjects: true })));
-        const uploadInstructionsPartner = JSON.parse(JSON.stringify(t(`dialog.uploadInstructionsPartner`, { returnObjects: true })));
-        const reviewInstructions = JSON.parse(JSON.stringify(t(`dialog.reviewInstructions`, { returnObjects: true })));
+        const authPrepayInMonitor = JSON.parse(JSON.stringify(t(`viewInstructions.authPrepayInMonitor`, { returnObjects: true })));
+        
 
         let instructions: any[] = [];
         if (oUser?.isInternalUser) {
-            instructions.push(uploadInstructions);
-            instructions.push(reviewInstructions);
-        } else {
-            instructions.push(uploadInstructionsPartner);
+            instructions.push(authPrepayInMonitor);
         }
 
         if (!instructions || Object.keys(instructions).length === 0) {
@@ -884,6 +880,7 @@ const AcceptedPrepayment = () => {
         return instructions;
     }
 
+
     return (
         <div className="grid">
             <div className="col-12">
@@ -891,27 +888,27 @@ const AcceptedPrepayment = () => {
                 <Toast ref={toast} />
                 <Card header={headerCard} pt={{ content: { className: 'p-0' } }}>
                     <ConfirmDialog />
-                    {/* <RenderInfoButton
+                    <RenderInfoButton
                         instructions={getObjectIntruction()}
                         showInfo={showInfo}
                         setShowInfo={setShowInfo}
                         showManual={showManual}
                         setShowManual={setShowManual}
-                        btnShowInstructionsText={"Mostrar instrucciones"}
-                        btnHideInstructionsText={"Ocultar instrucciones"}
-                        dialogManualBtnLabelText={"Videos de ayuda"}
-                        dialogManualBtnTooltipText={"Videos de ayuda"}
-                        dialogManualHeaderText={"Videos de ayuda"}
+                        btnShowInstructionsText={tCommon('btnShowInstructions')}
+                        btnHideInstructionsText={tCommon('btnHideInstructions')}
+                        dialogManualBtnLabelText={tCommon('btnHelpVideos')}
+                        dialogManualBtnTooltipText={tCommon('btnHelpVideos')}
+                        dialogManualHeaderText={tCommon('btnHelpVideos')}
                         lVideos={[]}
-                    /> */}
+                    />
                     <DialogPrepay
                         visible={visible}
                         onHide={() => setDialogVisible(false)}
                         isMobile={isMobile}
                         footerContent={dialogFooterContent}
                         headerTitle={dialogHeaderTitle()}
-                        oNc={oPrepay}
-                        setONc={setOPrepay}
+                        oPrepay={oPrepay}
+                        setOPrepay={setOPrepay}
                         dialogMode={dialogMode}
                         showToast={showToast}
                         setLoading={setLoading}

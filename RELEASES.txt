@@ -1075,3 +1075,21 @@ Resumen:
 Cambios:
 - Lectura de información de deadline desde el backend.
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 12-10-2026
+Autor: Rodrigo Ayala
+========================================
+
+Resumen:
+- Homogeneizar diseño gráfico de PC.
+
+Cambios:
+- Se corrigieron y clarificaron tooltips en vistas y diálogos, se metieron textos en plano (la mayoría) a sus archivos de traducción correspondientes, se arreglaron bugs y botones que no salían en diálogos, se añadieron instrucciones en vistas e instrucciones en diálogos.
+
+Notas:
+- TODO: Hacer que todas las tablas se puedan reordenar de la misma manera (hay vistas que tienen menos columnas para ordenar y que no tienen la funcionalidad de orderase por varias columnas).
+- TODO: Clarificar algunas instrucciones para que sean más eficientes y agregar instrucciones a vistas donde existan botones.
+
+----------------------------------------

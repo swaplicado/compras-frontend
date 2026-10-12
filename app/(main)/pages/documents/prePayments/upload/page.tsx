@@ -220,9 +220,11 @@ const UploadPrepayment = () => {
                 date: !oPrepay.date,
                 amount: !oPrepay.amount,
                 currency: !oPrepay.oCurrency,
-                area: (oPrepay?.references.length > 1 || oPrepay?.references?.[0]?.id == 0) ? !oPrepay.area : false,
-                files: (fileUploadRef.current?.getFiles().length || 0) === 0,
-                includePdf: fileUploadRef.current?.getFiles().length || 0 > 0 ? !fileUploadRef.current?.getFiles().some((file: { type: string }) => file.type === 'application/pdf') : false,
+                area: (oPrepay?.references?.length > 1 || oPrepay?.references?.[0]?.id == 0) ? !oPrepay.area : false,
+                files: (fileUploadRef.current?.getFiles()?.length || 0) === 0,
+                includePdf: (fileUploadRef.current?.getFiles()?.length || 0) > 0 
+                    ? !fileUploadRef.current?.getFiles()?.some((file: { type: string }) => file.type === 'application/pdf') 
+                    : false,
             }
         }
 
@@ -818,16 +820,30 @@ const UploadPrepayment = () => {
     }, [userFunctionalAreas, oUser, startDate, endDate])
 
     const getObjectIntruction = () => {
-        const uploadInstructions = JSON.parse(JSON.stringify(t(`dialog.uploadInstructions`, { returnObjects: true })));
-        const uploadInstructionsPartner = JSON.parse(JSON.stringify(t(`dialog.uploadInstructionsPartner`, { returnObjects: true })));
-        const reviewInstructions = JSON.parse(JSON.stringify(t(`dialog.reviewInstructions`, { returnObjects: true })));
+        const uploadPrepay = t(`viewInstructions.uploadPrepay`, { returnObjects: true });
+        const deleteRejectedInstructions = t(`viewInstructions.deleteRejectedInstructions`, { returnObjects: true });
+        const reviewPrepay = t(`viewInstructions.reviewPrepay`, { returnObjects: true });
+        const searchPrepay = t(`viewInstructions.searchPrepay`, { returnObjects: true });
+        const sortColumn = t(`viewInstructions.sortColumn`, { returnObjects: true });
+        const reloadView = t(`viewInstructions.reloadView`, { returnObjects: true });
+        const downloadFiles = t(`viewInstructions.downloadFiles`, { returnObjects: true });
 
         let instructions: any[] = [];
         if (oUser?.isInternalUser) {
-            instructions.push(uploadInstructions);
-            instructions.push(reviewInstructions);
+            instructions.push(uploadPrepay);
+            instructions.push(deleteRejectedInstructions);
+            instructions.push(reviewPrepay);
+            instructions.push(searchPrepay);
+            instructions.push(sortColumn);
+            instructions.push(reloadView);
+            instructions.push(downloadFiles);
         } else {
-            instructions.push(uploadInstructionsPartner);
+            instructions.push(uploadPrepay);
+            instructions.push(deleteRejectedInstructions);
+            instructions.push(searchPrepay);
+            instructions.push(sortColumn);
+            instructions.push(reloadView);
+            instructions.push(downloadFiles);
         }
 
         if (!instructions || Object.keys(instructions).length === 0) {
@@ -849,11 +865,11 @@ const UploadPrepayment = () => {
                         setShowInfo={setShowInfo}
                         showManual={showManual}
                         setShowManual={setShowManual}
-                        btnShowInstructionsText={"Mostrar instrucciones"}
-                        btnHideInstructionsText={"Ocultar instrucciones"}
-                        dialogManualBtnLabelText={"Videos de ayuda"}
-                        dialogManualBtnTooltipText={"Videos de ayuda"}
-                        dialogManualHeaderText={"Videos de ayuda"}
+                        btnShowInstructionsText={tCommon('btnShowInstructions')}
+                        btnHideInstructionsText={tCommon('btnHideInstructions')}
+                        dialogManualBtnLabelText={tCommon('btnHelpVideos')}
+                        dialogManualBtnTooltipText={tCommon('btnHelpVideos')}
+                        dialogManualHeaderText={tCommon('btnHelpVideos')}
                         lVideos={[]}
                     />
                     <DialogPrepay
@@ -862,8 +878,8 @@ const UploadPrepayment = () => {
                         isMobile={isMobile}
                         footerContent={dialogFooterContent}
                         headerTitle={dialogHeaderTitle()}
-                        oNc={oPrepay}
-                        setONc={setOPrepay}
+                        oPrepay={oPrepay}
+                        setOPrepay={setOPrepay}
                         dialogMode={dialogMode}
                         showToast={showToast}
                         setLoading={setLoading}

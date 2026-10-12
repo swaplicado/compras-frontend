@@ -466,7 +466,7 @@ const Upload = () => {
 
             if (response.status === 200 || response.status === 201) {
                 await getDps(getDpsParams);
-                showToast('success', 'Registro enviado a la sección "Cargar facturas"');
+                showToast('success', t('success.sendUpload'));
             } else {
                 throw new Error(t('uploadDialog.errors.updateStatusError'));
             }
@@ -488,12 +488,14 @@ const Upload = () => {
     const handleSendToUpload = async () => {
         try {
             confirmDialog({
-                message: '¿Quieres enviar esta factura a la sección "Cargar facturas": ' + selectedRow.folio + '?',
-                header: 'Confirma envio',
+                message: t('confirmations.sendToUpload.message', {
+                    folio: selectedRow.folio
+                }),
+                header: t('confirmations.sendToUpload.header'),
                 icon: 'pi pi-info-circle',
                 acceptClassName: 'p-button-primary',
-                acceptLabel: 'Si',
-                rejectLabel: 'No',
+                acceptLabel: tCommon('btnYes'),
+                rejectLabel: tCommon('btnNo'),
                 accept: () => accept(),
                 reject: () => reject()
             });

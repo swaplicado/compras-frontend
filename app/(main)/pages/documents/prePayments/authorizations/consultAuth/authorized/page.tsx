@@ -427,7 +427,7 @@ const AcceptedPrepayment = () => {
             });
 
             if (response.status == 200) {
-                showToast('success', 'Registro enviado a autorizar', 'Realizado');
+                showToast('success', tCommon('success.sendAuth'), 'Realizado');
                 await getLPrepayments();
             } else {
                 throw new Error('');
@@ -457,12 +457,12 @@ const AcceptedPrepayment = () => {
                 const id_dps = oPrepay.id;
                 const folio = oPrepay.folio;
                 confirmDialog({
-                    message: '¿Quieres enviar a autorizar: ' + folio + '?',
-                    header: 'Confirma envío de autorización',
+                    message: t('confirmations.sendToAuthorization.message', { folio }),
+                    header: t('confirmations.sendToAuthorization.header'),
                     icon: 'pi pi-info-circle',
                     acceptClassName: 'p-button-primary',
-                    acceptLabel: 'Si',
-                    rejectLabel: 'No',
+                    acceptLabel: tCommon('btnYes'),
+                    rejectLabel: tCommon('btnNo'),
                     accept: () => accept(),
                     reject: () => reject()
                 });
@@ -623,12 +623,12 @@ const AcceptedPrepayment = () => {
             }}
         >
             <h3 className="m-0 text-900 font-medium">
-                {t('titleAuthorizedNc')}
+                {t('titleAuthorizedPrepay')}
                 &nbsp;&nbsp;
                 <Tooltip target=".custom-target-icon" />
                 <i
                     className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                    data-pr-tooltip={t('titleAuthorizedNc')}
+                    data-pr-tooltip={t('titleAuthorizedPrepayTooltip')}
                     data-pr-position="right"
                     data-pr-my="left center-2"
                     style={{ fontSize: '1rem', cursor: 'pointer' }}
@@ -913,8 +913,8 @@ const AcceptedPrepayment = () => {
                         isMobile={isMobile}
                         footerContent={dialogFooterContent}
                         headerTitle={dialogHeaderTitle()}
-                        oNc={oPrepay}
-                        setONc={setOPrepay}
+                        oPrepay={oPrepay}
+                        setOPrepay={setOPrepay}
                         dialogMode={dialogMode}
                         showToast={showToast}
                         setLoading={setLoading}
