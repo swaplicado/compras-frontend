@@ -280,7 +280,7 @@ const UploadPrepayment = () => {
                 <Tooltip target=".custom-target-icon" />
                 <i
                     className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                    data-pr-tooltip={t('titleAll')}
+                    data-pr-tooltip={t('titleAllTooltip')}
                     data-pr-position="right"
                     data-pr-my="left center-2"
                     style={{ fontSize: '1rem', cursor: 'pointer' }}
@@ -537,8 +537,8 @@ const UploadPrepayment = () => {
                         isMobile={isMobile}
                         footerContent={dialogFooterContent}
                         headerTitle={dialogHeaderTitle()}
-                        oNc={oPrepay}
-                        setONc={setOPrepay}
+                        oPrepay={oPrepay}
+                        setOPrepay={setOPrepay}
                         dialogMode={dialogMode}
                         showToast={showToast}
                         setLoading={setLoading}

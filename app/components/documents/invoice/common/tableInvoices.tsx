@@ -240,10 +240,18 @@ export const TableInvoices = ({
             if (response.status == 200) {
                 await getDps(getDpsParams);
             } else {
-                throw new Error(`Error al eliminar la factura: ${response.statusText}`);
+                throw new Error(
+                    t('uploadDialog.errors.deleteInvoiceError', {
+                        statusText: response.statusText
+                    })
+                );
             }
         } catch (error: any) {
-            showToast?.('error', error.response?.data?.error || 'Error al eliminar la factura', 'Error al eliminar la factura');
+            showToast?.(
+                'error',
+                error.response?.data?.error || t('uploadDialog.errors.deleteInvoiceErrorFallback'),
+                t('uploadDialog.errors.deleteInvoiceErrorFallback')
+            );
         } finally {
             setLoading(false);
         }
@@ -258,12 +266,12 @@ export const TableInvoices = ({
             const id_dps = rowData.id_dps;
             const folio = rowData.folio;
             confirmDialog({
-                message: '¿Quieres eliminar esta factura: ' + folio + '?',
-                header: 'Confirma eliminación',
+                message: t('confirmations.deleteInvoice.message', { folio }),
+                header: t('confirmations.deleteInvoice.header'),
                 icon: 'pi pi-info-circle',
                 acceptClassName: 'p-button-danger',
-                acceptLabel: 'Si',
-                rejectLabel: 'No',
+                acceptLabel: tCommon('btnYes'),
+                rejectLabel: tCommon('btnNo'),
                 accept: () => accept(id_dps),
                 reject: () => reject(id_dps)
             });
@@ -291,7 +299,8 @@ export const TableInvoices = ({
                 operator: FilterOperator.AND,
                 constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }]
             },
-            useCfdi: { value: null, matchMode: FilterMatchMode.IN }
+            //useCfdi: { value: null, matchMode: FilterMatchMode.IN }
+            id_dps: { value: null, matchMode: FilterMatchMode.IN }
         });
         setGlobalFilterValue('');
     };
@@ -327,28 +336,63 @@ export const TableInvoices = ({
         setFilters(_filters);
     };
 
-    const handleUseCfdiFilterChange = (value: any) => {
-        const lCfdis = constants.USE_CFDI_ACTIVO_FIJO;
-        const filteredData = lDps.filter(item => !lCfdis.includes(item.useCfdi));
-        let notlCfdis: any[] = [];
-        if (filteredData.length > 1) {
-            notlCfdis = filteredData.map(item => item.useCfdi);
-        } else {
-            notlCfdis = [''];
-        }
+    // const handleUseCfdiFilterChange = (value: any) => {
+    //     const lCfdis = constants.USE_CFDI_ACTIVO_FIJO;
+    //     const filteredData = lDps.filter(item => !lCfdis.includes(item.useCfdi));
+    //     let notlCfdis: any[] = [];
+    //     if (filteredData.length > 1) {
+    //         notlCfdis = filteredData.map(item => item.useCfdi);
+    //     } else {
+    //         notlCfdis = [''];
+    //     }
 
+    //     let _filters = { ...filters };
+
+    //     setActivoFijoFilterValue(value);
+        
+    //     if (value == 'all') {
+    //         (_filters['useCfdi'] as any).value = null;
+    //     } else if (value == 'yes') {
+    //         (_filters['useCfdi'] as any).value = lCfdis;
+    //         (_filters['useCfdi'] as any).matchMode = FilterMatchMode.IN;
+    //     } else if (value == 'no') {
+    //         (_filters['useCfdi'] as any).value = notlCfdis;
+    //         (_filters['useCfdi'] as any).matchMode = FilterMatchMode.IN;
+    //     }
+        
+    //     setFilters(_filters);
+    // };
+
+    const handleAccountingFilterChange = (value: any) => {
+        setActivoFijoFilterValue(value);
         let _filters = { ...filters };
 
-        setActivoFijoFilterValue(value);
-        
-        if (value == 'all') {
-            (_filters['useCfdi'] as any).value = null;
-        } else if (value == 'yes') {
-            (_filters['useCfdi'] as any).value = lCfdis;
-            (_filters['useCfdi'] as any).matchMode = FilterMatchMode.IN;
-        } else if (value == 'no') {
-            (_filters['useCfdi'] as any).value = notlCfdis;
-            (_filters['useCfdi'] as any).matchMode = FilterMatchMode.IN;
+        if (value === (constants.USE_CFDI_ACTIVO_FIJO_FILTER_OPTIONS[0].value)) {
+            (_filters['id_dps'] as any).value = null;
+        } else {
+            // Escanear qué filas son AF o Gasto:
+            const matchedIds = lDps.filter(item => {
+                let nature = item.nature || '';
+                let concepts = item.concepts || '';
+                const cfdiUse = item.useCfdi || item.fiscal_use || '';
+
+                if (item?.lReferences && Array.isArray(item.lReferences) && item.lReferences.length > 0) {
+                    const refConcepts = item.lReferences.map((ref: any) => ref.concepts || '').join(',');
+                    concepts = `${concepts},${refConcepts}`;
+
+                    const refNatures = item.lReferences.map((ref: any) => ref.nature || '').join(',');
+                    nature = `${nature},${refNatures}`;
+                }
+
+                const { finalType } = getAccountingNature(nature, concepts, cfdiUse);
+                
+                // Retornar true si el Tipo coincide con el filtro seleccionado:
+                return value === 'yes' ? finalType === 'AF' : finalType === 'G';
+            }).map(item => item.id_dps); // Extraemos solo los IDs
+
+            // Si encontró coincidencias, inyectamos los IDs. Si no, inyectamos un array [-1] para forzar la tabla vacía.
+            (_filters['id_dps'] as any).value = matchedIds.length > 0 ? matchedIds : [-1];
+            (_filters['id_dps'] as any).matchMode = FilterMatchMode.IN;
         }
         
         setFilters(_filters);
@@ -816,7 +860,7 @@ export const TableInvoices = ({
                 dateFilterMode={dateFilterMode}
                 withBtnLast3Months={withBtnLast3Months}
                 withActivoFijoFilter={true}
-                handleFilterActivoFijo={handleUseCfdiFilterChange}
+                handleFilterActivoFijo={handleAccountingFilterChange}
                 activoFijoFilterValue={activoFijoFilterValue}
             />
             <br />

@@ -60,7 +60,7 @@ export const RenderInfoButton = ({
                             } }
                         />
                     )}
-                    {Object.keys(instructions).map((key, index) => {
+                    {Object.keys(instructions).map((key, index, array) => {
                         // Verificamos que el item sea realmente un objeto (por si vienen basuras de i18n)
                         if (typeof instructions[key] !== 'object') return null;
 
@@ -76,13 +76,18 @@ export const RenderInfoButton = ({
                                             ))}
                                     </ul>
                                 </div>
-                                <div className="text-600 font-italic mt-2">
+                                {/* White-space para los saltos de linea */}
+                                <div className="text-600 font-italic mt-2" style={{ whiteSpace: 'pre-line' }}>
                                     {Object.keys(instructions[key])
                                         .filter((subKey) => subKey.startsWith('footer'))
                                         .map((subKey) => (
                                             instructions[key][subKey]
                                         ))}
                                 </div>
+                                {/* Divisor entre bloques */}
+                                {index < array.length -1 && (
+                                    <hr className="my-4" surface-border border-top-1 border-none/>
+                                )}
                             </React.Fragment>
                         )
                     })}

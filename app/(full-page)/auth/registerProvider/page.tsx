@@ -154,9 +154,9 @@ const RegisterProvider = () => {
                     companies.push({ id: item.id, name: item.full_name, external_id: item.external_id });
                 }
                 setLCompanies(companies.sort((a, b) => a.name.localeCompare(b.name)));
-            } else throw new Error(`Error al obtener las empresas: ${response.statusText}`);
+            } else throw new Error(`${t('register.fail.companies')}: ${response.statusText}`);
         } catch (error: any) {
-            showToast('error', error.response?.data?.error || 'Error al obtener las empresas', 'Error al obtener las empresas');
+            showToast('error', error.response?.data?.error || t('register.fail.companies'), t('register.fail.companies'));
             return [];
         }
     };
@@ -183,9 +183,9 @@ const RegisterProvider = () => {
                     }
                 }
                 setLAreas(areas);
-            } else throw new Error(`Error al obtener las áreas: ${response.statusText}`);
+            } else throw new Error(`${t('register.fail.areas')}: ${response.statusText}`);
         } catch (error: any) {
-            showToast('error', error.response?.data?.error || 'Error al obtener las áreas', 'Error al obtener las áreas');
+            showToast('error', error.response?.data?.error || t('register.fail.areas'), t('register.fail.areas'));
             return [];
         }
     };
@@ -205,9 +205,9 @@ const RegisterProvider = () => {
                 }
                 setLCountries(countries);
                 setOProvider({ ...oProvider, country: countries.find((country: any) => country.code === 'MEX') });
-            } else throw new Error(`Error al obtener los países: ${response.statusText}`);
+            } else throw new Error(`${t('register.fail.countries')}: ${response.statusText}`);
         } catch (error: any) {
-            showToast('error', error.response?.data?.error || 'Error al obtener los países', 'Error al obtener los países');
+            showToast('error', error.response?.data?.error || t('register.fail.countries'), t('register.fail.countries'));
             return [];
         }
     };
@@ -226,9 +226,9 @@ const RegisterProvider = () => {
                     lFiscalRegime.push({ id: item.id, code: item.code, name: item.code + '-' + item.name });
                 }
                 setLFiscalRegimes(lFiscalRegime);
-            } else throw new Error(`Error al obtener los regímenes fiscales: ${response.statusText}`);
+            } else throw new Error(`${t('register.fail.fiscalRegime')}: ${response.statusText}`);
         } catch (error: any) {
-            showToast('error', error.response?.data?.error || 'Error al obtener los regímenes fiscales', 'Error al obtener los regímenes fiscales');
+            showToast('error', error.response?.data?.error || t('register.fail.fiscalRegime'), t('register.fail.fiscalRegime'));
             return [];
         }
     };
@@ -347,11 +347,11 @@ const RegisterProvider = () => {
                 setSuccessMessage(response.data.data.success || 'Registro enviado con éxito');
                 setResultUpload('success');
             } else {
-                throw new Error(t('uploadDialog.errors.uploadError'));
+                throw new Error(t('register.fail.send'));
             }
         } catch (error: any) {
             console.log(error);
-            setErrorMessage(error.response?.data?.error || 'Error al enviar el registro');
+            setErrorMessage(error.response?.data?.error || t('register.fail.send'));
             showToast?.('error', error.response?.data?.error || 'Error al enviar el registro', 'Error al enviar el registro');
         } finally {
             setLoading(false);
@@ -914,8 +914,8 @@ const RegisterProvider = () => {
                                         }}
                                         
                                         errorMessages={{
-                                            invalidFileType: t('uploadDialog.files.invalidFileType'),
-                                            invalidFileSize: t('uploadDialog.files.invalidFileSize'),
+                                            invalidFileType: t('register.alerts.invalidFileType', { extensions: constants.allowedExtensionsLabel }),
+                                            //invalidFileSize: t('register.alerts.invalidFileSize'),
                                         }}
                                     />
                                 </div>

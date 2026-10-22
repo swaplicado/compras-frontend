@@ -1,8 +1,8 @@
 const authorizations = {
     titleMyAuth: 'Autorizaciones de facturas pendientes para mí',
     titleAllAuth: 'Autorizaciones de facturas en las que participo',
-    titleMyAuthTooltip: 'Pantalla para autorizar mis facturas en turno',
-    titleAllAuthTooltip: 'Pantalla para consultar flujo de autorización de facturas',
+    titleMyAuthTooltip: 'Pantalla para autorizar mis facturas en turno.',
+    titleAllAuthTooltip: 'Pantalla para consultar flujo de autorización de facturas.',
     flowAuthorization: {
         dialogHeader: "Flujo de autorización",
         flowAuthLabel: "Flujo de authorización",
@@ -24,7 +24,7 @@ const authorizations = {
             titleReview: "Error al enviar la factura.",
         },
         comments: {
-            label: "Comentarios",
+            label: "Comentarios:",
             placeholder: "Ingresa tus comentarios",
             tooltip: "Ingresa tus comentarios para que el autorizador las vea.",
         }

@@ -42,7 +42,7 @@ const ConsultAccountState = () => {
     const [loading, setLoading] = useState(false);
     const [oUser, setOUser] = useState<any>(null);
     const [dateFilter, setDateFilter] = useState<any>(null);
-    const { t } = useTranslation('crp');
+    const { t } = useTranslation('accountStatePdf');
     const { t: tCommon } = useTranslation('common');
     // Totales
     const totalCargos = lAccountState.reduce((acc, item) => acc + (Number(item.debit) || 0), 0);
@@ -155,12 +155,12 @@ const ConsultAccountState = () => {
             }}
         >
             <h3 className="m-0 text-900 font-medium">
-                Estado de cuenta
+                {t('title')}
                 &nbsp;&nbsp;
                 <Tooltip target=".custom-target-icon" />
                 <i
                     className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                    data-pr-tooltip={'Estado de cuenta'}
+                    data-pr-tooltip={t('titleTooltip')}
                     data-pr-position="right"
                     data-pr-my="left center-2"
                     style={{ fontSize: '1rem', cursor: 'pointer' }}

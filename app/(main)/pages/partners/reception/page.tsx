@@ -27,6 +27,7 @@ const ReceptionPartners = () => {
     const { t: tCommon } = useTranslation('common');
     const [userFunctionalAreas, setUserFunctionalAreas] = useState<any>(null);
     const [oUser, setOUser] = useState<any>(null);
+    const [dialogMode, setDialogMode] = useState<'review' | 'auth' | 'sendAuth'>('review');
     const [showInfo, setShowInfo] = useState<boolean>(false);
     const [showManual, setShowManual] = useState<boolean>(false);
     
@@ -108,6 +109,7 @@ const ReceptionPartners = () => {
     const handleDoubleClick = async (e: DataTableRowClickEvent) => {
         setShowing('body');
         configOPartner(e.data);
+        setDialogMode('review');
         setFormErrors({
             authz_acceptance_notes: false
         })
@@ -124,6 +126,7 @@ const ReceptionPartners = () => {
     const openPartner = async (data: any) => {
         setShowing('body');
         configOPartner(data);
+        setDialogMode('review');
         setFormErrors({
             authz_acceptance_notes: false
         })
@@ -189,7 +192,7 @@ const ReceptionPartners = () => {
 
             if (response.status == 200) {
                 
-                setSuccessMessage('Registro de proveedor enviado a autorizar');
+                setSuccessMessage(t('register.successMessage'));
                 setShowing('animationSuccess');
 
                 await getlPartners({
@@ -215,7 +218,7 @@ const ReceptionPartners = () => {
                 setFormErrors({
                     authz_acceptance_notes: true
                 })
-                showToast('info', 'Ingresa nota de rechazo')
+                showToast('info', t('register.authz_acceptance_notes.textHelper'))
                 return;
             }
 
@@ -232,7 +235,7 @@ const ReceptionPartners = () => {
             if (response.status === 200 || response.status === 201) {
                 return true;
             } else {
-                throw new Error('Error al aceptar el registro de proveedor');
+                throw new Error(t('register.fail.review'));
             }
         } catch (error: any) {
             console.log(error);
@@ -248,7 +251,7 @@ const ReceptionPartners = () => {
                 setFormErrors({
                     authz_acceptance_notes: true
                 })
-                showToast('info', 'Ingresa nota de rechazo')
+                showToast('info', t('register.authz_acceptance_notes.textHelper'))
                 return;
             }
 
@@ -319,7 +322,7 @@ const ReceptionPartners = () => {
                     <Tooltip target=".custom-target-icon" />
                     <i
                         className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                        data-pr-tooltip={t('titleNewProvider')}
+                        data-pr-tooltip={t('titleNewProviderTooltip')}
                         data-pr-position="right"
                         data-pr-my="left center-2"
                         style={{ fontSize: '1rem', cursor: 'pointer' }}
@@ -369,10 +372,20 @@ const ReceptionPartners = () => {
     }, [userFunctionalAreas])
 
     const getObjectIntruction = () => {
-        const reviewInstructions = JSON.parse(JSON.stringify(t(`reviewInstructions`, { returnObjects: true })));
+        const reviewPartner = JSON.parse(JSON.stringify(t(`viewInstructions.reviewPartner`, { returnObjects: true })));
+        const searchPartner = JSON.parse(JSON.stringify(t(`viewInstructions.searchPartner`, { returnObjects: true })));
+        const sortColumn = JSON.parse(JSON.stringify(t(`viewInstructions.sortColumn`, { returnObjects: true })));
+        const reloadView = JSON.parse(JSON.stringify(t(`viewInstructions.reloadView`, { returnObjects: true })));
+        const authPartner = JSON.parse(JSON.stringify(t(`viewInstructions.authPartner`, { returnObjects: true })));
+        const downloadFiles = JSON.parse(JSON.stringify(t(`viewInstructions.downloadFiles`, { returnObjects: true })));
 
         let instructions: any[] = [];
-        instructions.push(reviewInstructions);
+        instructions.push(reviewPartner);
+        instructions.push(searchPartner);
+        instructions.push(sortColumn);
+        instructions.push(reloadView);
+        instructions.push(authPartner);
+        instructions.push(downloadFiles);
 
         if (!instructions || Object.keys(instructions).length === 0) {
             return null;
@@ -393,11 +406,11 @@ const ReceptionPartners = () => {
                         setShowInfo={setShowInfo}
                         showManual={showManual}
                         setShowManual={setShowManual}
-                        btnShowInstructionsText={"Mostrar instrucciones"}
-                        btnHideInstructionsText={"Ocultar instrucciones"}
-                        dialogManualBtnLabelText={"Videos de ayuda"}
-                        dialogManualBtnTooltipText={"Videos de ayuda"}
-                        dialogManualHeaderText={"Videos de ayuda"}
+                        btnShowInstructionsText={tCommon('btnShowInstructions')}
+                        btnHideInstructionsText={tCommon('btnHideInstructions')}
+                        dialogManualBtnLabelText={tCommon('btnHelpVideos')}
+                        dialogManualBtnTooltipText={tCommon('btnHelpVideos')}
+                        dialogManualHeaderText={tCommon('btnHelpVideos')}
                         lVideos={[]}
                     />
                     <DialogReception 
@@ -407,6 +420,8 @@ const ReceptionPartners = () => {
                         footerContent={dialogFooterContent()}
                         isMobile={isMobile}
                         oPartner={oPartner}
+                        oUser={oUser?.oUser}
+                        dialogMode={dialogMode}
                         setOPartner={setOPartner}
                         setFormErrors={setFormErrors}
                         formErrors={formErrors}

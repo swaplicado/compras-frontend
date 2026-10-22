@@ -570,10 +570,19 @@ const AuthOC = () => {
     }, [oOc])
 
     const getObjectIntruction = () => {
-        const viewInstructions = JSON.parse(JSON.stringify(t(`dialog.viewInstructions`, { returnObjects: true })));
+        const authOc = t(`viewInstructions.authOc`, { returnObjects: true });
+        const searchOc = t(`viewInstructions.searchOc`, { returnObjects: true });
+        const sortColumn = t(`viewInstructions.sortColumn`, { returnObjects: true });
+        const reloadView = t(`viewInstructions.reloadView`, { returnObjects: true });
+        const downloadFiles = t(`viewInstructions.downloadFiles`, { returnObjects: true });
 
         let instructions: any[] = [];
-        instructions.push(viewInstructions);
+        
+        instructions.push(authOc);
+        instructions.push(searchOc);
+        instructions.push(sortColumn);
+        instructions.push(reloadView);
+        instructions.push(downloadFiles);
 
         if (!instructions || Object.keys(instructions).length === 0) {
             return null;
@@ -595,11 +604,11 @@ const AuthOC = () => {
                         setShowInfo={setShowInfo}
                         showManual={showManual}
                         setShowManual={setShowManual}
-                        btnShowInstructionsText={"Mostrar instrucciones"}
-                        btnHideInstructionsText={"Ocultar instrucciones"}
-                        dialogManualBtnLabelText={"Videos de ayuda"}
-                        dialogManualBtnTooltipText={"Videos de ayuda"}
-                        dialogManualHeaderText={"Videos de ayuda"}
+                        btnShowInstructionsText={tCommon('btnShowInstructions')}
+                        btnHideInstructionsText={tCommon('btnHideInstructions')}
+                        dialogManualBtnLabelText={tCommon('btnHelpVideos')}
+                        dialogManualBtnTooltipText={tCommon('btnHelpVideos')}
+                        dialogManualHeaderText={tCommon('btnHelpVideos')}
                         lVideos={[]}
                     />
                     <DialogOc

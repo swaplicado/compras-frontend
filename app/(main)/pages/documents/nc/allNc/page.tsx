@@ -1,4 +1,4 @@
-//CARGA DE NC
+//PANTALLA TODAS LAS NC
 'use client';
 import React, {useEffect, useState, useRef} from "react";
 import constants from '@/app/constants/constants';
@@ -273,7 +273,7 @@ const UploadNC = () => {
                 <Tooltip target=".custom-target-icon" />
                 <i
                     className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                    data-pr-tooltip={t('titleAll')}
+                    data-pr-tooltip={t('titleAllTooltip')}
                     data-pr-position="right"
                     data-pr-my="left center-2"
                     style={{ fontSize: '1rem', cursor: 'pointer' }}

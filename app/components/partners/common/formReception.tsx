@@ -6,6 +6,8 @@ import { CustomFileUpload } from '@/app/components/documents/invoice/customFileU
 import { Tooltip } from 'primereact/tooltip';
 import { FieldsEditAcceptance } from '@/app/components/documents/invoice/fieldsEditAcceptance'
 import { useTranslation } from 'react-i18next';
+import { Divider } from 'primereact/divider';
+
 
 interface FormReceptionPartnerProps {
     oProvider: any;
@@ -64,18 +66,36 @@ export const FormReceptionPartner = ({
 
     return (
         <div className="p-fluid formgrid grid">
-            <h5 className='md:col-12 col-12'>
-                {t('register.titleProviderData.label')}
-                &nbsp;
-                <Tooltip target=".custom-target-icon" />
-                <i
-                    className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                    data-pr-tooltip={t('register.titleProviderData.tooltip')}
-                    data-pr-position="right"
-                    data-pr-my="left center-2"
-                    style={{ fontSize: '1rem', cursor: 'pointer' }}
-                ></i>
-            </h5>
+            {/* Si es en view se muestra en fomato de título */}
+            {formMode === 'view' ? (
+                <Divider align="left">
+                    <h5 className='md:col-12 col-12 text-center'>
+                        {t('register.titleProviderData.label')}
+                        &nbsp;
+                        <Tooltip target=".custom-target-icon" />
+                        <i
+                            className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
+                            data-pr-tooltip={t('register.titleProviderData.tooltip')}
+                            data-pr-position="right"
+                            data-pr-my="left center-2"
+                            style={{ fontSize: '1rem', cursor: 'pointer' }}
+                        ></i>
+                    </h5>
+                </Divider>
+            ) : (
+                <h5 className='md:col-12 col-12'>
+                    {t('register.titleProviderData.label')}
+                    &nbsp;
+                    <Tooltip target=".custom-target-icon" />
+                    <i
+                        className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
+                        data-pr-tooltip={t('register.titleProviderData.tooltip')}
+                        data-pr-position="right"
+                        data-pr-my="left center-2"
+                        style={{ fontSize: '1rem', cursor: 'pointer' }}
+                    ></i>
+                </h5>
+            )}
             <RenderField
                 label={t('register.entity_type.label')}
                 tooltip={t('register.entity_type.tooltip')}
@@ -185,18 +205,35 @@ export const FormReceptionPartner = ({
                 <ProgressSpinner style={{ width: '50px', height: '50px' }} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />
             )}
 
-            <h5 className='md:col-12 col-12'>
-                {t('register.titleProviderContact.label')}
-                &nbsp;
-                <Tooltip target=".custom-target-icon" />
-                <i
-                    className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                    data-pr-tooltip={t('register.titleProviderContact.tooltip')}
-                    data-pr-position="right"
-                    data-pr-my="left center-2"
-                    style={{ fontSize: '1rem', cursor: 'pointer' }}
-                ></i>
-            </h5>
+            {formMode === 'view' ? (
+                <Divider align="left">
+                    <h5 className='md:col-12 col-12 text-center'>
+                        {t('register.titleProviderContact.label')}
+                        &nbsp;
+                        <Tooltip target=".custom-target-icon" />
+                        <i
+                            className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
+                            data-pr-tooltip={t('register.titleProviderContact.tooltip')}
+                            data-pr-position="right"
+                            data-pr-my="left center-2"
+                            style={{ fontSize: '1rem', cursor: 'pointer' }}
+                        ></i>
+                    </h5>
+                </Divider>
+            ) : (
+                <h5 className='md:col-12 col-12'>
+                    {t('register.titleProviderContact.label')}
+                    &nbsp;
+                    <Tooltip target=".custom-target-icon" />
+                    <i
+                        className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
+                        data-pr-tooltip={t('register.titleProviderContact.tooltip')}
+                        data-pr-position="right"
+                        data-pr-my="left center-2"
+                        style={{ fontSize: '1rem', cursor: 'pointer' }}
+                    ></i>
+                </h5>
+            )}
             <RenderField
                 label={t('register.name.label')}
                 tooltip={t('register.name.tooltip')}
@@ -266,18 +303,35 @@ export const FormReceptionPartner = ({
                 errorMessage={t('register.email.textHelper')}
             />
             
-            <h5 className='md:col-12 col-12'>
-                {t('register.titleProviderLocation.label')}
-                &nbsp;
-                <Tooltip target=".custom-target-icon" />
-                <i
-                    className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                    data-pr-tooltip={t('register.titleProviderLocation.tooltip')}
-                    data-pr-position="right"
-                    data-pr-my="left center-2"
-                    style={{ fontSize: '1rem', cursor: 'pointer' }}
-                ></i>
-            </h5>
+            {formMode === 'view' ? (
+                <Divider align="left">
+                    <h5 className='md:col-12 col-12 text-center'>
+                        {t('register.titleProviderLocation.label')}
+                        &nbsp;
+                        <Tooltip target=".custom-target-icon" />
+                        <i
+                            className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
+                            data-pr-tooltip={t('register.titleProviderLocation.tooltip')}
+                            data-pr-position="right"
+                            data-pr-my="left center-2"
+                            style={{ fontSize: '1rem', cursor: 'pointer' }}
+                        ></i>
+                    </h5>
+                </Divider>
+            ) : (
+                <h5 className='md:col-12 col-12'>
+                    {t('register.titleProviderLocation.label')}
+                    &nbsp;
+                    <Tooltip target=".custom-target-icon" />
+                    <i
+                        className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
+                        data-pr-tooltip={t('register.titleProviderLocation.tooltip')}
+                        data-pr-position="right"
+                        data-pr-my="left center-2"
+                        style={{ fontSize: '1rem', cursor: 'pointer' }}
+                    ></i>
+                </h5>
+            )}
             <RenderField
                 label={t('register.street.label')}
                 tooltip={t('register.street.tooltip')}
@@ -383,8 +437,8 @@ export const FormReceptionPartner = ({
 
             { withNotesAcceptation && (
                 <RenderField
-                    label={'Notas aceptación/rechazo'}
-                    tooltip={'Notas aceptación/rechazo'}
+                    label={t('register.authz_acceptance_notes.label')}
+                    tooltip={t('register.authz_acceptance_notes.tooltip')}
                     value={oProvider?.authz_acceptance_notes}
                     disabled={disabledNotesAcceptation}
                     mdCol={12}
@@ -397,13 +451,13 @@ export const FormReceptionPartner = ({
                     placeholder={''}
                     errorKey={'authz_acceptance_notes'}
                     errors={formErrors}
-                    errorMessage={'Ingresa notas'}
+                    errorMessage={t('register.authz_acceptance_notes.textHelper')}
                 />
             )}
             { withNotesAuth && (
                 <RenderField
-                    label={'Notas autorización/rechazo'}
-                    tooltip={'Notas autorización/rechazo'}
+                    label={t('register.authz_authorization_notes.label')}
+                    tooltip={t('register.authz_authorization_notes.tooltip')}
                     value={oProvider?.authz_authorization_notes}
                     disabled={disabledNotesAuth}
                     mdCol={12}
@@ -416,7 +470,7 @@ export const FormReceptionPartner = ({
                     placeholder={''}
                     errorKey={'authz_authorization_notes'}
                     errors={formErrors}
-                    errorMessage={'Ingresa notas'}
+                    errorMessage={t('register.authz_authorization_notes.textHelper')}
                 />
             )}
 
@@ -435,7 +489,7 @@ export const FormReceptionPartner = ({
                         ></i>
                     </h5>
                     <div className="field col-12">
-                        <p>Cargar los siguientes archivos:</p>
+                        <p>{t('register.files.labelRequestFiles')}</p>
                         <ol>
                             {Object.keys(instructions).map((key, index) => (
                                 <li key={index}>

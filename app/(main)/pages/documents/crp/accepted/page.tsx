@@ -387,7 +387,7 @@ const ConsultPaymentProgramded = () => {
             });
 
             if (response.status == 200) {
-                showToast('success', 'Registro enviado a autorizar', 'Realizado');
+                showToast('success', tCommon('success.sendAuth'), 'Realizado');
                 await getLCrp();
             } else {
                 throw new Error('');
@@ -417,12 +417,12 @@ const ConsultPaymentProgramded = () => {
             const id_dps = oCrp.id;
             const folio = oCrp.folio;
             confirmDialog({
-                message: '¿Quieres enviar a autorizar: ' + folio + '?',
-                header: 'Confirma envío de autorización',
+                message: t('confirmations.sendToAuthorization.message', { folio }),
+                header: t('confirmations.sendToAuthorization.header'),
                 icon: 'pi pi-info-circle',
                 acceptClassName: 'p-button-primary',
-                acceptLabel: 'Si',
-                rejectLabel: 'No',
+                acceptLabel: tCommon('btnYes'),
+                rejectLabel: tCommon('btnNo'),
                 accept: () => accept(),
                 reject: () => reject()
             });

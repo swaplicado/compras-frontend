@@ -183,7 +183,7 @@ const AllPartners = () => {
                     <Tooltip target=".custom-target-icon" />
                     <i
                         className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                        data-pr-tooltip={t('titleAllRequestPartner')}
+                        data-pr-tooltip={t('titleAllRequestPartnerTooltip')}
                         data-pr-position="right"
                         data-pr-my="left center-2"
                         style={{ fontSize: '1rem', cursor: 'pointer' }}
@@ -229,10 +229,16 @@ const AllPartners = () => {
     }, [userFunctionalAreas])
 
     const getObjectIntruction = () => {
-        const sendAuthInstructions = JSON.parse(JSON.stringify(t(`sendAuthInstructions`, { returnObjects: true })));
+        const searchPartner = JSON.parse(JSON.stringify(t(`viewInstructions.searchPartner`, { returnObjects: true })));
+        const sortColumn = JSON.parse(JSON.stringify(t(`viewInstructions.sortColumn`, { returnObjects: true })));
+        const reloadView = JSON.parse(JSON.stringify(t(`viewInstructions.reloadView`, { returnObjects: true })));
+        const downloadFiles = JSON.parse(JSON.stringify(t(`viewInstructions.downloadFiles`, { returnObjects: true })));
 
         let instructions: any[] = [];
-        instructions.push(sendAuthInstructions);
+        instructions.push(searchPartner);
+        instructions.push(sortColumn);
+        instructions.push(reloadView);
+        instructions.push(downloadFiles);
 
         if (!instructions || Object.keys(instructions).length === 0) {
             return null;
@@ -247,19 +253,19 @@ const AllPartners = () => {
                 {loading && loaderScreen()}
                 <Toast ref={toast} />
                 <Card header={headerCard} pt={{ content: { className: 'p-0' } }}>
-                    {/* <RenderInfoButton
+                    <RenderInfoButton
                         instructions={getObjectIntruction()}
                         showInfo={showInfo}
                         setShowInfo={setShowInfo}
                         showManual={showManual}
                         setShowManual={setShowManual}
-                        btnShowInstructionsText={"Mostrar instrucciones"}
-                        btnHideInstructionsText={"Ocultar instrucciones"}
-                        dialogManualBtnLabelText={"Videos de ayuda"}
-                        dialogManualBtnTooltipText={"Videos de ayuda"}
-                        dialogManualHeaderText={"Videos de ayuda"}
+                        btnShowInstructionsText={tCommon('btnShowInstructions')}
+                        btnHideInstructionsText={tCommon('btnHideInstructions')}
+                        dialogManualBtnLabelText={tCommon('btnHelpVideos')}
+                        dialogManualBtnTooltipText={tCommon('btnHelpVideos')}
+                        dialogManualHeaderText={tCommon('btnHelpVideos')}
                         lVideos={[]}
-                    /> */}
+                    />
                     <DialogReception 
                         headerTitle={'Revisión registro de proveedor'}
                         visible={visible}

@@ -481,10 +481,13 @@ const AuthInProcessNC = () => {
     }, [userFunctionalAreas, oUser])
 
     const getObjectIntruction = () => {
-        const viewInstructions = JSON.parse(JSON.stringify(t(`dialog.viewInstructions`, { returnObjects: true })));
+        const authNcInMonitor = JSON.parse(JSON.stringify(t(`viewInstructions.authNcInMonitor`, { returnObjects: true })));
+        
 
         let instructions: any[] = [];
-        instructions.push(viewInstructions);
+        if (oUser?.isInternalUser) {
+            instructions.push(authNcInMonitor);
+        }
 
         if (!instructions || Object.keys(instructions).length === 0) {
             return null;
@@ -505,11 +508,11 @@ const AuthInProcessNC = () => {
                         setShowInfo={setShowInfo}
                         showManual={showManual}
                         setShowManual={setShowManual}
-                        btnShowInstructionsText={"Mostrar instrucciones"}
-                        btnHideInstructionsText={"Ocultar instrucciones"}
-                        dialogManualBtnLabelText={"Videos de ayuda"}
-                        dialogManualBtnTooltipText={"Videos de ayuda"}
-                        dialogManualHeaderText={"Videos de ayuda"}
+                        btnShowInstructionsText={tCommon('btnShowInstructions')}
+                        btnHideInstructionsText={tCommon('btnHideInstructions')}
+                        dialogManualBtnLabelText={tCommon('btnHelpVideos')}
+                        dialogManualBtnTooltipText={tCommon('btnHelpVideos')}
+                        dialogManualHeaderText={tCommon('btnHelpVideos')}
                         lVideos={[]}
                     />
                     <DialogNc 

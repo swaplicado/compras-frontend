@@ -1,11 +1,15 @@
 const commons = {
     appName: "Portal de Compras",
     appLogo: "/layout/images/app_logo.png",
-    btnShowInstructions: "Mostrar instrucciones",
-    btnHideInstructions: "Ocultar instrucciones",
+    helpTextHome: "Haz click en cualquier tarjeta para ir al menú",
+    btnShowInstructions: "Ver ayuda", //Mostrar instrucciones, ¿Necesitas ayuda?, ¿Cómo usar esta vista?
+    btnHideInstructions: "Ocultar ayuda", //Ocultar instrucciones, Ocultar ayuda
+    btnHelpVideos: "Videos de ayuda",
     btnSelectFiles: "Seleccionar",
     btnUpload: "Cargar",
     btnAttach: "Adjuntar",
+    btnAuthorize: "Autorizar",
+    btnSendAuthorize: "Enviar a autorizar",
     btnCancel: "Cancelar",
     btnClose: "Cerrar",
     btnSave: "Guardar",
@@ -15,14 +19,16 @@ const commons = {
     btnEdit: "Guardar",
     btnSearch: "Busca",
     placeholderSearch: "Buscar  ",
-    btnCleanFilter: "Limpiar todo",
-    tooltipCleanFilter: "Limpiar filtros aplicados",
+    btnCleanFilter: "Limpiar filtros",
+    tooltipCleanFilter: "Limpia los filtros aplicados.",
     btnClear: "Limpiar",
     btnContinue: "Continuar",
     btnBack: "Regresar",
     btnAccept: "Aceptar",
     btnAcceptAndSend: "Aceptar y enviar",
     btnReject: "Rechazar",
+    btnYes: "Sí",
+    btnNo: "No",
     btnDownload: "Descargar",
     btnSend: "Enviar",
     active: "Activo",
@@ -31,10 +37,15 @@ const commons = {
     notice: "Aviso",
     last3Months: "Últimos 3 meses",
 
+    lbAccountingType: "Tipo:",
+    flTypeTooltip: "Filtrar por tipo de egreso.",
     btnReload: "Recargar",
     tooltipBtnReload: "Recargar la página",
 
-    erros: {
+    success: {
+        sendAuth: "Registro enviado a autorizar",
+    },
+    errors: {
         requiredField: "Este campo es obligatorio.",
         invalidEmail: "Por favor ingresa un correo electrónico válido.",
         invalidNumber: "Por favor ingresa un número válido.",

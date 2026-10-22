@@ -27,6 +27,7 @@ const RejectedPartners = () => {
     const { t: tCommon } = useTranslation('common');
     const [userFunctionalAreas, setUserFunctionalAreas] = useState<any>(null);
     const [oUser, setOUser] = useState<any>(null);
+    const [dialogMode, setDialogMode] = useState<'review' | 'auth' | 'sendAuth'>('sendAuth');
     const [showInfo, setShowInfo] = useState<boolean>(false);
     const [showManual, setShowManual] = useState<boolean>(false);
     
@@ -108,6 +109,7 @@ const RejectedPartners = () => {
     const handleDoubleClick = async (e: DataTableRowClickEvent) => {
         setShowing('body');
         configOPartner(e.data);
+        setDialogMode('sendAuth')
         setFormErrors({
             authz_acceptance_notes: false
         })
@@ -124,6 +126,7 @@ const RejectedPartners = () => {
     const openPartner = async (data: any) => {
         setShowing('body');
         configOPartner(data);
+        setDialogMode('sendAuth')
         setFormErrors({
             authz_acceptance_notes: false
         })
@@ -183,7 +186,7 @@ const RejectedPartners = () => {
                     <Tooltip target=".custom-target-icon" />
                     <i
                         className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                        data-pr-tooltip={t('titleAccepted')}
+                        data-pr-tooltip={t('titleAcceptedTooltip')}
                         data-pr-position="right"
                         data-pr-my="left center-2"
                         style={{ fontSize: '1rem', cursor: 'pointer' }}
@@ -197,7 +200,7 @@ const RejectedPartners = () => {
             showing == 'body' && (
                 <div className="flex flex-column md:flex-row justify-content-between gap-2">
                     <Button label={tCommon('btnClose')} icon="bx bx-x" onClick={() => setDialogVisible(false)} severity="secondary" disabled={loading} />
-                    <Button label={'Enviar a autorizar'} icon="bx bx-like" onClick={() => handleFlowAuthorization()} autoFocus disabled={loading} severity="success" />
+                    <Button label={tCommon('btnSendAuthorize')} icon="bx bx-like" onClick={() => handleFlowAuthorization()} autoFocus disabled={loading} severity="success" />
                 </div>
             )
         )
@@ -234,7 +237,7 @@ const RejectedPartners = () => {
 
             if (response.status == 200) {
                 
-                setSuccessMessage('Registro de proveedor enviado a autorizar');
+                setSuccessMessage(t('register.successMessage'));
                 setShowing('animationSuccess');
 
                 await getlPartners({
@@ -284,11 +287,12 @@ const RejectedPartners = () => {
     }, [userFunctionalAreas])
 
     const getObjectIntruction = () => {
-        const sendAuthInstructions = JSON.parse(JSON.stringify(t(`sendAuthInstructions`, { returnObjects: true })));
+        const sendToAuthPartner = JSON.parse(JSON.stringify(t(`viewInstructions.sendToAuthPartner`, { returnObjects: true })));
 
         let instructions: any[] = [];
-        instructions.push(sendAuthInstructions);
-
+        if (oUser?.oUser.groups.includes(constants.ROLES.CONTADOR_ID)) {
+            instructions.push(sendToAuthPartner);
+        }
         if (!instructions || Object.keys(instructions).length === 0) {
             return null;
         }
@@ -308,20 +312,22 @@ const RejectedPartners = () => {
                         setShowInfo={setShowInfo}
                         showManual={showManual}
                         setShowManual={setShowManual}
-                        btnShowInstructionsText={"Mostrar instrucciones"}
-                        btnHideInstructionsText={"Ocultar instrucciones"}
-                        dialogManualBtnLabelText={"Videos de ayuda"}
-                        dialogManualBtnTooltipText={"Videos de ayuda"}
-                        dialogManualHeaderText={"Videos de ayuda"}
+                        btnShowInstructionsText={tCommon('btnShowInstructions')}
+                        btnHideInstructionsText={tCommon('btnHideInstructions')}
+                        dialogManualBtnLabelText={tCommon('btnHelpVideos')}
+                        dialogManualBtnTooltipText={tCommon('btnHelpVideos')}
+                        dialogManualHeaderText={tCommon('btnHelpVideos')}
                         lVideos={[]}
                     />
                     <DialogReception 
-                        headerTitle={'Revisión registro de proveedor'}
+                        headerTitle={t('register.sendToAuthTitle')}
                         visible={visible}
                         onHide={() => setDialogVisible(false)}
                         footerContent={dialogFooterContent()}
                         isMobile={isMobile}
                         oPartner={oPartner}
+                        oUser={oUser?.oUser}
+                        dialogMode={dialogMode}
                         setOPartner={setOPartner}
                         setFormErrors={setFormErrors}
                         formErrors={formErrors}

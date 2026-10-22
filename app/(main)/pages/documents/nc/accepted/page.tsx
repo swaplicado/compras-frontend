@@ -277,7 +277,7 @@ const AcceptedNC = () => {
             });
 
             if (response.status == 200) {
-                showToast('success', 'Registro enviado a autorizar', 'Realizado');
+                showToast('success', tCommon('success.sendAuth'), 'Realizado');
                 await getLNc();
             } else {
                 throw new Error('');
@@ -309,12 +309,12 @@ const AcceptedNC = () => {
             const id_dps = oNc.id;
             const folio = oNc.folio;
             confirmDialog({
-                message: '¿Quieres enviar a autorizar: ' + folio + '?',
-                header: 'Confirma envío de autorización',
+                message: t('confirmations.sendToAuthorization.message', { folio }),
+                header: t('confirmations.sendToAuthorization.header'),
                 icon: 'pi pi-info-circle',
                 acceptClassName: 'p-button-primary',
-                acceptLabel: 'Si',
-                rejectLabel: 'No',
+                acceptLabel: tCommon('btnYes'),
+                rejectLabel: tCommon('btnNo'),
                 accept: () => accept(),
                 reject: () => reject()
             });
@@ -600,11 +600,11 @@ const AcceptedNC = () => {
                         setShowInfo={setShowInfo}
                         showManual={showManual}
                         setShowManual={setShowManual}
-                        btnShowInstructionsText={"Mostrar instrucciones"}
-                        btnHideInstructionsText={"Ocultar instrucciones"}
-                        dialogManualBtnLabelText={"Videos de ayuda"}
-                        dialogManualBtnTooltipText={"Videos de ayuda"}
-                        dialogManualHeaderText={"Videos de ayuda"}
+                        btnShowInstructionsText={tCommon('btnShowInstructions')}
+                        btnHideInstructionsText={tCommon('btnHideInstructions')}
+                        dialogManualBtnLabelText={tCommon('btnHelpVideos')}
+                        dialogManualBtnTooltipText={tCommon('btnHelpVideos')}
+                        dialogManualHeaderText={tCommon('btnHelpVideos')}
                         lVideos={[]}
                     />
                     <DialogNc 

@@ -204,12 +204,16 @@ export const MyToolbar = ({
 
                     {withActivoFijoFilter && (
                         <div className="flex align-items-center gap-2 flex-nowrap">
-                            <label htmlFor="">Tipo:</label>
+                            <label htmlFor="" className="font-medium">
+                                {tCommon('lbAccountingType')}
+                            </label>
                             <Dropdown
                                 value={activoFijoFilterValue}
                                 onChange={(e) => handleFilterActivoFijo?.(e.value)}
                                 options={constants.USE_CFDI_ACTIVO_FIJO_FILTER_OPTIONS}
                                 className="w-full"
+                                tooltip={tCommon('flTypeTooltip')}
+                                tooltipOptions={{ position: 'bottom', className: 'white-space-nowrap' }}
                             />
                         </div>
                     )}

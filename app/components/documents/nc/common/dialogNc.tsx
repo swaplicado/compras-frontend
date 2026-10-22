@@ -2,6 +2,8 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Dialog } from 'primereact/dialog';
 import { Tooltip } from 'primereact/tooltip';
 import { ProgressSpinner } from 'primereact/progressspinner';
+import { OverlayPanel } from 'primereact/overlaypanel';
+import { Button } from 'primereact/button';
 import { RenderField } from '@/app/components/commons/renderField';
 import { useTranslation } from 'react-i18next';
 import { formatCurrency } from '@/app/(main)/utilities/documents/common/currencyUtils';
@@ -137,6 +139,25 @@ export const DialogNc = ({
     const visibleElement = useIntersectionObserver({ current: elementRef });
     const dialogContentRef = useRef<HTMLDivElement>(null);
     const btnToScroll = btnScroll(dialogContentRef, visibleElement);
+
+    // Referencia para el OverlayPanel de instrucciones
+    const op = useRef<OverlayPanel>(null);
+
+    // Detectamos si el proveedor seleccionado es extranjero
+    const isForeign = oNc?.partner?.country && oNc?.partner?.country != constants.COUNTRIES.MEXICO_ID;
+
+    let uploadNcInstructionsKey = 'dialog.uploadInstructions';
+    if (isForeign) {
+        uploadNcInstructionsKey = 'dialog.uploadInstructionsForeign';
+    } else if (oUser?.isProvider) {
+        uploadNcInstructionsKey = 'dialog.uploadInstructionsPartner';
+    }
+
+    // Extraemos el objeto de traducción actual para validar si tiene footer o no
+    const currentUploadTranslations: any = t(uploadNcInstructionsKey, { returnObjects: true }) || {};
+    const reviewTranslations: any = t('dialog.reviewInstructions', { returnObjects: true }) || {};
+    const authTranslations: any = t('dialog.authorizationInstructions', { returnObjects: true }) || {};
+    const editTranslations: any = t('dialog.editInstructions', { returnObjects: true }) || {};
 
     const footer = (
         <>
@@ -311,6 +332,120 @@ export const DialogNc = ({
                 {showing == 'body' && (
                     <div className="flex-grow-1 flex flex-column">
                         <br />
+                        {/* --- Botón de Ayuda y OverlayPanel --- */}
+                        {(dialogMode === 'create' || dialogMode === 'edit' || isInReview || isInAuth) && (
+                            <div className="flex justify-content-end px-3">
+                                <Button 
+                                    type="button" 
+                                    icon="bx bx-info-circle" 
+                                    label={
+                                        dialogMode === 'create' ? t('dialog.howToUpload') : 
+                                        dialogMode === 'edit' ? t('dialog.howToEdit') : 
+                                        isInAuth ? t('dialog.howToAuthorize') :
+                                        t('dialog.howToReview')
+                                    }
+                                    className="p-button-text p-button-sm p-button-info" 
+                                    onClick={(e) => op.current?.toggle(e)}
+                                />
+                            </div>
+                        )}
+                        <OverlayPanel ref={op} showCloseIcon style={{ width: isMobile ? '100%' : '500px' }} appendTo={null}>
+                            <div className="p-3">
+                                {dialogMode === 'create' ? (
+                                    (!oUser?.isProvider && !oNc?.partner) ? (
+                                        // Mensaje cuando es usuario interno y aún no selecciona un proveedor
+                                        <div className="text-center p-2">
+                                            <i className="bx bx-info-circle text-4xl text-blue-500 mb-3 block"></i>
+                                            <h5 className="m-0 mb-2">{t('dialog.fields.partner.placeholder')}</h5>
+                                            <p className="m-0 text-secondary">{t('dialog.selectProviderForHelp')}</p>
+                                        </div>
+                                    ) : (
+                                        // Instrucciones de carga (Nacional, Foráneo o Proveedor logueado)
+                                        <>
+                                            <h5 className="mt-0 mb-3">{currentUploadTranslations.header}</h5>
+                                            <ul className="pl-3 m-0" style={{ lineHeight: '1.5' }}>
+                                                {Object.keys(currentUploadTranslations)
+                                                    .filter(key => key.startsWith('step'))
+                                                    .map((key, i) => (
+                                                        <li key={i} className="mb-2">
+                                                            {currentUploadTranslations[key]}
+                                                        </li>
+                                                    ))
+                                                }
+                                            </ul>
+                                            {currentUploadTranslations.footer && (
+                                                <p className="mt-3 mb-0 text-sm font-italic text-secondary" style={{ whiteSpace: 'pre-line' }}>
+                                                    {currentUploadTranslations.footer}
+                                                </p>
+                                            )}
+                                        </>
+                                    )
+                                ) : dialogMode === 'edit' ? (
+                                    // Instrucciones de edición
+                                    <>
+                                        <h5 className="mt-0 mb-3">{editTranslations.header}</h5>
+                                        <ul className="pl-3 m-0" style={{ lineHeight: '1.5' }}>
+                                            {Object.keys(editTranslations)
+                                                .filter(key => key.startsWith('step'))
+                                                .map((key, i) => (
+                                                    <li key={i} className="mb-2">
+                                                        {editTranslations[key]}
+                                                    </li>
+                                                ))
+                                            }
+                                        </ul>
+                                        {editTranslations.footer && (
+                                            <p className="mt-3 mb-0 text-sm font-italic text-secondary" style={{ whiteSpace: 'pre-line' }}>
+                                                {editTranslations.footer}
+                                            </p>
+                                        )}
+                                    </>
+                                ) : isInAuth ? (
+                                    // Instrucciones de autorización
+                                    <>
+                                        <h5 className="mt-0 mb-3">{authTranslations.header}</h5>
+                                        <ul className="pl-3 m-0" style={{ lineHeight: '1.5' }}>
+                                            {Object.keys(authTranslations)
+                                                .filter(key => key.startsWith('step'))
+                                                .map((key, i) => (
+                                                    <li key={i} className="mb-2">
+                                                        {authTranslations[key]}
+                                                    </li>
+                                                ))
+                                            }
+                                        </ul>
+                                        {authTranslations.footer && (
+                                            <p className="mt-3 mb-0 text-sm font-italic text-secondary" style={{ whiteSpace: 'pre-line' }}>
+                                                {authTranslations.footer}
+                                            </p>
+                                        )}
+                                    </>
+                                ) : isInReview ? (
+                                    // Instrucciones de revisión (View)
+                                    <>
+                                        <h5 className="mt-0 mb-3">{reviewTranslations.header}</h5>
+                                        <ul className="pl-3 m-0" style={{ lineHeight: '1.5' }}>
+                                            {Object.keys(reviewTranslations)
+                                                .filter(key => key.startsWith('step'))
+                                                .map((key, i) => (
+                                                    <li key={i} className="mb-2">
+                                                        {reviewTranslations[key]}
+                                                    </li>
+                                                ))
+                                            }
+                                        </ul>
+                                        {reviewTranslations.footer && (
+                                            <p className="mt-3 mb-0 text-sm font-italic text-secondary" style={{ whiteSpace: 'pre-line' }}>
+                                                {reviewTranslations.footer}
+                                            </p>
+                                        )}
+                                    </>
+                                ) : (
+                                    <></>
+                                )}
+                            </div>
+                        </OverlayPanel>
+
                         {withHeader && (
                             <div className="p-fluid formgrid grid">
                                 <RenderField
@@ -328,7 +463,7 @@ export const DialogNc = ({
                                     placeholder={t('dialog.fields.company.placeholder')}
                                     errorKey={'company'}
                                     errors={formErrors}
-                                    errorMessage={'Selecciona empresa'}
+                                    errorMessage={t('dialog.fields.company.errorMessage')}
                                 />
                                 { !oUser?.isProvider && (
                                     <RenderField
@@ -346,7 +481,7 @@ export const DialogNc = ({
                                         placeholder={t('dialog.fields.partner.placeholder')}
                                         errorKey={'partner'}
                                         errors={formErrors}
-                                        errorMessage={'Selecciona proveedor'}
+                                        errorMessage={t('dialog.fields.partner.errorMessage')}
                                     />
                                 )}
                                 {loadingInvoices && (
@@ -376,7 +511,7 @@ export const DialogNc = ({
                                             placeholder={t('dialog.fields.lInvoices.placeholder')}
                                             errorKey={'invoices'}
                                             errors={formErrors}
-                                            errorMessage={'Selecciona facturas'}
+                                            errorMessage={t('dialog.fields.lInvoices.errorMessage')}
                                         />
                                         { !loadingApplicationType ? (
                                             <RenderField
@@ -394,7 +529,7 @@ export const DialogNc = ({
                                                 placeholder={t('dialog.fields.application_type.placeholder')}
                                                 errorKey={'application_type'}
                                                 errors={formErrors}
-                                                errorMessage={'Selecciona un tipo de aplicacion'}
+                                                errorMessage={t('dialog.fields.application_type.errorMessage')}
                                             />
                                         ):
                                             <div className={`field col-12 md:col-6`}>
@@ -428,7 +563,7 @@ export const DialogNc = ({
                                                 placeholder={t('dialog.fields.lAreas.placeholder')} 
                                                 errorKey={'area'} 
                                                 errors={formErrors} 
-                                                errorMessage={'Selecciona un área'} 
+                                                errorMessage={t('dialog.fields.lAreas.errorMessage')}
                                             />
                                         )}
                                         {oNc?.invoices && (oNc?.invoices?.length > 1 || dialogMode == 'view') && (
@@ -436,14 +571,14 @@ export const DialogNc = ({
                                                 {/* <Divider className='m-2'/> */}
                                                 <div className={`field col-12 md:col-12 text-center`}>
                                                     <Divider align="center">
-                                                        <h6>Facturas de la nota de crédito</h6>
+                                                        <h5>{t('dialog.sections.invoices')}</h5>
                                                     </Divider>
                                                     <div className="">
                                                         <div className="col">
                                                             {oNc?.invoices.map((item: any, index: number) => (
                                                                 <div className="flex flex-column md:flex-row align-items-start md:align-items-center justify-content-start mb-3 gap-3" key={index}>
                                                                     <label className="font-medium">
-                                                                        Folio: {item.folio} | Monto aplicado:
+                                                                        {t('dialog.invoiceItems.folioLabel')} {item.folio} {t('dialog.invoiceItems.appliedAmountLabel')}
                                                                     </label>
                                                                     <div className="col-12 md:col-5 f justify-content-start">
                                                                         <CustomInputNumber
@@ -459,7 +594,7 @@ export const DialogNc = ({
                                                                             inputClassName="text-right"
                                                                             onChange={(e: any) => handleInputAmountInvoice(index, e.value)}
                                                                         />
-                                                                        {oNc?.invoices[index]?.error && <small className="p-error">La cantidad no puede ser 0</small>}
+                                                                        {oNc?.invoices[index]?.error && <small className="p-error">{t('dialog.invoiceItems.amountZeroError')}</small>}
                                                                     </div>
                                                                 </div>
                                                             ))}
@@ -511,7 +646,7 @@ export const DialogNc = ({
                         {withBody && isXmlValid && (dialogMode == 'create' || dialogMode == 'edit' || dialogMode == 'view') && (
                             <div className="p-fluid formgrid grid">
                                 <Divider align="center">
-                                    <h6>Datos de la nota de crédito</h6>
+                                    <h5>{t('dialog.sections.data')}</h5>
                                 </Divider>
                                 <RenderField
                                     label={t('dialog.fields.folio.label')}
@@ -528,7 +663,7 @@ export const DialogNc = ({
                                     placeholder={t('dialog.fields.folio.placeholder')}
                                     errorKey={'folio'}
                                     errors={formErrors}
-                                    errorMessage={'Ingresa folio'}
+                                    errorMessage={t('dialog.fields.folio.errorMessage')}
                                 />
                                 <RenderField
                                     label={t('dialog.fields.date.label')}
@@ -546,7 +681,7 @@ export const DialogNc = ({
                                     placeholder={t('dialog.fields.date.placeholder')}
                                     errorKey={'date'}
                                     errors={formErrors}
-                                    errorMessage={'Selecciona fecha'}
+                                    errorMessage={t('dialog.fields.date.errorMessage')}
                                 />
                                 <RenderField
                                     label={t('dialog.fields.partner_fiscal_id.label')}
@@ -563,7 +698,7 @@ export const DialogNc = ({
                                     placeholder={t('dialog.fields.partner_fiscal_id.placeholder')}
                                     errorKey={'partner_fiscal_id'}
                                     errors={formErrors}
-                                    errorMessage={'Ingresa RFC emisor'}
+                                    errorMessage={t('dialog.fields.partner_fiscal_id.errorMessage')}
                                 />
                                 <RenderField
                                     label={t('dialog.fields.issuer_tax_regime.label')}
@@ -580,7 +715,7 @@ export const DialogNc = ({
                                     placeholder={t('dialog.fields.issuer_tax_regime.placeholder')}
                                     errorKey={'issuer_tax_regime'}
                                     errors={formErrors}
-                                    errorMessage={'Ingresa régimen fiscal del emisor'}
+                                    errorMessage={t('dialog.fields.issuer_tax_regime.errorMessage')}
                                 />
                                 <RenderField
                                     label={t('dialog.fields.company_fiscal_id.label')}
@@ -597,7 +732,7 @@ export const DialogNc = ({
                                     placeholder={t('dialog.fields.company_fiscal_id.placeholder')}
                                     errorKey={'company_fiscal_id'}
                                     errors={formErrors}
-                                    errorMessage={'Ingresa RFC receptor'}
+                                    errorMessage={t('dialog.fields.company_fiscal_id.errorMessage')}
                                 />
                                 <RenderField
                                     label={t('dialog.fields.receiver_tax_regime.label')}
@@ -631,7 +766,7 @@ export const DialogNc = ({
                                     placeholder={t('dialog.fields.amount.placeholder')}
                                     errorKey={'amount'}
                                     errors={formErrors}
-                                    errorMessage={'Ingresa monto'}
+                                    errorMessage={t('dialog.fields.amount.errorMessage')}
                                 />
                                 <RenderField
                                     label={t('dialog.fields.currency.label')}
@@ -648,7 +783,7 @@ export const DialogNc = ({
                                     placeholder={t('dialog.fields.currency.placeholder')}
                                     errorKey={'currency'}
                                     errors={formErrors}
-                                    errorMessage={'Selecciona moneda'}
+                                    errorMessage={t('dialog.fields.currency.errorMessage')}
                                 />
                                 <RenderField
                                     label={t('dialog.fields.exchange_rate.label')}
@@ -665,7 +800,7 @@ export const DialogNc = ({
                                     placeholder={t('dialog.fields.exchange_rate.placeholder')}
                                     errorKey={'exchange_rate'}
                                     errors={formErrors}
-                                    errorMessage={'Ingresa tipo de cambio'}
+                                    errorMessage={t('dialog.fields.exchange_rate.errorMessage')}
                                 />
 
                                 { (dialogMode == 'create') && (
@@ -690,7 +825,7 @@ export const DialogNc = ({
                                         )}
                                         <div className="formgrid grid">
                                             <div className="col">
-                                                <label>Archivos</label>
+                                                <label>{t('dialog.files.label')}</label>
                                                 &nbsp;
                                                 <Tooltip target=".custom-target-icon" />
                                                 <i
@@ -714,7 +849,7 @@ export const DialogNc = ({
                                                     maxFileSizeForHuman={constants.maxFileSizeForHuman}
                                                     maxUnitFileSize={constants.maxUnitFile}
                                                     errorMessages={{
-                                                        invalidFileType: t('dialog.files.invalidFileType'),
+                                                        invalidFileType: t('dialog.files.invalidFileType', { extensions: constants.allowedExtensionsLabel }),
                                                         invalidAllFilesSize: t('dialog.files.invalidAllFilesSize'),
                                                         invalidFileSize: t('dialog.files.invalidFileSize'),
                                                         invalidFileSizeMessageSummary: t('dialog.files.invalidFileSizeMessageSummary'),
@@ -731,7 +866,7 @@ export const DialogNc = ({
                                 { (dialogMode == 'view' || dialogMode == 'edit') && (
                                     <>
                                         <Divider align="center">
-                                            <h6>Comentarios de la revisión</h6>
+                                            <h5>{t('dialog.sections.reviewComments')}</h5>
                                         </Divider>
                                         <RenderField
                                             label={t('dialog.fields.authz_acceptance_notes.label')}
@@ -748,7 +883,7 @@ export const DialogNc = ({
                                             placeholder={t('dialog.fields.authz_acceptance_notes.placeholder')}
                                             errorKey={'authz_acceptance_notes'}
                                             errors={formErrors}
-                                            errorMessage={'Ingrese comentario para rechazar'}
+                                            errorMessage={t('dialog.fields.authz_acceptance_notes.errorMessage')}
                                             labelClass={'font-bold opacity-100 text-blue-600'}
                                         />
                                     </>
@@ -757,7 +892,7 @@ export const DialogNc = ({
                                 { showAuthComments && (
                                     <>
                                         <Divider align="center">
-                                            <h6>Comentarios de la autorización</h6>
+                                            <h5>{t('dialog.sections.authComments')}</h5>
                                         </Divider>
                                         <RenderField
                                             label={t('dialog.fields.authz_authorization_notes.label')}
@@ -774,7 +909,7 @@ export const DialogNc = ({
                                             placeholder={t('dialog.fields.authz_authorization_notes.placeholder')}
                                             errorKey={'authz_authorization_notes'}
                                             errors={formErrors}
-                                            errorMessage={'Ingrese comentario para rechazar'}
+                                            errorMessage={t('dialog.fields.authz_authorization_notes.errorMessage')}
                                             labelClass={'font-bold opacity-100 text-blue-600'}
                                         />
                                     </>

@@ -309,7 +309,7 @@ export const ValidateXml = ( {
                 maxFileSizeForHuman={'2 MB'}
                 errorMessages={
                     {
-                        invalidFileType: 'Solo se permite archivo XML',
+                        invalidFileType: t('uploadDialog.files.invalidAllFileType', { extensions: constants.allowedExtensionXmlLabel }),
                         invalidAllFilesSize: t('uploadDialog.files.invalidAllFilesSize'),
                         invalidFileSize: t('uploadDialog.files.invalidFileSize'),
                         invalidFileSizeMessageSummary: t('uploadDialog.files.invalidFileSizeMessageSummary'),

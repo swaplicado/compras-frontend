@@ -27,13 +27,14 @@ const RejectedPartners = () => {
     const { t: tCommon } = useTranslation('common');
     const [userFunctionalAreas, setUserFunctionalAreas] = useState<any>(null);
     const [oUser, setOUser] = useState<any>(null);
+    const [dialogMode, setDialogMode] = useState<'review' | 'auth' | 'sendAuth'>('auth');
     const [showInfo, setShowInfo] = useState<boolean>(false);
     const [showManual, setShowManual] = useState<boolean>(false);
     
     //constantes para el dialog
     const [visible, setDialogVisible] = useState(false);
     const [formErrors, setFormErrors] = useState({
-        authz_acceptance_notes: false
+        authz_authorization_notes: false
     });
     const [showing, setShowing] = useState<'body' | 'animationSuccess' | 'animationError'>('body');
     const [successTitle, setSuccessTitle] = useState<string>('');
@@ -107,8 +108,9 @@ const RejectedPartners = () => {
     const handleDoubleClick = async (e: DataTableRowClickEvent) => {
         setShowing('body');
         configOPartner(e.data);
+        setDialogMode('auth')
         setFormErrors({
-            authz_acceptance_notes: false
+            authz_authorization_notes: false
         })
         setDialogVisible(true);
         setLoadingFiles(true);
@@ -123,8 +125,9 @@ const RejectedPartners = () => {
     const openPartner = async (data: any) => {
         setShowing('body');
         configOPartner(data);
+        setDialogMode('auth')
         setFormErrors({
-            authz_acceptance_notes: false
+            authz_authorization_notes: false
         })
         setDialogVisible(true);
         setLoadingFiles(true);
@@ -205,6 +208,13 @@ const RejectedPartners = () => {
 
     const handleReject = async () => {
         try {
+            if (!oPartner?.authz_authorization_notes?.trim()) {
+            setFormErrors((prev: any) => ({
+                ...prev,
+                authz_authorization_notes: true
+            }));
+            return;
+        }
             setLoading(true);
             const route = constants.ROUTE_POST_REJECT_RESOURCE;
             const response = await axios.post(constants.API_AXIOS_PATCH, {
@@ -262,7 +272,7 @@ const RejectedPartners = () => {
                 <Tooltip target=".custom-target-icon" />
                 <i
                     className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                    data-pr-tooltip={t('titleMyAuth')}
+                    data-pr-tooltip={t('titleMyAuthTooltip')}
                     data-pr-position="right"
                     data-pr-my="left center-2"
                     style={{ fontSize: '1rem', cursor: 'pointer' }}
@@ -318,11 +328,12 @@ const RejectedPartners = () => {
     }, [userFunctionalAreas])
 
     const getObjectIntruction = () => {
-        const authInstructions = JSON.parse(JSON.stringify(t(`authInstructions`, { returnObjects: true })));
+        const authPartner = JSON.parse(JSON.stringify(t(`viewInstructions.authPartner`, { returnObjects: true })));
 
         let instructions: any[] = [];
-        instructions.push(authInstructions);
-
+        if (oUser?.oUser.groups.includes(constants.ROLES.CONTADOR_ID)) {
+            instructions.push(authPartner);
+        }
         if (!instructions || Object.keys(instructions).length === 0) {
             return null;
         }
@@ -342,20 +353,23 @@ const RejectedPartners = () => {
                         setShowInfo={setShowInfo}
                         showManual={showManual}
                         setShowManual={setShowManual}
-                        btnShowInstructionsText={"Mostrar instrucciones"}
-                        btnHideInstructionsText={"Ocultar instrucciones"}
-                        dialogManualBtnLabelText={"Videos de ayuda"}
-                        dialogManualBtnTooltipText={"Videos de ayuda"}
-                        dialogManualHeaderText={"Videos de ayuda"}
+                        btnShowInstructionsText={tCommon('btnShowInstructions')}
+                        btnHideInstructionsText={tCommon('btnHideInstructions')}
+                        dialogManualBtnLabelText={tCommon('btnHelpVideos')}
+                        dialogManualBtnTooltipText={tCommon('btnHelpVideos')}
+                        dialogManualHeaderText={tCommon('btnHelpVideos')}
                         lVideos={[]}
                     />
                     <DialogReception 
-                        headerTitle={'Revisión registro de proveedor'}
+                        headerTitle={t('register.authTitle')}
                         visible={visible}
                         onHide={() => setDialogVisible(false)}
+
                         footerContent={dialogFooterContent()}
                         isMobile={isMobile}
                         oPartner={oPartner}
+                        oUser={oUser?.oUser}
+                        dialogMode={dialogMode}
                         setOPartner={setOPartner}
                         setFormErrors={setFormErrors}
                         formErrors={formErrors}
