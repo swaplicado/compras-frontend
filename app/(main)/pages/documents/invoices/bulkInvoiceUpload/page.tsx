@@ -55,8 +55,8 @@ const BulkInvoiceUpload = () => {
     const { t: tCommon } = useTranslation('common');
     // const options = ['Fletes', 'Compras'];
     const options = [
-        {label: "Fletes", value: "Fletes", icon: "pi pi-truck" },
-        {label: "Compras", value: "Compras", icon: "pi pi-shopping-cart"}
+        {label: t('options.freights'), value: t('options.freights'), icon: "pi pi-truck" },
+        {label: t('options.purchases'), value: t('options.purchases'), icon: "pi pi-shopping-cart"}
     ]
     const [invoiceType, setInvoiceType] = useState<string | null>(null);
     const [lInvoices, setLInvoices] = useState<any[]>([]);
@@ -71,6 +71,7 @@ const BulkInvoiceUpload = () => {
     const [dialogType, setDialogType] = useState<'validate' | 'upload' | 'warning' | null>(null);
     const [succesInvoices, setSuccesInvoices] = useState<Array<any>>([]);
     const [enabledSaveBtn, setEnabledSaveBtn] = useState<boolean>(false);
+    const [showInfo, setShowInfo] = useState<boolean>(false);
 
     const message = useRef<Messages>(null);
 
@@ -123,7 +124,7 @@ const BulkInvoiceUpload = () => {
     };
     const getReferences = (index: number) => async (partner_id: string, company_partner_id: string) => {
         try {
-            const type = invoiceType == 'Fletes' ? constants.REFERENCE_TYPE_TICKET : constants.REFERENCE_TYPE_OC; 
+            const type = invoiceType == t('options.freights') ? constants.REFERENCE_TYPE_TICKET : constants.REFERENCE_TYPE_OC; 
             const route = constants.ROUTE_GET_REFERENCES;
             const response = await axios.get(constants.API_AXIOS_GET, {
                 params: {
@@ -151,10 +152,10 @@ const BulkInvoiceUpload = () => {
                     return newArray;
                 });
             } else {
-                showToast('error', 'Error al obtener las referencias');
+                showToast('error', t('errors.getReferences'));
             }
         } catch (error: any) {
-            showToast('error', 'Error al obtener las referencias');
+            showToast('error', t('errors.getReferences'));
         }
     }
     const setDpsReferencesArrayForIndex = (index: number) => (references: []) => {
@@ -310,7 +311,7 @@ const BulkInvoiceUpload = () => {
 
     const popInvoice = (index: number) => {
         if (lInvoices.length == 1) {
-            showToast('info', t('errorPopInvoice'), 'info');
+            showToast('info', t('errors.popInvoice'), 'info');
             return;
         }
         setLInvoices(lInvoices.filter((_, i) => i !== index));
@@ -330,6 +331,43 @@ const BulkInvoiceUpload = () => {
 
         setFilesErrorsArray(filesErrorsArray.filter((_, i) => i !== index));
         setFilesTotalSize(filesTotalSize.filter((_, i) => i !== index));
+    };
+
+    const renderInfoButton = () => {
+        // Obtenemos el bloque viewInstructions desde nuestro namespace actual (bulkInvoiceUpload)
+        const instructions = JSON.parse(JSON.stringify(t(`viewInstructions`, { returnObjects: true })));
+        
+        if (!instructions || Object.keys(instructions).length === 0) {
+            return null;
+        }
+
+        return (
+            <div className="pb-4">
+                <Button 
+                    label={!showInfo ? tCommon('btnShowInstructions') : tCommon('btnHideInstructions')} 
+                    icon="pi pi-info-circle" 
+                    className="p-button-text p-button-secondary p-0" 
+                    onClick={() => setShowInfo(!showInfo)} 
+                    severity="info" 
+                />
+                {showInfo && (
+                    <div className="p-3 border-1 border-round border-gray-200 bg-white mb-3 surface-border surface-card">
+                        {Object.keys(instructions).map((key, index) => (
+                            <div key={index}>
+                                <h6>{instructions[key].header}</h6>
+                                <ul>
+                                    {Object.keys(instructions[key])
+                                        .filter((subKey) => subKey.startsWith('step'))
+                                        .map((subKey, subIndex) => (
+                                            <li key={subIndex}>{instructions[key][subKey]}</li>
+                                        ))}
+                                </ul>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+        );
     };
 
     const handleChoiceInvoiceType = (type: string) => {
@@ -376,12 +414,12 @@ const BulkInvoiceUpload = () => {
             
             if ((pdfFiles?.length || 0) === 0) {
                 isValid = false;
-                lError.push('Falta el archivo PDF de la factura.');
+                lError.push(t('errors.missingPdf'));
             }
 
             if ((xmlFiles?.length || 0) === 0) {
                 isValid = false;
-                lError.push('Falta el archivo XML de la factura.');
+                lError.push(t('errors.missingXml'));
             }
 
             setPdfErrorsArray((prev) => {
@@ -406,7 +444,7 @@ const BulkInvoiceUpload = () => {
     
                 if (hasSameFile) {
                     isValid = false;
-                    lError.push('No es necesario volver a cargar el archivo ' + xmlName + ' en la sección Archivos adicionales.');
+                    lError.push(t('hasSameFile', { xmlName: xmlName }));
                 }
     
                 const hasMatchingPDF = pdfFiles.some((file) => {
@@ -417,7 +455,7 @@ const BulkInvoiceUpload = () => {
     
                 if (!hasMatchingPDF) {
                     isValid = false;
-                    lError.push('Es necesario que se cargue la representación impresa en PDF de la factura y que tenga el mismo nombre que el archivo XML: ' + xmlBaseName + '.');
+                    lError.push(t('hasMatchingPDF', { xmlBaseName: xmlBaseName }));
                 }
             }
             
@@ -425,22 +463,22 @@ const BulkInvoiceUpload = () => {
                 const newArray = [...prev];
                 newArray[i].notes = !lDps[i].notes;
                 newArray[i].payment_date = lDps[i].do_payment ? ( lDps[i].payment_date ? false : true ) : false;
-                newArray[i].reference = invoiceType == 'Fletes' ? ( lDps[i].reference ? lDps[i].reference.length < 1 : true ) : false;
+                newArray[i].reference = invoiceType == t('options.freights') ? ( lDps[i].reference ? lDps[i].reference.length < 1 : true ) : false;
                 return newArray;
             });
 
-            !lDps[i].notes ? lError.push('Falta descripción de la factura.') : '';
-            lDps[i].do_payment ? ( lDps[i].payment_date ? false : lError.push('Falta fecha de pago.') ) : '';
-            invoiceType == 'Fletes' ? ( lDps[i].reference ? (lDps[i].reference.length < 1 ? lError.push('Falta seleccionar boleto.') : '') : lError.push('Falta seleccionar boleto.') ) : '';
+            !lDps[i].notes ? lError.push(t('errors.missingNotes')) : '';
+            lDps[i].do_payment ? ( lDps[i].payment_date ? false : lError.push(t('errors.missingPaymentDate')) ) : '';
+            invoiceType == t('options.freights') ? ( lDps[i].reference ? (lDps[i].reference.length < 1 ? lError.push(t('errors.missingTicket')) : '') : lError.push(t('errors.missingTicket')) ) : '';
 
-            if (!lDps[i].notes || (lDps[i].do_payment ? ( lDps[i].payment_date ? false : true ) : false) || (invoiceType == 'Fletes' ? ( lDps[i].reference ? lDps[i].reference.length < 1 : true ) : false)) {
+            if (!lDps[i].notes || (lDps[i].do_payment ? ( lDps[i].payment_date ? false : true ) : false) || (invoiceType == t('options.freights') ? ( lDps[i].reference ? lDps[i].reference.length < 1 : true ) : false)) {
                 isValid = false;
             }
             
             if ((xmlFiles?.length || 0) >= 1) {
                 if (!lXmlValid[i]) {
                     isValid = false;
-                    lError.push('El archivo XML no es válido.');
+                    lError.push(t('errors.invalidXml'));
                 }
             }
             dpsErrors.push(lError);
@@ -463,50 +501,57 @@ const BulkInvoiceUpload = () => {
                     return newArray;
                 });
 
-                const route = constants.ROUTE_POST_VALIDATE_WAYBILL_SUPPLEMENT;
-                const formData = new FormData();
-                const xmlFiles = xmlUploadRefs[i].current?.getFiles() || [];
-    
-                xmlFiles.forEach((file: string | Blob) => {
-                    formData.append('files', file);
-                });
+                // Validación de que hay referencias seleccionadas para la factura
+                if (!lDps[i]?.reference || lDps[i].reference.length === 0) {
+                    currentInvoiceWarnings.push(t('errors.missingTicket'));
+                    hasAnyWarning = true;
+                } else {
 
-                let lReferences = JSON.stringify(lDps[i]?.reference?.map((ref: any) => ref.id));
-
-                formData.append('references', lReferences);
-                formData.append('route', route);
-
-                const response = await axios.post(constants.API_AXIOS_POST, formData, {
-                    headers: { 'Content-Type': 'multipart/form-data' }
-                });
-    
-                if (response.status === 200 || response.status === 201) {
-                    let data = response.data.data;
-                    setLDps((prev) => {
-                        const newArray = [...prev];
-                        newArray[i].xmlVsTicket = data.warnings;
-                        newArray[i].sendxmlVsTicket = true;
-                        return newArray;
+                    const route = constants.ROUTE_POST_VALIDATE_WAYBILL_SUPPLEMENT;
+                    const formData = new FormData();
+                    const xmlFiles = xmlUploadRefs[i].current?.getFiles() || [];
+        
+                    xmlFiles.forEach((file: string | Blob) => {
+                        formData.append('files', file);
                     });
 
-                    if (data.warnings && data.warnings.length > 0) {
-                        // Hubo inconsistencias en esta factura
-                        setXmlErrorsArray((prev) => {
+                    let lReferences = JSON.stringify(lDps[i]?.reference?.map((ref: any) => ref.id) || []);
+
+                    formData.append('references', lReferences);
+                    formData.append('route', route);
+
+                    const response = await axios.post(constants.API_AXIOS_POST, formData, {
+                        headers: { 'Content-Type': 'multipart/form-data' }
+                    });
+        
+                    if (response.status === 200 || response.status === 201) {
+                        let data = response.data.data;
+                        setLDps((prev) => {
                             const newArray = [...prev];
-                            newArray[i].extraWarnings = data.warnings
+                            newArray[i].xmlVsTicket = data.warnings;
+                            newArray[i].sendxmlVsTicket = true;
                             return newArray;
                         });
 
-                        const warningsList = Array.isArray(data.warnings) ? data.warnings : [data.warnings];
-                        currentInvoiceWarnings.push(...warningsList);
-                        hasAnyWarning = true;
-                    } 
+                        if (data.warnings && data.warnings.length > 0) {
+                            // Hubo inconsistencias en esta factura
+                            setXmlErrorsArray((prev) => {
+                                const newArray = [...prev];
+                                newArray[i].extraWarnings = data.warnings
+                                return newArray;
+                            });
 
-                } else {
-                    throw new Error(t('uploadDialog.errors.uploadError'));
+                            const warningsList = Array.isArray(data.warnings) ? data.warnings : [data.warnings];
+                            currentInvoiceWarnings.push(...warningsList);
+                            hasAnyWarning = true;
+                        } 
+
+                    } else {
+                        throw new Error(t('errors.validateTicketXml'));
+                    }
                 }
             } catch (error: any) {
-                currentInvoiceWarnings.push(error.response?.data?.error || 'Error al validar los datos del boleto contra el XML');
+                currentInvoiceWarnings.push(error.response?.data?.error || t('errors.validateTicketXml'));
                 hasAnyWarning = true;
             } finally {
                 setLoadingDpsArray((prev) => {
@@ -527,13 +572,13 @@ const BulkInvoiceUpload = () => {
             setDialogType('warning');
             setShowDialogErrors(true);
         } else {
-            // Si todo fue perfecto, mostramos Toast y dejamos que el usuario guarde
-            showToast('success', 'Validación exitosa.', 'Éxito');
+            // Si todo fue perfecto, mostramos Toast usando las traducciones
+            showToast('success', t('success.validationMessage'), t('success.validationTitle'));
         }
     }
 
     const checkAllDpsValidateXmlVsTicket = useCallback(() => {
-        if (invoiceType == 'Fletes') {
+        if (invoiceType == t('options.freights')) {
             let validate = false;
             for (let i = 0; i < lDps.length; i++) {
                 if (!lDps[i].sendxmlVsTicket) {
@@ -589,7 +634,7 @@ const BulkInvoiceUpload = () => {
                 
                 // const area_id = lRefToValidateXml[0].id == 0 ? oArea?.id : lRefToValidateXml[0].functional_area_id;
                 // const area_id = invoiceType == 'Fletes' ? lDps[i].reference[0].area_id : constants.AREA_COMPRAS_AGUACATE;
-                 const area_id = invoiceType == 'Fletes' ? 
+                 const area_id = invoiceType == t('options.freights') ? 
                     (lDps[i].reference[0].area_id ? lDps[i].reference[0].area_id : (
                         lDps[i].company_partner_id == constants.AETH_ID_LOCAL ? constants.AREA_COMPRAS_AGUACATE : constants.AREA_AME_NO_APLICA
                     )) : (lDps[i].company_partner_id == constants.AETH_ID_LOCAL ? constants.AREA_COMPRAS_AGUACATE : constants.AREA_AME_NO_APLICA);
@@ -600,7 +645,7 @@ const BulkInvoiceUpload = () => {
                 formData.append('company', lDps[i].company_partner_id);
                 formData.append('user_id', oUser.oUser.id.toString());
                 formData.append('is_internal_user', oUser.isInternalUser ? 'True' : 'False');
-                formData.append('processing_type_id', invoiceType == 'Fletes' ? constants.PROCESSING_TYPE_INVOICE_FLETE.toString() : constants.PROCESSING_TYPE_INVOICE_COMPRA.toString());
+                formData.append('processing_type_id', invoiceType == t('options.freights') ? constants.PROCESSING_TYPE_INVOICE_FLETE.toString() : constants.PROCESSING_TYPE_INVOICE_COMPRA.toString());
                 formData.append('do_payment', lDps[i].do_payment ? '1' : '0' );
     
                 const splitFolio = lDps[i].folio.split('-');
@@ -728,7 +773,9 @@ const BulkInvoiceUpload = () => {
                                     { lDps[index].xmlVsTicket?.length > 0 && (
                                         <i className='bx bxs-error bx-md' style={{color: '#FFD700'}}></i>
                                     )}
-                                    <h4 key={'index_' + invoiceKeys[index]} className='m-0'>Factura número {index + 1}:</h4>
+                                    <h4 key={'index_' + invoiceKeys[index]} className='m-0'>
+                                        {t('invoiceNumber', { number: index + 1 })}
+                                    </h4>
                                 </div>
                                 <div className={`card p-2 relative 
                                                     ${lDps[index].sended == 'sended' ? 
@@ -761,16 +808,16 @@ const BulkInvoiceUpload = () => {
                                         </div>
                                     )}
                                     { !isEditable(index) && (
-                                        <Button icon="pi pi-minus" className="p-button-rounded" severity='danger' size='small' style={{transform: 'scale(0.7)', left: '-20px', top: '-20px'}} onClick={() => popInvoice(index)} />
+                                        <Button icon="pi pi-minus" className="p-button-rounded" tooltip={t('tooltips.removeInvoice')} severity='danger' size='small' style={{transform: 'scale(0.7)', left: '-20px', top: '-20px'}} onClick={() => popInvoice(index)} />
                                     )}
                                     <div className={`p-fluid formgrid grid ${ !isEditable(index) ? '-mt-3' : ''}`}>
                                         <div className="field col-12 md:col-4">
                                             <label>
-                                                Archivo XML:
+                                                {t('labels.xmlFile')}
                                             </label>
                                             &nbsp;
                                             <Tooltip target=".custom-target-icon" />
-                                            <i className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge" data-pr-tooltip={''} data-pr-position="right" data-pr-my="left center-2" style={{ fontSize: '1rem', cursor: 'pointer' }}></i>
+                                            <i className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge" data-pr-tooltip={t('tooltips.xmlFile')} data-pr-position="right" data-pr-my="left center-2" style={{ fontSize: '1rem', cursor: 'pointer' }}></i>
                                             <ValidateXml
                                                 key={`xml-${invoiceKeys[index]}`}
                                                 xmlUploadRef={xmlUploadRefs[index]}
@@ -792,7 +839,7 @@ const BulkInvoiceUpload = () => {
                                                 clearOnProviderChange={false}
                                                 clearOnCompanyChange={false}
                                                 clearOnRefChange={false}
-                                                type={ invoiceType == 'Fletes' ? constants.XML_TYPE_FLETE :  constants.XML_TYPE_COMPRA }
+                                                type={ invoiceType == t('options.freights') ? constants.XML_TYPE_FLETE :  constants.XML_TYPE_COMPRA }
                                                 disabled={isEditable(index)}
                                                 getReferences={getReferences(index)}
                                                 setReferences={setDpsReferencesArrayForIndex(index)}
@@ -800,11 +847,11 @@ const BulkInvoiceUpload = () => {
                                         </div>
                                         <div className="field col-12 md:col-4">
                                             <label>
-                                                Archivo PDF:
+                                                {t('labels.pdfFile')}
                                             </label>
                                             &nbsp;
                                             <Tooltip target=".custom-target-icon" />
-                                            <i className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge" data-pr-tooltip={'Archivo PDF de la factura'} data-pr-position="right" data-pr-my="left center-2" style={{ fontSize: '1rem', cursor: 'pointer' }}></i>
+                                            <i className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge" data-pr-tooltip={t('tooltips.pdfFile')} data-pr-position="right" data-pr-my="left center-2" style={{ fontSize: '1rem', cursor: 'pointer' }}></i>
                                             <CustomFileUpload
                                                 key={`pdf-${invoiceKeys[index]}`}
                                                 fileUploadRef={pdfUploadRefs[index]}
@@ -820,16 +867,16 @@ const BulkInvoiceUpload = () => {
                                                 maxFileSizeForHuman={constants.maxFileSizeForHuman}
                                                 maxUnitFileSize={constants.maxUnitFile}
                                                 errorMessages={{
-                                                    helperTextFiles: 'Ingresa un archivo pdf'
+                                                    helperTextFiles: t('helperMessages.putPdf')
                                                 }}
                                                 disabled={isEditable(index)}
                                             />
                                         </div>
                                         <div className="field col-12 md:col-4">
-                                            <label>Archivos adicionales:</label>
+                                            <label>{t('labels.additionalFiles')}</label>
                                             &nbsp;
                                             <Tooltip target=".custom-target-icon" />
-                                            <i className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge" data-pr-tooltip={'Archivos adicionales'} data-pr-position="right" data-pr-my="left center-2" style={{ fontSize: '1rem', cursor: 'pointer' }}></i>
+                                            <i className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge" data-pr-tooltip={t('tooltips.additionalFiles')} data-pr-position="right" data-pr-my="left center-2" style={{ fontSize: '1rem', cursor: 'pointer' }}></i>
                                             <CustomFileUpload
                                                 key={`files-${invoiceKeys[index]}`}
                                                 fileUploadRef={filesUploadRefs[index]}
@@ -872,39 +919,40 @@ const BulkInvoiceUpload = () => {
                                                                 )
                                                             })
                                                         }
-                                                    </div> */}
+                                                    </div> */
+                                                    }
                                                     <div className=" col-12 md:col-4">
-                                                        <h6 className='mb-1'>Proveedor:</h6>
+                                                        <h6 className='mb-1'>{t('labels.provider')}</h6>
                                                     </div>
                                                     <div className=" col-12 md:col-8">
                                                         {lDps[index]?.partner_name || ''}
                                                     </div>
                                                     <div className=" col-12 md:col-4">
-                                                        <h6 className='mb-1'>Régimen fiscal:</h6>
+                                                        <h6 className='mb-1'>{t('labels.taxRegime')}</h6>
                                                     </div>
                                                     <div className=" col-12 md:col-8">
                                                         {lDps[index]?.receiver_tax_regime || ''}
                                                     </div>
                                                     <div className=" col-12 md:col-2">
-                                                        <h6 className='mb-1'>Folio:</h6>
+                                                        <h6 className='mb-1'>{t('labels.folio')}</h6>
                                                     </div>
                                                     <div className=" col-12 md:col-4">
                                                         {lDps[index]?.folio || ''}
                                                     </div>
                                                     <div className=" col-12 md:col-2">
-                                                        <h6 className='mb-1'>Fecha:</h6>
+                                                        <h6 className='mb-1'>{t('labels.date')}</h6>
                                                     </div>
                                                     <div className=" col-12 md:col-4">
                                                         { lDps[index]?.date ? DateFormatter(lDps[index].date) : '' }
                                                     </div>
                                                     <div className=" col-12 md:col-2">
-                                                        <h6 className='mb-1'>Total:</h6>
+                                                        <h6 className='mb-1'>{t('labels.total')}</h6>
                                                     </div>
                                                     <div className=" col-12 md:col-4">
                                                         {lDps[index]?.amount || ''}
                                                     </div>
                                                     <div className=" col-12 md:col-2">
-                                                        <h6 className='mb-1'>Moneda:</h6>
+                                                        <h6 className='mb-1'>{t('labels.currency')}</h6>
                                                     </div>
                                                     <div className=" col-12 md:col-4">
                                                         {lDps[index]?.currency || ''}
@@ -916,7 +964,7 @@ const BulkInvoiceUpload = () => {
                                             ) }
                                         </div>
                                         <div className='field col-12 md:col-4'>
-                                            {invoiceType == 'Fletes' && (
+                                            {invoiceType == t('options.freights') && (
                                                 <>
                                                     {lLoadingXml[index] && (
                                                         <div className='flex align-items-center justify-content-center'>
@@ -930,8 +978,8 @@ const BulkInvoiceUpload = () => {
                                                     )}
                                                     {!lLoadingXml[index] && (
                                                         <RenderField
-                                                            label={'Boletos'}
-                                                            tooltip={''}
+                                                            label={t('labels.tickets')}
+                                                            tooltip={t('tooltips.tickets')}
                                                             value={lDps[index]?.reference}
                                                             disabled={isEditable(index)}
                                                             mdCol={12}
@@ -958,8 +1006,8 @@ const BulkInvoiceUpload = () => {
                                                 </>
                                             )}
                                             <RenderField
-                                                label={'Descripción de la factura'}
-                                                tooltip={''}
+                                                label={t('labels.notes')}
+                                                tooltip={t('tooltips.notes')}
                                                 value={lDps[index]?.notes || ''}
                                                 disabled={isEditable(index)}
                                                 mdCol={12}
@@ -980,7 +1028,7 @@ const BulkInvoiceUpload = () => {
                                                 placeholder={''}
                                                 errorKey={'notes'}
                                                 errors={dpsErrorsArray[index]}
-                                                errorMessage={'Ingresa la descripción de la factura'}
+                                                errorMessage={t('errors.missingNotes')}
                                             />
                                         </div>
                                         <div className='field col-12 md:col-4'>
@@ -988,7 +1036,7 @@ const BulkInvoiceUpload = () => {
                                             <div className="formgrid grid">
                                                 <div className="col-12 md:col-4 align-content-center">
                                                     <RenderField
-                                                        label={'Realizar pago'}
+                                                        label={t('doPayment')}
                                                         tooltip={''}
                                                         value={lDps[index]?.do_payment}
                                                         disabled={isEditable(index)}
@@ -1010,8 +1058,8 @@ const BulkInvoiceUpload = () => {
                                                 </div>
                                                 <div className="col-12 md:col-8">
                                                     <RenderField
-                                                        label={'Fecha de pago'}
-                                                        tooltip={''}
+                                                        label={t('labels.paymentDate')}
+                                                        tooltip={t('tooltips.paymentDate')}
                                                         value={lDps[index]?.payment_date || ''}
                                                         disabled={isEditable(index)}
                                                         mdCol={12}
@@ -1025,10 +1073,10 @@ const BulkInvoiceUpload = () => {
                                                                 return newArray;
                                                             })
                                                         }}
-                                                        placeholder={''}
+                                                        placeholder={t('placeholders.paymentDate')}
                                                         errorKey={'payment_date'}
                                                         errors={dpsErrorsArray[index]}
-                                                        errorMessage={'Selecciona fecha'}
+                                                        errorMessage={t('helperMessages.paymentDate')}
                                                     />
                                                 </div>
                                             </div>
@@ -1036,8 +1084,8 @@ const BulkInvoiceUpload = () => {
                                             {/* Segunda fila: Instrucciones de pago ocupa toda la fila */}
                                             <div className="col-12">
                                                 <RenderField
-                                                    label={'Instrucciones de pago'}
-                                                    tooltip={''}
+                                                    label={t('labels.paymentInstructions')}
+                                                    tooltip={t('tooltips.paymentInstructions')}
                                                     value={lDps[index]?.payment_notes || ''}
                                                     disabled={isEditable(index)}
                                                     mdCol={12}
@@ -1058,7 +1106,7 @@ const BulkInvoiceUpload = () => {
                                                 />
                                             </div>
                                         </div>
-                                        {invoiceType != 'Fletes' && (<div className='field col-12 md:col-4'>
+                                        {invoiceType != t('options.freights') && (<div className='field col-12 md:col-4'>
                                             <div className="formgrid grid">
                                                 <div className="col-12 md:col-6">
                                                     <RenderField
@@ -1111,7 +1159,7 @@ const BulkInvoiceUpload = () => {
                             </div>
                         ))}
                         <div className="flex justify-content-end">
-                            <Button icon="pi pi-plus" className="p-button-rounded p-button-success" onClick={addInvoice} disabled={isSubmitting}/>
+                            <Button icon="pi pi-plus" className="p-button-rounded p-button-success" tooltip={t('tooltips.addInvoice')} tooltipOptions={{ position: 'top' }} onClick={addInvoice} disabled={isSubmitting}/>
                         </div>
                     </>
                 )}
@@ -1150,10 +1198,11 @@ const BulkInvoiceUpload = () => {
                 {loading && loaderScreen()}
                 <Toast ref={toast} />
                 <Card header={headerCard} pt={{ content: { className: 'p-0' }, body: { className: 'p-2'} }}>
+                    {renderInfoButton()}
                     <div className="p-fluid formgrid grid">
                         <div className="field col-12 md:col-4">
                             <label htmlFor="invoicetype" className="mb-0">
-                                Selecciona tipo de factura
+                                {t('labels.invoiceType')}
                             </label>
 
                             <SelectButton
@@ -1167,8 +1216,8 @@ const BulkInvoiceUpload = () => {
                         </div>
                         <div className="field col-12 md:col-4">
                             <RenderField
-                                label={'Fecha de pago'}
-                                tooltip={''}
+                                label= {t('labels.paymentDate')}
+                                tooltip={t('tooltips.paymentDateAll')}
                                 value={payDay}
                                 disabled={false}
                                 mdCol={8}
@@ -1178,19 +1227,25 @@ const BulkInvoiceUpload = () => {
                                 placeholder={''}
                                 errorKey={'date'}
                                 errors={{}}
-                                errorMessage={'Selecciona fecha'}
+                                errorMessage={t('helperMessages.paymentDate')}
                             />
                         </div>
                         <div className='field col-12 md:col-2'>
-                            { invoiceType == 'Fletes' && (
+                            { invoiceType == t('options.freights') && (
                                 <div className="flex justify-content-end">
-                                    <Button icon="pi pi-reply" className="" label='Validar' onClick={handleValidateXmlVsTicket} />
+                                    <Button 
+                                        icon="pi pi-reply" 
+                                        className="" 
+                                        label={t('buttons.validate')} 
+                                        tooltip={t('tooltips.validate')} 
+                                        tooltipOptions={{ position: 'top' }} 
+                                        onClick={handleValidateXmlVsTicket} />
                                 </div>
                             )}
                         </div>
                         <div className='field col-12 md:col-2'>
                             <div className="flex justify-content-end">
-                                <Button icon="pi pi-save" disabled={!enabledSaveBtn} className="" label='Guardar' onClick={handleSubmit} />
+                                <Button icon="pi pi-save" disabled={!enabledSaveBtn} className="" label={t('buttons.save')} onClick={handleSubmit} />
                             </div>
                         </div>
                     </div>

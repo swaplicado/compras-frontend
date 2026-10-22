@@ -1,4 +1,4 @@
-//FACTURAS ACEPTADAS
+//FACTURAS RECHAZADAS EN LA AUTORIZACÍON
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
 import { TableInvoices } from '@/app/components/documents/invoice/common/tableInvoices';
@@ -19,6 +19,7 @@ import { FlowAuthorizationDialog } from '@/app/components/documents/invoice/flow
 import { Tooltip } from 'primereact/tooltip';
 import { getOpex, findOpex } from '@/app/(main)/utilities/documents/invoice/opex';
 import { getProcessingType } from '@/app/(main)/utilities/documents/invoice/processingType';
+import { RenderInfoButton } from '@/app/components/commons/instructionsButton';
 
 const Upload = () => {
     const [dialogVisible, setDialogVisible] = useState(false);
@@ -99,7 +100,7 @@ const Upload = () => {
                 <Tooltip target=".custom-target-icon" />
                 <i
                     className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                    data-pr-tooltip={t('titleAuthorizedRejectedTooltip')}
+                    data-pr-tooltip={t('titleAuthorizationRejectedTooltip')}
                     data-pr-position="right"
                     data-pr-my="left center-2"
                     style={{ fontSize: '1rem', cursor: 'pointer' }}
@@ -632,12 +633,39 @@ const Upload = () => {
         fetchReferences();
     }, []);
 
+    const getObjectIntruction = () => {
+        
+        const deleteRejected = t(`viewInstructions.deleteRejectedInstructionsShort`, { returnObjects: true });
+        let instructions: any[] = [];
+        instructions.push(deleteRejected);
+
+        if (!instructions || Object.keys(instructions).length === 0) {
+            return null;
+        }
+
+        return instructions;
+    }
+
+
     return (
         <div className="grid">
             <div className="col-12">
                 {loading && loaderScreen()}
                 <Toast ref={toast} />
                 <Card header={headerCard} pt={{ content: { className: 'p-0' } }}>
+                    <RenderInfoButton
+                        instructions={getObjectIntruction()}
+                        showInfo={showInfo}
+                        setShowInfo={setShowInfo}
+                        showManual={showManual}
+                        setShowManual={setShowManual}
+                        btnShowInstructionsText={tCommon('btnShowInstructions')}
+                        btnHideInstructionsText={tCommon('btnHideInstructions')}
+                        dialogManualBtnLabelText={tCommon('btnHelpVideos')}
+                        dialogManualBtnTooltipText={tCommon('btnHelpVideos')}
+                        dialogManualHeaderText={tCommon('btnHelpVideos')}
+                        lVideos={[]}
+                    />
                     <InvoiceDialog 
                         visible={dialogVisible}
                         onHide={() => setDialogVisible(false)}

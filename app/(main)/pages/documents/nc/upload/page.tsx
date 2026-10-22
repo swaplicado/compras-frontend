@@ -814,16 +814,30 @@ const UploadNC = () => {
     }, [userFunctionalAreas, oUser, startDate, endDate])
 
     const getObjectIntruction = () => {
-        const uploadInstructions = JSON.parse(JSON.stringify(t(`dialog.uploadInstructions`, { returnObjects: true })));
-        const uploadInstructionsPartner = JSON.parse(JSON.stringify(t(`dialog.uploadInstructionsPartner`, { returnObjects: true })));
-        const reviewInstructions = JSON.parse(JSON.stringify(t(`dialog.reviewInstructions`, { returnObjects: true })));
+        const uploadNc = t(`viewInstructions.uploadNc`, { returnObjects: true });
+        const deleteRejectedInstructions = t(`viewInstructions.deleteRejectedInstructions`, { returnObjects: true });
+        const reviewNc = t(`viewInstructions.reviewNc`, { returnObjects: true });
+        const searchNc = t(`viewInstructions.searchNc`, { returnObjects: true });
+        const sortColumn = t(`viewInstructions.sortColumn`, { returnObjects: true });
+        const reloadView = t(`viewInstructions.reloadView`, { returnObjects: true });
+        const downloadFiles = t(`viewInstructions.downloadFiles`, { returnObjects: true });
 
         let instructions: any[] = [];
         if (oUser?.isInternalUser) {
-            instructions.push(uploadInstructions);
-            instructions.push(reviewInstructions);
+            instructions.push(uploadNc);
+            instructions.push(deleteRejectedInstructions);
+            instructions.push(reviewNc);
+            instructions.push(searchNc);
+            instructions.push(sortColumn);
+            instructions.push(reloadView);
+            instructions.push(downloadFiles);
         } else {
-            instructions.push(uploadInstructionsPartner);
+            instructions.push(uploadNc);
+            instructions.push(deleteRejectedInstructions);
+            instructions.push(searchNc);
+            instructions.push(sortColumn);
+            instructions.push(reloadView);
+            instructions.push(downloadFiles);
         }
 
         if (!instructions || Object.keys(instructions).length === 0) {
@@ -845,11 +859,11 @@ const UploadNC = () => {
                     setShowInfo={setShowInfo}
                     showManual={showManual}
                     setShowManual={setShowManual}
-                    btnShowInstructionsText={"Mostrar instrucciones"}
-                    btnHideInstructionsText={"Ocultar instrucciones"}
-                    dialogManualBtnLabelText={"Videos de ayuda"}
-                    dialogManualBtnTooltipText={"Videos de ayuda"}
-                    dialogManualHeaderText={"Videos de ayuda"}
+                    btnShowInstructionsText={tCommon('btnShowInstructions')}
+                    btnHideInstructionsText={tCommon('btnHideInstructions')}
+                    dialogManualBtnLabelText={tCommon('btnHelpVideos')}
+                    dialogManualBtnTooltipText={tCommon('btnHelpVideos')}
+                    dialogManualHeaderText={tCommon('btnHelpVideos')}
                     lVideos={[]}
                 />
                     <DialogNc 

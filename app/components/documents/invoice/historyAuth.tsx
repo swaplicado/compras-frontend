@@ -11,14 +11,14 @@ interface HistoryAuthProps {
 export const HistoryAuth = ({ 
     lHistory 
 }: HistoryAuthProps) => {
-    const { t } = useTranslation('payments');
+    const { t } = useTranslation('invoices');
     const { t: tCommon } = useTranslation('common');
 
     return (
         <div>
             <br />
             <div>
-                <label htmlFor="">Historial de autorizaciones</label>
+                <label htmlFor="">{t('authHistory.label')}</label>
             </div>
             <DataTable
                 value={lHistory}

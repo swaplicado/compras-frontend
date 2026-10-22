@@ -15,6 +15,7 @@ import { DataTable, DataTableFilterMeta, DataTableRowClickEvent } from 'primerea
 import { Column } from 'primereact/column';
 import { CustomFileViewer } from '@/app/components/documents/invoice/fileViewer';
 import { CustomFileUpload } from '@/app/components/documents/invoice/customFileUpload';
+import { OverlayPanel } from 'primereact/overlaypanel';
 import { FileUpload } from 'primereact/fileupload';
 import { Messages } from 'primereact/messages';
 import axios from 'axios';
@@ -71,6 +72,7 @@ interface DialogCrpProps {
     showAuthComments?: boolean,
     isInAuth?: boolean,
     lFiscalRegimes: any,
+    instructions?: any[];
 }
 
 export const DialogCrp = ({
@@ -116,7 +118,8 @@ export const DialogCrp = ({
     setLFilesToEdit,
     showAuthComments = false,
     isInAuth = false,
-    lFiscalRegimes
+    lFiscalRegimes,
+    instructions = []
 }: DialogCrpProps) => {
     const { t } = useTranslation('crp');
     const { t: tCommon } = useTranslation('common');
@@ -294,6 +297,15 @@ export const DialogCrp = ({
         return value;
     };
 
+    const opInstructions = useRef<OverlayPanel>(null);
+    // Referencia para el OverlayPanel
+    const op = useRef<OverlayPanel>(null);
+
+    // Para obtener las instrucciones de carga de CRP dependiendo si es usuario interno o proveedor
+    const uploadCrpInstructionsKey = oUser?.isInternalUser ? 'dialog.uploadInstructions' : 'dialog.uploadInstructionsPartner';
+    
+
+
     return (
         <div className="flex justify-content-center">
             <Dialog 
@@ -332,11 +344,76 @@ export const DialogCrp = ({
                 {showing == 'body' && (
                     <div className="flex-grow-1 flex flex-column">
                         <br />
+
+                        {/*---------- Botón de ayuda CRP -------------- */}
+                        {(dialogMode === 'create' || isInAuth) && (
+                            <div className="flex justify-content-end px-3">
+                                <Button 
+                                    type="button" 
+                                    icon="bx bx-info-circle" 
+                                    label={dialogMode === 'create' ? t('dialog.howToUpload') : t('dialog.howToAuth')}
+                                    className="p-button-text p-button-sm p-button-info" 
+                                    onClick={(e) => op.current?.toggle(e)}
+                                />
+                            </div>
+                        )}
+
+                        <OverlayPanel ref={op} showCloseIcon style={{ width: isMobile ? '100%' : '500px' }} appendTo={null}>
+                            <div className="p-3">
+                                {dialogMode === 'create' ? (
+                                    (!oUser?.isProvider && !oCrp?.oProvider) ? (
+                                        // Mensaje cuando es usuario interno y aún no selecciona un proveedor
+                                        <div className="text-center p-2">
+                                            <i className="bx bx-info-circle text-4xl text-blue-500 mb-3 block"></i>
+                                            <h5 className="m-0 mb-2">{t('dialog.fields.partner.placeholder')}</h5>
+                                            <p className="m-0 text-secondary">{t('dialog.selectProviderForHelp')}</p>
+                                        </div>
+                                    ) : (
+                                        // Instrucciones de carga (Depende del tipo de usuario)
+                                        <>
+                                            <h5 className="mt-0 mb-3">{t(`${uploadCrpInstructionsKey}.header`)}</h5>
+                                            <ul className="pl-3 m-0" style={{ lineHeight: '1.5' }}>
+                                                {Object.keys(t(uploadCrpInstructionsKey, { returnObjects: true }) || {})
+                                                    .filter(key => key.startsWith('step'))
+                                                    .map((key, i) => (
+                                                        <li key={i} className="mb-2">
+                                                            {t(`${uploadCrpInstructionsKey}.${key}`)}
+                                                        </li>
+                                                    ))
+                                                }
+                                            </ul>
+                                            <p className="mt-3 mb-0 text-sm font-italic text-secondary" style={{ whiteSpace: 'pre-line' }}>
+                                                {t(`${uploadCrpInstructionsKey}.footer`)}
+                                            </p>
+                                        </>
+                                    )
+                                ) : (
+                                    // Instrucciones de autorizacion
+                                    <>
+                                        <h5 className="mt-0 mb-3">{t('dialog.authInstructions.header')}</h5>
+                                        <ul className="pl-3 m-0" style={{ lineHeight: '1.5' }}>
+                                            {Object.keys(t('dialog.authInstructions', { returnObjects: true }) || {})
+                                                .filter(key => key.startsWith('step'))
+                                                .map((key, i) => (
+                                                    <li key={i} className="mb-2">
+                                                        {t(`dialog.authInstructions.${key}`)}
+                                                    </li>
+                                                ))
+                                            }
+                                        </ul>
+                                        <p className="mt-3 mb-0 text-sm font-italic text-secondary" style={{ whiteSpace: 'pre-line' }}>
+                                            {t('dialog.authInstructions.footer')}
+                                        </p>
+                                    </>
+                                )}
+                            </div>
+                        </OverlayPanel>
+
                         {withHeader && (
                             <div className="p-fluid formgrid grid">
                                 {dialogMode == 'view' && 
                                     <Divider align="center">
-                                        <h5>Datos de los comprobante de recepción de pagos</h5>
+                                        <h5>{t('dialog.crpDataTitle')}</h5>
                                     </Divider>
                                 }
                                 <RenderField
@@ -440,6 +517,10 @@ export const DialogCrp = ({
                                     <div className={`field col-12 md:col-12`}>
                                         <div className="formgrid grid">
                                             <div className="col">
+                                            <label>
+                                                {t('dialog.fields.xml_file.label')}
+                                            </label>
+
                                                 <ValidateXmlCrp
                                                     xmlUploadRef={xmlUploadRef}
                                                     oCompany={oCrp?.oCompany}
@@ -554,8 +635,8 @@ export const DialogCrp = ({
                                 />
 
                                 <RenderField
-                                    label={t('dialog.fields.folio.label')}
-                                    tooltip={t('dialog.fields.folio.label')}
+                                    label={t('dialog.fields.date.label')}
+                                    tooltip={t('dialog.fields.date.tooltip')}
                                     value={oCrp?.xml_date}
                                     disabled={true}
                                     mdCol={6}
@@ -574,12 +655,12 @@ export const DialogCrp = ({
                                     <div className="field col-12 md:col-12">
                                         <div className="formgrid grid">
                                             <div className="col">
-                                                <label>Archivos</label>
+                                                <label>{t('dialog.files.label')}</label>
                                                 &nbsp;
                                                 <Tooltip target=".custom-target-icon" />
                                                 <i
                                                     className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                                                    data-pr-tooltip={t('uploadDialog.files.tooltip')}
+                                                    data-pr-tooltip={t('dialog.files.tooltip')}
                                                     data-pr-position="right"
                                                     data-pr-my="left center-2"
                                                     style={{ fontSize: '1rem', cursor: 'pointer' }}
@@ -598,7 +679,7 @@ export const DialogCrp = ({
                                                     maxFileSizeForHuman={constants.maxFileSizeForHuman}
                                                     maxUnitFileSize={constants.maxUnitFile}
                                                     errorMessages={{
-                                                        invalidFileType: t('dialog.files.invalidFileType'),
+                                                        invalidFileType: t('dialog.files.invalidFileType', { extensions: constants.allowedExtensionsLabel }),
                                                         invalidAllFilesSize: t('dialog.files.invalidAllFilesSize'),
                                                         invalidFileSize: t('dialog.files.invalidFileSize'),
                                                         invalidFileSizeMessageSummary: t('dialog.files.invalidFileSizeMessageSummary'),
@@ -618,7 +699,7 @@ export const DialogCrp = ({
                             <div className={`field col-12 md:col-12`}>
                                 <div style={{ overflowX: 'auto' }}>
                                     <Divider align="center">
-                                        <h5>Datos de los pagos</h5>
+                                        <h5>{t('dialog.paymentDataTitle')}</h5>
                                     </Divider>
                                     <div className="formgrid grid">
                                         <div className="col">

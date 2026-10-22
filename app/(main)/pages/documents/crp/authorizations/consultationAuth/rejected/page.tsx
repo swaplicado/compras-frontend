@@ -27,6 +27,7 @@ import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { getlFiscalRegime } from '@/app/(main)/utilities/documents/common/fiscalRegimeUtils';
 import { useContext } from 'react';
 import { LayoutContext } from '@/layout/context/layoutcontext';
+import { RenderInfoButton } from "@/app/components/commons/instructionsButton";
 
 const ConsultPaymentProgramded = () => {
     const [startDate, setStartDate] = useState<string>('');
@@ -39,6 +40,8 @@ const ConsultPaymentProgramded = () => {
     const [userFunctionalAreas, setUserFunctionalAreas] = useState<any>(null);
     const [oUser, setOUser] = useState<any>(null);
     const [dateFilter, setDateFilter] = useState<any>(null);
+    const [showInfo, setShowInfo] = useState <boolean>(false);
+    const [showManual, setShowManual] = useState <boolean>(false);
     const [lCompaniesFilter, setLCompaniesFilter] = useState<any[]>([]);
     const [lFiscalRegimes, setLFiscalRegimes] = useState<any[]>([]);
 
@@ -137,6 +140,19 @@ const ConsultPaymentProgramded = () => {
             setLCrp: setLCrp,
             showToast: showToast 
         });
+    }
+
+    const getObjectIntruction = () => {
+        
+        const deleteRejected = t(`viewInstructions.deleteRejectedInstructionsShort`, { returnObjects: true });
+        let instructions: any[] = [];
+        instructions.push(deleteRejected);
+
+        if (!instructions || Object.keys(instructions).length === 0) {
+            return null;
+        }
+
+        return instructions;
     }
 
     useEffect(() => {
@@ -388,12 +404,12 @@ const ConsultPaymentProgramded = () => {
                 const id_dps = rowData.id;
                 const folio = rowData.folio;
                 confirmDialog({
-                    message: '¿Quieres eliminar este CRP: ' + folio + '?',
-                    header: 'Confirma eliminación',
+                    message: t('confirmations.deleteRejected.message', { folio }),
+                    header: t('confirmations.deleteRejected.header'),
                     icon: 'pi pi-info-circle',
                     acceptClassName: 'p-button-danger',
-                    acceptLabel: 'Si',
-                    rejectLabel: 'No',
+                    acceptLabel: tCommon('btnYes'),
+                    rejectLabel: tCommon('btnNo'),
                     accept: () => accept(id_dps),
                     reject: () => reject(id_dps)
                 });
@@ -470,6 +486,19 @@ const ConsultPaymentProgramded = () => {
                 <Toast ref={toast} />
                 <Card header={headerCard} pt={{ content: { className: 'p-0' } }}>
                     <ConfirmDialog />
+                    <RenderInfoButton
+                        instructions={getObjectIntruction()}
+                        showInfo={showInfo}
+                        setShowInfo={setShowInfo}
+                        showManual={showManual}
+                        setShowManual={setShowManual}
+                        btnShowInstructionsText={tCommon('btnShowInstructions')}
+                        btnHideInstructionsText={tCommon('btnHideInstructions')}
+                        dialogManualBtnLabelText={tCommon('btnHelpVideos')}
+                        dialogManualBtnTooltipText={tCommon('btnHelpVideos')}
+                        dialogManualHeaderText={tCommon('btnHelpVideos')}
+                        lVideos={[]}
+                    />
                     <DialogCrp
                         visible={visible}
                         onHide={() =>  setDialogVisible(false)}

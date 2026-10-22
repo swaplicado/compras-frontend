@@ -141,15 +141,6 @@ const AcceptedPrepayment = () => {
     const getLPrepayments = async () => {
         let params: any = {};
         if (oUser.isInternalUser) {
-            // const route = constants.ROUTE_GET_DPS_AUTHORIZATION;
-            // params = {
-            //     route: route,
-            //     type: 1,
-            //     user_id: oUser.oUser.external_id,
-            //     id_actor_type: 2,
-            //     document_type: constants.RESOURCE_TYPE_PP,
-            //     authz_authorization: constants.REVIEW_REJECT_ID
-            // };
             const route = constants.ROUTE_GET_DPS_AUTHORIZATIONS_BY_FUNCTIONAL_AREA;
             params = {
                 route: route,
@@ -426,7 +417,7 @@ const AcceptedPrepayment = () => {
             });
 
             if (response.status == 200) {
-                showToast('success', 'Registro enviado a autorizar', 'Realizado');
+                showToast('success', tCommon('success.sendAuth'), 'Realizado');
                 await getLPrepayments();
             } else {
                 throw new Error('');
@@ -547,12 +538,12 @@ const AcceptedPrepayment = () => {
             }}
         >
             <h3 className="m-0 text-900 font-medium">
-                {t('titleRejectedNc')}
+                {t('titleAuthRejectedPrepay')}
                 &nbsp;&nbsp;
                 <Tooltip target=".custom-target-icon" />
                 <i
                     className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                    data-pr-tooltip={t('titleRejectedNcTooltip')}
+                    data-pr-tooltip={t('titleAuthRejectedPrepayTooltip')}
                     data-pr-position="right"
                     data-pr-my="left center-2"
                     style={{ fontSize: '1rem', cursor: 'pointer' }}
@@ -830,17 +821,11 @@ const AcceptedPrepayment = () => {
     }, [userFunctionalAreas, oUser, startDate, endDate])
 
     const getObjectIntruction = () => {
-        const uploadInstructions = JSON.parse(JSON.stringify(t(`dialog.uploadInstructions`, { returnObjects: true })));
-        const uploadInstructionsPartner = JSON.parse(JSON.stringify(t(`dialog.uploadInstructionsPartner`, { returnObjects: true })));
-        const reviewInstructions = JSON.parse(JSON.stringify(t(`dialog.reviewInstructions`, { returnObjects: true })));
-
+        const deleteInstructions = JSON.parse(JSON.stringify(t(`dialog.deleteInstructions`, { returnObjects: true })));
+        
         let instructions: any[] = [];
-        if (oUser?.isInternalUser) {
-            instructions.push(uploadInstructions);
-            instructions.push(reviewInstructions);
-        } else {
-            instructions.push(uploadInstructionsPartner);
-        }
+        
+        instructions.push(deleteInstructions);
 
         if (!instructions || Object.keys(instructions).length === 0) {
             return null;
@@ -880,12 +865,12 @@ const AcceptedPrepayment = () => {
             const id_dps = rowData.id;
             const folio = rowData.folio;
             confirmDialog({
-                message: '¿Quieres eliminar esta nota de crédito: ' + folio + '?',
-                header: 'Confirma eliminación',
+                message: t('confirmations.deleteRejected.message', { folio }),
+                header: t('confirmations.deleteRejected.header'),
                 icon: 'pi pi-info-circle',
                 acceptClassName: 'p-button-danger',
-                acceptLabel: 'Si',
-                rejectLabel: 'No',
+                acceptLabel: tCommon('btnYes'),
+                rejectLabel: tCommon('btnNo'),
                 accept: () => accept(id_dps),
                 reject: () => reject(id_dps)
             });
@@ -932,14 +917,27 @@ const AcceptedPrepayment = () => {
                         dialogManualHeaderText={"Videos de ayuda"}
                         lVideos={[]}
                     /> */}
+                    <RenderInfoButton
+                        instructions={getObjectIntruction()}
+                        showInfo={showInfo}
+                        setShowInfo={setShowInfo}
+                        showManual={showManual}
+                        setShowManual={setShowManual}
+                        btnShowInstructionsText={tCommon('btnShowInstructions')}
+                        btnHideInstructionsText={tCommon('btnHideInstructions')}
+                        dialogManualBtnLabelText={tCommon('btnHelpVideos')}
+                        dialogManualBtnTooltipText={tCommon('btnHelpVideos')}
+                        dialogManualHeaderText={tCommon('btnHelpVideos')}
+                        lVideos={[]}
+                    />
                     <DialogPrepay
                         visible={visible}
                         onHide={() => setDialogVisible(false)}
                         isMobile={isMobile}
                         footerContent={dialogFooterContent}
                         headerTitle={dialogHeaderTitle()}
-                        oNc={oPrepay}
-                        setONc={setOPrepay}
+                        oPrepay={oPrepay}
+                        setOPrepay={setOPrepay}
                         dialogMode={dialogMode}
                         showToast={showToast}
                         setLoading={setLoading}

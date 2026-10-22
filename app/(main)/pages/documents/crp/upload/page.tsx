@@ -180,6 +180,7 @@ const ConsultPaymentProgramded = () => {
             dateFormatted: null,
             oCompany: null,
             oPartner: null,
+            oProvider: null,
             company: null,
             date: null,
             folio: null,
@@ -313,16 +314,28 @@ const ConsultPaymentProgramded = () => {
     }
 
     const getObjectIntruction = () => {
-        const uploadInstructions = JSON.parse(JSON.stringify(t(`dialog.uploadInstructions`, { returnObjects: true })));
-        const uploadInstructionsPartner = JSON.parse(JSON.stringify(t(`dialog.uploadInstructionsPartner`, { returnObjects: true })));
-        const reviewInstructions = JSON.parse(JSON.stringify(t(`dialog.reviewInstructions`, { returnObjects: true })));
+        const uploadCrp = t(`viewInstructions.uploadCrp`, { returnObjects: true });
+        const deleteRejected = t(`viewInstructions.deleteRejectedInstructions`, { returnObjects: true });
+        const authCrp = t(`viewInstructions.authCrp`, { returnObjects: true });
+        const searchCrp = t(`viewInstructions.searchCrp`, { returnObjects: true });
+        const reloadView = t(`viewInstructions.reloadView`, { returnObjects: true });
+        const downloadFiles = t(`viewInstructions.downloadFiles`, { returnObjects: true });
 
         let instructions: any[] = [];
         if (oUser?.isInternalUser) {
-            instructions.push(uploadInstructions);
-            instructions.push(reviewInstructions);
+            // Usuario interno ve todas las instrucciones
+            instructions.push(uploadCrp);
+            instructions.push(deleteRejected);
+            instructions.push(searchCrp);
+            instructions.push(reloadView);
+            instructions.push(downloadFiles);
         } else {
-            instructions.push(uploadInstructionsPartner);
+            // Los demas ven todas excepto la de revisión
+            instructions.push(uploadCrp);
+            instructions.push(deleteRejected);
+            instructions.push(searchCrp);
+            instructions.push(reloadView);
+            instructions.push(downloadFiles);
         }
 
         if (!instructions || Object.keys(instructions).length === 0) {
@@ -659,11 +672,11 @@ const ConsultPaymentProgramded = () => {
                         setShowInfo={setShowInfo}
                         showManual={showManual}
                         setShowManual={setShowManual}
-                        btnShowInstructionsText={"Mostrar instrucciones"}
-                        btnHideInstructionsText={"Ocultar instrucciones"}
-                        dialogManualBtnLabelText={"Videos de ayuda"}
-                        dialogManualBtnTooltipText={"Videos de ayuda"}
-                        dialogManualHeaderText={"Videos de ayuda"}
+                        btnShowInstructionsText={tCommon('btnShowInstructions')}
+                        btnHideInstructionsText={tCommon('btnHideInstructions')}
+                        dialogManualBtnLabelText={tCommon('btnHelpVideos')}
+                        dialogManualBtnTooltipText={tCommon('btnHelpVideos')}
+                        dialogManualHeaderText={tCommon('btnHelpVideos')}
                         lVideos={[]}
                     />
                     <DialogCrp

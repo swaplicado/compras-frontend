@@ -482,12 +482,12 @@ const RejectedNC = () => {
             const id_dps = rowData.id;
             const folio = rowData.folio;
             confirmDialog({
-                message: '¿Quieres eliminar esta nota de crédito: ' + folio + '?',
-                header: 'Confirma eliminación',
+                message: t('confirmations.deleteRejected.message', { folio }),
+                header: t('confirmations.deleteRejected.header'),
                 icon: 'pi pi-info-circle',
                 acceptClassName: 'p-button-danger',
-                acceptLabel: 'Si',
-                rejectLabel: 'No',
+                acceptLabel: tCommon('btnYes'),
+                rejectLabel: tCommon('btnNo'),
                 accept: () => accept(id_dps),
                 reject: () => reject(id_dps)
             });
@@ -579,12 +579,12 @@ const RejectedNC = () => {
     }, [userFunctionalAreas, oUser, startDate, endDate])
 
     const getObjectIntruction = () => {
-        const editInstructions = JSON.parse(JSON.stringify(t(`dialog.editInstructions`, { returnObjects: true })));
-        const deleteInstructions = JSON.parse(JSON.stringify(t(`dialog.deleteInstructions`, { returnObjects: true })));
+        const editNc = JSON.parse(JSON.stringify(t(`viewInstructions.editNc`, { returnObjects: true })));
+        const deleteNc = JSON.parse(JSON.stringify(t(`viewInstructions.deleteNc`, { returnObjects: true })));
 
         let instructions: any[] = [];
-        instructions.push(editInstructions);
-        instructions.push(deleteInstructions);
+        instructions.push(editNc);
+        instructions.push(deleteNc);
 
         if (!instructions || Object.keys(instructions).length === 0) {
             return null;
@@ -606,11 +606,11 @@ const RejectedNC = () => {
                         setShowInfo={setShowInfo}
                         showManual={showManual}
                         setShowManual={setShowManual}
-                        btnShowInstructionsText={"Mostrar instrucciones"}
-                        btnHideInstructionsText={"Ocultar instrucciones"}
-                        dialogManualBtnLabelText={"Videos de ayuda"}
-                        dialogManualBtnTooltipText={"Videos de ayuda"}
-                        dialogManualHeaderText={"Videos de ayuda"}
+                        btnShowInstructionsText={tCommon('btnShowInstructions')}
+                        btnHideInstructionsText={tCommon('btnHideInstructions')}
+                        dialogManualBtnLabelText={tCommon('btnHelpVideos')}
+                        dialogManualBtnTooltipText={tCommon('btnHelpVideos')}
+                        dialogManualHeaderText={tCommon('btnHelpVideos')}
                         lVideos={[]}
                     />
                     <DialogNc 

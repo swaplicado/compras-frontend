@@ -14,12 +14,12 @@ import { getOUser } from '@/app/(main)/utilities/user/common/userUtilities'
 import { DialogPartnerVsAreas } from '@/app/components/configurations/users/dialogPartnerVsAreas';
 import { getlAreas } from '@/app/(main)/utilities/documents/common/areaUtils';
 
-const options = ['Sin referencia', 'Carga masiva', 'Proveedores Vs áreas'];
 
 export default function Users() {
     const { t } = useTranslation('configUsers');
     const { t: tCommon } = useTranslation('common');
     const toast = useRef<Toast>(null);
+    const options = [t('options.withoutRef'), t('options.bulkUpload'), t('options.partnersVsAreas')];
     const [loading, setLoading] = useState<boolean>(false);
     const [optionConfig, setOptionConfig] = useState(options[0]);
     const [lUsers, setLUsers] = useState<Array<any>>([]);
@@ -56,11 +56,11 @@ export default function Users() {
                 setLUsers(prev => prev.map(u =>
                     u.id == user_id ? { ...u, has_invoice_without_oc_permission: value } : u
                 ));
-                showToast('success', 'Permiso actualizado correctamente', 'Éxito');
+                showToast('success', t('responses.success'), 'Éxito');
             }
 
         } catch (error: any) {
-            showToast('error', error.response.data.message || 'Error al actualizar el permiso del usuario')
+            showToast('error', error.response?.data?.message || t('responses.errorUpdateUserPermission'));
         } finally {
             setLoading(false);
         }
@@ -98,10 +98,10 @@ export default function Users() {
                         } : p
                     ))
                 }
-                showToast('success', 'Permiso actualizado correctamente', 'Éxito');
+                showToast('success', t('responses.success'), 'Éxito');
             }
         } catch (error: any) {
-            showToast('error', error.response.data.message || 'Error al actualizar el tipo de proceso del proveedor')
+            showToast('error', error.response?.data?.message || t('responses.errorUpdateProcessingType'))
         } finally {
             setLoading(false);
         }
@@ -127,7 +127,7 @@ export default function Users() {
                 }
             })
             if (response.status == 200) {
-                showToast('success', 'Áreas asignadas correctamente', 'Éxito');
+                showToast('success', t('responses.successPartnerAreas'), 'Éxito');
                 await getPartnersVsAreas({
                     setLPartners: setLPartnersAreas,
                     showToast: showToast,
@@ -136,7 +136,7 @@ export default function Users() {
                 setVisiblePartnerAreas(false);
             }
         } catch (error: any) {
-            showToast('error', error.response.data.message || 'Error al asignar áreas al proveedor');
+            showToast('error', error.response.data.message || t('responses.errorAssignPartnerAreas'));
         } finally {
             setLoading(false);
         }
@@ -193,7 +193,7 @@ export default function Users() {
             await getUsers({
                 setLUsers,
                 showToast: showToast,
-                errorMessage: 'Error al obtener los usuarios'
+                errorMessage: t('responses.errorGetUsers')
             });
             setLoading(false);
         }
@@ -205,7 +205,7 @@ export default function Users() {
                 is_deleted: false,
                 include_processing_types: true,
                 showToast: showToast,
-                errorMessage: 'Error al obtener los proveedores'
+                errorMessage: t('responses.errorGetPartners')
             })
             setLoading(false);
         }
@@ -215,7 +215,7 @@ export default function Users() {
             await getPartnersVsAreas({
                 setLPartners: setLPartnersAreas,
                 showToast: showToast,
-                errorMessage: 'Error al obtener los proveedores'
+                errorMessage: t('responses.errorGetPartners')
             })
             setLoading(false);
         }

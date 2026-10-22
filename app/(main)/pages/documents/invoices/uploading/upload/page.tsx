@@ -1,4 +1,4 @@
-//CARGA DE FACTURAS Y ACEPTACION
+//CARGAR Y REVISAR FACTURAS, Y ACEPTACION
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
 import { TableInvoices } from '@/app/components/documents/invoice/common/tableInvoices';
@@ -692,6 +692,8 @@ const Upload = () => {
             delete instructions['reviewInvoice'];
         }
 
+        delete instructions['deleteRejectedInstructionsShort']; // Esta instruccion solo se mostrará en la vista de rechazados
+
         return (
             <div className="pb-4">
                 <Button label={!showInfo ? tCommon('btnShowInstructions') : tCommon('btnHideInstructions')} icon="pi pi-info-circle" className="p-button-text p-button-secondary p-0" onClick={() => setShowInfo(!showInfo)} severity="info" />
@@ -721,6 +723,12 @@ const Upload = () => {
                                             <li key={subIndex}>{instructions[key][subKey]}</li>
                                         ))}
                                 </ul>
+                                {/* Renderizamos el footer si existe */}
+                                {instructions[key].footer && (
+                                    <p className="mt-3 mb-3 ml-4 font-italic text-secondary" style={{ whiteSpace: 'pre-line' }}>
+                                        {instructions[key].footer}
+                                    </p>
+                                )}
                             </div>
                         ))}
                     </div>

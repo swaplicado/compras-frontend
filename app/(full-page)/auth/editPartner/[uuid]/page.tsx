@@ -891,8 +891,8 @@ const RegisterProvider = () => {
                                             }}
                                             
                                             errorMessages={{
-                                                invalidFileType: t('uploadDialog.files.invalidFileType'),
-                                                invalidFileSize: t('uploadDialog.files.invalidFileSize'),
+                                                invalidFileType: t('register.alerts.invalidFileType', { extensions: constants.allowedExtensionsLabel }),
+                                                //invalidFileSize: t('register.alerts.invalidFileSize'),
                                             }}
                                         />
                                     </div>

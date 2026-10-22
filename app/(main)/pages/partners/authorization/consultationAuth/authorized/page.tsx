@@ -179,7 +179,7 @@ const RejectedPartners = () => {
                     <Tooltip target=".custom-target-icon" />
                     <i
                         className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                        data-pr-tooltip={t('titleAuthorized')}
+                        data-pr-tooltip={t('titleAuthorizedTooltip')}
                         data-pr-position="right"
                         data-pr-my="left center-2"
                         style={{ fontSize: '1rem', cursor: 'pointer' }}

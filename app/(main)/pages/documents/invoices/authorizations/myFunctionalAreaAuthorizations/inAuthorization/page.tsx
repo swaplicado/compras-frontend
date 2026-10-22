@@ -17,6 +17,8 @@ import { InvoiceDialog } from '@/app/components/documents/invoice/common/invoice
 import { getDps } from "@/app/(main)/utilities/documents/invoice/dps";
 import { FlowAuthorizationDialog } from '@/app/components/documents/invoice/flowAuthorizationDialog';
 import { Tooltip } from 'primereact/tooltip';
+import { RenderInfoButton } from "@/app/components/commons/instructionsButton";
+
 
 const Upload = () => {
     const [dialogVisible, setDialogVisible] = useState(false);
@@ -617,12 +619,43 @@ const Upload = () => {
         fetchReferences();
     }, []);
 
+    const getObjectIntruction = () => {
+        const cancelFlowAuthInstructions = JSON.parse(JSON.stringify(t(`viewInstructions.cancelFlowAuthInstructions`, { returnObjects: true })));
+        const authFacturaInMonitor = JSON.parse(JSON.stringify(t(`viewInstructions.authFacturaInMonitor`, { returnObjects: true })));
+        
+
+        let instructions: any[] = [];
+        if (oValidUser.isInternalUser) {
+            instructions.push(cancelFlowAuthInstructions);
+            instructions.push(authFacturaInMonitor);
+        }
+
+        if (!instructions || Object.keys(instructions).length === 0) {
+            return null;
+        }
+
+        return instructions;
+    }
+
     return (
         <div className="grid">
             <div className="col-12">
                 {loading && loaderScreen()}
                 <Toast ref={toast} />
                 <Card header={headerCard} pt={{ content: { className: 'p-0' } }}>
+                    <RenderInfoButton
+                        instructions={getObjectIntruction()}
+                        showInfo={showInfo}
+                        setShowInfo={setShowInfo}
+                        showManual={showManual}
+                        setShowManual={setShowManual}
+                        btnShowInstructionsText={tCommon('btnShowInstructions')}
+                        btnHideInstructionsText={tCommon('btnHideInstructions')}
+                        dialogManualBtnLabelText={tCommon('btnHelpVideos')}
+                        dialogManualBtnTooltipText={tCommon('btnHelpVideos')}
+                        dialogManualHeaderText={tCommon('btnHelpVideos')}
+                        lVideos={[]}
+                    />
                     <InvoiceDialog 
                         visible={dialogVisible}
                         onHide={() => setDialogVisible(false)}

@@ -16,6 +16,7 @@ import { useIsMobile } from '@/app/components/commons/screenMobile';
 import { InvoiceDialog } from '@/app/components/documents/invoice/common/invoiceDialog';
 import { getDps } from "@/app/(main)/utilities/documents/invoice/dps";
 import { Tooltip } from 'primereact/tooltip';
+import { RenderInfoButton } from '@/app/components/commons/instructionsButton';
 
 const Upload = () => {
     const [dialogVisible, setDialogVisible] = useState(false);
@@ -75,7 +76,7 @@ const Upload = () => {
                 <Tooltip target=".custom-target-icon" />
                 <i
                     className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                    data-pr-tooltip={t('titleAcceptedTooltip')}
+                    data-pr-tooltip={t('titleReviewRejectedTooltip')}
                     data-pr-position="right"
                     data-pr-my="left center-2"
                     style={{ fontSize: '1rem', cursor: 'pointer' }}
@@ -503,12 +504,38 @@ const Upload = () => {
         fetchReferences();
     }, []);
 
+    const getObjectIntruction = () => {
+        
+        const deleteRejected = t(`viewInstructions.deleteRejectedInstructionsShort`, { returnObjects: true });
+        let instructions: any[] = [];
+        instructions.push(deleteRejected);
+
+        if (!instructions || Object.keys(instructions).length === 0) {
+            return null;
+        }
+
+        return instructions;
+    }
+
     return (
         <div className="grid">
             <div className="col-12">
                 {loading && loaderScreen()}
                 <Toast ref={toast} />
                 <Card header={headerCard} pt={{ content: { className: 'p-0' } }}>
+                    <RenderInfoButton
+                        instructions={getObjectIntruction()}
+                        showInfo={showInfo}
+                        setShowInfo={setShowInfo}
+                        showManual={showManual}
+                        setShowManual={setShowManual}
+                        btnShowInstructionsText={tCommon('btnShowInstructions')}
+                        btnHideInstructionsText={tCommon('btnHideInstructions')}
+                        dialogManualBtnLabelText={tCommon('btnHelpVideos')}
+                        dialogManualBtnTooltipText={tCommon('btnHelpVideos')}
+                        dialogManualHeaderText={tCommon('btnHelpVideos')}
+                        lVideos={[]}
+                    />
                     <InvoiceDialog 
                         visible={dialogVisible}
                         onHide={() => setDialogVisible(false)}

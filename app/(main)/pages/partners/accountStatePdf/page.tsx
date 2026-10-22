@@ -98,7 +98,7 @@ const ConsultAccountState = () => {
                     link.click();
                 } else {
                     setShowing('animationError');
-                    setErrorMessage('No fue posible obtener el PDF vuelva a intentarlo mas tarde');
+                    setErrorMessage(t('errorMessage'));
                     setDialogVisible(true);
                 }
             } else {
@@ -225,7 +225,7 @@ const ConsultAccountState = () => {
                                 onChange={(e) => setCompany(e.value)}
                                 options={lCompany}
                                 optionLabel="name"
-                                placeholder={'Selecciona empresa'}
+                                placeholder={t('companyPlaceholder')}
                                 filter
                                 className={`w-full`}
                                 showClear

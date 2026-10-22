@@ -1,3 +1,4 @@
+// Version obsoleta creo
 import React, { useEffect, useState } from 'react';
 import { Tooltip } from 'primereact/tooltip';
 import { InputText } from 'primereact/inputtext';
@@ -271,8 +272,8 @@ export const FieldsDpsTextPlane = ({
                         4,
                     )}
                     {renderField(
-                        t('uploadDialog.aceptNotes.label'),
-                        t('uploadDialog.aceptNotes.tooltipReview'),
+                        t('uploadDialog.acceptNotes.label'),
+                        t('uploadDialog.acceptNotes.tooltipReview'),
                         oDps?.notes,
                         true,
                         12,

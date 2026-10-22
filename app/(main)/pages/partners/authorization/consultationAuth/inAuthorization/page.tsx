@@ -16,6 +16,7 @@ import { DataTable, DataTableFilterMeta, DataTableRowClickEvent } from 'primerea
 import DateFormatter from '@/app/components/commons/formatDate';
 import { DialogReception } from '@/app/components/partners/reception/dialogReception';
 import { getlPartnersAuth, getlFilesPartners, downloadFiles } from '@/app/(main)/utilities/partners/partnersUtils';
+import { RenderInfoButton } from "@/app/components/commons/instructionsButton";
 
 const RejectedPartners = () => {
     const [lPartners, setPartners] = useState<any[]>([]);
@@ -40,6 +41,8 @@ const RejectedPartners = () => {
     const [withShowFiles, setWithShowFiles]  = useState<boolean>(true);
     const [loadingFiles, setLoadingFiles]  = useState<boolean>(false);
     const [lFiles, setLFiles]  = useState<any[]>([]);
+    const [showInfo, setShowInfo] = useState<boolean>(false);
+    const [showManual, setShowManual] = useState<boolean>(false);
 
     const isMobile = useIsMobile();
 
@@ -179,7 +182,7 @@ const RejectedPartners = () => {
                 <Tooltip target=".custom-target-icon" />
                 <i
                     className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                    data-pr-tooltip={t('titleInProcess')}
+                    data-pr-tooltip={t('titleInProcessTooltip')}
                     data-pr-position="right"
                     data-pr-my="left center-2"
                     style={{ fontSize: '1rem', cursor: 'pointer' }}
@@ -227,12 +230,41 @@ const RejectedPartners = () => {
         }
     }, [userFunctionalAreas])
 
+    const getObjectIntruction = () => {
+        const authPartnerInMonitor = JSON.parse(JSON.stringify(t(`viewInstructions.authPartnerInMonitor`, { returnObjects: true })));
+        
+
+        let instructions: any[] = [];
+        if (oUser?.isInternalUser) {
+            instructions.push(authPartnerInMonitor);
+        }
+
+        if (!instructions || Object.keys(instructions).length === 0) {
+            return null;
+        }
+
+        return instructions;
+    }
+
     return (
         <div className="grid">
             <div className="col-12">
                 {loading && loaderScreen()}
                 <Toast ref={toast} />
                 <Card header={headerCard} pt={{ content: { className: 'p-0' } }}>
+                    <RenderInfoButton
+                        instructions={getObjectIntruction()}
+                        showInfo={showInfo}
+                        setShowInfo={setShowInfo}
+                        showManual={showManual}
+                        setShowManual={setShowManual}
+                        btnShowInstructionsText={tCommon('btnShowInstructions')}
+                        btnHideInstructionsText={tCommon('btnHideInstructions')}
+                        dialogManualBtnLabelText={tCommon('btnHelpVideos')}
+                        dialogManualBtnTooltipText={tCommon('btnHelpVideos')}
+                        dialogManualHeaderText={tCommon('btnHelpVideos')}
+                        lVideos={[]}
+                    />
                     <DialogReception 
                         headerTitle={'Revisión registro de proveedor'}
                         visible={visible}

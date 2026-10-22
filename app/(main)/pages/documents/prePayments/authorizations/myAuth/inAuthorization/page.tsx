@@ -375,12 +375,12 @@ const AcceptedPrepayment = () => {
             }}
         >
             <h3 className="m-0 text-900 font-medium">
-                {t('titleAuthNc')}
+                {t('titleAuthPrepay')}
                 &nbsp;&nbsp;
                 <Tooltip target=".custom-target-icon" />
                 <i
                     className="custom-target-icon bx bx-help-circle p-text-secondary p-overlay-badge"
-                    data-pr-tooltip={t('titleAuthNc')}
+                    data-pr-tooltip={t('titleAuthPrepay')}
                     data-pr-position="right"
                     data-pr-my="left center-2"
                     style={{ fontSize: '1rem', cursor: 'pointer' }}
@@ -693,17 +693,20 @@ const AcceptedPrepayment = () => {
     }, [userFunctionalAreas, oUser])
 
     const getObjectIntruction = () => {
-        const uploadInstructions = JSON.parse(JSON.stringify(t(`dialog.uploadInstructions`, { returnObjects: true })));
-        const uploadInstructionsPartner = JSON.parse(JSON.stringify(t(`dialog.uploadInstructionsPartner`, { returnObjects: true })));
-        const reviewInstructions = JSON.parse(JSON.stringify(t(`dialog.reviewInstructions`, { returnObjects: true })));
+        const authPrepay = t(`viewInstructions.authPrepay`, { returnObjects: true });
+        const searchPrepay = t(`viewInstructions.searchPrepay`, { returnObjects: true });
+        const sortColumn = t(`viewInstructions.sortColumn`, { returnObjects: true });
+        const reloadView = t(`viewInstructions.reloadView`, { returnObjects: true });
+        const downloadFiles = t(`viewInstructions.downloadFiles`, { returnObjects: true });
 
         let instructions: any[] = [];
-        if (oUser?.isInternalUser) {
-            instructions.push(uploadInstructions);
-            instructions.push(reviewInstructions);
-        } else {
-            instructions.push(uploadInstructionsPartner);
-        }
+        
+        instructions.push(authPrepay);
+        instructions.push(searchPrepay);
+        instructions.push(sortColumn);
+        instructions.push(reloadView);
+        instructions.push(downloadFiles);
+        
 
         if (!instructions || Object.keys(instructions).length === 0) {
             return null;
@@ -711,6 +714,7 @@ const AcceptedPrepayment = () => {
 
         return instructions;
     }
+
 
     return (
         <div className="grid">
@@ -732,14 +736,27 @@ const AcceptedPrepayment = () => {
                         dialogManualHeaderText={"Videos de ayuda"}
                         lVideos={[]}
                     /> */}
+                    <RenderInfoButton
+                        instructions={getObjectIntruction()}
+                        showInfo={showInfo}
+                        setShowInfo={setShowInfo}
+                        showManual={showManual}
+                        setShowManual={setShowManual}
+                        btnShowInstructionsText={tCommon('btnShowInstructions')}
+                        btnHideInstructionsText={tCommon('btnHideInstructions')}
+                        dialogManualBtnLabelText={tCommon('btnHelpVideos')}
+                        dialogManualBtnTooltipText={tCommon('btnHelpVideos')}
+                        dialogManualHeaderText={tCommon('btnHelpVideos')}
+                        lVideos={[]}
+                    />
                     <DialogPrepay
                         visible={visible}
                         onHide={() => setDialogVisible(false)}
                         isMobile={isMobile}
                         footerContent={dialogFooterContent}
                         headerTitle={dialogHeaderTitle()}
-                        oNc={oPrepay}
-                        setONc={setOPrepay}
+                        oPrepay={oPrepay}
+                        setOPrepay={setOPrepay}
                         dialogMode={dialogMode}
                         showToast={showToast}
                         setLoading={setLoading}
