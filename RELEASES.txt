@@ -1093,3 +1093,17 @@ Notas:
 - TODO: Clarificar algunas instrucciones para que sean más eficientes y agregar instrucciones a vistas donde existan botones.
 
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 27-10-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- Fix, mostrar archivos en pagos
+
+Correcciones:
+- Fix, no se limpiaban los archivos en el viewFiles
+
+----------------------------------------

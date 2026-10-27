@@ -328,6 +328,7 @@ const ConsultPaymentProgramded = () => {
                         // getHistoryAuth={getHistoryAuth}
                         loadingHistoryAuth={loadingHistoryAuth}
                         lHistoryAuth={historyAuth}
+                        setLFilesCrp={setLFiles}
                     />
                     <TablePayments 
                         lPayments={lPayments}
