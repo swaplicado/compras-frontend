@@ -328,6 +328,7 @@ const ConsultPaymentOperatedByCheck = () => {
                         // getHistoryAuth={getHistoryAuth}
                         loadingHistoryAuth={loadingHistoryAuth}
                         lHistoryAuth={historyAuth}
+                        setLFilesCrp={setLFiles}
                     />
                     <TablePayments 
                         lPayments={lPayments}
