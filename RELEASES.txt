@@ -1107,3 +1107,14 @@ Correcciones:
 - Fix, no se limpiaban los archivos en el viewFiles
 
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 28-10-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- Aumentado caracteres maximos de instrucciones de pago de 100 a 250
+
+----------------------------------------

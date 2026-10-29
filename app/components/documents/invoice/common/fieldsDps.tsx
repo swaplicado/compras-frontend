@@ -1134,7 +1134,7 @@ export const FieldsDps = ({
                             errorKey: '',
                             errorMessage: t('uploadDialog.paymentInstruction.helperText'),
                             labelClass: 'opacity-100 text-blue-600',
-                            lengthTextArea: 100
+                            lengthTextArea: 250
                         })}
 
                         <Divider align="center">
