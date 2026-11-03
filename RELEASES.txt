@@ -1118,3 +1118,14 @@ Resumen:
 - Aumentado caracteres maximos de instrucciones de pago de 100 a 250
 
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 03-11-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- Fix, validacion de tipo de cambio
+
+----------------------------------------
