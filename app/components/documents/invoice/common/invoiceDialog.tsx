@@ -462,7 +462,7 @@ export const InvoiceDialog = ({
                 useCfdi: false,
                 amount: !oDps?.amount,
                 currency: !oDps?.currency && !oDps?.oCurrency,
-                exchange_rate: !oDps?.exchange_rate && oDps?.currency !== 'MXN'
+                exchange_rate: false
             };
         } else {
             dpsErrors = {

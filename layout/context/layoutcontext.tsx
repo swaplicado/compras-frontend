@@ -49,7 +49,7 @@ export const LayoutProvider = ({ children }: ChildContainerProps) => {
             console.error("Error leyendo preferencias de UI:", error);
         }
         setIsInitialized(true);
-    }, [layoutConfig.theme]);
+    }, []);
 
     /* Al cambiar la configuración: Guardar en el navegador */
     useEffect(() => {
