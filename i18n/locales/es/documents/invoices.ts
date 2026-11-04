@@ -464,7 +464,8 @@ const invoices = {
             getCurrenciesError: "Error al obtener tipos de cambio.",
             getAuthorizationHistoryError: "Error al obtener el historial de autorización:",
             deleteInvoiceError: "Error al eliminar la factura: {{statusText}}",
-            deleteInvoiceErrorFallback: "Error al eliminar la factura"
+            deleteInvoiceErrorFallback: "Error al eliminar la factura",
+            getPayDayError: "Fecha de pago erronea"
         },
         rejectComments: {
             label: "Comentarios aprobación/rechazo:",
