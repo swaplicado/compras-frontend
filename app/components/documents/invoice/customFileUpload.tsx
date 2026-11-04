@@ -123,10 +123,17 @@ export const CustomFileUpload = ({
         const displayText = emptyPlaceholder || fallbackText;
 
         return (
-            <div className="flex align-items-center justify-content-center flex-column py-6 px-4 cursor-pointer hover:surface-100 transition-colors border-round">
-                <i className="pi pi-cloud-upload text-500 mb-3" style={{ fontSize: '2.8rem' }}></i>
-                <span className="text-600 font-medium text-center text-lg">{displayText}</span>
-            </div>
+             !disabled ? (
+                <div className="flex align-items-center justify-content-center flex-column py-6 px-4 cursor-pointer hover:surface-100 transition-colors border-round">
+                    <i className="pi pi-cloud-upload text-500 mb-3" style={{ fontSize: '2.8rem' }}></i>
+                    <span className="text-600 font-medium text-center text-lg">{displayText}</span>
+                </div>
+            ) : (
+                <div className="flex align-items-center justify-content-center flex-column py-6 px-4 border-round">
+                    <i className="pi pi-times text-500 mb-3" style={{ fontSize: '2.8rem', opacity: '0.3' }}></i>
+                    <span className="text-600 font-medium text-center text-lg"></span>
+                </div>
+            )
         );
     };
 

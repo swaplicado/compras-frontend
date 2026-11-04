@@ -1129,3 +1129,19 @@ Resumen:
 - Fix, validacion de tipo de cambio
 
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 04-11-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- Pantalla de pagos por comprobar a proveedores
+- Deshabilitar visualmente el fileUpload
+
+Cambios:
+- Se añadio al menu la pantalla de pagos por comprobar para el proveedor
+- Se clarifico visualmente que el fileUpload esta deshabilitado
+
+----------------------------------------

@@ -167,6 +167,11 @@
                             "to": "/pages/documents/payments/programed"
                         },
                         {
+                            "label": "Operados por comprobar",
+                            "icon": "pi pi-hourglass",
+                            "to": "/pages/documents/payments/operatedByCheck"
+                        },
+                        {
                             "label": "Operados",
                             "icon": "pi pi-money-bill",
                             "to": "/pages/documents/payments/executed"
