@@ -466,16 +466,16 @@ export const InvoiceDialog = ({
             };
         } else {
             dpsErrors = {
-                folio: !oDps?.folio || String(oDps.folio).trim() === '',
-                date: !oDps?.date,
+                folio: false,
+                date: false,
                 payment_method: false,
                 provider_rfc: false,
                 issuer_tax_regime: false,
                 company_rfc: false,
                 receiver_tax_regime: false,
                 useCfdi: false,
-                amount: !oDps?.amount,
-                currency: !oDps?.currency && !oDps?.oCurrency,
+                amount: false,
+                currency: false,
                 exchange_rate: false
             };
         }
@@ -1249,7 +1249,7 @@ export const InvoiceDialog = ({
             setLRefToValidateXml([]);
         }
 
-        if (dialogMode == 'review' && !oDps.payday && oDps.provider_id) {
+        if (dialogMode == 'review' && !oDps.payday && oDps.provider_id && visible) {
             getPayDay?.();
         }
 
