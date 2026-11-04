@@ -90,7 +90,7 @@ const Upload = () => {
                 "
             style={{
                 padding: '1rem',
-                height: '4rem'
+                height: '4.7rem'
             }}
         >
             <h3 className="m-0 text-900 font-medium">
@@ -109,9 +109,13 @@ const Upload = () => {
                 <h6 className="ml-3 text-700 font-medium text-right" style={{ color: moment(actualDate).isAfter(limitDate) ? 'red' : 'black' }}>
                     IMPORTANTE: {moment(actualDate).isBefore(limitDate) ? t('dpsDateLimitText') : t('dpsDateAfterLimitText')} {DateFormatter(limitDate)}
                     { !crpPending?.authorized ? (
-                        <p style={{color: "red"}}>
-                            {crpPending?.reason}
-                        </p>
+                        <>
+                            <p style={{color: "red"}}>
+                                {crpPending?.reason}
+                                <br />
+                                Puedes ver tus pagos por comprobar haciendo click en <a href="/pages/documents/payments/operatedByCheck" rel="noopener noreferrer">Pagos por comprobar</a>
+                            </p>
+                        </>
                         
                     ) : ''}
                 </h6>
