@@ -101,7 +101,8 @@ interface InvoiceDialogProps {
     lSuppliers?: any[];
     lZones?: any[];
     lProcessingType?: any[];
-    canEditAcceptance?: boolean
+    canEditAcceptance?: boolean;
+    userGroups?: any[];
 }
 
 interface renderFieldProps {
@@ -121,6 +122,7 @@ interface renderFieldProps {
     renderRightItem?: { item: React.ReactNode; mdCol: number };
     mySyle?: any;
     digits?: number;
+    userGroups?: any[];
 }
 
 export const InvoiceDialog = ({
@@ -179,7 +181,8 @@ export const InvoiceDialog = ({
     withEditExpiredDate = false,
     lOpex = [],
     lProcessingType = [],
-    canEditAcceptance = false
+    canEditAcceptance = false,
+    userGroups = []
 }: InvoiceDialogProps) => {
     const op = useRef<OverlayPanel>(null);
     const [oCompany, setOCompany] = useState<any>(null);
@@ -271,6 +274,8 @@ export const InvoiceDialog = ({
     const [isAdvance, setIsAdvance] = useState<boolean>(false);
     const [oAdvance, setOAdvance] = useState<any>(null);
     const [originalIsAdvance, setOriginalIsAdvance] = useState<boolean>(false);
+
+    const [showWarningCrpPending, setShowWarningCrpPending] = useState<boolean>(false);
 
     const isBuyer = oValidUser?.isInternalUser;
     const isMexican = oProvider ? oProvider.country == constants.COUNTRIES.MEXICO_ID : false;
@@ -521,22 +526,26 @@ export const InvoiceDialog = ({
         setOReference([]);
         setOArea(null);
         setOProvider(oProvider);
-        
+        setShowWarningCrpPending(false);
+        setErrorMessage('');
         let oCrpPending = null;
-        // if (oProvider) {
-        //     oCrpPending = await getCrpPending({
-        //         params: { route: constants.ROUTE_GET_CRP_PENDING_BY_PARTNER, provider_id: oProvider.id },
-        //         errorMessage: '',
-        //         setCrpPending,
-        //         showToast
-        //     });
-        // }
-        // if (oCrpPending) {
-        //     if (!oCrpPending?.authorized) {
-        //         setErrorMessage('El proveedor ' + oProvider?.name + ' ' + oCrpPending?.reason );
-        //         setResultUpload('error');
-        //     }
-        // }
+        if (oProvider && isBuyer) {
+            oCrpPending = await getCrpPending({
+                params: { route: constants.ROUTE_GET_CRP_PENDING_BY_PARTNER, provider_id: oProvider.id },
+                errorMessage: '',
+                setCrpPending,
+                showToast
+            });
+        }
+        if (oCrpPending) {
+            if (!oCrpPending?.authorized && (userGroups?.includes(constants.ROLES.COMPRADOR_ID) || userGroups?.includes(constants.ROLES.PROVEEDOR_ID)) && !userGroups?.includes(constants.ROLES.CONTADOR_ID)) {
+                setErrorMessage(oProvider?.name + ': ' + oCrpPending?.reason );
+                setResultUpload('error');
+            } else if (!oCrpPending?.authorized && userGroups?.includes(constants.ROLES.CONTADOR_ID)) {
+                setErrorMessage(oProvider?.name + ': ' + oCrpPending?.reason );
+                setShowWarningCrpPending(true);
+            }
+        }
         setFormErrors((prev: any) => ({ ...prev, provider: false }));
         if (!oProvider || !oProvider.id) {
             setLReferences([]);
@@ -2508,6 +2517,14 @@ export const InvoiceDialog = ({
                                 <div className="field col-12 md:col-12">
                                     <div className="formgrid grid">
                                         <div className="col">
+                                        { showWarningCrpPending && (
+                                            <span className='text-yellow-700'>
+                                                {errorMessage}
+                                            </span>
+                                        )}
+
+                                        <br />
+                                        <br />
                                             <label>
                                                 {t('uploadDialog.xml_file.label')}
                                                 {(!oReference || oReference.length === 0) && (

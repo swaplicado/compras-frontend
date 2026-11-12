@@ -1145,3 +1145,17 @@ Cambios:
 - Se clarifico visualmente que el fileUpload esta deshabilitado
 
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 12-11-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- Evitar que proveedores y contadores carguen facturas si faltan crp, excepto contadores (tarea por sergio flores)
+
+Cambios:
+- Evitar que proveedores y contadores carguen facturas si faltan crp, excepto contadores
+
+----------------------------------------
