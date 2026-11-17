@@ -1313,7 +1313,7 @@ export const InvoiceDialog = ({
         } else {
             setModeFieldsDps('view');
         }
-    }, [oProvider, dialogMode]);
+    }, [oProvider, dialogMode, oCompany]);
 
     const footerCreate = resultUpload === 'waiting' && (
         <>
