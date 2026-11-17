@@ -970,6 +970,7 @@ const Upload = () => {
                         withEditExpiredDate={true}
                         lOpex={lOpex}
                         lProcessingType={lProcessingType}
+                        userGroups={userGroups}
                     />
                     { oValidUser.isInternalUser && (
                         <FlowAuthorizationDialog 
