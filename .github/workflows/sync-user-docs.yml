@@ -1,0 +1,52 @@
+name: Sincronizar documentación de usuario
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - docs/para-usuarios.md
+      - docs/portal-index.md
+      - scripts/publish-user-docs.sh
+      - .github/workflows/sync-user-docs.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sync-user-docs
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar este repositorio
+        uses: actions/checkout@v4
+
+      - name: Descargar el portal de documentación
+        uses: actions/checkout@v4
+        with:
+          repository: swaplicado/documentacion
+          ref: main
+          token: ${{ secrets.DOCS_REPO_TOKEN }}
+          path: documentacion
+
+      - name: Generar las páginas públicas
+        run: bash scripts/publish-user-docs.sh documentacion
+
+      - name: Publicar cambios en el portal
+        working-directory: documentacion
+        env:
+          ACTOR: ${{ github.actor }}
+        run: |
+          git add projects/portal-compras
+          if git diff --cached --quiet; then
+            echo "Sin cambios en la documentación pública."
+            exit 0
+          fi
+          git config user.name "$ACTOR"
+          git config user.email "$ACTOR@users.noreply.github.com"
+          git commit -m "docs: sync portal-compras user guide"
+          git push origin HEAD:main
