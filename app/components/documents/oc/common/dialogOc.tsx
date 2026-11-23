@@ -24,6 +24,7 @@ import { FieldsEditAcceptance } from '@/app/components/documents/invoice/fieldsE
 import { TableEty } from '@/app/components/documents/oc/common/tableEty';
 import { HistoryAuth } from '@/app/components/documents/invoice/historyAuth';
 import { Button } from 'primereact/button';
+import { getDocumentExtraData } from '@/app/components/documents/invoice/common/documentExtraDatautils';
 
 interface DialogOc {
     visible: boolean;
@@ -205,6 +206,16 @@ export const DialogOc = ({
             }
         }
     }, [visible]);
+
+    useEffect(() => {
+        if (visible && dialogMode == 'view' && oOc?.id) {
+            getDocumentExtraData({
+                document_id: oOc.id,
+                setODps: setOOc,
+                showToast
+            });
+        }
+    }, [visible, dialogMode, oOc?.id]);
 
     useEffect(() => {
         if (dialogMode == 'create') {
@@ -551,6 +562,22 @@ export const DialogOc = ({
                                     errorKey={'date'}
                                     errors={formErrors}
                                     errorMessage={'Selecciona fecha'}
+                                />
+                                <RenderField
+                                    label={t('dialog.fields.dateDocDuration.label')}
+                                    tooltip={oOc?.date_doc_delivery && oOc?.date_doc_lapsing
+                                        ? `Periodo de consumo del ${DateFormatter(oOc.date_doc_delivery)} al ${DateFormatter(oOc.date_doc_lapsing)}`
+                                        : t('dialog.fields.dateDocDuration.tooltip')}
+                                    value={oOc?.date_doc_duration?.trim?.() || 'N/D'}
+                                    disabled={true}
+                                    mdCol={3}
+                                    type={'text'}
+                                    onChange={() => null}
+                                    options={[]}
+                                    placeholder={t('dialog.fields.dateDocDuration.placeholder')}
+                                    errorKey={''}
+                                    errors={formErrors}
+                                    errorMessage={''}
                                 />
                                 <RenderField
                                     label={t('dialog.fields.account_tag.label')}

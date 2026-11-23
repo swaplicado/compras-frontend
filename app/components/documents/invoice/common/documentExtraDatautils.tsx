@@ -19,7 +19,10 @@ export const getDocumentExtraData = async ({ document_id, setODps, showToast }: 
             const data = response.data.data || {};
             setODps((prev: any) => ({
                 ...prev,
-                supplier_data: data.supplier_data || null
+                supplier_data: data.supplier_data || null,
+                date_doc_delivery: data.date_doc_delivery || null,
+                date_doc_lapsing: data.date_doc_lapsing || null,
+                date_doc_duration: data.date_doc_duration || null
             }));
         } else {
             throw new Error(`Error al obtener datos extra: ${response.statusText}`);

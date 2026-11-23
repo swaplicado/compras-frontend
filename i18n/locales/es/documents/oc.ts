@@ -104,6 +104,11 @@ const oc = {
                 placeholder: "Fecha",
                 tooltip: "Fecha de la orden de compra."
             },
+            dateDocDuration: {
+                label: "Período de validez:",
+                placeholder: "Duración",
+                tooltip: "No se encontró el rango de vigencia de la orden de compra."
+            },
             folio: {
                 label: "Folio:",
                 placeholder: "Folio",
