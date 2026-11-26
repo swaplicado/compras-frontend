@@ -1159,3 +1159,17 @@ Cambios:
 - Evitar que proveedores y contadores carguen facturas si faltan crp, excepto contadores
 
 ----------------------------------------
+
+========================================
+RELEASE
+Fecha: 26-11-2026
+Autor: Adrián Alejandro Avilés Gómez
+========================================
+
+Resumen:
+- habilitar menu de configuraciones a contadores
+
+Cambios:
+- Añadido el rol de contadores para habilitar el menu de configuracion
+
+----------------------------------------

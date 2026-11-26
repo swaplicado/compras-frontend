@@ -32,7 +32,7 @@ const AppMenu = () => {
             let config = groups.includes(constants.ROLES.PROVEEDOR_ID) ? appConfigProvider : appConfig;
             const oUser = await getOUser();
 
-            if (groups.includes(constants.ROLES.ADMINISTRADOR_ID)) {
+            if (groups.includes(constants.ROLES.ADMINISTRADOR_ID) || groups.includes(constants.ROLES.CONTADOR_ID)) {
                 config.menu.push({
                     "label": "Configuraciones",
                     "items": [
